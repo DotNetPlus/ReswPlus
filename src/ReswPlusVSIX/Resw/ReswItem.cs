@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 // Source: https://github.com/rudyhuyn/ReswPlus
 
-namespace ReswPlus.ReswGen
+namespace ReswPlus.Resw
 {
-    public class ReswItem
+    class ReswItem
     {
         public ReswItem(string key, string value, string comment = null)
         {

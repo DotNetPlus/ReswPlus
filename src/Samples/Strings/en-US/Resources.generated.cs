@@ -6,7 +6,7 @@ using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Data;
 
 namespace ReswPlusSample.Strings {
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Huyn.ReswPlus", "0.1.1.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Huyn.ReswPlus", "0.1.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -31,6 +31,7 @@ namespace ReswPlusSample.Strings {
         {
             return string.Format(FileShared(pluralCount), username, pluralCount, city);
         }
+
         #endregion
 
         #region MinutesLeft
@@ -48,6 +49,7 @@ namespace ReswPlusSample.Strings {
         {
             return string.Format(MinutesLeft(pluralCount), pluralCount);
         }
+
         #endregion
 
         #region PluralizationTest
@@ -79,9 +81,11 @@ namespace ReswPlusSample.Strings {
         {
             return string.Format(ReceivedMessages(pluralCount), pluralCount, paramString2);
         }
+
         #endregion
 
         #region ForecastAnnouncement
+
         /// <summary>
         ///   Looks up a localized string similar to: The current temperature in {2} is {0}°F ({1}°C)
         /// </summary>
@@ -96,6 +100,7 @@ namespace ReswPlusSample.Strings {
         #endregion
 
         #region GotMessages
+
         /// <summary>
         ///   Looks up a localized string similar to: Welcome {0}, you got {1} emails!
         /// </summary>
@@ -120,6 +125,7 @@ namespace ReswPlusSample.Strings {
         public static string WelcomeTitle => _resourceLoader.GetString("WelcomeTitle");
 
         #region YourAgeAndName
+
         /// <summary>
         ///   Looks up a localized string similar to: Your are {0}yo and named {1}!
         /// </summary>

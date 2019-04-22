@@ -4,9 +4,9 @@
 
 using System.Collections.Generic;
 
-namespace ReswPlus.ReswGen
+namespace ReswPlus.Resw
 {
-    public class ReswInfo
+    class ReswInfo
     {
         public List<ReswItem> Items { get; set; }
     }

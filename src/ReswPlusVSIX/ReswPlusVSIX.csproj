@@ -55,13 +55,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CodeGenerators\ReswPlusPluralizationGenerator.cs" />
+    <Compile Include="Languages\ICodeGenerator.cs" />
+    <Compile Include="SingleFileGenerators\ReswPlusPluralizationGenerator.cs" />
+    <Compile Include="Languages\CSharpCodeGenerator.cs" />
+    <Compile Include="Resw\ParameterType.cs" />
+    <Compile Include="Resw\ReswParser.cs" />
+    <Compile Include="Resw\ReswTagTyped.cs" />
     <Compile Include="Utils\CodeGeneratorRegistrationAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resw\ReswCodeGenerator.cs" />
     <Compile Include="Resw\ReswInfo.cs" />
     <Compile Include="Resw\ReswItem.cs" />
-    <Compile Include="CodeGenerators\ReswPlusGenerator.cs" />
+    <Compile Include="SingleFileGenerators\ReswPlusGenerator.cs" />
     <Compile Include="ReswPlusPackage.cs" />
   </ItemGroup>
   <ItemGroup>

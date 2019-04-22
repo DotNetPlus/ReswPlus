@@ -8,21 +8,22 @@ using System.Text;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using ReswPlus.ReswGen;
+using ReswPlus.Languages;
+using ReswPlus.Resw;
 
-namespace ReswPlus.CodeGenerators
+namespace ReswPlus.SingleFileGenerators
 {
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    [InstalledProductRegistration(nameof(ReswPlusGenerator), "Advanced File Code Generator for Resw files", "1.0")]
+    [InstalledProductRegistration(nameof(ReswPlusPluralizationGenerator), "Advanced File Code Generator for Resw files", "1.0")]
     [ComVisible(true)]
-    [Guid("5A25BA4F-0BC7-44FB-B8D2-90C17CBD6CC7")]
+    [Guid("96B53337-A048-431A-BE1B-86554C5D2196")]
     [Utils.CodeGeneratorRegistration(
-        typeof(ReswPlusGenerator),
-        nameof(ReswPlusGenerator),
+        typeof(ReswPlusPluralizationGenerator),
+        nameof(ReswPlusPluralizationGenerator),
         VSConstants.UICONTEXT.CSharpProject_string,
         GeneratesDesignTimeSource = true)]
-    [ProvideObject(typeof(ReswPlusGenerator))]
-    public sealed class ReswPlusGenerator: IVsSingleFileGenerator
+    [ProvideObject(typeof(ReswPlusPluralizationGenerator))]
+    public sealed class ReswPlusPluralizationGenerator : IVsSingleFileGenerator
     {
         #region IVsSingleFileGenerator Members
 
@@ -33,21 +34,21 @@ namespace ReswPlus.CodeGenerators
         }
 
         public int Generate(string inputFilePath, string inputFileContents,
-          string defaultNamespace, IntPtr[] outputFileContents,
-          out uint output, IVsGeneratorProgress generateProgress)
+          string defaultNamespace, IntPtr[] rgbOutputFileContents,
+          out uint pcbOutput, IVsGeneratorProgress generateProgress)
         {
             try
             {
-                var content = ReswCodeGenerator.GenerateCode(inputFilePath, inputFileContents, defaultNamespace, false);
+                var content = new ReswCodeGenerator(new CSharpCodeGenerator()).GenerateCode(inputFilePath, inputFileContents, defaultNamespace, true);
                 var bytes = Encoding.UTF8.GetBytes(content);
                 var length = bytes.Length;
-                outputFileContents[0] = Marshal.AllocCoTaskMem(length);
-                Marshal.Copy(bytes, 0, outputFileContents[0], length);
-                output = (uint)length;
+                rgbOutputFileContents[0] = Marshal.AllocCoTaskMem(length);
+                Marshal.Copy(bytes, 0, rgbOutputFileContents[0], length);
+                pcbOutput = (uint)length;
             }
             catch (Exception)
             {
-                output = 0;
+                pcbOutput = 0;
             }
             return VSConstants.S_OK;
         }
