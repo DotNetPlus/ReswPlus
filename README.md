@@ -14,6 +14,14 @@ Currently supported:
 - Visual Studio 2017 and 2019 (all versions).
 - C# apps (UWP C++/CX, C++/winrt and VB apps is in development). 
 
+|                                                 | Resw | Resw + ReswPlus | Resx | Android XML (for reference) |
+|-------------------------------------------------|------|-----------------|------|-------------|
+| Modify UI properties via resource files (x:uid) | ✅    | ✅               |      |             |
+| Strongly typed accessors                        |      | ✅               | ✅    | ✅           |
+| Plural forms                                    |      | ✅               |      | ✅           |
+| 'None' state                                    |      | ✅               |      |             |
+| Strongly typed string formatting                |      | ✅               |      |             |
+
 ## How to install
 
 ReswPlus supports Visual Studio 2017 and 2019.
