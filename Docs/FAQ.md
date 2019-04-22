@@ -3,6 +3,10 @@
 Because ReswPlus uses [MarkupExtension](https://docs.microsoft.com/en-us/uwp/api/windows.ui.xaml.markup.markupextension), the minimum version supported is 	
 Windows 10 Fall Creators Update (1709).
 
+## Does it support VB or C++?
+
+VB support is currently under development. C++/CX and C++/WinRT support are planned for a future update.
+
 ## Is it free?
 
 Yes and it won't change.
