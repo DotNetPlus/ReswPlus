@@ -176,6 +176,7 @@ namespace ReswPlus.Languages
             stringBuilder.AppendLine("    {");
             stringBuilder.AppendLine("        public enum KeyEnum");
             stringBuilder.AppendLine("        {");
+            stringBuilder.AppendLine("            __Undefined = 0,");
             foreach (var key in keys)
             {
                 stringBuilder.AppendLine($"            {key},");
@@ -187,19 +188,19 @@ namespace ReswPlus.Languages
             stringBuilder.AppendLine("        {");
             stringBuilder.AppendLine($"            _resourceLoader = ResourceLoader.GetForViewIndependentUse(\"{resourceFileName}\");");
             stringBuilder.AppendLine("        }");
-            stringBuilder.AppendLine("        public KeyEnum? Key { get; set;}");
+            stringBuilder.AppendLine("        public KeyEnum Key { get; set;}");
             stringBuilder.AppendLine("        public IValueConverter Converter { get; set;}");
             stringBuilder.AppendLine("        public object ConverterParameter { get; set;}");
             stringBuilder.AppendLine("        protected override object ProvideValue()");
             stringBuilder.AppendLine("        {");
             stringBuilder.AppendLine("            string res;");
-            stringBuilder.AppendLine("            if(!Key.HasValue)");
+            stringBuilder.AppendLine("            if(Key == KeyEnum.__Undefined)");
             stringBuilder.AppendLine("            {");
             stringBuilder.AppendLine("                res = \"\";");
             stringBuilder.AppendLine("            }");
             stringBuilder.AppendLine("            else");
             stringBuilder.AppendLine("            {");
-            stringBuilder.AppendLine("                res = _resourceLoader.GetString(Key.Value.ToString());");
+            stringBuilder.AppendLine("                res = _resourceLoader.GetString(Key.ToString());");
             stringBuilder.AppendLine("            }");
             stringBuilder.AppendLine("            return Converter == null ? res : Converter.Convert(res, typeof(String), ConverterParameter, null);");
             stringBuilder.AppendLine("        }");

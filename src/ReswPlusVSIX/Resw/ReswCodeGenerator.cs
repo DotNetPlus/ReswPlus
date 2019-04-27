@@ -2,12 +2,12 @@
 // Licensed under the MIT License.
 // Source: https://github.com/rudyhuyn/ReswPlus
 
-using System.Collections.Generic;
+using Microsoft.VisualStudio.Shell;
+using ReswPlus.Languages;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using ReswPlus.Languages;
 
 namespace ReswPlus.Resw
 {
@@ -25,19 +25,30 @@ namespace ReswPlus.Resw
         {
             var listFormats = "(?:" + ReswTagTyped.GetParameterSymbols().Aggregate((a, b) => a + "|" + b) + ")";
             var listFormatsWithName = listFormats + "(?:\\(\\w+\\))?";
-            RegexStringFormat = new Regex($"\\{TagStrongType}\\[\\s*(?<formats>{listFormatsWithName}(?:\\s*,\\s*{listFormatsWithName}\\s*)*)\\]");
+            RegexStringFormat =
+                new Regex(
+                    $"\\{TagStrongType}\\[\\s*(?<formats>{listFormatsWithName}(?:\\s*,\\s*{listFormatsWithName}\\s*)*)\\]");
         }
 
         public ReswCodeGenerator(ICodeGenerator codeGenerator)
         {
-            this._codeGenerator = codeGenerator;
+            _codeGenerator = codeGenerator;
         }
+
         public string GenerateCode(string resourcePath, string content, string defaultNamespace, bool supportPluralNet)
         {
+
             var namespaceToUse = ExtractNamespace(defaultNamespace);
 
             var filename = Path.GetFileNameWithoutExtension(resourcePath);
             var reswInfo = ReswParser.Parse(content);
+
+            var projectNameIfLibrary = GetProjectNameIfLibrary(resourcePath);
+
+            //If the resource file is in a library, the resource id in the .pri file
+            //will be <library name>/FilenameWithoutExtension
+            var resouceNameForResourceLoader = string.IsNullOrEmpty(projectNameIfLibrary) ?
+                filename : projectNameIfLibrary + "/" + filename;
 
             var stringBuilder = new StringBuilder();
 
@@ -45,18 +56,21 @@ namespace ReswPlus.Resw
 
             stringBuilder.AppendLine("");
             stringBuilder.AppendLine(_codeGenerator.OpenNamespace(namespaceToUse));
-            stringBuilder.AppendLine(_codeGenerator.OpenStronglyTypedClass(filename, filename));
+            stringBuilder.AppendLine(_codeGenerator.OpenStronglyTypedClass(resouceNameForResourceLoader, filename));
             stringBuilder.AppendLine("");
 
-            var stringItems = reswInfo.Items.Where(i => !i.Key.Contains(".") && !(i.Comment?.Contains(TagIgnore) ?? false)).ToArray();
+            var stringItems = reswInfo.Items
+                .Where(i => !i.Key.Contains(".") && !(i.Comment?.Contains(TagIgnore) ?? false)).ToArray();
 
             if (supportPluralNet)
             {
                 //check Pluralization
                 const string regexPluralItem = "_(Zero|One|Other|Many|Few|None)$";
-                var itemsWithPlural = reswInfo.Items.Where(c => c.Key.Contains("_") && Regex.IsMatch(c.Key, regexPluralItem)).ToArray();
+                var itemsWithPlural = reswInfo.Items
+                    .Where(c => c.Key.Contains("_") && Regex.IsMatch(c.Key, regexPluralItem)).ToArray();
 
-                foreach (var item in (from item in itemsWithPlural group item by item.Key.Substring(0, item.Key.LastIndexOf('_'))))
+                foreach (var item in (from item in itemsWithPlural
+                                      group item by item.Key.Substring(0, item.Key.LastIndexOf('_'))))
                 {
                     var idNone = item.Key + "_None";
                     var hasNoneForm = reswInfo.Items.Any(i => i.Key == idNone);
@@ -67,11 +81,13 @@ namespace ReswPlus.Resw
                     stringBuilder.AppendLine(_codeGenerator.OpenRegion(item.Key));
                     stringBuilder.AppendLine(
                         _codeGenerator.CreatePluralNetAccessor(item.Key, summary, hasNoneForm ? idNone : null));
-              
-                    var commentToUse = item.FirstOrDefault(i => i.Comment != null && RegexStringFormat.IsMatch(i.Comment));
+
+                    var commentToUse =
+                        item.FirstOrDefault(i => i.Comment != null && RegexStringFormat.IsMatch(i.Comment));
                     if (commentToUse != null)
                     {
-                        var formattedFunction = GetFormattedFunction(item.Key, item.FirstOrDefault().Value, commentToUse.Comment, true);
+                        var formattedFunction = GetFormattedFunction(item.Key, item.FirstOrDefault().Value,
+                            commentToUse.Comment, true);
                         if (formattedFunction != null)
                         {
                             stringBuilder.AppendLine(formattedFunction);
@@ -100,7 +116,7 @@ namespace ReswPlus.Resw
                     var singleLineValue = RegexRemoveSpace.Replace(item.Value, " ").Trim();
                     var summary = $"Looks up a localized string similar to: {singleLineValue}";
                     stringBuilder.AppendLine(_codeGenerator.CreateAccessor(item.Key, summary));
-   
+
                     if (formattedFunction != null)
                     {
                         stringBuilder.AppendLine(formattedFunction);
@@ -112,7 +128,8 @@ namespace ReswPlus.Resw
 
                 stringBuilder.AppendLine(_codeGenerator.CloseStronglyTypedClass());
                 stringBuilder.AppendLine("");
-                var markupExtensionStr = _codeGenerator.CreateMarkupExtension(filename, filename + "Extension", stringItems.Select(s=>s.Key));
+                var markupExtensionStr = _codeGenerator.CreateMarkupExtension(resouceNameForResourceLoader, filename + "Extension",
+                    stringItems.Select(s => s.Key));
                 if (!string.IsNullOrEmpty(markupExtensionStr))
                 {
                     stringBuilder.AppendLine(markupExtensionStr);
@@ -123,6 +140,7 @@ namespace ReswPlus.Resw
             {
                 stringBuilder.AppendLine(_codeGenerator.CloseStronglyTypedClass());
             }
+
             stringBuilder.AppendLine(_codeGenerator.CloseNamespace());
             stringBuilder.AppendLine("");
             return stringBuilder.ToString();
@@ -132,7 +150,8 @@ namespace ReswPlus.Resw
         private string ExtractNamespace(string defaultNamespace)
         {
             // remove bcp47 tag from the namespace
-            var regexNamespace = new Regex("\\.Strings\\.[a-z]{2}(?:[-_](?:Latn|Cyrl|Hant|Hans))?(?:[-_](?:\\d{3}|[A-Z]{2,3}))?$");
+            var regexNamespace =
+                new Regex("\\.Strings\\.[a-z]{2}(?:[-_](?:Latn|Cyrl|Hant|Hans))?(?:[-_](?:\\d{3}|[A-Z]{2,3}))?$");
             var match = regexNamespace.Match(defaultNamespace);
             if (match.Success)
             {
@@ -168,7 +187,8 @@ namespace ReswPlus.Resw
                 if (tagTypedInfo.PluralNetDecimal == null)
                 {
                     pluralNetParameterName = "pluralNetReferenceNumber";
-                    extraParameterForPluralNet = new FunctionParameter { Type = ParameterType.Double, Name = pluralNetParameterName };
+                    extraParameterForPluralNet = new FunctionParameter
+                    { Type = ParameterType.Double, Name = pluralNetParameterName };
                 }
                 else
                 {
@@ -178,7 +198,25 @@ namespace ReswPlus.Resw
 
             var summary = $"Format the string similar to: {singleLineValue}";
 
-            return _codeGenerator.CreateFormatMethod(key, tagTypedInfo.Parameters, summary, extraParameterForPluralNet, pluralNetParameterName);
+            return _codeGenerator.CreateFormatMethod(key, tagTypedInfo.Parameters, summary, extraParameterForPluralNet,
+                pluralNetParameterName);
+        }
+
+        private string GetProjectNameIfLibrary(string filepath)
+        {
+            var dte = (EnvDTE.DTE)Package.GetGlobalService(typeof(EnvDTE.DTE));
+            var projectItem = dte.Solution.FindProjectItem(filepath);
+            var project = projectItem?.ContainingProject;
+            if (project != null)
+            {
+                var isLibrary = project.Properties.Item("OutputTypeEx").Value == 2;
+                if (isLibrary)
+                {
+                    return project.Name;
+                }
+            }
+
+            return null;
         }
     }
 }
