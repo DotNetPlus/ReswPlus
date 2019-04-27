@@ -17,7 +17,7 @@ namespace ReswPlus.Languages
 
         string CloseNamespace();
 
-        string OpenStronglyTypedClass(string className);
+        string OpenStronglyTypedClass(string resourceFileName, string className);
         string CloseStronglyTypedClass();
         string OpenRegion(string name);
         string CloseRegion();
@@ -28,6 +28,6 @@ namespace ReswPlus.Languages
         string CreateFormatMethod(string key, IEnumerable<FunctionParameter> parameters, string summary = null,
             FunctionParameter extraParameterForFunction = null, string parameterNameForPluralNet = null);
 
-        string CreateMarkupExtension(string className, IEnumerable<string> keys);
+        string CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys);
     }
 }

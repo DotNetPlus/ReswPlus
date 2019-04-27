@@ -45,7 +45,7 @@ namespace ReswPlus.Resw
 
             stringBuilder.AppendLine("");
             stringBuilder.AppendLine(_codeGenerator.OpenNamespace(namespaceToUse));
-            stringBuilder.AppendLine(_codeGenerator.OpenStronglyTypedClass(filename));
+            stringBuilder.AppendLine(_codeGenerator.OpenStronglyTypedClass(filename, filename));
             stringBuilder.AppendLine("");
 
             var stringItems = reswInfo.Items.Where(i => !i.Key.Contains(".") && !(i.Comment?.Contains(TagIgnore) ?? false)).ToArray();
@@ -112,7 +112,7 @@ namespace ReswPlus.Resw
 
                 stringBuilder.AppendLine(_codeGenerator.CloseStronglyTypedClass());
                 stringBuilder.AppendLine("");
-                var markupExtensionStr = _codeGenerator.CreateMarkupExtension(filename + "Extension", stringItems.Select(s=>s.Key));
+                var markupExtensionStr = _codeGenerator.CreateMarkupExtension(filename, filename + "Extension", stringItems.Select(s=>s.Key));
                 if (!string.IsNullOrEmpty(markupExtensionStr))
                 {
                     stringBuilder.AppendLine(markupExtensionStr);

@@ -61,7 +61,7 @@ namespace ReswPlus.Languages
             return "}";
         }
 
-        public string OpenStronglyTypedClass(string className)
+        public string OpenStronglyTypedClass(string resourceFilename, string className)
         {
             var stringBuilder = new StringBuilder();
             stringBuilder.AppendLine("    [global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"0.1.0.0\")]");
@@ -72,7 +72,7 @@ namespace ReswPlus.Languages
 
             stringBuilder.AppendLine($"        static {className}()");
             stringBuilder.AppendLine("        {");
-            stringBuilder.AppendLine("            _resourceLoader = ResourceLoader.GetForViewIndependentUse();");
+            stringBuilder.AppendLine($"            _resourceLoader = ResourceLoader.GetForViewIndependentUse(\"{resourceFilename}\");");
             stringBuilder.Append("        }");
             return stringBuilder.ToString();
         }
@@ -165,29 +165,29 @@ namespace ReswPlus.Languages
             return stringBuilder.ToString();
         }
 
-        public string CreateMarkupExtension(string className, IEnumerable<string> keys)
+        public string CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys)
         {
             var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("    public enum ReswPlusKeyExtension");
-            stringBuilder.AppendLine("    {");
-            foreach (var key in keys)
-            {
-                stringBuilder.AppendLine($"        {key},");
-            }
-            stringBuilder.AppendLine("    }");
-            stringBuilder.AppendLine("");
             stringBuilder.AppendLine("    [global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"0.1.0.0\")]");
             stringBuilder.AppendLine("    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]");
             stringBuilder.AppendLine("    [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]");
             stringBuilder.AppendLine("    [MarkupExtensionReturnType(ReturnType = typeof(string))]");
             stringBuilder.AppendLine($"    public class {className}: MarkupExtension");
             stringBuilder.AppendLine("    {");
+            stringBuilder.AppendLine("        public enum KeyEnum");
+            stringBuilder.AppendLine("        {");
+            foreach (var key in keys)
+            {
+                stringBuilder.AppendLine($"            {key},");
+            }
+            stringBuilder.AppendLine("        }");
+            stringBuilder.AppendLine("");
             stringBuilder.AppendLine("        private static ResourceLoader  _resourceLoader;");
             stringBuilder.AppendLine($"        static {className}()");
             stringBuilder.AppendLine("        {");
-            stringBuilder.AppendLine("            _resourceLoader = ResourceLoader.GetForViewIndependentUse();");
+            stringBuilder.AppendLine($"            _resourceLoader = ResourceLoader.GetForViewIndependentUse(\"{resourceFileName}\");");
             stringBuilder.AppendLine("        }");
-            stringBuilder.AppendLine("        public ReswPlusKeyExtension? Key { get; set;}");
+            stringBuilder.AppendLine("        public KeyEnum? Key { get; set;}");
             stringBuilder.AppendLine("        public IValueConverter Converter { get; set;}");
             stringBuilder.AppendLine("        public object ConverterParameter { get; set;}");
             stringBuilder.AppendLine("        protected override object ProvideValue()");
