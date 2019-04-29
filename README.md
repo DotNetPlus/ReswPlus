@@ -25,6 +25,7 @@ Currently supported:
 | Plural forms                                    |      | ✅               |      | ✅           |
 | 'None' state                                    |      | ✅               |      |             |
 | Strongly typed string formatting                |      | ✅               |      |             |
+| Support Resources in libraries                  |      | ✅               | ✅    |             |
 
 ## How to install
 
