@@ -53,12 +53,26 @@ namespace ReswPlus.Languages
 
         public string OpenNamespace(string namespaceName)
         {
-            return $"namespace {namespaceName} {{";
+            if (string.IsNullOrEmpty(namespaceName))
+            {
+                return "";
+            }
+            else
+            {
+                return $"namespace {namespaceName} {{";
+            }
         }
 
-        public string CloseNamespace()
+        public string CloseNamespace(string namespaceName)
         {
-            return "}";
+            if (string.IsNullOrEmpty(namespaceName))
+            {
+                return "";
+            }
+            else
+            {
+                return "} //" + namespaceName;
+            }
         }
 
         public string OpenStronglyTypedClass(string resourceFilename, string className)
@@ -68,7 +82,7 @@ namespace ReswPlus.Languages
             stringBuilder.AppendLine("    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]");
             stringBuilder.AppendLine("    [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]");
             stringBuilder.AppendLine($"    public class {className} {{");
-            stringBuilder.AppendLine("        private static ResourceLoader  _resourceLoader;");
+            stringBuilder.AppendLine("        private static ResourceLoader _resourceLoader;");
 
             stringBuilder.AppendLine($"        static {className}()");
             stringBuilder.AppendLine("        {");
@@ -183,7 +197,7 @@ namespace ReswPlus.Languages
             }
             stringBuilder.AppendLine("        }");
             stringBuilder.AppendLine("");
-            stringBuilder.AppendLine("        private static ResourceLoader  _resourceLoader;");
+            stringBuilder.AppendLine("        private static ResourceLoader _resourceLoader;");
             stringBuilder.AppendLine($"        static {className}()");
             stringBuilder.AppendLine("        {");
             stringBuilder.AppendLine($"            _resourceLoader = ResourceLoader.GetForViewIndependentUse(\"{resourceFileName}\");");

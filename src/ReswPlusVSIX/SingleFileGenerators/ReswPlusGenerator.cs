@@ -2,14 +2,12 @@
 // Licensed under the MIT License.
 // Source: https://github.com/rudyhuyn/ReswPlus
 
-using System;
-using System.Runtime.InteropServices;
-using System.Text;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using ReswPlus.Languages;
-using ReswPlus.Resw;
+using System;
+using System.Runtime.InteropServices;
 
 namespace ReswPlus.SingleFileGenerators
 {
@@ -22,37 +20,39 @@ namespace ReswPlus.SingleFileGenerators
         nameof(ReswPlusGenerator),
         VSConstants.UICONTEXT.CSharpProject_string,
         GeneratesDesignTimeSource = true)]
+    [Utils.CodeGeneratorRegistration(
+        typeof(ReswPlusGenerator),
+        nameof(ReswPlusGenerator),
+        VSConstants.UICONTEXT.VBProject_string,
+        GeneratesDesignTimeSource = true)]
     [ProvideObject(typeof(ReswPlusGenerator))]
-    public sealed class ReswPlusGenerator: IVsSingleFileGenerator
+    public sealed class ReswPlusGenerator : IVsSingleFileGenerator, IObjectWithSite
     {
-        #region IVsSingleFileGenerator Members
+        private readonly ReswPlusGeneratorBase _base;
 
-        public int DefaultExtension(out string defaultExtension)
+        public ReswPlusGenerator()
         {
-            defaultExtension = ".generated.cs";
-            return defaultExtension.Length;
+            _base = new ReswPlusGeneratorBase(false);
         }
 
-        public int Generate(string inputFilePath, string inputFileContents,
-          string defaultNamespace, IntPtr[] outputFileContents,
-          out uint output, IVsGeneratorProgress generateProgress)
+        public int DefaultExtension(out string pbstrDefaultExtension)
         {
-            try
-            {
-                var content = new ReswCodeGenerator(new CSharpCodeGenerator()).GenerateCode(inputFilePath, inputFileContents, defaultNamespace, false);
-                var bytes = Encoding.UTF8.GetBytes(content);
-                var length = bytes.Length;
-                outputFileContents[0] = Marshal.AllocCoTaskMem(length);
-                Marshal.Copy(bytes, 0, outputFileContents[0], length);
-                output = (uint)length;
-            }
-            catch (Exception)
-            {
-                output = 0;
-            }
-            return VSConstants.S_OK;
+            return _base.DefaultExtension(out pbstrDefaultExtension);
         }
 
-        #endregion
+        public int Generate(string wszInputFilePath, string bstrInputFileContents, string wszDefaultNamespace, IntPtr[] rgbOutputFileContents, out uint pcbOutput, IVsGeneratorProgress pGenerateProgress)
+        {
+            return _base.Generate(wszInputFilePath, bstrInputFileContents, wszDefaultNamespace, rgbOutputFileContents, out pcbOutput, pGenerateProgress);
+        }
+
+        public void SetSite(object pUnkSite)
+        {
+            _base.SetSite(pUnkSite);
+        }
+
+        public void GetSite(ref Guid riid, out IntPtr ppvSite)
+        {
+            _base.GetSite(ref riid, out ppvSite);
+        }
     }
 }

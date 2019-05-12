@@ -15,7 +15,7 @@ namespace ReswPlus.Languages
 
         string OpenNamespace(string namespaceName);
 
-        string CloseNamespace();
+        string CloseNamespace(string namespaceName);
 
         string OpenStronglyTypedClass(string resourceFileName, string className);
         string CloseStronglyTypedClass();

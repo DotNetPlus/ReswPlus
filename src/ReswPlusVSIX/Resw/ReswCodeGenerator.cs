@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 // Source: https://github.com/rudyhuyn/ReswPlus
 
-using Microsoft.VisualStudio.Shell;
+using EnvDTE;
 using ReswPlus.Languages;
 using System.IO;
 using System.Linq;
@@ -19,6 +19,7 @@ namespace ReswPlus.Resw
 
         private static readonly Regex RegexStringFormat;
         private static readonly Regex RegexRemoveSpace = new Regex("\\s");
+        private readonly ProjectItem _projectItem;
         private readonly ICodeGenerator _codeGenerator;
 
         static ReswCodeGenerator()
@@ -30,8 +31,9 @@ namespace ReswPlus.Resw
                     $"\\{TagStrongType}\\[\\s*(?<formats>{listFormatsWithName}(?:\\s*,\\s*{listFormatsWithName}\\s*)*)\\]");
         }
 
-        public ReswCodeGenerator(ICodeGenerator codeGenerator)
+        public ReswCodeGenerator(ProjectItem item, ICodeGenerator codeGenerator)
         {
+            _projectItem = item;
             _codeGenerator = codeGenerator;
         }
 
@@ -141,7 +143,7 @@ namespace ReswPlus.Resw
                 stringBuilder.AppendLine(_codeGenerator.CloseStronglyTypedClass());
             }
 
-            stringBuilder.AppendLine(_codeGenerator.CloseNamespace());
+            stringBuilder.AppendLine(_codeGenerator.CloseNamespace(namespaceToUse));
             stringBuilder.AppendLine("");
             return stringBuilder.ToString();
         }
@@ -204,9 +206,7 @@ namespace ReswPlus.Resw
 
         private string GetProjectNameIfLibrary(string filepath)
         {
-            var dte = (EnvDTE.DTE)Package.GetGlobalService(typeof(EnvDTE.DTE));
-            var projectItem = dte.Solution.FindProjectItem(filepath);
-            var project = projectItem?.ContainingProject;
+            var project = _projectItem?.ContainingProject;
             if (project != null)
             {
                 var isLibrary = project.Properties.Item("OutputTypeEx").Value == 2;
