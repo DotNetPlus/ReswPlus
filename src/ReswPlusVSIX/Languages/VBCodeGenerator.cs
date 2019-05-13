@@ -1,12 +1,18 @@
 using ReswPlus.Resw;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ReswPlus.Languages
 {
     internal class VBCodeGenerator : ICodeGenerator
     {
+        private readonly CodeStringBuilder _builder;
+
+        public VBCodeGenerator()
+        {
+            _builder = new CodeStringBuilder();
+        }
+
         public string GetParameterTypeString(ParameterType type)
         {
             switch (type)
@@ -35,117 +41,122 @@ namespace ReswPlus.Languages
             }
         }
 
-        public string GetHeaders(bool supportPluralNet)
+        public void NewLine()
         {
-            var stringBuilder = new StringBuilder();
+            _builder.AppendEmptyLine();
+        }
 
-            stringBuilder.AppendLine("' File generated automatically by ReswPlus. https://github.com/rudyhuyn/ReswPlus");
+        public string GetString()
+        {
+            return _builder.GetString();
+        }
+
+        public void GetHeaders(bool supportPluralNet)
+        {
+            _builder.AppendLine("' File generated automatically by ReswPlus. https://github.com/rudyhuyn/ReswPlus");
             if (supportPluralNet)
             {
-                stringBuilder.AppendLine("' The NuGet package PluralNet is necessary to support Pluralization.");
+                _builder.AppendLine("' The NuGet package PluralNet is necessary to support Pluralization.");
             }
-            stringBuilder.AppendLine("Imports System");
-            stringBuilder.AppendLine("Imports Windows.ApplicationModel.Resources");
-            stringBuilder.AppendLine("Imports Windows.UI.Xaml.Markup");
-            stringBuilder.Append("Imports Windows.UI.Xaml.Data");
-            return stringBuilder.ToString();
+            _builder.AppendLine("Imports System");
+            _builder.AppendLine("Imports Windows.ApplicationModel.Resources");
+            _builder.AppendLine("Imports Windows.UI.Xaml.Markup");
+            _builder.AppendLine("Imports Windows.UI.Xaml.Data");
         }
 
-        public string OpenNamespace(string namespaceName)
+        public void OpenNamespace(string namespaceName)
         {
-            if (string.IsNullOrEmpty(namespaceName))
+            if (!string.IsNullOrEmpty(namespaceName))
             {
-                return "";
+                _builder.AppendLine($"Namespace {namespaceName}");
+                _builder.AddLevel();
             }
-            else
+        }
+
+        public void CloseNamespace(string namespaceName)
+        {
+            if (!string.IsNullOrEmpty(namespaceName))
             {
-                return $"Namespace {namespaceName}";
+                _builder.RemoveLevel();
+                _builder.AppendLine("End Namespace");
             }
         }
 
-        public string CloseNamespace(string namespaceName)
+        public void OpenStronglyTypedClass(string resourceFilename, string className)
         {
-            if (string.IsNullOrEmpty(namespaceName))
-            {
-                return "";
-            }
-            else
-            {
-                return "End Namespace";
-            }
+
+            _builder.AppendLine("<System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"0.1.0.0\")>");
+            _builder.AppendLine("<System.Diagnostics.DebuggerNonUserCodeAttribute()>");
+            _builder.AppendLine("<System.Runtime.CompilerServices.CompilerGeneratedAttribute()>");
+            _builder.AppendLine($"Public Class {className}");
+            _builder.AddLevel();
+            _builder.AppendLine("Private Shared _resourceLoader as ResourceLoader");
+            _builder.AppendEmptyLine();
+            _builder.AppendLine($"Shared Sub New()");
+            _builder.AddLevel();
+            _builder.AppendLine($"_resourceLoader = ResourceLoader.GetForViewIndependentUse(\"{resourceFilename}\")");
+            _builder.RemoveLevel();
+            _builder.AppendLine("End Sub");
         }
 
-        public string OpenStronglyTypedClass(string resourceFilename, string className)
+        public void CloseStronglyTypedClass()
         {
-            var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("    <System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"0.1.0.0\")>");
-            stringBuilder.AppendLine("    <System.Diagnostics.DebuggerNonUserCodeAttribute()>");
-            stringBuilder.AppendLine("    <System.Runtime.CompilerServices.CompilerGeneratedAttribute()>");
-            stringBuilder.AppendLine($"    Public Class {className}");
-            stringBuilder.AppendLine("        Private Shared _resourceLoader as ResourceLoader");
-
-            stringBuilder.AppendLine($"        Shared Sub New()");
-            stringBuilder.AppendLine($"            _resourceLoader = ResourceLoader.GetForViewIndependentUse(\"{resourceFilename}\")");
-            stringBuilder.Append("        End Sub");
-            return stringBuilder.ToString();
+            _builder.RemoveLevel();
+            _builder.AppendLine("End Class");
         }
 
-        public string CloseStronglyTypedClass()
+        public void OpenRegion(string name)
         {
-            return "    End Class";
+            _builder.AppendLine($"#Region \"{name}\"");
         }
 
-        public string OpenRegion(string name)
+        public void CloseRegion()
         {
-            return $"        #Region \"{name}\"";
+            _builder.AppendLine("#End Region");
         }
 
-        public string CloseRegion()
+        public void CreatePluralNetAccessor(string pluralKey, string summary, string idNone = null)
         {
-            return "        #End Region";
-        }
-
-        public string CreatePluralNetAccessor(string pluralKey, string summary, string idNone = null)
-        {
-            var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("        ' <summary>");
-            stringBuilder.AppendLine($"        '   {summary}");
-            stringBuilder.AppendLine("        ' </summary>");
-            stringBuilder.AppendLine($"        Public Shared Function {pluralKey}(number As Double) As String");
+            _builder.AppendLine("' <summary>");
+            _builder.AppendLine($"'   {summary}");
+            _builder.AppendLine("' </summary>");
+            _builder.AppendLine($"Public Shared Function {pluralKey}(number As Double) As String");
+            _builder.AddLevel();
             if (!string.IsNullOrEmpty(idNone))
             {
-                stringBuilder.AppendLine("            If number == 0");
-                stringBuilder.AppendLine($"                Return _resourceLoader.GetString(\"{idNone}\")");
-                stringBuilder.AppendLine("            End If");
+                _builder.AppendLine("If number = 0 Then");
+                _builder.AddLevel();
+                _builder.AppendLine($"Return _resourceLoader.GetString(\"{idNone}\")");
+                _builder.RemoveLevel();
+                _builder.AppendLine("End If");
             }
 
-            stringBuilder.AppendLine($"            Return Huyn.PluralNet.ResourceLoaderExtension.GetPlural(_resourceLoader, \"{pluralKey}\", CDec(number))");
-            stringBuilder.Append("        End Function");
-            return stringBuilder.ToString();
+            _builder.AppendLine($"Return Huyn.PluralNet.ResourceLoaderExtension.GetPlural(_resourceLoader, \"{pluralKey}\", CDec(number))");
+            _builder.RemoveLevel();
+            _builder.AppendLine("End Function");
         }
 
-        public string CreateAccessor(string key, string summary)
+        public void CreateAccessor(string key, string summary)
         {
-            var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("        ' <summary>");
-            stringBuilder.AppendLine($"        '   {summary}");
-            stringBuilder.AppendLine("        ' </summary>");
-            stringBuilder.AppendLine($"        Public Shared ReadOnly Property {key} As String");
-            stringBuilder.AppendLine("            Get");
-            stringBuilder.AppendLine($"                Return _resourceLoader.GetString(\"{key}\")");
-            stringBuilder.AppendLine("            End Get");
-            stringBuilder.AppendLine("        End Property");
-
-            return stringBuilder.ToString();
+            _builder.AppendLine("' <summary>");
+            _builder.AppendLine($"'   {summary}");
+            _builder.AppendLine("' </summary>");
+            _builder.AppendLine($"Public Shared ReadOnly Property {key} As String");
+            _builder.AddLevel();
+            _builder.AppendLine("Get");
+            _builder.AddLevel();
+            _builder.AppendLine($"Return _resourceLoader.GetString(\"{key}\")");
+            _builder.RemoveLevel();
+            _builder.AppendLine("End Get");
+            _builder.RemoveLevel();
+            _builder.AppendLine("End Property");
         }
 
-        public string CreateFormatMethod(string key, IEnumerable<FunctionParameter> parameters, string summary = null, FunctionParameter extraParameterForFunction = null, string parameterNameForPluralNet = null)
+        public void CreateFormatMethod(string key, IEnumerable<FunctionParameter> parameters, string summary = null, FunctionParameter extraParameterForFunction = null, string parameterNameForPluralNet = null)
         {
-            var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("        ' <summary>");
-            stringBuilder.AppendLine($"        '   {summary}");
-            stringBuilder.AppendLine("        ' </summary>");
-            stringBuilder.Append($"        Public Shared Function {key}_Format(");
+            _builder.AppendLine("' <summary>");
+            _builder.AppendLine($"'   {summary}");
+            _builder.AppendLine("' </summary>");
 
             IEnumerable<FunctionParameter> functionParameters;
             if (extraParameterForFunction != null)
@@ -158,7 +169,8 @@ namespace ReswPlus.Languages
             {
                 functionParameters = parameters;
             }
-            stringBuilder.Append(functionParameters.Select(p => "ByVal " + p.Name + " As " + GetParameterTypeString(p.Type)).Aggregate((a, b) => a + ", " + b));
+            var parametersStr = functionParameters.Select(p => "ByVal " + p.Name + " As " + GetParameterTypeString(p.Type)).Aggregate((a, b) => a + ", " + b);
+            _builder.AppendLine($"Public Shared Function {key}_Format({parametersStr}) As String");
             var formatParameters = parameters.Select(p => p.Name).Aggregate((a, b) => a + ", " + b);
 
             string sourceForFormat;
@@ -170,49 +182,59 @@ namespace ReswPlus.Languages
             {
                 sourceForFormat = key;
             }
-
-            stringBuilder.AppendLine(") As String");
-            stringBuilder.AppendLine($"            Return String.Format({sourceForFormat}, {formatParameters})");
-            stringBuilder.Append("        End Function");
-
-            return stringBuilder.ToString();
+            _builder.AddLevel();
+            _builder.AppendLine($"Return String.Format({sourceForFormat}, {formatParameters})");
+            _builder.RemoveLevel();
+            _builder.AppendLine("End Function");
         }
 
-        public string CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys)
+        public void CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys)
         {
-            var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("    <System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"0.1.0.0\")>");
-            stringBuilder.AppendLine("    <System.Diagnostics.DebuggerNonUserCodeAttribute()>");
-            stringBuilder.AppendLine("    <System.Runtime.CompilerServices.CompilerGeneratedAttribute()>");
-            stringBuilder.AppendLine("    <MarkupExtensionReturnType(ReturnType:=GetType(String))>");
-            stringBuilder.AppendLine($"    Public Class {className}");
-            stringBuilder.AppendLine("        Inherits MarkupExtension");
-            stringBuilder.AppendLine("        Public Enum KeyEnum");
-            stringBuilder.AppendLine("            __Undefined = 0");
+
+            _builder.AppendLine("<System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"0.1.0.0\")>");
+            _builder.AppendLine("<System.Diagnostics.DebuggerNonUserCodeAttribute()>");
+            _builder.AppendLine("<System.Runtime.CompilerServices.CompilerGeneratedAttribute()>");
+            _builder.AppendLine("<MarkupExtensionReturnType(ReturnType:=GetType(String))>");
+            _builder.AppendLine($"Public Class {className}");
+            _builder.AddLevel();
+            _builder.AppendLine("Inherits MarkupExtension");
+            _builder.AppendLine("Public Enum KeyEnum");
+            _builder.AddLevel();
+            _builder.AppendLine("__Undefined = 0");
             foreach (var key in keys)
             {
-                stringBuilder.AppendLine($"            {key}");
+                _builder.AppendLine(key);
             }
-            stringBuilder.AppendLine("        End Enum");
-            stringBuilder.AppendLine("");
-            stringBuilder.AppendLine("        Private Shared _resourceLoader as ResourceLoader");
-            stringBuilder.AppendLine("        Shared Sub New()");
-            stringBuilder.AppendLine($"            _resourceLoader = ResourceLoader.GetForViewIndependentUse(\"{resourceFileName}\")");
-            stringBuilder.AppendLine("        End Sub");
-            stringBuilder.AppendLine("        Public Property Key As KeyEnum");
-            stringBuilder.AppendLine("        Public Property Converter As IValueConverter");
-            stringBuilder.AppendLine("        Public Property ConverterParameter As Object");
-            stringBuilder.AppendLine("        Protected Overrides Function ProvideValue() As Object");
-            stringBuilder.AppendLine("            Dim res As String");
-            stringBuilder.AppendLine("            If Key = KeyEnum.__Undefined Then");
-            stringBuilder.AppendLine("                res = \"\"");
-            stringBuilder.AppendLine("            Else");
-            stringBuilder.AppendLine("                res = _resourceLoader.GetString(Key.ToString())");
-            stringBuilder.AppendLine("            End If");
-            stringBuilder.AppendLine("                        Return If(Converter Is Nothing, res, Converter.Convert(res, GetType(String), ConverterParameter, Nothing))");
-            stringBuilder.AppendLine("        End Function");
-            stringBuilder.Append("    End Class");
-            return stringBuilder.ToString();
+            _builder.RemoveLevel();
+            _builder.AppendLine("End Enum");
+            _builder.AppendEmptyLine();
+            _builder.AppendLine("Private Shared _resourceLoader as ResourceLoader");
+            _builder.AppendLine("Shared Sub New()");
+            _builder.AddLevel();
+            _builder.AppendLine($"_resourceLoader = ResourceLoader.GetForViewIndependentUse(\"{resourceFileName}\")");
+            _builder.RemoveLevel();
+            _builder.AppendLine("End Sub");
+            _builder.AppendEmptyLine();
+            _builder.AppendLine("Public Property Key As KeyEnum");
+            _builder.AppendLine("Public Property Converter As IValueConverter");
+            _builder.AppendLine("Public Property ConverterParameter As Object");
+            _builder.AppendLine("Protected Overrides Function ProvideValue() As Object");
+            _builder.AddLevel();
+            _builder.AppendLine("Dim res As String");
+            _builder.AppendLine("If Key = KeyEnum.__Undefined Then");
+            _builder.AddLevel();
+            _builder.AppendLine("res = \"\"");
+            _builder.RemoveLevel();
+            _builder.AppendLine("Else");
+            _builder.AddLevel();
+            _builder.AppendLine("res = _resourceLoader.GetString(Key.ToString())");
+            _builder.RemoveLevel();
+            _builder.AppendLine("End If");
+            _builder.AppendLine("Return If(Converter Is Nothing, res, Converter.Convert(res, GetType(String), ConverterParameter, Nothing))");
+            _builder.RemoveLevel();
+            _builder.AppendLine("End Function");
+            _builder.RemoveLevel();
+            _builder.AppendLine("End Class");
         }
     }
 }

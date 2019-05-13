@@ -58,7 +58,7 @@ namespace ReswPlus.SingleFileGenerators
                         codeGenerator = new VBCodeGenerator();
                         break;
                 }
-                if(codeGenerator == null)
+                if (codeGenerator == null)
                 {
                     return VSConstants.E_UNEXPECTED;
                 }

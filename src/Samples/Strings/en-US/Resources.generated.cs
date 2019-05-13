@@ -5,12 +5,12 @@ using Windows.ApplicationModel.Resources;
 using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Data;
 
-namespace ReswPlusSample.Strings {
+namespace ReswPlusSample.Strings{
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Huyn.ReswPlus", "0.1.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
-        private static ResourceLoader  _resourceLoader;
+        private static ResourceLoader _resourceLoader;
         static Resources()
         {
             _resourceLoader = ResourceLoader.GetForViewIndependentUse("Resources");
@@ -24,6 +24,7 @@ namespace ReswPlusSample.Strings {
         {
             return Huyn.PluralNet.ResourceLoaderExtension.GetPlural(_resourceLoader, "FileShared", (decimal)number);
         }
+
         /// <summary>
         ///   Format the string similar to: {0} shared {1} photos from {2}
         /// </summary>
@@ -31,7 +32,6 @@ namespace ReswPlusSample.Strings {
         {
             return string.Format(FileShared(pluralCount), username, pluralCount, city);
         }
-
         #endregion
 
         #region MinutesLeft
@@ -42,6 +42,7 @@ namespace ReswPlusSample.Strings {
         {
             return Huyn.PluralNet.ResourceLoaderExtension.GetPlural(_resourceLoader, "MinutesLeft", (decimal)number);
         }
+
         /// <summary>
         ///   Format the string similar to: {0} minute left
         /// </summary>
@@ -49,7 +50,6 @@ namespace ReswPlusSample.Strings {
         {
             return string.Format(MinutesLeft(pluralCount), pluralCount);
         }
-
         #endregion
 
         #region PluralizationTest
@@ -74,6 +74,7 @@ namespace ReswPlusSample.Strings {
             }
             return Huyn.PluralNet.ResourceLoaderExtension.GetPlural(_resourceLoader, "ReceivedMessages", (decimal)number);
         }
+
         /// <summary>
         ///   Format the string similar to: No new messages from {1}
         /// </summary>
@@ -81,15 +82,14 @@ namespace ReswPlusSample.Strings {
         {
             return string.Format(ReceivedMessages(pluralCount), pluralCount, paramString2);
         }
-
         #endregion
 
         #region ForecastAnnouncement
-
         /// <summary>
         ///   Looks up a localized string similar to: The current temperature in {2} is {0}°F ({1}°C)
         /// </summary>
         public static string ForecastAnnouncement => _resourceLoader.GetString("ForecastAnnouncement");
+
         /// <summary>
         ///   Format the string similar to: The current temperature in {2} is {0}°F ({1}°C)
         /// </summary>
@@ -100,11 +100,11 @@ namespace ReswPlusSample.Strings {
         #endregion
 
         #region GotMessages
-
         /// <summary>
         ///   Looks up a localized string similar to: Welcome {0}, you got {1} emails!
         /// </summary>
         public static string GotMessages => _resourceLoader.GetString("GotMessages");
+
         /// <summary>
         ///   Format the string similar to: Welcome {0}, you got {1} emails!
         /// </summary>
@@ -125,11 +125,11 @@ namespace ReswPlusSample.Strings {
         public static string WelcomeTitle => _resourceLoader.GetString("WelcomeTitle");
 
         #region YourAgeAndName
-
         /// <summary>
         ///   Looks up a localized string similar to: Your are {0}yo and named {1}!
         /// </summary>
         public static string YourAgeAndName => _resourceLoader.GetString("YourAgeAndName");
+
         /// <summary>
         ///   Format the string similar to: Your are {0}yo and named {1}!
         /// </summary>
@@ -157,7 +157,7 @@ namespace ReswPlusSample.Strings {
             YourAgeAndName,
         }
 
-        private static ResourceLoader  _resourceLoader;
+        private static ResourceLoader _resourceLoader;
         static ResourcesExtension()
         {
             _resourceLoader = ResourceLoader.GetForViewIndependentUse("Resources");
@@ -180,5 +180,4 @@ namespace ReswPlusSample.Strings {
         }
     }
 
-}
-
+} //ReswPlusSample.Strings

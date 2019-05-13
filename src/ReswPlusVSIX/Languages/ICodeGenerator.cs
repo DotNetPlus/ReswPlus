@@ -1,33 +1,31 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ReswPlus.Resw;
+using System.Collections.Generic;
 
 namespace ReswPlus.Languages
 {
-    interface ICodeGenerator
+    internal interface ICodeGenerator
     {
         string GetParameterTypeString(ParameterType type);
 
-        string GetHeaders(bool supportPluralNet);
+        void NewLine();
+        void GetHeaders(bool supportPluralNet);
 
-        string OpenNamespace(string namespaceName);
+        void OpenNamespace(string namespaceName);
 
-        string CloseNamespace(string namespaceName);
+        void CloseNamespace(string namespaceName);
 
-        string OpenStronglyTypedClass(string resourceFileName, string className);
-        string CloseStronglyTypedClass();
-        string OpenRegion(string name);
-        string CloseRegion();
-        string CreatePluralNetAccessor(string pluralKey, string summary, string idNone = null);
+        void OpenStronglyTypedClass(string resourceFileName, string className);
+        void CloseStronglyTypedClass();
+        void OpenRegion(string name);
+        void CloseRegion();
+        void CreatePluralNetAccessor(string pluralKey, string summary, string idNone = null);
 
-        string CreateAccessor(string key, string summary);
+        void CreateAccessor(string key, string summary);
 
-        string CreateFormatMethod(string key, IEnumerable<FunctionParameter> parameters, string summary = null,
+        void CreateFormatMethod(string key, IEnumerable<FunctionParameter> parameters, string summary = null,
             FunctionParameter extraParameterForFunction = null, string parameterNameForPluralNet = null);
 
-        string CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys);
+        void CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys);
+        string GetString();
     }
 }
