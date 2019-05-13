@@ -10,7 +10,7 @@ namespace ReswPlus.Languages
 
         public VBCodeGenerator()
         {
-            _builder = new CodeStringBuilder();
+            _builder = new CodeStringBuilder("Basic");
         }
 
         public string GetParameterTypeString(ParameterType type)

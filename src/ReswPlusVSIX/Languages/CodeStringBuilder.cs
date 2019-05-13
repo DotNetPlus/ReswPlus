@@ -1,34 +1,35 @@
-using System;
+using EnvDTE;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using System.Text;
 
 namespace ReswPlus.Languages
 {
-    public static class CodeStringBuilderExtension
-    {
-        public static StringBuilder AddSpace(this StringBuilder builder, uint level)
-        {
-            for (var i = 0; i < level; ++i)
-            {
-                builder.Append("    ");
-            }
-            return builder;
-        }
-    }
-
     public class CodeStringBuilder
     {
         private readonly StringBuilder _stringBuilder;
+        private readonly string _indentString;
         private uint _level;
 
-        public CodeStringBuilder()
+        public CodeStringBuilder(string language)
         {
             _level = 0;
             _stringBuilder = new StringBuilder();
+            _indentString = GetIndentString(language);
         }
 
-        public StringBuilder AppendLine(string value)
+        public void AppendLine(string value)
         {
-            return _stringBuilder.AddSpace(_level).AppendLine(value);
+            AddSpace(_level);
+            _stringBuilder.AppendLine(value);
+        }
+
+        public void AddSpace(uint level)
+        {
+            for (var i = 0; i < level; ++i)
+            {
+                _stringBuilder.Append(_indentString);
+            }
         }
 
         public void AddLevel()
@@ -53,5 +54,37 @@ namespace ReswPlus.Languages
         {
             return _stringBuilder.ToString();
         }
+
+        public string GetIndentString(string language)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            try
+            {
+                var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
+                if (dte != null)
+                {
+                    var textEditorSetting = dte.Properties["TextEditor", language];
+                    if ((bool)textEditorSetting.Item("InsertTabs").Value)
+                    {
+                        return "\t";
+                    }
+                    else
+                    {
+                        var res = "";
+                        var numberCharacters = (int)textEditorSetting.Item("IndentSize").Value;
+                        for (var i = 0; i < numberCharacters; ++i)
+                        {
+                            res += " ";
+                        }
+                        return res;
+                    }
+                }
+            }
+            catch
+            {
+            }
+            return "    ";
+        }
+
     }
 }

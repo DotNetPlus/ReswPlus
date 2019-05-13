@@ -5,7 +5,6 @@
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Designer.Interfaces;
-using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using ReswPlus.Languages;
@@ -62,6 +61,7 @@ namespace ReswPlus.SingleFileGenerators
                 {
                     return VSConstants.E_UNEXPECTED;
                 }
+
                 var content = new ReswCodeGenerator(GetProjectItem(), codeGenerator).GenerateCode(inputFilePath, inputFileContents, defaultNamespace, _usePluralization);
                 var bytes = Encoding.UTF8.GetBytes(content);
                 var length = bytes.Length;
@@ -147,7 +147,7 @@ namespace ReswPlus.SingleFileGenerators
 
         private CodeDomProvider _codeDomProvider;
         private ServiceProvider _serviceProvider;
-        private bool _usePluralization;
+        private readonly bool _usePluralization;
         #endregion
     }
 }

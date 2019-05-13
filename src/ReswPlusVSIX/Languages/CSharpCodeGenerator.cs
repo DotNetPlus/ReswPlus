@@ -10,7 +10,7 @@ namespace ReswPlus.Languages
 
         public CSharpCodeGenerator()
         {
-            _builder = new CodeStringBuilder();
+            _builder = new CodeStringBuilder("CSharp");
         }
 
         public string GetParameterTypeString(ParameterType type)
