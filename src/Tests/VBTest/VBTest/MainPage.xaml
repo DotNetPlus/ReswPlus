@@ -1,0 +1,20 @@
+<Page
+    x:Class="VBTest.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:VBTest"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    mc:Ignorable="d">
+
+    <Grid>
+        <StackPanel VerticalAlignment="Center">
+            <TextBlock Text="{x:Bind local:Resources.WelcomeTitle}" />
+            <TextBlock Text="{local:Resources Key=WelcomeTitle}" />
+            <TextBlock Text="{x:Bind local:Resources.GotMessages_Format('Paul', 3)}" />
+            <Slider x:Name="SliderTest" Maximum="10" />
+            <TextBlock Text="{x:Bind local:Resources.MinutesLeft_Format(SliderTest.Value), Mode=OneWay}" />
+        </StackPanel>
+    </Grid>
+</Page>
