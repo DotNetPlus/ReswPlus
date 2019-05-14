@@ -1,6 +1,6 @@
 <img src="https://user-images.githubusercontent.com/1226538/56482508-6fbd2d00-6479-11e9-8fc0-b20d5f3171ad.png" height="80" />
 
-# ReswPlus [Preview] - Advanced File Code Generator for Resw files.
+# ReswPlus - Advanced File Code Generator for Resw files.
 
 
 ReswPlus is a Visual Studio extension enriching your existing .resw files with many high valuable features:
@@ -12,7 +12,7 @@ ReswPlus is a Visual Studio extension enriching your existing .resw files with m
 
 Currently supported: 
 - Visual Studio 2017 and 2019 (all versions).
-- C# apps (UWP C++/CX, C++/winrt and VB apps is in development). 
+- C# and VB.Net apps (C++/CX and C++/winrt coming).
 
 ![reswplus](https://user-images.githubusercontent.com/1226538/56525314-a76eb800-64ff-11e9-9e39-1bb4cd2dd012.gif)
 
