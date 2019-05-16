@@ -18,7 +18,7 @@ namespace ReswPlusSample.Strings{
 
         #region FileShared
         /// <summary>
-        ///   Get the pluralized version of the string similar to: {0} shared {1} photos from {2}
+        ///   Get the pluralized version of the string similar to: {0} shared {1} photo from {2}
         /// </summary>
         public static string FileShared(double number)
         {
@@ -26,7 +26,7 @@ namespace ReswPlusSample.Strings{
         }
 
         /// <summary>
-        ///   Format the string similar to: {0} shared {1} photos from {2}
+        ///   Format the string similar to: {0} shared {1} photo from {2}
         /// </summary>
         public static string FileShared_Format(string username, double pluralCount, string city)
         {

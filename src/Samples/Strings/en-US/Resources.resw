@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="FileShared_One" xml:space="preserve">
-    <value>{0} shared {1} photos from {2}</value>
+    <value>{0} shared {1} photo from {2}</value>
     <comment>#ReswPlusTyped[s(username), Q, s(city)]</comment>
   </data>
   <data name="FileShared_Other" xml:space="preserve">
