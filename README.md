@@ -170,7 +170,7 @@ Pluralization can be used in combination with string formatting.
 
 | Key              | Value                          | Comment                                 |
 |------------------|--------------------------------|-----------------------------------------|
-| FileShared_One   | {0} shared {1} photos from {2} | #ReswPlusTyped[s(username), Q, s(city)] |
+| FileShared_One   | {0} shared {1} photo from {2}  | #ReswPlusTyped[s(username), Q, s(city)] |
 | FileShared_Other | {0} shared {1} photos from {2} |                                         |
 
 Will generate:
