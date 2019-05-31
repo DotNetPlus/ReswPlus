@@ -3,7 +3,7 @@
 #include "StringFormat.h"
 
 using namespace Windows::ApplicationModel::Resources;
-using namespace Huyn::ReswPlusLib;
+using namespace ReswPlusLib;
 using namespace Platform;
 using namespace Windows::UI::Xaml::Interop;
 

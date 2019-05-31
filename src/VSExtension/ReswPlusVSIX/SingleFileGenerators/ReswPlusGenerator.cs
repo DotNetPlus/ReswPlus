@@ -25,6 +25,11 @@ namespace ReswPlus.SingleFileGenerators
         nameof(ReswPlusGenerator),
         VSConstants.UICONTEXT.VBProject_string,
         GeneratesDesignTimeSource = true)]
+    [Utils.CodeGeneratorRegistration(
+        typeof(ReswPlusGenerator),
+        nameof(ReswPlusGenerator),
+        VSConstants.UICONTEXT.VCProject_string,
+        GeneratesDesignTimeSource = true)]
     [ProvideObject(typeof(ReswPlusGenerator))]
     public sealed class ReswPlusGenerator : IVsSingleFileGenerator, IObjectWithSite
     {

@@ -56,6 +56,9 @@ namespace ReswPlus.SingleFileGenerators
                     case "vb":
                         codeGenerator = new VBCodeGenerator();
                         break;
+                    case "cpp":
+                        codeGenerator = new CppCodeGenerator();
+                        break;
                 }
                 if (codeGenerator == null)
                 {

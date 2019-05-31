@@ -22,7 +22,7 @@ namespace ReswPlusSample.Strings{
         /// </summary>
         public static string FileShared(double number)
         {
-            return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "FileShared", (decimal)number);
+            return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "FileShared", number);
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace ReswPlusSample.Strings{
         /// </summary>
         public static string MinutesLeft(double number)
         {
-            return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "MinutesLeft", (decimal)number);
+            return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "MinutesLeft", number);
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace ReswPlusSample.Strings{
         /// </summary>
         public static string PluralizationTest(double number)
         {
-            return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "PluralizationTest", (decimal)number);
+            return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "PluralizationTest", number);
         }
         #endregion
 
@@ -72,7 +72,7 @@ namespace ReswPlusSample.Strings{
             {
                 return _resourceLoader.GetString("ReceivedMessages_None");
             }
-            return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "ReceivedMessages", (decimal)number);
+            return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "ReceivedMessages", number);
         }
 
         /// <summary>

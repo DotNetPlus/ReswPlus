@@ -1,4 +1,4 @@
-﻿//
+//
 // MainPage.xaml.cpp
 // Implementation of the MainPage class.
 //
@@ -23,7 +23,7 @@ using namespace Windows::UI::Xaml::Input;
 using namespace Windows::UI::Xaml::Media;
 using namespace Windows::UI::Xaml::Navigation;
 using namespace Windows::ApplicationModel::Resources;
-using namespace Huyn::ReswPlusLib;
+using namespace ReswPlusLib;
 using namespace std;
 
 MainPage::MainPage()

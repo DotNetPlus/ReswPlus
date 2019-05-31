@@ -233,9 +233,6 @@
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.8</Version>
     </PackageReference>
-    <PackageReference Include="PluralNet">
-      <Version>1.0.5</Version>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <PRIResource Include="Strings\en-US\Resources.resw">
@@ -245,6 +242,12 @@
   </ItemGroup>
   <ItemGroup>
     <PRIResource Include="Strings\fr\Resources.resw" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Library\ReswPlusLib.UWP\ReswPlusLib.UWP.csproj">
+      <Project>{d14cd365-de80-4f9f-8019-5ee08ce6d8b0}</Project>
+      <Name>ReswPlusLib.UWP</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

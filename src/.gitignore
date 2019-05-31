@@ -1,5 +1,6 @@
 obj/
 bin/
+Generated Files/
 *.nuspec
 *.user
 *.suo

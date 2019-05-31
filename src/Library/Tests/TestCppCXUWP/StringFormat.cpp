@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "StringFormat.h"
-namespace TestCppCXTUWP
+namespace TestCppCXUWP
 {
 	int vasprintf_internal(wchar_t **str, const wchar_t *format, va_list ap)
 	{

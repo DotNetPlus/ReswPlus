@@ -4,13 +4,13 @@ using System.Linq;
 
 namespace ReswPlus.Languages
 {
-    internal class CppCodeGenerator : ICodeGenerator
+    internal class CSharpCodeGenerator : ICodeGenerator
     {
         private readonly CodeStringBuilder _builder;
 
-        public CppCodeGenerator()
+        public CSharpCodeGenerator()
         {
-            _builder = new CodeStringBuilder("Cpp");
+            _builder = new CodeStringBuilder("CSharp");
         }
 
         public string GetParameterTypeString(ParameterType type)
