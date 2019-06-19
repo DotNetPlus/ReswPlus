@@ -1,2 +1,7 @@
 # Don't touch my line endings you git!
-* -text
+* text=auto
+
+# Ignore all differences in line endings
+*.jpg   binary
+*.png   binary
+*.gif   binary

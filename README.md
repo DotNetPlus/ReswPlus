@@ -1,7 +1,7 @@
 <img src="https://user-images.githubusercontent.com/1226538/56482508-6fbd2d00-6479-11e9-8fc0-b20d5f3171ad.png" height="80" />
 
 # ReswPlus - Advanced File Code Generator for Resw files.
-
+[![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/rudyhuyn.ReswPlus.svg?color=green)](https://marketplace.visualstudio.com/items?itemName=rudyhuyn.ReswPlus)
 
 ReswPlus is a Visual Studio extension enriching your existing .resw files with many high valuable features:
 - Access to strings via strongly typed static properties.
@@ -34,6 +34,9 @@ ReswPlus supports Visual Studio 2017 and 2019.
 In Visual Studio, select `Tools > Extensions and Updates...`, then select `Online` on the left, search `ReswPlus` and click on Install. 
 
 Alternatively, you can directly download the extension here: https://marketplace.visualstudio.com/items?itemName=rudyhuyn.ReswPlus
+
+> If you used ReswPlus 0.2, read [changelog and breaking changes of ReswPlus 0.3](https://github.com/rudyhuyn/ReswPlus/blob/master/CHANGELOG.md) 
+
 
 ## How to activate ReswPlus in my project
 
