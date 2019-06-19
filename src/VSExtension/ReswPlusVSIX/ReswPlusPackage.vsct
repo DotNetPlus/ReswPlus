@@ -1,55 +1,92 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <!--  This is the file that defines the actual layout and type of the commands.
+    <!--  This is the file that defines the actual layout and type of the commands.
         It is divided in different sections (e.g. command definition, command
         placement, ...), with each defining a specific set of properties.
         See the comment before each section for more details about how to
         use it. -->
 
-  <!--  The VSCT compiler (the tool that translates this file into the binary
+    <!--  The VSCT compiler (the tool that translates this file into the binary
         format that VisualStudio will consume) has the ability to run a preprocessor
         on the vsct file; this preprocessor is (usually) the C++ preprocessor, so
         it is possible to define includes and macros with the same syntax used
         in C++ files. Using this ability of the compiler here, we include some files
         defining some of the constants that we will use inside the file. -->
 
-  <!--This is the file that defines the IDs for all the commands exposed by VisualStudio. -->
-  <Extern href="stdidcmd.h"/>
+    <!--This is the file that defines the IDs for all the commands exposed by VisualStudio. -->
+    <Extern href="stdidcmd.h"/>
 
-  <!--This header contains the command ids for the menus provided by the shell. -->
-  <Extern href="vsshlids.h"/>
+    <!--This header contains the command ids for the menus provided by the shell. -->
+    <Extern href="vsshlids.h"/>
 
-  <!--The Commands section is where commands, menus, and menu groups are defined.
+    <!--The Commands section is where commands, menus, and menu groups are defined.
       This section uses a Guid to identify the package that provides the command defined inside it. -->
-  <Commands package="guidReswPlusPackage">
-    <!-- Inside this section we have different sub-sections: one for the menus, another
-    for the menu groups, one for the buttons (the actual commands), one for the combos
-    and the last one for the bitmaps used. Each element is identified by a command id that
-    is a unique pair of guid and numeric identifier; the guid part of the identifier is usually
-    called "command set" and is used to group different command inside a logically related
-    group; your package should define its own command set in order to avoid collisions
-    with command ids defined by other packages. -->
+    <Commands package="guidReswPlusPackage">
+        <Menus>
+            <!-- Define a new menu below the mainItemMenuGroup-->
+            <Menu guid="guidReswPlusPackageCmdSet" id="myExtensionSubMenu" priority="0x0000" type="Menu">
+                <Parent guid="guidReswPlusPackageCmdSet" id="mainItemMenuGroup"/>
+                <CommandFlag>DynamicVisibility</CommandFlag>
+                <Strings>
+                    <ButtonText>ReswPlus</ButtonText>
+                </Strings>
+            </Menu>
+        </Menus>
 
-    <!-- In this section you can define new menu groups. A menu group is a container for
-         other menus or buttons (commands); from a visual point of view you can see the
-         group as the part of a menu contained between two lines. The parent of a group
-         must be a menu. -->
-    <Groups>
-      <Group guid="guidReswPlusPackageCmdSet" id="MyMenuGroup" priority="0x0600">
-        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
-      </Group>
-    </Groups>
-   </Commands>
+        <Groups>
+            <!-- Define the mainItemMenuGroup, child of the item menu -->
+            <Group guid="guidReswPlusPackageCmdSet" id="mainItemMenuGroup" priority="0x0600">
+                <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
+            </Group>
+            <!-- Define the myExtensionSubMenuGroup, child of the myExtensionSubMenu -->
+            <Group guid="guidReswPlusPackageCmdSet" id="myExtensionSubMenuGroup" priority="0x0600">
+                <Parent guid="guidReswPlusPackageCmdSet" id="myExtensionSubMenu"/>
+            </Group>
+        </Groups>
 
-  <Symbols>
-    <!-- This is the package guid. -->
-    <GuidSymbol name="guidReswPlusPackage" value="{8c9d543c-0e65-4319-8395-f7b38088a080}" />
+        <Buttons>
+            <!-- Define the button cmdidGenerateStronglyTypedResw inside the myExtensionSubMenuGroup-->
+            <Button guid="guidReswPlusPackageCmdSet" id="cmdidGenerateStronglyTypedResw" priority="0x0100" type="Button">
+                <Parent guid="guidReswPlusPackageCmdSet" id="myExtensionSubMenuGroup" />
+                <Strings>
+                    <ButtonText>Generate strongly typed classes</ButtonText>
+                </Strings>
+            </Button>
+            <!-- Define the button cmdidGenerateStronglyTypedResw inside the myExtensionSubMenuGroup-->
+            <Button guid="guidReswPlusPackageCmdSet" id="cmdidGenerateStronglyTypedPluralizationResw" priority="0x0100" type="Button">
+                <Parent guid="guidReswPlusPackageCmdSet" id="myExtensionSubMenuGroup" />
+                <Strings>
+                    <ButtonText>Generate strongly typed classes with pluralization</ButtonText>
+                </Strings>
+            </Button>
+        </Buttons>
+    </Commands>
 
-    <!-- This is the guid used to group the menu commands together -->
-    <GuidSymbol name="guidReswPlusPackageCmdSet" value="{b0cd4869-f716-482e-95f8-2808971c89cd}">
-      <IDSymbol name="MyMenuGroup" value="0x1020" />
-      <IDSymbol name="ReswPlusId" value="0x0100" />
-    </GuidSymbol>
-  </Symbols>
+    <VisibilityConstraints>
+        <!-- 
+    This will show or hide the button based on the uiContextSupportedFiles which is specified in
+    the ProvideUIContextRule attribute on the package class in MyPackage.cs. 
+    
+    Note, this only applies when the package hasn't been loaded yet. When loaded, the visibility
+    of the button is controlled by the MenuItemQueryStatus method in MyButton.cs.
+    -->
+        <VisibilityItem guid="guidReswPlusPackageCmdSet" id="myExtensionSubMenu" context="uiContextSupportedFiles" />
+    </VisibilityConstraints>
+    
+    <Symbols>
+        <GuidSymbol name="uiContextSupportedFiles" value="{34551deb-f034-43e9-a279-0e541241687e}" />
+        <!-- This is the package guid. -->
+        <GuidSymbol name="guidReswPlusPackage" value="{8c9d543c-0e65-4319-8395-f7b38088a080}" />
+
+        <!-- This is the guid used to group the menu commands together -->
+        <GuidSymbol name="guidReswPlusPackageCmdSet" value="{6e52371a-5161-41cf-bd14-72203edf374d}">
+            <!-- Warning!!: Keep the value in sync with the code in ContextMenu.cs -->
+            <IDSymbol name="myExtensionSubMenu" value="0x0100"/>
+            <IDSymbol name="myExtensionSubMenuGroup" value="0x1021" />
+            <IDSymbol name="mainItemMenuGroup" value="0x1020" />
+            <IDSymbol name="cmdidGenerateStronglyTypedResw" value="0x0200" />
+            <IDSymbol name="cmdidGenerateStronglyTypedPluralizationResw" value="0x0201" />
+        </GuidSymbol>
+    </Symbols>
 </CommandTable>

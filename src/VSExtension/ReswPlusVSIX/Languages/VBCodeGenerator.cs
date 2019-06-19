@@ -13,6 +13,14 @@ namespace ReswPlus.Languages
             _builder = new CodeStringBuilder("Basic");
         }
 
+        public string GetParameterString(FunctionParameter info)
+        {
+            return GetParameterTypeString(info.Type) +
+                " " +
+                (info.TypeToCast != null ? "(" + GetParameterTypeString(info.TypeToCast.Value) + ")" : null) +
+                info.Name;
+        }
+
         public string GetParameterTypeString(ParameterType type)
         {
             switch (type)
@@ -62,6 +70,24 @@ namespace ReswPlus.Languages
             _builder.AppendLine("Imports Windows.ApplicationModel.Resources");
             _builder.AppendLine("Imports Windows.UI.Xaml.Markup");
             _builder.AppendLine("Imports Windows.UI.Xaml.Data");
+        }
+
+        public void OpenNamespace(string[] namespaces)
+        {
+            if (namespaces != null && namespaces.Any())
+            {
+                _builder.AppendLine($"Namespace {namespaces.Aggregate((a, b) => a + "." + b)}");
+                _builder.AddLevel();
+            }
+        }
+
+        public void CloseNamespace(string[] namespaces)
+        {
+            if (namespaces != null && namespaces.Any())
+            {
+                _builder.RemoveLevel();
+                _builder.AppendLine($"End Namespace '{namespaces.Aggregate((a, b) => a + "." + b)}");
+            }
         }
 
         public void OpenNamespace(string namespaceName)
@@ -152,7 +178,7 @@ namespace ReswPlus.Languages
             _builder.AppendLine("End Property");
         }
 
-        public void CreateFormatMethod(string key, IEnumerable<FunctionParameter> parameters, string summary = null, FunctionParameter extraParameterForFunction = null, string parameterNameForPluralNet = null)
+        public void CreateFormatMethod(string key, IEnumerable<FunctionParameter> parameters, string summary = null, FunctionParameter extraParameterForFunction = null, FunctionParameter parameterForPluralization = null)
         {
             _builder.AppendLine("' <summary>");
             _builder.AppendLine($"'   {summary}");
@@ -174,9 +200,10 @@ namespace ReswPlus.Languages
             var formatParameters = parameters.Select(p => p.Name).Aggregate((a, b) => a + ", " + b);
 
             string sourceForFormat;
-            if (!string.IsNullOrEmpty(parameterNameForPluralNet))
+            if (parameterForPluralization != null)
             {
-                sourceForFormat = key + "(" + parameterNameForPluralNet + ")";
+                var doubleValue = parameterForPluralization.TypeToCast.HasValue ? $"CType({parameterForPluralization.Name}, {GetParameterTypeString(parameterForPluralization.TypeToCast.Value)})" : parameterForPluralization.Name;
+                sourceForFormat = $"{key}({doubleValue})";
             }
             else
             {

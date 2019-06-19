@@ -2,11 +2,12 @@
 // Licensed under the MIT License.
 // Source: https://github.com/rudyhuyn/ReswPlus
 
+using Microsoft.VisualStudio.Shell;
 using System;
+using System.ComponentModel.Design;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
 
 namespace ReswPlus
@@ -16,12 +17,19 @@ namespace ReswPlus
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
+    [ProvideUIContextRule(_uiContextSupportedFiles,
+        name: "Supported Files",
+        expression: "ReswFile",
+        termNames: new[] { "ReswFile" },
+        termValues: new[] { "HierSingleSelectionName:.resw$"})]
+
     public sealed class ReswPlusPackage : AsyncPackage
     {
         /// <summary>
         /// ReswPlusPackage GUID string.
         /// </summary>
         public const string PackageGuidString = "8c9d543c-0e65-4319-8395-f7b38088a080";
+        public const string _uiContextSupportedFiles = "34551deb-f034-43e9-a279-0e541241687e"; // Must match guid in VsCommandTable.vsct
 
         #region Package Members
 
@@ -35,6 +43,7 @@ namespace ReswPlus
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            await ContextMenu.InitializeAsync(this);
         }
 
         #endregion

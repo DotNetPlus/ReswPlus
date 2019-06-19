@@ -1,16 +1,15 @@
 // File generated automatically by ReswPlus. https://github.com/rudyhuyn/ReswPlus
-// The NuGet package PluralNet is necessary to support Pluralization.
 using System;
 using Windows.ApplicationModel.Resources;
 using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Data;
 
-namespace MultiResourcesLib.Strings {
+namespace MultiResourcesLib.Strings{
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Huyn.ReswPlus", "0.1.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
-        private static ResourceLoader  _resourceLoader;
+        private static ResourceLoader _resourceLoader;
         static Resources()
         {
             _resourceLoader = ResourceLoader.GetForViewIndependentUse("MultiResourcesLib/Resources");
@@ -35,7 +34,7 @@ namespace MultiResourcesLib.Strings {
             HelloMessage,
         }
 
-        private static ResourceLoader  _resourceLoader;
+        private static ResourceLoader _resourceLoader;
         static ResourcesExtension()
         {
             _resourceLoader = ResourceLoader.GetForViewIndependentUse("MultiResourcesLib/Resources");
@@ -58,5 +57,4 @@ namespace MultiResourcesLib.Strings {
         }
     }
 
-}
-
+} //MultiResourcesLib.Strings

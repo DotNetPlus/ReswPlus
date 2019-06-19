@@ -10,9 +10,8 @@ namespace ReswPlus.Languages
         void NewLine();
         void GetHeaders(bool supportPluralization);
 
-        void OpenNamespace(string namespaceName);
-
-        void CloseNamespace(string namespaceName);
+        void OpenNamespace(string[] namespaceName);
+        void CloseNamespace(string[] namespaceName);
 
         void OpenStronglyTypedClass(string resourceFileName, string className);
         void CloseStronglyTypedClass();
@@ -23,7 +22,7 @@ namespace ReswPlus.Languages
         void CreateAccessor(string key, string summary);
 
         void CreateFormatMethod(string key, IEnumerable<FunctionParameter> parameters, string summary = null,
-            FunctionParameter extraParameterForFunction = null, string parameterNameForPluralNet = null);
+            FunctionParameter extraParameterForFunction = null, FunctionParameter parameterForPluralization = null);
 
         void CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys);
         string GetString();

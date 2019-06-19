@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Localization;
 using System.Collections.Generic;
 
-namespace TestCSharpAspNetCore.Pages
+namespace TestCSharpDOTNETCORE.Pages
 {
     public class IndexModel : PageModel
     {
@@ -19,7 +19,7 @@ namespace TestCSharpAspNetCore.Pages
         public void OnGet()
         {
             {
-                var resourceManager = TestCSharpAspNetCore.Resources.SharedResources.ResourceManager;
+                var resourceManager = TestCSharpDOTNETCORE.Resources.SharedResources.ResourceManager;
                 ResourceManagerStrings = new List<string>();
                 for (var i = 0; i < 5; ++i)
                 {

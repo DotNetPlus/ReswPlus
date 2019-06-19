@@ -4,13 +4,13 @@ using System.Linq;
 
 namespace ReswPlus.Languages
 {
-    internal class CppCodeGenerator : ICodeGenerator
+    internal class CSharpCodeGenerator : ICodeGenerator
     {
         private readonly CodeStringBuilder _builder;
 
-        public CppCodeGenerator()
+        public CSharpCodeGenerator()
         {
-            _builder = new CodeStringBuilder("Cpp");
+            _builder = new CodeStringBuilder("CSharp");
         }
 
         public string GetParameterTypeString(ParameterType type)
@@ -56,7 +56,7 @@ namespace ReswPlus.Languages
             _builder.AppendLine("// File generated automatically by ReswPlus. https://github.com/rudyhuyn/ReswPlus");
             if (supportPluralization)
             {
-                _builder.AppendLine("// The NuGet package PluralNet is necessary to support Pluralization.");
+                _builder.AppendLine("// The NuGet package ReswPlusLib is necessary to support Pluralization.");
             }
             _builder.AppendLine("using System;");
             _builder.AppendLine("using Windows.ApplicationModel.Resources;");
@@ -64,21 +64,21 @@ namespace ReswPlus.Languages
             _builder.AppendLine("using Windows.UI.Xaml.Data;");
         }
 
-        public void OpenNamespace(string namespaceName)
+        public void OpenNamespace(string[] namespaces)
         {
-            if (!string.IsNullOrEmpty(namespaceName))
+            if (namespaces != null && namespaces.Any())
             {
-                _builder.AppendLine($"namespace {namespaceName}{{");
+                _builder.AppendLine($"namespace {namespaces.Aggregate((a, b) => a + "." + b)}{{");
                 _builder.AddLevel();
             }
         }
 
-        public void CloseNamespace(string namespaceName)
+        public void CloseNamespace(string[] namespaces)
         {
-            if (!string.IsNullOrEmpty(namespaceName))
+            if (namespaces != null && namespaces.Any())
             {
                 _builder.RemoveLevel();
-                _builder.AppendLine($"}} //{namespaceName}");
+                _builder.AppendLine($"}} //{namespaces.Aggregate((a, b) => a + "." + b)}");
             }
         }
 
@@ -134,7 +134,7 @@ namespace ReswPlus.Languages
                 _builder.AppendLine("}");
             }
 
-            _builder.AppendLine($"return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, \"{pluralKey}\", (decimal)number);");
+            _builder.AppendLine($"return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, \"{pluralKey}\", number);");
             _builder.RemoveLevel();
             _builder.AppendLine("}");
         }
@@ -148,7 +148,7 @@ namespace ReswPlus.Languages
             _builder.AppendLine($"public static string {key} => _resourceLoader.GetString(\"{key}\");");
         }
 
-        public void CreateFormatMethod(string key, IEnumerable<FunctionParameter> parameters, string summary = null, FunctionParameter extraParameterForFunction = null, string parameterNameForPluralNet = null)
+        public void CreateFormatMethod(string key, IEnumerable<FunctionParameter> parameters, string summary = null, FunctionParameter extraParameterForFunction = null, FunctionParameter parameterForPluralization = null)
         {
             _builder.AppendLine("/// <summary>");
             _builder.AppendLine($"///   {summary}");
@@ -172,9 +172,10 @@ namespace ReswPlus.Languages
             var formatParameters = parameters.Select(p => p.Name).Aggregate((a, b) => a + ", " + b);
 
             string sourceForFormat;
-            if (!string.IsNullOrEmpty(parameterNameForPluralNet))
+            if (parameterForPluralization != null)
             {
-                sourceForFormat = key + "(" + parameterNameForPluralNet + ")";
+                var doubleValue = parameterForPluralization.TypeToCast.HasValue ? $"({GetParameterTypeString(parameterForPluralization.TypeToCast.Value)}){parameterForPluralization.Name}" : parameterForPluralization.Name;
+                sourceForFormat = $"{key}({doubleValue})";
             }
             else
             {
@@ -238,5 +239,6 @@ namespace ReswPlus.Languages
             _builder.RemoveLevel();
             _builder.AppendLine("}");
         }
+
     }
 }

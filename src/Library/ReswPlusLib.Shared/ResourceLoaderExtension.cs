@@ -3,11 +3,11 @@ using ReswPlusLib.Utils;
 using System.Globalization;
 using System;
 
-#if ASPNETCORE
+#if DOTNETCORE
 using Microsoft.Extensions.Localization;
 #endif
 
-#if WINRT || ASPNETCORE || NETSTANDARD
+#if WINRT || DOTNETCORE || NETSTANDARD
 using System.Resources;
 #endif
 
@@ -22,7 +22,7 @@ namespace ReswPlusLib
         private static IPluralProvider _pluralProvider;
         private static readonly object _objLock = new object();
 
-#if WINRT || ASPNETCORE || NETSTANDARD
+#if WINRT || DOTNETCORE || NETSTANDARD
         public static string GetPlural(this ResourceManager resource, string key, double number)
         {
             return GetPluralInternal<ResourceManager>((reskey) => resource.GetString(reskey), key, number);
@@ -36,7 +36,7 @@ namespace ReswPlusLib
         }
 #endif
 
-#if ASPNETCORE
+#if DOTNETCORE
         public static string GetPlural(this IStringLocalizer resource, string key, double number)
         {
             return GetPluralInternal<IStringLocalizer>((reskey) => resource.GetString(reskey), key, number);

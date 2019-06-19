@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Globalization;
 
-namespace TestCSharpAspNetCore
+namespace TestCSharpDOTNETCORE
 {
     public class Startup
     {

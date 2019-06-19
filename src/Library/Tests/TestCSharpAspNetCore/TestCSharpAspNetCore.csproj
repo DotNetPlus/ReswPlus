@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ReswPlusLib.DotNetCore\ReswPlusLib.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\ReswPlusLib.DotNetCore\ReswPlusLib.DotNetCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>

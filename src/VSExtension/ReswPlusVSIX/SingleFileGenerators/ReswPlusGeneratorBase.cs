@@ -4,11 +4,14 @@
 
 using EnvDTE;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Designer.Interfaces;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using NuGet.VisualStudio;
 using ReswPlus.Languages;
 using ReswPlus.Resw;
+using ReswPlus.Utils;
 using System;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
@@ -34,29 +37,24 @@ namespace ReswPlus.SingleFileGenerators
             return defaultExtension.Length;
         }
 
-        public int Generate(string inputFilePath, string inputFileContents,
-          string defaultNamespace, IntPtr[] outputFileContents,
-          out uint output, IVsGeneratorProgress generateProgress)
+        public int Generate(ProjectItem projectItem, string inputFileContents,
+          string defaultNamespace, out byte[] output, IVsGeneratorProgress generateProgress)
         {
-            output = 0;
+            ThreadHelper.ThrowIfNotOnUIThread();
+            output = null;
             try
             {
-                var codeProvider = GetCodeProvider();
-                if (codeProvider == null)
-                {
-                    return VSConstants.E_UNEXPECTED;
-                }
-
+                var language = projectItem.GetLanguage();
                 Languages.ICodeGenerator codeGenerator = null;
-                switch (codeProvider.FileExtension.ToLower())
+                switch (language)
                 {
-                    case "cs":
+                    case Utils.Language.CSHARP:
                         codeGenerator = new CSharpCodeGenerator();
                         break;
-                    case "vb":
+                    case Utils.Language.VB:
                         codeGenerator = new VBCodeGenerator();
                         break;
-                    case "cpp":
+                    case Utils.Language.CPP:
                         codeGenerator = new CppCodeGenerator();
                         break;
                 }
@@ -65,12 +63,15 @@ namespace ReswPlus.SingleFileGenerators
                     return VSConstants.E_UNEXPECTED;
                 }
 
-                var content = new ReswCodeGenerator(GetProjectItem(), codeGenerator).GenerateCode(inputFilePath, inputFileContents, defaultNamespace, _usePluralization);
-                var bytes = Encoding.UTF8.GetBytes(content);
-                var length = bytes.Length;
-                outputFileContents[0] = Marshal.AllocCoTaskMem(length);
-                Marshal.Copy(bytes, 0, outputFileContents[0], length);
-                output = (uint)length;
+                var inputFilepath = projectItem.Properties.Item("FullPath").Value as string;
+                var content = new ReswCodeGenerator(projectItem, codeGenerator).GenerateCode(inputFilepath, inputFileContents, defaultNamespace, _usePluralization);
+                output = Encoding.UTF8.GetBytes(content);
+
+                //Install nuget package
+                if (_usePluralization)
+                {
+                    InstallNuGetPackage(projectItem.ContainingProject, "ReswPlusLib");
+                }
             }
             catch (Exception)
             {
@@ -140,7 +141,7 @@ namespace ReswPlus.SingleFileGenerators
         /// generator was called on
         /// </summary>
         /// <returns>The EnvDTE.ProjectItem of the project item the code generator was called on</returns>
-        private ProjectItem GetProjectItem()
+        public ProjectItem GetProjectItem()
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             var p = GetServiceProvider()?.GetService(typeof(ProjectItem));
@@ -152,5 +153,25 @@ namespace ReswPlus.SingleFileGenerators
         private ServiceProvider _serviceProvider;
         private readonly bool _usePluralization;
         #endregion
+
+        public bool InstallNuGetPackage(Project project, string package)
+        {
+            try
+            {
+                var componentModel = (IComponentModel)Package.GetGlobalService(typeof(SComponentModel));
+                var installerServices = componentModel.GetService<IVsPackageInstallerServices>();
+                if (!installerServices.IsPackageInstalled(project, package))
+                {
+                    var installer = componentModel.GetService<IVsPackageInstaller>();
+                    installer.InstallPackage(null, project, package, (System.Version)null, false);
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Can't install {package} nuget package: {ex.Message}");
+            }
+            return false;
+        }
     }
 }

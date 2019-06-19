@@ -1,9 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace ReswPlus.Resw
 {
@@ -12,29 +8,43 @@ namespace ReswPlus.Resw
     {
         public ParameterType Type { get; set; }
         public string Name { get; set; }
+        public ParameterType? TypeToCast { get; set; }
     }
 
     internal class FunctionParametersInfo
     {
         public List<FunctionParameter> Parameters { get; set; } = new List<FunctionParameter>();
-        public FunctionParameter PluralNetDecimal { get; set; }
+        public FunctionParameter PluralizationParameter { get; set; }
     }
-    class ReswTagTyped
+
+    internal class ParameterTypeInfo
     {
-        private static readonly Dictionary<string, ParameterType> _acceptedTypes = new Dictionary<string, ParameterType>
+        public ParameterType Type { get; }
+        public bool CanBeQuantifier { get; }
+
+        public ParameterTypeInfo(ParameterType type, bool canBeQuantifier)
         {
-            {"o", ParameterType.Object},
-            {"b", ParameterType.Byte},
-            {"d", ParameterType.Int},
-            {"u", ParameterType.Uint},
-            {"l", ParameterType.Long},
-            {"s", ParameterType.String},
-            {"f", ParameterType.Double},
-            {"c", ParameterType.Char},
-            {"ul", ParameterType.Ulong},
-            {"m", ParameterType.Decimal},
-            {"Q", ParameterType.Double} //reserved by PluralNet
+            Type = type;
+            CanBeQuantifier = canBeQuantifier;
+        }
+    }
+
+    internal class ReswTagTyped
+    {
+        private static readonly Dictionary<string, ParameterTypeInfo> _acceptedTypes = new Dictionary<string, ParameterTypeInfo>
+        {
+            {"o", new ParameterTypeInfo(ParameterType.Object, false)},
+            {"b", new ParameterTypeInfo(ParameterType.Byte, false)},
+            {"d", new ParameterTypeInfo(ParameterType.Int, true)},
+            {"u", new ParameterTypeInfo(ParameterType.Uint, true)},
+            {"l", new ParameterTypeInfo(ParameterType.Long, true)},
+            {"s", new ParameterTypeInfo(ParameterType.String, false)},
+            {"f", new ParameterTypeInfo(ParameterType.Double, true)},
+            {"c", new ParameterTypeInfo(ParameterType.Char, false)},
+            {"ul", new ParameterTypeInfo(ParameterType.Ulong, true)},
+            {"m", new ParameterTypeInfo(ParameterType.Decimal, true)}
         };
+
         private static readonly Regex RegexNamedParameters = new Regex("(?<type>\\w+)(?:\\((?<name>\\w+)\\))?");
 
         public static FunctionParametersInfo ParseParameters(IEnumerable<string> types)
@@ -51,10 +61,10 @@ namespace ReswPlus.Resw
 
                 var trimmedType = matchNamedParameters.Groups["type"].Value;
                 var paramName = matchNamedParameters.Groups["name"].Value;
-                var paramType = _acceptedTypes[trimmedType];
+                var paramType = GetParameterType(trimmedType);
                 if (string.IsNullOrEmpty(paramName))
                 {
-                    if (trimmedType == "Q")
+                    if (trimmedType.StartsWith("Q"))
                     {
                         paramName = "pluralCount";
                     }
@@ -64,10 +74,10 @@ namespace ReswPlus.Resw
                     }
                 }
 
-                var functionParam = new FunctionParameter { Type = paramType, Name = paramName };
-                if (trimmedType == "Q" && result.PluralNetDecimal == null)
+                var functionParam = new FunctionParameter { Type = paramType.type, Name = paramName, TypeToCast = paramType.typeToCast };
+                if (trimmedType.StartsWith("Q") && result.PluralizationParameter == null)
                 {
-                    result.PluralNetDecimal = functionParam;
+                    result.PluralizationParameter = functionParam;
                 }
                 result.Parameters.Add(functionParam);
                 ++paramIndex;
@@ -75,9 +85,31 @@ namespace ReswPlus.Resw
             return result;
         }
 
+        public static (ParameterType type, ParameterType? typeToCast) GetParameterType(string key)
+        {
+            if (key.StartsWith("Q"))
+            {
+                if (key == "Q")
+                {
+                    return (ParameterType.Double, null);
+                }
+                key = key.Substring(1);
+            }
+            var info = _acceptedTypes[key];
+            return (info.Type, (info.CanBeQuantifier && info.Type != ParameterType.Double ? (ParameterType?)ParameterType.Double : null));
+        }
+
         public static IEnumerable<string> GetParameterSymbols()
         {
-            return _acceptedTypes.Keys;
+            yield return "Q";
+            foreach (var type in _acceptedTypes)
+            {
+                yield return type.Key;
+                if (type.Value.CanBeQuantifier)
+                {
+                    yield return "Q" + type.Key;
+                }
+            }
         }
     }
 }

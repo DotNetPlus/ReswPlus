@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReswPlusLib.WinRT", "Librar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReswPlusLib.UWP", "Library\ReswPlusLib.UWP\ReswPlusLib.UWP.csproj", "{D14CD365-DE80-4F9F-8019-5EE08CE6D8B0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReswPlusLib.AspNetCore", "Library\ReswPlusLib.DotNetCore\ReswPlusLib.AspNetCore.csproj", "{7F0F9C15-A38A-4106-B1E3-119F576BF2B0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReswPlusLib.DotNetCore", "Library\ReswPlusLib.DotNetCore\ReswPlusLib.DotNetCore.csproj", "{7F0F9C15-A38A-4106-B1E3-119F576BF2B0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReswPlusLib.DotNetStandard", "Library\ReswPlusLib.DotNetStandard\ReswPlusLib.DotNetStandard.csproj", "{B75A8578-4836-4459-A160-324297733D4F}"
 EndProject

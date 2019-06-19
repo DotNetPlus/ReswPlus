@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ReswPlusLib.DotNetStandard\ReswPlusLib.DotNetStandard.csproj" />
+    <ProjectReference Include="..\..\ReswPlusLib.DotNetCore\ReswPlusLib.DotNetCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>

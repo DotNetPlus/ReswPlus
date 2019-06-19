@@ -136,7 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <PRIResource Include="Strings\en\Resources.resw">
-      <Generator>ReswPlusPluralizationGenerator</Generator>
+      <Generator>ReswPlusGenerator</Generator>
       <LastGenOutput>Resources.generated.cs</LastGenOutput>
     </PRIResource>
   </ItemGroup>

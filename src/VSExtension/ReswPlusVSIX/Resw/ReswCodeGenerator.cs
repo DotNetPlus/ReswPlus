@@ -6,7 +6,6 @@ using EnvDTE;
 using ReswPlus.Languages;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace ReswPlus.Resw
@@ -132,7 +131,7 @@ namespace ReswPlus.Resw
             return _codeGenerator.GetString();
         }
 
-        private string ExtractNamespace(string defaultNamespace)
+        private string[] ExtractNamespace(string defaultNamespace)
         {
             // remove bcp47 tag from the namespace
             var regexNamespace =
@@ -140,10 +139,10 @@ namespace ReswPlus.Resw
             var match = regexNamespace.Match(defaultNamespace);
             if (match.Success)
             {
-                return defaultNamespace.Substring(0, match.Index + 8);
+                return defaultNamespace.Substring(0, match.Index + 8).Split('.');
             }
 
-            return defaultNamespace;
+            return defaultNamespace.Split('.');
         }
 
         private string GetFormatString(string comment)
@@ -160,10 +159,10 @@ namespace ReswPlus.Resw
             return null;
         }
 
-        private bool ManageFormattedFunction(string key, string exampleValue, string comment, bool isPluralNet)
+        private bool ManageFormattedFunction(string key, string exampleValue, string comment, bool isAdvanced)
         {
             var format = GetFormatString(comment);
-            if(format == null)
+            if (format == null)
             {
                 return false;
             }
@@ -172,27 +171,26 @@ namespace ReswPlus.Resw
             var types = format.Split(',');
             var tagTypedInfo = ReswTagTyped.ParseParameters(types);
 
-            FunctionParameter extraParameterForPluralNet = null;
-            string pluralNetParameterName = null;
-            if (isPluralNet)
+            FunctionParameter extraParameterForPluralization = null;
+            FunctionParameter pluralizationQuantifier = null;
+            if (isAdvanced)
             {
                 // Add an extra parameter for pluralization if necessary
-                if (tagTypedInfo.PluralNetDecimal == null)
+                if (tagTypedInfo.PluralizationParameter == null)
                 {
-                    pluralNetParameterName = "pluralNetReferenceNumber";
-                    extraParameterForPluralNet = new FunctionParameter
-                    { Type = ParameterType.Double, Name = pluralNetParameterName };
+                    pluralizationQuantifier = extraParameterForPluralization = new FunctionParameter
+                    { Type = ParameterType.Double, Name = "pluralizationReferenceNumber" };
                 }
                 else
                 {
-                    pluralNetParameterName = tagTypedInfo.PluralNetDecimal.Name;
+                    pluralizationQuantifier = tagTypedInfo.PluralizationParameter;
                 }
             }
 
             var summary = $"Format the string similar to: {singleLineValue}";
 
             _codeGenerator.NewLine();
-            _codeGenerator.CreateFormatMethod(key, tagTypedInfo.Parameters, summary, extraParameterForPluralNet, pluralNetParameterName);
+            _codeGenerator.CreateFormatMethod(key, tagTypedInfo.Parameters, summary, extraParameterForPluralization, pluralizationQuantifier);
             return true;
         }
 
@@ -201,11 +199,15 @@ namespace ReswPlus.Resw
             var project = _projectItem?.ContainingProject;
             if (project != null)
             {
-                var isLibrary = project.Properties.Item("OutputTypeEx").Value == 2;
-                if (isLibrary)
+                try
                 {
-                    return project.Name;
+                    var isLibrary = (int)project.Properties.Item("OutputTypeEx").Value == 2;
+                    if (isLibrary)
+                    {
+                        return project.Name;
+                    }
                 }
+                catch { }
             }
 
             return null;

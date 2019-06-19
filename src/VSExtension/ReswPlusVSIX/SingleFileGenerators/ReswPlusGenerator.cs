@@ -47,17 +47,31 @@ namespace ReswPlus.SingleFileGenerators
 
         public int Generate(string wszInputFilePath, string bstrInputFileContents, string wszDefaultNamespace, IntPtr[] rgbOutputFileContents, out uint pcbOutput, IVsGeneratorProgress pGenerateProgress)
         {
-            return _base.Generate(wszInputFilePath, bstrInputFileContents, wszDefaultNamespace, rgbOutputFileContents, out pcbOutput, pGenerateProgress);
+            var res = _base.Generate(_base.GetProjectItem(), bstrInputFileContents, wszDefaultNamespace, out var outputBuffer, pGenerateProgress);
+            if (outputBuffer != null)
+            {
+                var length = outputBuffer.Length;
+                rgbOutputFileContents[0] = Marshal.AllocCoTaskMem(length);
+                Marshal.Copy(outputBuffer, 0, rgbOutputFileContents[0], length);
+                pcbOutput = (uint)length;
+            }
+            else
+            {
+                pcbOutput = 0;
+            }
+            return res;
+        }
+
+        #region IObjectWithSite Members
+        public void GetSite(ref Guid riid, out IntPtr ppvSite)
+        {
+            _base.GetSite(ref riid, out ppvSite);
         }
 
         public void SetSite(object pUnkSite)
         {
             _base.SetSite(pUnkSite);
         }
-
-        public void GetSite(ref Guid riid, out IntPtr ppvSite)
-        {
-            _base.GetSite(ref riid, out ppvSite);
-        }
+        #endregion
     }
 }

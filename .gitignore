@@ -22,6 +22,7 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
+Generated Files/
 
 # ReSharper is a .NET coding add-in
 _ReSharper*/
