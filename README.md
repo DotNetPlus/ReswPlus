@@ -12,7 +12,7 @@ ReswPlus is a Visual Studio extension enriching your existing .resw files with m
 
 Currently supported: 
 - Visual Studio 2017 and 2019 (all versions).
-- C# and VB.Net apps (C++/CX and C++/winrt coming).
+- C#, VB.Net and C++/CX apps (C++/winrt coming soon).
 
 ![reswplus](https://user-images.githubusercontent.com/1226538/56525314-a76eb800-64ff-11e9-9e39-1bb4cd2dd012.gif)
 
@@ -37,13 +37,13 @@ Alternatively, you can directly download the extension here: https://marketplace
 
 ## How to activate ReswPlus in my project
 
-In your project, right-click on the resw file of the default language of your application (commonly `/Strings/en/Resources.resw`) and select `Properties`.
+In your project, right-click on the resw file of the default language of your application (commonly `/Strings/en/Resources.resw`) and select the menu `ReswPlus`.
 
-In the Properties panel, enter one of these tool in the *Custom Tool* field::
-- `ReswPlusGenerator`: stronged typed generation, string formatting, custom markup
-- `ReswPlusPluralizationGenerator`: all the above + pluralization and empty state support (the nuget package PluralNet must allow be added to the project)
+In the submenu, select:
+- `Generate strongly typed class`: stronged typed generation, string formatting, custom markup
+- `Generate strongly typed class with pluralization`: all the above + pluralization and empty state support (the nuget package ReswPlusLib will be automatically added to your project)
 
-<img src="https://user-images.githubusercontent.com/1226538/56481373-86608580-6473-11e9-9238-7ba22ae0ee15.png" height="120" />
+<img src="https://user-images.githubusercontent.com/1226538/59745769-57278400-922a-11e9-8395-f87f8faeb4bd.png" height="120" />
 
 It will automatically generate a file xxx.generated.cs associated to your Resource file.
 
@@ -93,7 +93,20 @@ These 3 ways are compile-time verified.
 
 ReswPlus can generate strongly typed methods to format your strings. Simply add the tag `#ReswPlusTyped[...]` in the comment column and ReswPlus will automatically generate a method YourResourceName_Format(..) with strongly typed parameters.
 
-Types currently supported for parameters: _string, int, uint, object, byte, long, double, char, ulong, decimal_
+Types currently supported for parameters:
+
+| identifier | C# Type | VB Type  | C++/CX Type       |
+|------------|---------|----------|-------------------|
+| b          | byte    | Byte     | char              |
+| i          | int     | Integer  | int               |
+| u          | uint    | UInteger | unsigned int      |
+| l          | long    | Long     | long              |
+| s          | string  | String   | Platform::String^ |
+| f          | double  | Double   | double            |
+| c          | char    | Char     | wchar_t           |
+| ul         | ulong   | ULong    | unsigned long     |
+| m          | decimal | Decimal  | long double       |
+| o          | Object  | object   | Platform::Object^ |
 
 Resw also allows you to name the parameters to make the code easy to read.
 
@@ -126,11 +139,7 @@ public static string ForecastAnnouncement_Format(int tempFahrenheit, int tempCel
 
 ### Pluralization
 
-<img src="https://user-images.githubusercontent.com/1226538/56482817-f8889880-647a-11e9-8015-38065428536d.png" height="120" />
-
-When associated to [PluralNet](https://github.com/rudyhuyn/pluralnet), another open-source library created by the same team, Resw can generate methods to easily access your pluralized strings.
-
-To install Plural, run the following NuGet command: `Install Package PluralNet` 
+ReswPlus can generate methods to easily access your pluralized strings. Simply right-click on your resw file, select `ReswPlus` > `Generate strongly typed class with pluralization`, the nuget package `ReswPlusLib` will be automatically added to your project and generate all the functions necessary to manage your localization.
 
 **Example:**
 
@@ -150,7 +159,7 @@ Will automatically generate the following code:
 /// </summary>
 public static string MinutesLeft(double number)
 {
-	return Huyn.PluralNet.ResourceLoaderExtension.GetPlural(_resourceLoader, "MinutesLeft", (decimal)number);
+	return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "MinutesLeft", number);
 }
 /// <summary>
 ///   Format the string similar to: {0} minute left
@@ -162,7 +171,7 @@ public static string MinutesLeft_Format(double pluralCount)
 #endregion
 ```
 
-PluralNet will then automatically select one of the string based on the number passed as a parameter. While English has only 2 plural forms, some languages have up to 5 different forms, 196 different languages are supported by this library.
+ReswPlus will then automatically select one of the string based on the number passed as a parameter. While English has only 2 plural forms, some languages have up to 5 different forms, 196 different languages are supported by this library.
 
 Pluralization can be used in combination with string formatting.
 
@@ -182,7 +191,7 @@ Will generate:
 /// </summary>
 public static string FileShared(double number)
 {
-	return Huyn.PluralNet.ResourceLoaderExtension.GetPlural(_resourceLoader, "FileShared", (decimal)number);
+	return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "FileShared", number);
 }
 /// <summary>
 ///   Format the string similar to: {0} shared {1} photos from {2}
