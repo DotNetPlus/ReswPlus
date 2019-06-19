@@ -70,7 +70,7 @@ namespace ReswPlus.Resw
                     }
                     else
                     {
-                        paramName = "param" + paramType + paramIndex;
+                        paramName = "param" + paramType.type + paramIndex;
                     }
                 }
 

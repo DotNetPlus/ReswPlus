@@ -50,14 +50,14 @@
             <Button guid="guidReswPlusPackageCmdSet" id="cmdidGenerateStronglyTypedResw" priority="0x0100" type="Button">
                 <Parent guid="guidReswPlusPackageCmdSet" id="myExtensionSubMenuGroup" />
                 <Strings>
-                    <ButtonText>Generate strongly typed classes</ButtonText>
+                    <ButtonText>Generate strongly typed class</ButtonText>
                 </Strings>
             </Button>
             <!-- Define the button cmdidGenerateStronglyTypedResw inside the myExtensionSubMenuGroup-->
             <Button guid="guidReswPlusPackageCmdSet" id="cmdidGenerateStronglyTypedPluralizationResw" priority="0x0100" type="Button">
                 <Parent guid="guidReswPlusPackageCmdSet" id="myExtensionSubMenuGroup" />
                 <Strings>
-                    <ButtonText>Generate strongly typed classes with pluralization</ButtonText>
+                    <ButtonText>Generate strongly typed class with pluralization</ButtonText>
                 </Strings>
             </Button>
         </Buttons>

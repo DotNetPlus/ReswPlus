@@ -136,6 +136,7 @@ namespace ReswPlus
             var language = projectItem.GetLanguage();
             if (language == Utils.Language.CSHARP || language == Utils.Language.VB)
             {
+                projectItem.Properties.Item("CustomTool").Value = "";
                 projectItem.Properties.Item("CustomTool").Value = usePluralization ? "ReswPlusAdvancedGenerator" : "ReswPlusGenerator";
             }
             else if (language == Utils.Language.CPP)

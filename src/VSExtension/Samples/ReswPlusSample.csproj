@@ -236,7 +236,7 @@
   </ItemGroup>
   <ItemGroup>
     <PRIResource Include="Strings\en-US\Resources.resw">
-      <Generator>ReswPlusPluralizationGenerator</Generator>
+      <Generator>ReswPlusAdvancedGenerator</Generator>
       <LastGenOutput>Resources.generated.cs</LastGenOutput>
     </PRIResource>
   </ItemGroup>
