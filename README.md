@@ -93,7 +93,20 @@ These 3 ways are compile-time verified.
 
 ReswPlus can generate strongly typed methods to format your strings. Simply add the tag `#ReswPlusTyped[...]` in the comment column and ReswPlus will automatically generate a method YourResourceName_Format(..) with strongly typed parameters.
 
-Types currently supported for parameters: _string, int, uint, object, byte, long, double, char, ulong, decimal_
+Types currently supported for parameters:
+
+| identifier | C# Type | VB Type  | C++/CX Type       |
+|------------|---------|----------|-------------------|
+| b          | byte    | Byte     | char              |
+| i          | int     | Integer  | int               |
+| u          | uint    | UInteger | unsigned int      |
+| l          | long    | Long     | long              |
+| s          | string  | String   | Platform::String^ |
+| f          | double  | Double   | double            |
+| c          | char    | Char     | wchar_t           |
+| ul         | ulong   | ULong    | unsigned long     |
+| m          | decimal | Decimal  | long double       |
+| o          | Object  | object   | Platform::Object^ |
 
 Resw also allows you to name the parameters to make the code easy to read.
 
