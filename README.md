@@ -146,7 +146,7 @@ Will automatically generate the following code:
 /// </summary>
 public static string MinutesLeft(double number)
 {
-	return Huyn.PluralNet.ResourceLoaderExtension.GetPlural(_resourceLoader, "MinutesLeft", (decimal)number);
+	return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "MinutesLeft", number);
 }
 /// <summary>
 ///   Format the string similar to: {0} minute left
@@ -158,7 +158,7 @@ public static string MinutesLeft_Format(double pluralCount)
 #endregion
 ```
 
-PluralNet will then automatically select one of the string based on the number passed as a parameter. While English has only 2 plural forms, some languages have up to 5 different forms, 196 different languages are supported by this library.
+ReswPlus will then automatically select one of the string based on the number passed as a parameter. While English has only 2 plural forms, some languages have up to 5 different forms, 196 different languages are supported by this library.
 
 Pluralization can be used in combination with string formatting.
 
@@ -178,7 +178,7 @@ Will generate:
 /// </summary>
 public static string FileShared(double number)
 {
-	return Huyn.PluralNet.ResourceLoaderExtension.GetPlural(_resourceLoader, "FileShared", (decimal)number);
+	return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "FileShared", number);
 }
 /// <summary>
 ///   Format the string similar to: {0} shared {1} photos from {2}
