@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+    <Metadata>
+        <Identity Id="ReswPlus.08b03f0c-a947-485c-a7a5-e351c75fad1a" Version="0.3.0" Language="en-US" Publisher="rudyhuyn" />
+        <DisplayName>ReswPlus</DisplayName>
+        <Description xml:space="preserve">Advanced Resw File Code Generator for UWP apps.
+
+ReswPlus is a Visual Studio extension enriching your existing .resw files with many high valuable features:
+- Access to strings via strongly typed static properties.
+- Generates methods to format your strings with named and strongly typed parameters.
+- Adds pluralization support (support plural rules for 196 languages!).
+- In addition to pluralization, also supports empty states when the number of items is zero.Advanced </Description>
+        <MoreInfo>https://github.com/rudyhuyn/ReswPlus</MoreInfo>
+        <License>Assets\License.txt</License>
+        <GettingStartedGuide>https://github.com/rudyhuyn/ReswPlus/blob/master/README.md</GettingStartedGuide>
+        <Icon>Assets\ReswPlusPackage.ico</Icon>
+        <PreviewImage>Assets\Logo.png</PreviewImage>
+        <Tags>resw resx strongly typed localization</Tags>
+    </Metadata>
+    <Installation>
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0, 17.0)" />
+        <InstallationTarget Version="[15.0,17.0)" Id="Microsoft.VisualStudio.Pro" />
+        <InstallationTarget Version="[15.0,17.0)" Id="Microsoft.VisualStudio.Enterprise" />
+    </Installation>
+    <Dependencies>
+        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
+        <Dependency Id="Microsoft.VisualStudio.MPF.15.0" DisplayName="Visual Studio MPF 15.0" d:Source="Installed" Version="[15.0]" />
+    </Dependencies>
+    <Prerequisites>
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.8.27729.1,17.0)" DisplayName="Visual Studio core editor" />
+    </Prerequisites>
+    <Assets>
+        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+    </Assets>
+</PackageManifest>
