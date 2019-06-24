@@ -2,7 +2,7 @@ using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using ReswPlus.SingleFileGenerators;
+using ReswPlus.Resw;
 using ReswPlus.Utils;
 using System;
 using System.ComponentModel.Design;
@@ -117,7 +117,7 @@ namespace ReswPlus
         {
             GenerateResourceFile(false);
         }
-        private void GenerateResourceFile(bool usePluralization)
+        private int GenerateResourceFile(bool usePluralization)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -131,18 +131,17 @@ namespace ReswPlus
                     OLEMSGICON.OLEMSGICON_INFO,
                     OLEMSGBUTTON.OLEMSGBUTTON_OK,
                     OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-                return;
+                return VSConstants.E_FAIL;
             }
             var language = projectItem.GetLanguage();
             if (language == Utils.Language.CSHARP || language == Utils.Language.VB)
             {
                 projectItem.Properties.Item("CustomTool").Value = "";
                 projectItem.Properties.Item("CustomTool").Value = usePluralization ? "ReswPlusAdvancedGenerator" : "ReswPlusGenerator";
+                return VSConstants.S_OK;
             }
             else if (language == Utils.Language.CPP)
             {
-                // CPP projects doesn't support custom tools, we need to create the file ourselves.
-
                 var filepath = (string)projectItem.Properties.Item("FullPath").Value;
                 var fileNamespace = (string)projectItem.ContainingProject.Properties.Item("RootNamespace").Value;
 
@@ -152,20 +151,30 @@ namespace ReswPlus
                 {
                     fileNamespace += "." + reswNamespace.Replace("\\", ".");
                 }
-                var generator = new ReswPlusGeneratorBase(usePluralization);
-                generator.Generate(projectItem, File.ReadAllText(filepath), fileNamespace, out var output, null);
 
-                var extension = ".h";
-                var generatedFilePath = Path.Combine(Path.GetDirectoryName(filepath), Path.GetFileNameWithoutExtension(filepath)) + ".generated" + extension;
-                using (var streamWriter = File.Create(generatedFilePath))
+                var reswCodeGenerator = ReswCodeGenerator.CreateGenerator(projectItem, language);
+                if (reswCodeGenerator == null)
                 {
-                    streamWriter.Write(output, 0, output.Length);
+                    return VSConstants.E_FAIL;
                 }
-                try
+
+                var inputFilepath = projectItem.Properties.Item("FullPath").Value as string;
+                var files = reswCodeGenerator.GenerateCode(inputFilepath, File.ReadAllText(inputFilepath), fileNamespace, usePluralization);
+                foreach (var file in files)
                 {
-                    projectItem.ProjectItems.AddFromFile(generatedFilePath);
+                    var generatedFilePath = Path.Combine(Path.GetDirectoryName(filepath), Path.GetFileNameWithoutExtension(filepath)) + ".generated" + file.Extension;
+                    using (var streamWriter = File.Create(generatedFilePath))
+                    {
+                        var contentBytes = System.Text.Encoding.UTF8.GetBytes(file.Content);
+                        streamWriter.Write(contentBytes, 0, contentBytes.Length);
+                    }
+                    try
+                    {
+                        projectItem.ProjectItems.AddFromFile(generatedFilePath);
+                    }
+                    catch { }
                 }
-                catch { }
+                return VSConstants.S_OK;
             }
             else
             {
@@ -176,6 +185,7 @@ namespace ReswPlus
                            OLEMSGICON.OLEMSGICON_INFO,
                            OLEMSGBUTTON.OLEMSGBUTTON_OK,
                            OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                return VSConstants.E_UNEXPECTED;
             }
         }
     }

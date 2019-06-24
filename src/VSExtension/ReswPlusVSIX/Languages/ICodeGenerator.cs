@@ -3,6 +3,11 @@ using System.Collections.Generic;
 
 namespace ReswPlus.Languages
 {
+    internal class GeneratedFile
+    {
+        public string Extension { get; set; }
+        public string Content { get; set; }
+    }
     internal interface ICodeGenerator
     {
         string GetParameterTypeString(ParameterType type);
@@ -25,6 +30,6 @@ namespace ReswPlus.Languages
             FunctionParameter extraParameterForFunction = null, FunctionParameter parameterForPluralization = null);
 
         void CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys);
-        string GetString();
+        IEnumerable<GeneratedFile> GetGeneratedFiles();
     }
 }
