@@ -145,12 +145,12 @@ namespace ReswPlus.Languages
                 _builder.AppendLine("if(number == 0)");
                 _builder.AppendLine("{");
                 _builder.AddLevel();
-                _builder.AppendLine($"return GetResourceLoader()->GetString(\"{idNone}\");");
+                _builder.AppendLine($"return GetResourceLoader()->GetString(L\"{idNone}\");");
                 _builder.RemoveLevel();
                 _builder.AppendLine("}");
             }
 
-            _builder.AppendLine($"return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), \"{pluralKey}\", number);");
+            _builder.AppendLine($"return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), L\"{pluralKey}\", number);");
             _builder.RemoveLevel();
             _builder.AppendLine("}");
             _builder.RemoveLevel();
@@ -167,7 +167,7 @@ namespace ReswPlus.Languages
             _builder.AppendLine($"static property Platform::String^ {key}");
             _builder.AppendLine("{");
             _builder.AddLevel();
-            _builder.AppendLine($"Platform::String^ get() {{ return GetResourceLoader()->GetString(\"{key}\"); }}");
+            _builder.AppendLine($"Platform::String^ get() {{ return GetResourceLoader()->GetString(L\"{key}\"); }}");
             _builder.RemoveLevel();
             _builder.AppendLine("}");
             _builder.RemoveLevel();
@@ -272,7 +272,7 @@ namespace ReswPlus.Languages
             _builder.AppendLine("if(Key == KeyEnum::__Undefined)");
             _builder.AppendLine("{");
             _builder.AddLevel();
-            _builder.AppendLine("res = \"\";");
+            _builder.AppendLine("res = L\"\";");
             _builder.RemoveLevel();
             _builder.AppendLine("}");
             _builder.AppendLine("else");

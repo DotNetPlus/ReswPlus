@@ -24,7 +24,7 @@ namespace TestCppCX{namespace Strings{
         /// </summary>
         static Platform::String^ YouGotEmails(double number)
         {
-            return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), "YouGotEmails", number);
+            return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), L"YouGotEmails", number);
         }
 
     /// <summary>
@@ -46,7 +46,7 @@ namespace TestCppCX{namespace Strings{
         /// </summary>
         static property Platform::String^ Hello
         {
-            Platform::String^ get() { return GetResourceLoader()->GetString("Hello"); }
+            Platform::String^ get() { return GetResourceLoader()->GetString(L"Hello"); }
         }
 
     };
@@ -75,7 +75,7 @@ namespace TestCppCX{namespace Strings{
             Platform::String^ res;
             if(Key == KeyEnum::__Undefined)
             {
-                res = "";
+                res = L"";
             }
             else
             {
