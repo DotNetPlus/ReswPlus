@@ -73,6 +73,7 @@
     <Compile Include="Resw\ReswItem.cs" />
     <Compile Include="SingleFileGenerators\ReswPlusGenerator.cs" />
     <Compile Include="ReswPlusPackage.cs" />
+    <Compile Include="Utils\NugetHelper.cs" />
     <Compile Include="Utils\ProjectItemExtension.cs" />
   </ItemGroup>
   <ItemGroup>

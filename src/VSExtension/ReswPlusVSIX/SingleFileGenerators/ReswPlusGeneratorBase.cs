@@ -4,17 +4,15 @@
 
 using EnvDTE;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Designer.Interfaces;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using NuGet.VisualStudio;
-using ReswPlus.Languages;
 using ReswPlus.Resw;
 using ReswPlus.Utils;
 using System;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using IServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
@@ -45,32 +43,25 @@ namespace ReswPlus.SingleFileGenerators
             try
             {
                 var language = projectItem.GetLanguage();
-                Languages.ICodeGenerator codeGenerator = null;
-                switch (language)
+                var reswCodeGenerator = ReswCodeGenerator.CreateGenerator(projectItem, language);
+                if (reswCodeGenerator == null)
                 {
-                    case Utils.Language.CSHARP:
-                        codeGenerator = new CSharpCodeGenerator();
-                        break;
-                    case Utils.Language.VB:
-                        codeGenerator = new VBCodeGenerator();
-                        break;
-                    case Utils.Language.CPP:
-                        codeGenerator = new CppCodeGenerator();
-                        break;
+                    return VSConstants.E_FAIL;
                 }
-                if (codeGenerator == null)
+                var inputFilepath = projectItem.Properties.Item("FullPath").Value as string;
+                var files = reswCodeGenerator.GenerateCode(inputFilepath, inputFileContents, defaultNamespace, _usePluralization);
+                if (files.Count() != 1)
                 {
-                    return VSConstants.E_UNEXPECTED;
+                    return VSConstants.E_FAIL;
                 }
 
-                var inputFilepath = projectItem.Properties.Item("FullPath").Value as string;
-                var content = new ReswCodeGenerator(projectItem, codeGenerator).GenerateCode(inputFilepath, inputFileContents, defaultNamespace, _usePluralization);
-                output = Encoding.UTF8.GetBytes(content);
+                // IVsSingleFileGenerator supports only 1 file.
+                output = Encoding.UTF8.GetBytes(files.First().Content);
 
                 //Install nuget package
                 if (_usePluralization)
                 {
-                    InstallNuGetPackage(projectItem.ContainingProject, "ReswPlusLib");
+                    projectItem.ContainingProject.InstallNuGetPackage("ReswPlusLib");
                 }
             }
             catch (Exception)
@@ -153,25 +144,5 @@ namespace ReswPlus.SingleFileGenerators
         private ServiceProvider _serviceProvider;
         private readonly bool _usePluralization;
         #endregion
-
-        public bool InstallNuGetPackage(Project project, string package)
-        {
-            try
-            {
-                var componentModel = (IComponentModel)Package.GetGlobalService(typeof(SComponentModel));
-                var installerServices = componentModel.GetService<IVsPackageInstallerServices>();
-                if (!installerServices.IsPackageInstalled(project, package))
-                {
-                    var installer = componentModel.GetService<IVsPackageInstaller>();
-                    installer.InstallPackage(null, project, package, (System.Version)null, false);
-                    return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Can't install {package} nuget package: {ex.Message}");
-            }
-            return false;
-        }
     }
 }

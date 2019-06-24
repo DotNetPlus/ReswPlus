@@ -54,9 +54,9 @@ namespace ReswPlus.Languages
             _builder.AppendEmptyLine();
         }
 
-        public string GetString()
+        public IEnumerable<GeneratedFile> GetGeneratedFiles()
         {
-            return _builder.GetString();
+            yield return new GeneratedFile() { Extension = ".vb", Content = _builder.GetString() };
         }
 
         public void GetHeaders(bool supportPluralization)

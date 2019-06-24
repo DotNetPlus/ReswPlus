@@ -4,6 +4,7 @@
 
 using EnvDTE;
 using ReswPlus.Languages;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -30,13 +31,35 @@ namespace ReswPlus.Resw
                     $"\\{TagStrongType}\\[\\s*(?<formats>{listFormatsWithName}(?:\\s*,\\s*{listFormatsWithName}\\s*)*)\\]");
         }
 
-        public ReswCodeGenerator(ProjectItem item, ICodeGenerator codeGenerator)
+        private ReswCodeGenerator(ProjectItem item, ICodeGenerator generator)
         {
             _projectItem = item;
-            _codeGenerator = codeGenerator;
+            _codeGenerator = generator;
         }
 
-        public string GenerateCode(string resourcePath, string content, string defaultNamespace, bool supportPluralization)
+        public static ReswCodeGenerator CreateGenerator(ProjectItem item, Utils.Language language)
+        {
+            ICodeGenerator codeGenerator = null;
+            switch (language)
+            {
+                case Utils.Language.CSHARP:
+                    codeGenerator = new CSharpCodeGenerator();
+                    break;
+                case Utils.Language.VB:
+                    codeGenerator = new VBCodeGenerator();
+                    break;
+                case Utils.Language.CPP:
+                    codeGenerator = new CppCodeGenerator();
+                    break;
+            }
+            if (codeGenerator != null)
+            {
+                return new ReswCodeGenerator(item, codeGenerator);
+            }
+            return null;
+        }
+
+        public IEnumerable<GeneratedFile> GenerateCode(string resourcePath, string content, string defaultNamespace, bool supportPluralization)
         {
             var namespaceToUse = ExtractNamespace(defaultNamespace);
 
@@ -128,7 +151,7 @@ namespace ReswPlus.Resw
 
             _codeGenerator.CloseNamespace(namespaceToUse);
 
-            return _codeGenerator.GetString();
+            return _codeGenerator.GetGeneratedFiles();
         }
 
         private string[] ExtractNamespace(string defaultNamespace)
