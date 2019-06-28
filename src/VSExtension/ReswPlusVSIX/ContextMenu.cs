@@ -141,7 +141,7 @@ namespace ReswPlus
                 projectItem.Properties.Item("CustomTool").Value = usePluralization ? "ReswPlusAdvancedGenerator" : "ReswPlusGenerator";
                 return VSConstants.S_OK;
             }
-            else if (language == Utils.Language.CPP)
+            else if (language == Utils.Language.CPPCX || language == Utils.Language.CPPWINRT)
             {
                 // CPP projects doesn't support custom tools, we need to create the file ourselves.
                 var filepath = (string)projectItem.Properties.Item("FullPath").Value;

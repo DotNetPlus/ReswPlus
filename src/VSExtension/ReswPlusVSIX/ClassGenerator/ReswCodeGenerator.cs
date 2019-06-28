@@ -50,8 +50,11 @@ namespace ReswPlus.CodeGenerator
                 case Utils.Language.VB:
                     codeGenerator = new VBCodeGenerator();
                     break;
-                case Utils.Language.CPP:
+                case Utils.Language.CPPCX:
                     codeGenerator = new CppCXCodeGenerator();
+                    break;
+                case Utils.Language.CPPWINRT:
+                    codeGenerator = new CppWinRTCodeGenerator();
                     break;
             }
             if (codeGenerator != null)

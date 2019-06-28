@@ -59,6 +59,7 @@
     <Compile Include="ClassGenerator\Models\StronglyTypedClass.cs" />
     <Compile Include="ContextMenu.cs" />
     <Compile Include="Languages\CodeStringBuilder.cs" />
+    <Compile Include="Languages\CppWinRTCodeGenerator.cs" />
     <Compile Include="Languages\CppCXCodeGenerator.cs" />
     <Compile Include="Languages\CsharpCodeGenerator.cs" />
     <Compile Include="Languages\DotNetGeneratorBase.cs" />
