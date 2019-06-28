@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ReswPlus.Languages
 {
-    internal class VBCodeGenerator : ICodeGenerator
+    internal class VBCodeGenerator : DotNetGeneratorBase
     {
         private readonly CodeStringBuilder _builder;
 
@@ -49,17 +49,12 @@ namespace ReswPlus.Languages
             }
         }
 
-        public void NewLine()
+        internal override IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename)
         {
-            _builder.AppendEmptyLine();
+            yield return new GeneratedFile() { Filename = baseFilename + ".vb", Content = _builder.GetString() };
         }
 
-        public IEnumerable<GeneratedFile> GetGeneratedFiles()
-        {
-            yield return new GeneratedFile() { Extension = ".vb", Content = _builder.GetString() };
-        }
-
-        public void GetHeaders(bool supportPluralization)
+        internal override void GenerateHeaders(bool supportPluralization)
         {
             _builder.AppendLine("' File generated automatically by ReswPlus. https://github.com/rudyhuyn/ReswPlus");
             if (supportPluralization)
@@ -72,7 +67,7 @@ namespace ReswPlus.Languages
             _builder.AppendLine("Imports Windows.UI.Xaml.Data");
         }
 
-        public void OpenNamespace(string[] namespaces)
+        internal override void OpenNamespace(string[] namespaces)
         {
             if (namespaces != null && namespaces.Any())
             {
@@ -81,7 +76,7 @@ namespace ReswPlus.Languages
             }
         }
 
-        public void CloseNamespace(string[] namespaces)
+        internal override void CloseNamespace(string[] namespaces)
         {
             if (namespaces != null && namespaces.Any())
             {
@@ -90,31 +85,13 @@ namespace ReswPlus.Languages
             }
         }
 
-        public void OpenNamespace(string namespaceName)
-        {
-            if (!string.IsNullOrEmpty(namespaceName))
-            {
-                _builder.AppendLine($"Namespace {namespaceName}");
-                _builder.AddLevel();
-            }
-        }
-
-        public void CloseNamespace(string namespaceName)
-        {
-            if (!string.IsNullOrEmpty(namespaceName))
-            {
-                _builder.RemoveLevel();
-                _builder.AppendLine("End Namespace");
-            }
-        }
-
-        public void OpenStronglyTypedClass(string resourceFilename, string className)
+        internal override void OpenStronglyTypedClass(string resourceFilename, string className)
         {
 
             _builder.AppendLine("<System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"0.1.0.0\")>");
             _builder.AppendLine("<System.Diagnostics.DebuggerNonUserCodeAttribute()>");
             _builder.AppendLine("<System.Runtime.CompilerServices.CompilerGeneratedAttribute()>");
-            _builder.AppendLine($"Public Class {className}");
+            _builder.AppendLine($"internal override Class {className}");
             _builder.AddLevel();
             _builder.AppendLine("Private Shared _resourceLoader as ResourceLoader");
             _builder.AppendEmptyLine();
@@ -125,34 +102,34 @@ namespace ReswPlus.Languages
             _builder.AppendLine("End Sub");
         }
 
-        public void CloseStronglyTypedClass()
+        internal override void CloseStronglyTypedClass()
         {
             _builder.RemoveLevel();
             _builder.AppendLine("End Class");
         }
 
-        public void OpenRegion(string name)
+        internal override void OpenRegion(string name)
         {
             _builder.AppendLine($"#Region \"{name}\"");
         }
 
-        public void CloseRegion()
+        internal override void CloseRegion()
         {
             _builder.AppendLine("#End Region");
         }
 
-        public void CreatePluralizationAccessor(string pluralKey, string summary, string idNone = null)
+        internal override void CreatePluralizationAccessor(string pluralKey, string summary, bool supportNoneState)
         {
             _builder.AppendLine("' <summary>");
             _builder.AppendLine($"'   {summary}");
             _builder.AppendLine("' </summary>");
-            _builder.AppendLine($"Public Shared Function {pluralKey}(number As Double) As String");
+            _builder.AppendLine($"internal override Shared Function {pluralKey}(number As Double) As String");
             _builder.AddLevel();
-            if (!string.IsNullOrEmpty(idNone))
+            if (!supportNoneState)
             {
                 _builder.AppendLine("If number = 0 Then");
                 _builder.AddLevel();
-                _builder.AppendLine($"Return _resourceLoader.GetString(\"{idNone}\")");
+                _builder.AppendLine($"Return _resourceLoader.GetString(\"{pluralKey}_None\")");
                 _builder.RemoveLevel();
                 _builder.AppendLine("End If");
             }
@@ -162,12 +139,12 @@ namespace ReswPlus.Languages
             _builder.AppendLine("End Function");
         }
 
-        public void CreateAccessor(string key, string summary)
+        internal override void CreateAccessor(string key, string summary)
         {
             _builder.AppendLine("' <summary>");
             _builder.AppendLine($"'   {summary}");
             _builder.AppendLine("' </summary>");
-            _builder.AppendLine($"Public Shared ReadOnly Property {key} As String");
+            _builder.AppendLine($"internal override Shared ReadOnly Property {key} As String");
             _builder.AddLevel();
             _builder.AppendLine("Get");
             _builder.AddLevel();
@@ -178,7 +155,7 @@ namespace ReswPlus.Languages
             _builder.AppendLine("End Property");
         }
 
-        public void CreateFormatMethod(string key, IEnumerable<FunctionParameter> parameters, string summary = null, FunctionParameter extraParameterForFunction = null, FunctionParameter parameterForPluralization = null)
+        internal override void CreateFormatMethod(string key, IEnumerable<FunctionParameter> parameters, string summary = null, FunctionParameter extraParameterForFunction = null, FunctionParameter parameterForPluralization = null)
         {
             _builder.AppendLine("' <summary>");
             _builder.AppendLine($"'   {summary}");
@@ -196,7 +173,7 @@ namespace ReswPlus.Languages
                 functionParameters = parameters;
             }
             var parametersStr = functionParameters.Select(p => "ByVal " + p.Name + " As " + GetParameterTypeString(p.Type)).Aggregate((a, b) => a + ", " + b);
-            _builder.AppendLine($"Public Shared Function {key}_Format({parametersStr}) As String");
+            _builder.AppendLine($"internal override Shared Function {key}_Format({parametersStr}) As String");
             var formatParameters = parameters.Select(p => p.Name).Aggregate((a, b) => a + ", " + b);
 
             string sourceForFormat;
@@ -215,17 +192,16 @@ namespace ReswPlus.Languages
             _builder.AppendLine("End Function");
         }
 
-        public void CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys)
+        internal override void CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys)
         {
-
             _builder.AppendLine("<System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"0.1.0.0\")>");
             _builder.AppendLine("<System.Diagnostics.DebuggerNonUserCodeAttribute()>");
             _builder.AppendLine("<System.Runtime.CompilerServices.CompilerGeneratedAttribute()>");
             _builder.AppendLine("<MarkupExtensionReturnType(ReturnType:=GetType(String))>");
-            _builder.AppendLine($"Public Class {className}");
+            _builder.AppendLine($"internal override Class {className}");
             _builder.AddLevel();
             _builder.AppendLine("Inherits MarkupExtension");
-            _builder.AppendLine("Public Enum KeyEnum");
+            _builder.AppendLine("internal override Enum KeyEnum");
             _builder.AddLevel();
             _builder.AppendLine("__Undefined = 0");
             foreach (var key in keys)
@@ -242,9 +218,9 @@ namespace ReswPlus.Languages
             _builder.RemoveLevel();
             _builder.AppendLine("End Sub");
             _builder.AppendEmptyLine();
-            _builder.AppendLine("Public Property Key As KeyEnum");
-            _builder.AppendLine("Public Property Converter As IValueConverter");
-            _builder.AppendLine("Public Property ConverterParameter As Object");
+            _builder.AppendLine("internal override Property Key As KeyEnum");
+            _builder.AppendLine("internal override Property Converter As IValueConverter");
+            _builder.AppendLine("internal override Property ConverterParameter As Object");
             _builder.AppendLine("Protected Overrides Function ProvideValue() As Object");
             _builder.AddLevel();
             _builder.AppendLine("Dim res As String");
@@ -262,6 +238,11 @@ namespace ReswPlus.Languages
             _builder.AppendLine("End Function");
             _builder.RemoveLevel();
             _builder.AppendLine("End Class");
+        }
+
+        internal override void AddNewLine()
+        {
+            _builder.AppendEmptyLine();
         }
     }
 }

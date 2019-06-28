@@ -7,7 +7,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Designer.Interfaces;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using ReswPlus.Resw;
+using ReswPlus.CodeGenerator;
 using ReswPlus.Utils;
 using System;
 using System.CodeDom.Compiler;
@@ -49,7 +49,8 @@ namespace ReswPlus.SingleFileGenerators
                     return VSConstants.E_FAIL;
                 }
                 var inputFilepath = projectItem.Properties.Item("FullPath").Value as string;
-                var files = reswCodeGenerator.GenerateCode(inputFilepath, inputFileContents, defaultNamespace, _usePluralization);
+                var baseFilename = "resources.generated." + GetCodeProvider().FileExtension; //won't be used.
+                var files = reswCodeGenerator.GenerateCode(inputFilepath, baseFilename, inputFileContents, defaultNamespace, _usePluralization, projectItem);
                 if (files.Count() != 1)
                 {
                     return VSConstants.E_FAIL;

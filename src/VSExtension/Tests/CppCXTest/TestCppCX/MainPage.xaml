@@ -19,6 +19,7 @@
             <Slider
                 x:Name="EmailsSlider"
                 Margin="0,6"
+                Maximum="10"
                 Header="Number of emails:"
                 Value="2" />
             <TextBlock Text="{x:Bind local:Resources.YouGotEmails_Format(EmailsSlider.Value, UserNameText.Text), Mode=OneWay}" />

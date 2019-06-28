@@ -2,7 +2,7 @@ using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using ReswPlus.Resw;
+using ReswPlus.CodeGenerator;
 using ReswPlus.Utils;
 using System;
 using System.ComponentModel.Design;
@@ -136,12 +136,14 @@ namespace ReswPlus
             var language = projectItem.GetLanguage();
             if (language == Utils.Language.CSHARP || language == Utils.Language.VB)
             {
+                // Reset CustomTool to force the file generation.
                 projectItem.Properties.Item("CustomTool").Value = "";
                 projectItem.Properties.Item("CustomTool").Value = usePluralization ? "ReswPlusAdvancedGenerator" : "ReswPlusGenerator";
                 return VSConstants.S_OK;
             }
             else if (language == Utils.Language.CPP)
             {
+                // CPP projects doesn't support custom tools, we need to create the file ourselves.
                 var filepath = (string)projectItem.Properties.Item("FullPath").Value;
                 var fileNamespace = (string)projectItem.ContainingProject.Properties.Item("RootNamespace").Value;
 
@@ -159,10 +161,11 @@ namespace ReswPlus
                 }
 
                 var inputFilepath = projectItem.Properties.Item("FullPath").Value as string;
-                var files = reswCodeGenerator.GenerateCode(inputFilepath, File.ReadAllText(inputFilepath), fileNamespace, usePluralization);
+                var baseFilename = Path.GetFileNameWithoutExtension(filepath) + ".generated";
+                var files = reswCodeGenerator.GenerateCode(inputFilepath, baseFilename, File.ReadAllText(inputFilepath), fileNamespace, usePluralization, projectItem);
                 foreach (var file in files)
                 {
-                    var generatedFilePath = Path.Combine(Path.GetDirectoryName(filepath), Path.GetFileNameWithoutExtension(filepath)) + ".generated" + file.Extension;
+                    var generatedFilePath = Path.Combine(Path.GetDirectoryName(filepath), file.Filename);
                     using (var streamWriter = File.Create(generatedFilePath))
                     {
                         var contentBytes = System.Text.Encoding.UTF8.GetBytes(file.Content);
