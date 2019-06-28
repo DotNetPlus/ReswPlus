@@ -2,10 +2,11 @@
 // The NuGet package ReswPlusLib is necessary to support Pluralization.
 #include <pch.h>
 #include "Resources.generated.h"
+#include <stdio.h>
 
+Windows::ApplicationModel::Resources::ResourceLoader^ TestCppCX::Strings::Resources::_resourceLoader = nullptr;
 Windows::ApplicationModel::Resources::ResourceLoader^ TestCppCX::Strings::Resources::GetResourceLoader()
 {
-    static Windows::ApplicationModel::Resources::ResourceLoader^ _resourceLoader(nullptr);
     if (_resourceLoader == nullptr)
     {
         _resourceLoader = Windows::ApplicationModel::Resources::ResourceLoader::GetForViewIndependentUse(L"Resources");

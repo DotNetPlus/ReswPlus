@@ -51,7 +51,7 @@ namespace ReswPlus.CodeGenerator
                     codeGenerator = new VBCodeGenerator();
                     break;
                 case Utils.Language.CPP:
-                    codeGenerator = new CppCodeGenerator();
+                    codeGenerator = new CppCXCodeGenerator();
                     break;
             }
             if (codeGenerator != null)

@@ -1,7 +1,6 @@
 // File generated automatically by ReswPlus. https://github.com/rudyhuyn/ReswPlus
 // The NuGet package ReswPlusLib is necessary to support Pluralization.
 #pragma once
-#include <stdio.h>
 
 namespace TestCppCX
 {
@@ -10,6 +9,7 @@ namespace TestCppCX
         public ref class Resources sealed
         {
         private:
+            static Windows::ApplicationModel::Resources::ResourceLoader^ _resourceLoader;
             static Windows::ApplicationModel::Resources::ResourceLoader^ GetResourceLoader();
         public:
             Resources() {}
