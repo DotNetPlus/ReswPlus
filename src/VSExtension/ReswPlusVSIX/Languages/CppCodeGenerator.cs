@@ -52,7 +52,7 @@ namespace ReswPlus.Languages
             builderHeader.AppendLine("#include <stdio.h>");
         }
 
-        private void CppFileGenerateHeaders(CodeStringBuilder builderHeader, string preprocessorHeader, string headerFilePath, bool supportPluralization)
+        private void CppFileGenerateHeaders(CodeStringBuilder builderHeader, string precompiledHeader, string headerFilePath, bool supportPluralization)
         {
             //Header
             builderHeader.AppendLine("// File generated automatically by ReswPlus. https://github.com/rudyhuyn/ReswPlus");
@@ -60,9 +60,9 @@ namespace ReswPlus.Languages
             {
                 builderHeader.AppendLine("// The NuGet package ReswPlusLib is necessary to support Pluralization.");
             }
-            if (!string.IsNullOrEmpty(preprocessorHeader))
+            if (!string.IsNullOrEmpty(precompiledHeader))
             {
-                builderHeader.AppendLine($"#include <{preprocessorHeader}>");
+                builderHeader.AppendLine($"#include <{precompiledHeader}>");
             }
             builderHeader.AppendLine($"#include \"{headerFilePath}\"");
         }
@@ -345,7 +345,7 @@ namespace ReswPlus.Languages
             var builderHeader = new CodeStringBuilder("Cpp");
             var builderCpp = new CodeStringBuilder("Cpp");
 
-            var preprocessorHeader = GetPreProcessorHeader(projectItem);
+            var precompiledHeader = GetprecompiledHeader(projectItem);
 
             HeaderFileGenerateHeaders(builderHeader, info.SupportPluralization);
             builderHeader.AppendEmptyLine();
@@ -353,7 +353,7 @@ namespace ReswPlus.Languages
             HeaderOpenStronglyTypedClass(builderHeader, info.ResoureFile, info.ClassName);
             builderHeader.AppendEmptyLine();
 
-            CppFileGenerateHeaders(builderCpp, preprocessorHeader, headerFileName, info.SupportPluralization);
+            CppFileGenerateHeaders(builderCpp, precompiledHeader, headerFileName, info.SupportPluralization);
             builderCpp.AppendEmptyLine();
             CppGenerateStronglyTypedClassStaticFunc(builderCpp, namespaceAndStronglyTypedClass, info.ResoureFile);
             builderCpp.AppendEmptyLine();
@@ -408,7 +408,7 @@ namespace ReswPlus.Languages
             yield return new GeneratedFile() { Filename = cppFileName, Content = builderCpp.GetString() };
         }
 
-        private string GetPreProcessorHeader(ProjectItem projectItem)
+        private string GetprecompiledHeader(ProjectItem projectItem)
         {
             try
             {
