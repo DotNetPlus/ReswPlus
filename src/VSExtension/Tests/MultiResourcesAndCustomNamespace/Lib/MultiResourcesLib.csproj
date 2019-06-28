@@ -122,9 +122,9 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Strings\en\Resources.generated.cs">
-      <DependentUpon>Resources.resw</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resw</DependentUpon>
     </Compile>
     <Compile Include="TestClass.cs" />
     <EmbeddedResource Include="Properties\MultiResourcesLib.rd.xml" />
@@ -133,10 +133,13 @@
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.3</Version>
     </PackageReference>
+    <PackageReference Include="ReswPlusLib">
+      <Version>0.0.4</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <PRIResource Include="Strings\en\Resources.resw">
-      <Generator>ReswPlusGenerator</Generator>
+      <Generator>ReswPlusAdvancedGenerator</Generator>
       <LastGenOutput>Resources.generated.cs</LastGenOutput>
     </PRIResource>
   </ItemGroup>

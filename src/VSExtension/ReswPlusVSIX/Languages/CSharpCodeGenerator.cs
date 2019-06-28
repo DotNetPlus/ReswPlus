@@ -1,10 +1,11 @@
+using ReswPlus.ClassGenerator.Models;
 using ReswPlus.Resw;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace ReswPlus.Languages
 {
-    internal class CSharpCodeGenerator : ICodeGenerator
+    internal class CSharpCodeGenerator : DotNetGeneratorBase
     {
         private readonly CodeStringBuilder _builder;
 
@@ -41,17 +42,12 @@ namespace ReswPlus.Languages
             }
         }
 
-        public void NewLine()
+        internal override IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename)
         {
-            _builder.AppendEmptyLine();
+            yield return new GeneratedFile() { Filename = baseFilename + ".cs", Content = _builder.GetString() };
         }
 
-        public IEnumerable<GeneratedFile> GetGeneratedFiles()
-        {
-            yield return new GeneratedFile() { Extension = ".cs", Content = _builder.GetString() };
-        }
-
-        public void GetHeaders(bool supportPluralization)
+        internal override void GenerateHeaders(bool supportPluralization)
         {
             _builder.AppendLine("// File generated automatically by ReswPlus. https://github.com/rudyhuyn/ReswPlus");
             if (supportPluralization)
@@ -64,7 +60,7 @@ namespace ReswPlus.Languages
             _builder.AppendLine("using Windows.UI.Xaml.Data;");
         }
 
-        public void OpenNamespace(string[] namespaces)
+        internal override void OpenNamespace(string[] namespaces)
         {
             if (namespaces != null && namespaces.Any())
             {
@@ -73,7 +69,7 @@ namespace ReswPlus.Languages
             }
         }
 
-        public void CloseNamespace(string[] namespaces)
+        internal override void CloseNamespace(string[] namespaces)
         {
             if (namespaces != null && namespaces.Any())
             {
@@ -82,7 +78,7 @@ namespace ReswPlus.Languages
             }
         }
 
-        public void OpenStronglyTypedClass(string resourceFilename, string className)
+        internal override void OpenStronglyTypedClass(string resourceFilename, string className)
         {
 
             _builder.AppendLine("[global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"0.1.0.0\")]");
@@ -99,23 +95,23 @@ namespace ReswPlus.Languages
             _builder.AppendLine("}");
         }
 
-        public void CloseStronglyTypedClass()
+        internal override void CloseStronglyTypedClass()
         {
             _builder.RemoveLevel();
             _builder.AppendLine("}");
         }
 
-        public void OpenRegion(string name)
+        internal override void OpenRegion(string name)
         {
             _builder.AppendLine($"#region {name}");
         }
 
-        public void CloseRegion()
+        internal override void CloseRegion()
         {
             _builder.AppendLine("#endregion");
         }
 
-        public void CreatePluralizationAccessor(string pluralKey, string summary, string idNone = null)
+        internal override void CreatePluralizationAccessor(string pluralKey, string summary, bool supportNoneState)
         {
 
             _builder.AppendLine("/// <summary>");
@@ -124,12 +120,12 @@ namespace ReswPlus.Languages
             _builder.AppendLine($"public static string {pluralKey}(double number)");
             _builder.AppendLine("{");
             _builder.AddLevel();
-            if (!string.IsNullOrEmpty(idNone))
+            if (supportNoneState)
             {
                 _builder.AppendLine("if(number == 0)");
                 _builder.AppendLine("{");
                 _builder.AddLevel();
-                _builder.AppendLine($"return _resourceLoader.GetString(\"{idNone}\");");
+                _builder.AppendLine($"return _resourceLoader.GetString(\"{pluralKey}_None\");");
                 _builder.RemoveLevel();
                 _builder.AppendLine("}");
             }
@@ -139,7 +135,7 @@ namespace ReswPlus.Languages
             _builder.AppendLine("}");
         }
 
-        public void CreateAccessor(string key, string summary)
+        internal override void CreateAccessor(string key, string summary)
         {
 
             _builder.AppendLine("/// <summary>");
@@ -148,7 +144,7 @@ namespace ReswPlus.Languages
             _builder.AppendLine($"public static string {key} => _resourceLoader.GetString(\"{key}\");");
         }
 
-        public void CreateFormatMethod(string key, IEnumerable<FunctionParameter> parameters, string summary = null, FunctionParameter extraParameterForFunction = null, FunctionParameter parameterForPluralization = null)
+        internal override void CreateFormatMethod(string key, IEnumerable<FunctionParameter> parameters, string summary = null, FunctionParameter extraParameterForFunction = null, FunctionParameter parameterForPluralization = null)
         {
             _builder.AppendLine("/// <summary>");
             _builder.AppendLine($"///   {summary}");
@@ -187,7 +183,7 @@ namespace ReswPlus.Languages
             _builder.AppendLine("}");
         }
 
-        public void CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys)
+        internal override void CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys)
         {
             _builder.AppendLine("[global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"0.1.0.0\")]");
             _builder.AppendLine("[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]");
@@ -240,5 +236,9 @@ namespace ReswPlus.Languages
             _builder.AppendLine("}");
         }
 
+        internal override void AddNewLine()
+        {
+            _builder.AppendEmptyLine();
+        }
     }
 }
