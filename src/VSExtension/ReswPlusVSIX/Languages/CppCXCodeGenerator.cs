@@ -6,7 +6,7 @@ namespace ReswPlus.Languages
 {
     internal class CppCXCodeGenerator : CppCodeGeneratorBase
     {
-        protected override string GetParameterTypeString(ParameterType type)
+        protected override string GetParameterTypeString(ParameterType type, bool isHeader)
         {
             switch (type)
             {
@@ -19,7 +19,7 @@ namespace ReswPlus.Languages
                 case ParameterType.Long:
                     return "long";
                 case ParameterType.String:
-                    return "Platform::String^";
+                    return isHeader ? "Platform::String^" : "String^";
                 case ParameterType.Double:
                     return "double";
                 case ParameterType.Char:
@@ -30,7 +30,7 @@ namespace ReswPlus.Languages
                     return "long double";
                 //case ParameterType.Object:
                 default:
-                    return "Platform::Object^";
+                    return isHeader ? "Platform::Object^" : "Object^";
             }
         }
 
@@ -45,7 +45,7 @@ namespace ReswPlus.Languages
             builderHeader.AppendLine("#pragma once");
         }
 
-        protected override void CppFileGenerateHeaders(CodeStringBuilder builderHeader, string precompiledHeader, string headerFilePath, bool supportPluralization)
+        protected override void CppFileGenerateHeaders(CodeStringBuilder builderHeader, string precompiledHeader, string headerFilePath, string localNamespace, bool supportPluralization)
         {
             //Header
             builderHeader.AppendLine("// File generated automatically by ReswPlus. https://github.com/rudyhuyn/ReswPlus");
@@ -59,6 +59,11 @@ namespace ReswPlus.Languages
             }
             builderHeader.AppendLine($"#include \"{headerFilePath}\"");
             builderHeader.AppendLine("#include <stdio.h>");
+            builderHeader.AppendEmptyLine();
+            builderHeader.AppendLine("using namespace Platform;");
+            builderHeader.AppendLine("using namespace Windows::ApplicationModel::Resources;");
+            builderHeader.AppendLine("using namespace Windows::UI::Xaml::Interop;");
+            builderHeader.AppendLine($"namespace {LocalNamespaceName} = {localNamespace};");
         }
 
         protected override void HeaderOpenStronglyTypedClass(CodeStringBuilder builderHeader, string resourceFilename, string className)
@@ -78,14 +83,14 @@ namespace ReswPlus.Languages
 
         protected override void CppGenerateStronglyTypedClassStaticFunc(CodeStringBuilder builderHeader, string computedNamespace, string resourceFilename)
         {
-            builderHeader.AppendLine($"Windows::ApplicationModel::Resources::ResourceLoader^ {computedNamespace}_resourceLoader = nullptr;");
-            builderHeader.AppendLine($"Windows::ApplicationModel::Resources::ResourceLoader^ {computedNamespace}GetResourceLoader()");
+            builderHeader.AppendLine($"ResourceLoader^ {computedNamespace}_resourceLoader = nullptr;");
+            builderHeader.AppendLine($"ResourceLoader^ {computedNamespace}GetResourceLoader()");
             builderHeader.AppendLine("{");
             builderHeader.AddLevel();
             builderHeader.AppendLine("if (_resourceLoader == nullptr)");
             builderHeader.AppendLine("{");
             builderHeader.AddLevel();
-            builderHeader.AppendLine($"_resourceLoader = Windows::ApplicationModel::Resources::ResourceLoader::GetForViewIndependentUse(L\"{resourceFilename}\");");
+            builderHeader.AppendLine($"_resourceLoader = ResourceLoader::GetForViewIndependentUse(L\"{resourceFilename}\");");
             builderHeader.RemoveLevel();
             builderHeader.AppendLine("}");
             builderHeader.AppendLine("return _resourceLoader;");
@@ -110,7 +115,7 @@ namespace ReswPlus.Languages
         }
         protected override void CppCreatePluralizationAccessor(CodeStringBuilder builderHeader, string computedNamespaces, string pluralKey, bool supportNoneState)
         {
-            builderHeader.AppendLine($"Platform::String^ {computedNamespaces}{pluralKey}(double number)");
+            builderHeader.AppendLine($"String^ {computedNamespaces}{pluralKey}(double number)");
             builderHeader.AppendLine("{");
             builderHeader.AddLevel();
             if (supportNoneState)
@@ -146,7 +151,7 @@ namespace ReswPlus.Languages
 
         protected override void CppCreateAccessor(CodeStringBuilder builderHeader, string computedNamespace, string key)
         {
-            builderHeader.AppendLine($"Platform::String^ {computedNamespace}{key}::get()");
+            builderHeader.AppendLine($"String^ {computedNamespace}{key}::get()");
             builderHeader.AppendLine("{");
             builderHeader.AddLevel();
             builderHeader.AppendLine($"return GetResourceLoader()->GetString(L\"{key}\");");
@@ -167,7 +172,7 @@ namespace ReswPlus.Languages
             {
                 functionParameters = parameters;
             }
-            var parametersStr = functionParameters.Select(p => GetParameterTypeString(p.Type) + " " + p.Name).Aggregate((a, b) => a + ", " + b);
+            var parametersStr = functionParameters.Select(p => GetParameterTypeString(p.Type, true) + " " + p.Name).Aggregate((a, b) => a + ", " + b);
             builderHeader.AppendLine("public:");
             builderHeader.AddLevel();
             builderHeader.AppendLine("/// <summary>");
@@ -190,9 +195,9 @@ namespace ReswPlus.Languages
             {
                 functionParameters = parameters;
             }
-            var parametersStr = functionParameters.Select(p => GetParameterTypeString(p.Type) + " " + p.Name).Aggregate((a, b) => a + ", " + b);
+            var parametersStr = functionParameters.Select(p => GetParameterTypeString(p.Type, false) + " " + p.Name).Aggregate((a, b) => a + ", " + b);
 
-            builderHeader.AppendLine($"Platform::String^ {computedNamespace}{key}_Format({parametersStr})");
+            builderHeader.AppendLine($"String^ {computedNamespace}{key}_Format({parametersStr})");
             builderHeader.AppendLine("{");
             builderHeader.AddLevel();
             var formatParameters = parameters
@@ -212,7 +217,7 @@ namespace ReswPlus.Languages
             string sourceForFormat;
             if (parameterForPluralization != null)
             {
-                var doubleValue = parameterForPluralization.TypeToCast.HasValue ? $"static_cast<{GetParameterTypeString(parameterForPluralization.TypeToCast.Value)}>({parameterForPluralization.Name})" : parameterForPluralization.Name;
+                var doubleValue = parameterForPluralization.TypeToCast.HasValue ? $"static_cast<{GetParameterTypeString(parameterForPluralization.TypeToCast.Value, false)}>({parameterForPluralization.Name})" : parameterForPluralization.Name;
                 sourceForFormat = $"{key}({doubleValue})";
             }
             else
@@ -223,7 +228,7 @@ namespace ReswPlus.Languages
             builderHeader.AppendLine($"size_t needed = _swprintf_p(nullptr, 0, {sourceForFormat}->Data(), {formatParameters});");
             builderHeader.AppendLine($"wchar_t *buffer = new wchar_t[needed + 1];");
             builderHeader.AppendLine($"_swprintf_p(buffer, needed + 1, {sourceForFormat}->Data(), {formatParameters});");
-            builderHeader.AppendLine($"return ref new Platform::String(buffer);");
+            builderHeader.AppendLine($"return ref new String(buffer);");
             builderHeader.RemoveLevel();
             builderHeader.AppendLine("}");
         }
@@ -267,14 +272,14 @@ namespace ReswPlus.Languages
             builderHeader.AppendLine($"{computedNamespace}{className}()");
             builderHeader.AppendLine("{");
             builderHeader.AddLevel();
-            builderHeader.AppendLine($"_resourceLoader = Windows::ApplicationModel::Resources::ResourceLoader::GetForViewIndependentUse(L\"{resourceFileName}\");");
+            builderHeader.AppendLine($"_resourceLoader = ResourceLoader::GetForViewIndependentUse(L\"{resourceFileName}\");");
             builderHeader.RemoveLevel();
             builderHeader.AppendLine("}");
             builderHeader.AppendEmptyLine();
-            builderHeader.AppendLine($"Platform::Object^ {computedNamespace}ProvideValue()");
+            builderHeader.AppendLine($"Object^ {computedNamespace}ProvideValue()");
             builderHeader.AppendLine("{");
             builderHeader.AddLevel();
-            builderHeader.AppendLine("Platform::String^ res;");
+            builderHeader.AppendLine("String^ res;");
             builderHeader.AppendLine("if(Key == KeyEnum::__Undefined)");
             builderHeader.AppendLine("{");
             builderHeader.AddLevel();
@@ -287,7 +292,7 @@ namespace ReswPlus.Languages
             builderHeader.AppendLine("res = _resourceLoader->GetString(Key.ToString());");
             builderHeader.RemoveLevel();
             builderHeader.AppendLine("}");
-            builderHeader.AppendLine("return Converter == nullptr ? res : Converter->Convert(res, Windows::UI::Xaml::Interop::TypeName(Platform::String::typeid), ConverterParameter, nullptr);");
+            builderHeader.AppendLine("return Converter == nullptr ? res : Converter->Convert(res, TypeName(String::typeid), ConverterParameter, nullptr);");
             builderHeader.RemoveLevel();
             builderHeader.AppendLine("}");
         }
