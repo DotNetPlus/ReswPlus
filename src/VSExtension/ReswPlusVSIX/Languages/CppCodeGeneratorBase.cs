@@ -8,10 +8,11 @@ namespace ReswPlus.Languages
 {
     internal abstract class CppCodeGeneratorBase : ICodeGenerator
     {
-        protected abstract string GetParameterTypeString(ParameterType type);
+        protected const string LocalNamespaceName = "local";
 
+        protected abstract string GetParameterTypeString(ParameterType type, bool isHeader);
         protected abstract void HeaderFileGenerateHeaders(CodeStringBuilder builderHeader, bool supportPluralization);
-        protected abstract void CppFileGenerateHeaders(CodeStringBuilder builderHeader, string precompiledHeader, string headerFilePath, bool supportPluralization);
+        protected abstract void CppFileGenerateHeaders(CodeStringBuilder builderHeader, string precompiledHeader, string headerFilePath, string localNamespace, bool supportPluralization);
         protected abstract void HeaderOpenStronglyTypedClass(CodeStringBuilder builderHeader, string resourceFilename, string className);
         protected abstract void CppGenerateStronglyTypedClassStaticFunc(CodeStringBuilder builderHeader, string computedNamespace, string resourceFilename);
         protected abstract void HeaderCloseStronglyTypedClass(CodeStringBuilder builderHeader);
@@ -64,13 +65,15 @@ namespace ReswPlus.Languages
             var markupClassName = info.ClassName + "Extension";
             var headerFileName = baseFilename + ".h";
             var cppFileName = baseFilename + ".cpp";
-            var baseNamespace = info.Namespace == null || !info.Namespace.Any() ? "" : info.Namespace.Aggregate((a, b) => a + "::" + b) + "::";
-            var namespaceAndStronglyTypedClass = $"{baseNamespace}{info.ClassName}::";
+            var baseNamespace = info.Namespace == null || !info.Namespace.Any() ? "" : info.Namespace.Aggregate((a, b) => a + "::" + b);
 
             var builderHeader = new CodeStringBuilder("Cpp");
             var builderCpp = new CodeStringBuilder("Cpp");
 
             var precompiledHeader = GetPrecompiledHeader(projectItem);
+            var localNamespace = baseNamespace == "" ? "" : $"{LocalNamespaceName}::";
+            var namespaceResourceClass = $"{localNamespace}{info.ClassName}::";
+            var namespaceMarkupExtensionClass = $"{localNamespace}{markupClassName}::";
 
             HeaderFileGenerateHeaders(builderHeader, info.SupportPluralization);
             builderHeader.AppendEmptyLine();
@@ -78,9 +81,9 @@ namespace ReswPlus.Languages
             HeaderOpenStronglyTypedClass(builderHeader, info.ResoureFile, info.ClassName);
             builderHeader.AppendEmptyLine();
 
-            CppFileGenerateHeaders(builderCpp, precompiledHeader, headerFileName, info.SupportPluralization);
+            CppFileGenerateHeaders(builderCpp, precompiledHeader, headerFileName, baseNamespace, info.SupportPluralization);
             builderCpp.AppendEmptyLine();
-            CppGenerateStronglyTypedClassStaticFunc(builderCpp, namespaceAndStronglyTypedClass, info.ResoureFile);
+            CppGenerateStronglyTypedClassStaticFunc(builderCpp, namespaceResourceClass, info.ResoureFile);
             builderCpp.AppendEmptyLine();
 
             var firstLocalization = true;
@@ -100,23 +103,23 @@ namespace ReswPlus.Languages
                 if (item is PluralLocalization pluralLocalization)
                 {
                     HeaderCreatePluralizationAccessor(builderHeader, item.Key, pluralLocalization.TemplateAccessorSummary);
-                    CppCreatePluralizationAccessor(builderCpp, namespaceAndStronglyTypedClass, pluralLocalization.Key, pluralLocalization.SupportNoneState);
+                    CppCreatePluralizationAccessor(builderCpp, namespaceResourceClass, pluralLocalization.Key, pluralLocalization.SupportNoneState);
                     if (pluralLocalization.Parameters != null && pluralLocalization.Parameters.Any())
                     {
                         HeaderCreateFormatMethod(builderHeader, pluralLocalization.Key, pluralLocalization.Parameters, pluralLocalization.FormatSummary, pluralLocalization.ExtraParameterForPluralization, pluralLocalization.ParameterToUseForPluralization);
                         builderCpp.AppendEmptyLine();
-                        CppCreateFormatMethod(builderCpp, namespaceAndStronglyTypedClass, pluralLocalization.Key, pluralLocalization.Parameters, pluralLocalization.ExtraParameterForPluralization, pluralLocalization.ParameterToUseForPluralization);
+                        CppCreateFormatMethod(builderCpp, namespaceResourceClass, pluralLocalization.Key, pluralLocalization.Parameters, pluralLocalization.ExtraParameterForPluralization, pluralLocalization.ParameterToUseForPluralization);
                     }
                 }
                 else if (item is Localization localization)
                 {
                     HeaderCreateAccessor(builderHeader, localization.Key, localization.AccessorSummary);
-                    CppCreateAccessor(builderCpp, namespaceAndStronglyTypedClass, localization.Key);
+                    CppCreateAccessor(builderCpp, namespaceResourceClass, localization.Key);
                     if (localization.Parameters != null && localization.Parameters.Any())
                     {
                         HeaderCreateFormatMethod(builderHeader, localization.Key, localization.Parameters, localization.FormatSummary);
                         builderCpp.AppendEmptyLine();
-                        CppCreateFormatMethod(builderCpp, namespaceAndStronglyTypedClass, localization.Key, localization.Parameters);
+                        CppCreateFormatMethod(builderCpp, namespaceResourceClass, localization.Key, localization.Parameters);
                     }
                 }
 
@@ -127,7 +130,7 @@ namespace ReswPlus.Languages
             HeaderCreateMarkupExtension(builderHeader, info.ResoureFile, markupClassName, info.Localizations.Where(i => i is Localization).Select(s => s.Key));
             HeaderCloseNamespace(builderHeader, info.Namespace);
             builderCpp.AppendEmptyLine();
-            CppCreateMarkupExtension(builderCpp, baseNamespace + markupClassName + "::", info.ResoureFile, markupClassName, info.Localizations.Where(i => i is Localization).Select(s => s.Key));
+            CppCreateMarkupExtension(builderCpp, namespaceMarkupExtensionClass, info.ResoureFile, markupClassName, info.Localizations.Where(i => i is Localization).Select(s => s.Key));
 
             yield return new GeneratedFile() { Filename = headerFileName, Content = builderHeader.GetString() };
             yield return new GeneratedFile() { Filename = cppFileName, Content = builderCpp.GetString() };
