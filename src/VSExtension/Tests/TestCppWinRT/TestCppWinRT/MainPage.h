@@ -1,6 +1,7 @@
-﻿#pragma once
+#pragma once
 
 #include "MainPage.g.h"
+#include "Strings/en/Resources.generated.h"
 
 namespace winrt::TestCppWinRT::implementation
 {
@@ -12,6 +13,12 @@ namespace winrt::TestCppWinRT::implementation
         void MyProperty(int32_t value);
 
         void ClickHandler(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::RoutedEventArgs const& args);
+        TestCppWinRT::TestStringable Str() {
+            return _str;
+        }
+
+    private:
+        TestCppWinRT::TestStringable _str;
     };
 }
 

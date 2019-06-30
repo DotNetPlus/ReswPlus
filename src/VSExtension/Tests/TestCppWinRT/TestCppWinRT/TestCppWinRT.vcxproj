@@ -105,6 +105,7 @@
     <ClInclude Include="Strings\en\Resources.generated.h">
       <DependentUpon>Strings\en\Resources.resw</DependentUpon>
     </ClInclude>
+    <ClInclude Include="TestStringable.h" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -144,6 +145,7 @@
     <ClCompile Include="Strings\en\Resources.generated.cpp">
       <DependentUpon>Strings\en\Resources.resw</DependentUpon>
     </ClCompile>
+    <ClCompile Include="TestStringable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl">
@@ -152,6 +154,10 @@
     <Midl Include="MainPage.idl">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Midl>
+    <Midl Include="Strings\en\Resources.generated.idl">
+      <DependentUpon>Strings\en\Resources.resw</DependentUpon>
+    </Midl>
+    <Midl Include="TestStringable.idl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PropertySheet.props" />
@@ -165,6 +171,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.190620.2\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.190620.2\build\native\Microsoft.Windows.CppWinRT.targets')" />
+    <Import Project="..\packages\ReswPlusLib.0.0.4\build\native\ReswPlusLib.targets" Condition="Exists('..\packages\ReswPlusLib.0.0.4\build\native\ReswPlusLib.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -172,5 +179,6 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.190620.2\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.190620.2\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.190620.2\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.190620.2\build\native\Microsoft.Windows.CppWinRT.targets'))" />
+    <Error Condition="!Exists('..\packages\ReswPlusLib.0.0.4\build\native\ReswPlusLib.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ReswPlusLib.0.0.4\build\native\ReswPlusLib.targets'))" />
   </Target>
 </Project>

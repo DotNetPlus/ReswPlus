@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "MainPage.h"
 #include "MainPage.g.cpp"
 
@@ -24,6 +24,6 @@ namespace winrt::TestCppWinRT::implementation
 
     void MainPage::ClickHandler(IInspectable const&, RoutedEventArgs const&)
     {
-        myButton().Content(box_value(L"Clicked"));
+//        myButton().Content(box_value(L"Clicked"));
     }
 }

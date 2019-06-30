@@ -1,3 +1,5 @@
+import "TestStringable.idl";
+
 namespace TestCppWinRT
 {
     [default_interface]
@@ -5,5 +7,9 @@ namespace TestCppWinRT
     {
         MainPage();
         Int32 MyProperty;
+        Windows.UI.Xaml.Controls.TextBox UserNameText{ get; };
+        Windows.UI.Xaml.Controls.Slider EmailsSlider{ get; };
+        Windows.UI.Xaml.Controls.TextBlock HelloTextBlock{ get; };
+        TestStringable Str{ get; };
     }
 }

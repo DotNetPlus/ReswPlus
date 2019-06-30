@@ -14,8 +14,8 @@ namespace ReswPlus.Languages
         internal abstract void AddNewLine();
         internal abstract void GenerateHeaders(bool supportPluralization);
 
-        internal abstract void OpenNamespace(string[] namespaceName);
-        internal abstract void CloseNamespace(string[] namespaceName);
+        internal abstract void OpenNamespace(IEnumerable<string> namespaceName);
+        internal abstract void CloseNamespace(IEnumerable<string> namespaceName);
 
         internal abstract void OpenStronglyTypedClass(string resourceFileName, string className);
         internal abstract void CloseStronglyTypedClass();
@@ -35,7 +35,7 @@ namespace ReswPlus.Languages
         {
             GenerateHeaders(info.SupportPluralization);
             AddNewLine();
-            OpenNamespace(info.Namespace);
+            OpenNamespace(info.Namespaces);
             OpenStronglyTypedClass(info.ResoureFile, info.ClassName);
 
             bool isFirst = true;
@@ -75,7 +75,7 @@ namespace ReswPlus.Languages
             CloseStronglyTypedClass();
             AddNewLine();
             CreateMarkupExtension(info.ResoureFile, info.ClassName + "Extension", info.Localizations.Where(i => i is Localization).Select(s => s.Key));
-            CloseNamespace(info.Namespace);
+            CloseNamespace(info.Namespaces);
             return GetGeneratedFiles(baseFilename);
         }
 

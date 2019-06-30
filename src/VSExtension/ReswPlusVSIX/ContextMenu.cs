@@ -177,6 +177,13 @@ namespace ReswPlus
                     }
                     catch { }
                 }
+
+                //Install nuget package
+                if (usePluralization)
+                {
+                    projectItem.ContainingProject.InstallNuGetPackage("ReswPlusLib");
+                }
+
                 return VSConstants.S_OK;
             }
             else

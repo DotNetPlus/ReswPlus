@@ -1,3 +1,4 @@
+using EnvDTE;
 using ReswPlus.Resw;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +35,14 @@ namespace ReswPlus.Languages
             }
         }
 
-        protected override void HeaderFileGenerateHeaders(CodeStringBuilder builderHeader, bool supportPluralization)
+        protected override bool SupportMultiNamespaceDeclaration(Project project)
+        {
+            //TODO: Must find a way to detect if the project uses C++17 or higher
+            return false;
+        }
+
+
+        protected override void HeaderFileGenerateHeaders(CodeStringBuilder builderHeader, string className, IEnumerable<string> namespacesOverride, bool supportPluralization)
         {
             //Header
             builderHeader.AppendLine("// File generated automatically by ReswPlus. https://github.com/rudyhuyn/ReswPlus");
@@ -45,7 +53,7 @@ namespace ReswPlus.Languages
             builderHeader.AppendLine("#pragma once");
         }
 
-        protected override void CppFileGenerateHeaders(CodeStringBuilder builderHeader, string precompiledHeader, string headerFilePath, string localNamespace, bool supportPluralization)
+        protected override void CppFileGenerateHeaders(CodeStringBuilder builderHeader, string precompiledHeader, string headerFilePath, string localNamespace, string className, IEnumerable<string> namespaces, bool supportPluralization)
         {
             //Header
             builderHeader.AppendLine("// File generated automatically by ReswPlus. https://github.com/rudyhuyn/ReswPlus");
@@ -208,7 +216,7 @@ namespace ReswPlus.Languages
                         case ParameterType.String:
                             return p.Name + "->Data()";
                         case ParameterType.Object:
-                            return p.Name + "->ToString()";
+                            return p.Name + "->ToString()->Data()";
                         default:
                             return p.Name;
                     }
@@ -233,7 +241,7 @@ namespace ReswPlus.Languages
             builderHeader.AppendLine("}");
         }
 
-        protected override void HeaderCreateMarkupExtension(CodeStringBuilder builderHeader, string resourceFileName, string className, IEnumerable<string> keys)
+        protected override void HeaderCreateMarkupExtension(CodeStringBuilder builderHeader, string resourceFileName, string className, IEnumerable<string> keys, IEnumerable<string> namespaces)
         {
             builderHeader.AppendLine("public enum class KeyEnum");
             builderHeader.AppendLine("{");

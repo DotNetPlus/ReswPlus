@@ -35,12 +35,28 @@ namespace TestCppCX
             {
                 Platform::String^ get();
             }
+
+        /* Methods and properties for TestWithObject */
+        public:
+            /// <summary>
+            ///   Looks up a localized string similar to: Test with object: %ls
+            /// </summary>
+            static property Platform::String^ TestWithObject
+            {
+                Platform::String^ get();
+            }
+        public:
+            /// <summary>
+            ///   Format the string similar to: Test with object: %ls
+            /// </summary>
+            static Platform::String^ TestWithObject_Format(Platform::Object^ obj);
         };
 
         public enum class KeyEnum
         {
             __Undefined = 0,
             Hello,
+            TestWithObject,
         };
 
         public ref class ResourcesExtension sealed: public Windows::UI::Xaml::Markup::MarkupExtension

@@ -3,6 +3,7 @@
 #include <pch.h>
 #include "Resources.generated.h"
 #include <stdio.h>
+
 using namespace Platform;
 using namespace Windows::ApplicationModel::Resources;
 using namespace Windows::UI::Xaml::Interop;
@@ -34,6 +35,19 @@ String^ local::Resources::YouGotEmails_Format(unsigned int numberMessages, Strin
 String^ local::Resources::Hello::get()
 {
     return GetResourceLoader()->GetString(L"Hello");
+}
+
+String^ local::Resources::TestWithObject::get()
+{
+    return GetResourceLoader()->GetString(L"TestWithObject");
+}
+
+String^ local::Resources::TestWithObject_Format(Object^ obj)
+{
+    size_t needed = _swprintf_p(nullptr, 0, TestWithObject->Data(), obj->ToString()->Data());
+    wchar_t *buffer = new wchar_t[needed + 1];
+    _swprintf_p(buffer, needed + 1, TestWithObject->Data(), obj->ToString()->Data());
+    return ref new String(buffer);
 }
 
 local::ResourcesExtension::ResourcesExtension()

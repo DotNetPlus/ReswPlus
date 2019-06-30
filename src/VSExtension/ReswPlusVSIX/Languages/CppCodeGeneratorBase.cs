@@ -1,6 +1,8 @@
 using EnvDTE;
 using ReswPlus.ClassGenerator.Models;
 using ReswPlus.Resw;
+using ReswPlus.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,9 +12,10 @@ namespace ReswPlus.Languages
     {
         protected const string LocalNamespaceName = "local";
 
+        protected abstract bool SupportMultiNamespaceDeclaration(Project project);
         protected abstract string GetParameterTypeString(ParameterType type, bool isHeader);
-        protected abstract void HeaderFileGenerateHeaders(CodeStringBuilder builderHeader, bool supportPluralization);
-        protected abstract void CppFileGenerateHeaders(CodeStringBuilder builderHeader, string precompiledHeader, string headerFilePath, string localNamespace, bool supportPluralization);
+        protected abstract void HeaderFileGenerateHeaders(CodeStringBuilder builderHeader, string className, IEnumerable<string> namespacesOverride, bool supportPluralization);
+        protected abstract void CppFileGenerateHeaders(CodeStringBuilder builderHeader, string precompiledHeader, string headerFilePath, string localNamespace, string className, IEnumerable<string> namespaces, bool supportPluralization);
         protected abstract void HeaderOpenStronglyTypedClass(CodeStringBuilder builderHeader, string resourceFilename, string className);
         protected abstract void CppGenerateStronglyTypedClassStaticFunc(CodeStringBuilder builderHeader, string computedNamespace, string resourceFilename);
         protected abstract void HeaderCloseStronglyTypedClass(CodeStringBuilder builderHeader);
@@ -23,30 +26,48 @@ namespace ReswPlus.Languages
         protected abstract void CppCreateAccessor(CodeStringBuilder builderHeader, string computedNamespace, string key);
         protected abstract void HeaderCreateFormatMethod(CodeStringBuilder builderHeader, string key, IEnumerable<FunctionParameter> parameters, string summary = null, FunctionParameter extraParameterForFunction = null, FunctionParameter parameterForPluralization = null);
         protected abstract void CppCreateFormatMethod(CodeStringBuilder builderHeader, string computedNamespace, string key, IEnumerable<FunctionParameter> parameters, FunctionParameter extraParameterForFunction = null, FunctionParameter parameterForPluralization = null);
-        protected abstract void HeaderCreateMarkupExtension(CodeStringBuilder builderHeader, string resourceFileName, string className, IEnumerable<string> keys);
+        protected abstract void HeaderCreateMarkupExtension(CodeStringBuilder builderHeader, string resourceFileName, string className, IEnumerable<string> keys, IEnumerable<string> namespaces);
         protected abstract void CppCreateMarkupExtension(CodeStringBuilder builderHeader, string computedNamespace, string resourceFileName, string className, IEnumerable<string> keys);
 
-        public void HeaderOpenNamespace(CodeStringBuilder builderHeader, string[] namespaces)
+        public void HeaderOpenNamespace(CodeStringBuilder builderHeader, IEnumerable<string> namespaces, bool supportNestedMamespacesAtOnce)
         {
             if (namespaces != null && namespaces.Any())
             {
-                foreach (var subNamespace in namespaces)
+                if (supportNestedMamespacesAtOnce)
                 {
-                    builderHeader.AppendLine($"namespace {subNamespace}");
+                    builderHeader.AppendLine($"namespace {namespaces.Aggregate((a,b)=> a + "::" + b)}");
                     builderHeader.AppendLine("{");
                     builderHeader.AddLevel();
+                }
+                else
+                {
+                    foreach (var subNamespace in namespaces)
+                    {
+                        builderHeader.AppendLine($"namespace {subNamespace}");
+                        builderHeader.AppendLine("{");
+                        builderHeader.AddLevel();
+                    }
                 }
             }
         }
 
-        public void HeaderCloseNamespace(CodeStringBuilder builderHeader, string[] namespaces)
+        public void HeaderCloseNamespace(CodeStringBuilder builderHeader, IEnumerable<string> namespaces, bool supportNestedMamespacesAtOnce)
         {
+
             if (namespaces != null && namespaces.Any())
             {
-                foreach (var n in namespaces.Reverse())
+                if (supportNestedMamespacesAtOnce)
                 {
                     builderHeader.RemoveLevel();
-                    builderHeader.AppendLine($"}} // namespace {n}");
+                    builderHeader.AppendLine($"}} // namespace {namespaces.Aggregate((a, b) => a + "::" + b)}");
+                }
+                else
+                {
+                    foreach (var n in namespaces.Reverse())
+                    {
+                        builderHeader.RemoveLevel();
+                        builderHeader.AppendLine($"}} // namespace {n}");
+                    }
                 }
             }
         }
@@ -60,28 +81,40 @@ namespace ReswPlus.Languages
         {
         }
 
-        public IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename, StronglyTypedClass info, ProjectItem projectItem)
+        public virtual IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename, StronglyTypedClass info, ProjectItem projectItem)
         {
+            return GeneratedFiles(baseFilename, info, projectItem, null);
+        }
+
+        protected virtual void HeaderAddExtra(CodeStringBuilder builderHeader, StronglyTypedClass info)
+        {
+
+        }
+
+        public virtual IEnumerable<GeneratedFile> GeneratedFiles(string baseFilename, StronglyTypedClass info, ProjectItem projectItem, IEnumerable<string> namespaceOverride)
+        {
+            var supportMultiNamespaceDeclaration = SupportMultiNamespaceDeclaration(projectItem.ContainingProject);
+            var namespacesToUse = namespaceOverride ?? info.Namespaces;
             var markupClassName = info.ClassName + "Extension";
             var headerFileName = baseFilename + ".h";
             var cppFileName = baseFilename + ".cpp";
-            var baseNamespace = info.Namespace == null || !info.Namespace.Any() ? "" : info.Namespace.Aggregate((a, b) => a + "::" + b);
+            var baseNamespace = namespacesToUse == null || !namespacesToUse.Any() ? "" : namespacesToUse.Aggregate((a, b) => a + "::" + b);
 
             var builderHeader = new CodeStringBuilder("Cpp");
             var builderCpp = new CodeStringBuilder("Cpp");
 
-            var precompiledHeader = GetPrecompiledHeader(projectItem);
+            var precompiledHeader = projectItem.GetPrecompiledHeader();
             var localNamespace = baseNamespace == "" ? "" : $"{LocalNamespaceName}::";
             var namespaceResourceClass = $"{localNamespace}{info.ClassName}::";
             var namespaceMarkupExtensionClass = $"{localNamespace}{markupClassName}::";
 
-            HeaderFileGenerateHeaders(builderHeader, info.SupportPluralization);
+            HeaderFileGenerateHeaders(builderHeader, info.ClassName, info.Namespaces, info.SupportPluralization);
             builderHeader.AppendEmptyLine();
-            HeaderOpenNamespace(builderHeader, info.Namespace);
+            HeaderOpenNamespace(builderHeader, namespacesToUse, supportMultiNamespaceDeclaration);
             HeaderOpenStronglyTypedClass(builderHeader, info.ResoureFile, info.ClassName);
             builderHeader.AppendEmptyLine();
 
-            CppFileGenerateHeaders(builderCpp, precompiledHeader, headerFileName, baseNamespace, info.SupportPluralization);
+            CppFileGenerateHeaders(builderCpp, precompiledHeader, headerFileName, baseNamespace, info.ClassName, info.Namespaces, info.SupportPluralization);
             builderCpp.AppendEmptyLine();
             CppGenerateStronglyTypedClassStaticFunc(builderCpp, namespaceResourceClass, info.ResoureFile);
             builderCpp.AppendEmptyLine();
@@ -127,38 +160,14 @@ namespace ReswPlus.Languages
             }
             HeaderCloseStronglyTypedClass(builderHeader);
             builderHeader.AppendEmptyLine();
-            HeaderCreateMarkupExtension(builderHeader, info.ResoureFile, markupClassName, info.Localizations.Where(i => i is Localization).Select(s => s.Key));
-            HeaderCloseNamespace(builderHeader, info.Namespace);
+            HeaderCreateMarkupExtension(builderHeader, info.ResoureFile, markupClassName, info.Localizations.Where(i => i is Localization).Select(s => s.Key), info.Namespaces);
+            HeaderCloseNamespace(builderHeader, namespacesToUse, supportMultiNamespaceDeclaration);
+            HeaderAddExtra(builderHeader, info);
             builderCpp.AppendEmptyLine();
             CppCreateMarkupExtension(builderCpp, namespaceMarkupExtensionClass, info.ResoureFile, markupClassName, info.Localizations.Where(i => i is Localization).Select(s => s.Key));
 
             yield return new GeneratedFile() { Filename = headerFileName, Content = builderHeader.GetString() };
             yield return new GeneratedFile() { Filename = cppFileName, Content = builderCpp.GetString() };
-        }
-
-        private string GetPrecompiledHeader(ProjectItem projectItem)
-        {
-            try
-            {
-                //VCProject not available via NuGet, we will use a dynamic type to limit dependencies.
-                dynamic vcproject = projectItem?.ContainingProject?.Object;
-                if (vcproject == null)
-                {
-                    return null;
-                }
-                var vcCompilerTool = vcproject.ActiveConfiguration.Tools.Item("VCCLCompilerTool");
-                if ((int)vcCompilerTool.UsePrecompiledHeader == 0)
-                {
-                    //pchOption.None, no precompiled header used
-                    return null;
-                }
-                else
-                {
-                    return (string)vcCompilerTool.PrecompiledHeaderThrough;
-                }
-            }
-            catch { }
-            return null;
         }
     }
 }

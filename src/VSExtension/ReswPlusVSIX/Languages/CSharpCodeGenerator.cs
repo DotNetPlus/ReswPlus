@@ -60,7 +60,7 @@ namespace ReswPlus.Languages
             _builder.AppendLine("using Windows.UI.Xaml.Data;");
         }
 
-        internal override void OpenNamespace(string[] namespaces)
+        internal override void OpenNamespace(IEnumerable<string> namespaces)
         {
             if (namespaces != null && namespaces.Any())
             {
@@ -69,7 +69,7 @@ namespace ReswPlus.Languages
             }
         }
 
-        internal override void CloseNamespace(string[] namespaces)
+        internal override void CloseNamespace(IEnumerable<string> namespaces)
         {
             if (namespaces != null && namespaces.Any())
             {

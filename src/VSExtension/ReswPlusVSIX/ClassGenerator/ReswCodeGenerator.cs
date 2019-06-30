@@ -83,7 +83,7 @@ namespace ReswPlus.CodeGenerator
             {
                 SupportPluralization = supportPluralization,
                 ClassName = filename,
-                Namespace = namespaceToUse,
+                Namespaces = namespaceToUse,
                 ResoureFile = resouceNameForResourceLoader
             };
 
