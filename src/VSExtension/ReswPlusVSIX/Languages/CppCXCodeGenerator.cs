@@ -208,7 +208,7 @@ namespace ReswPlus.Languages
                         case ParameterType.String:
                             return p.Name + "->Data()";
                         case ParameterType.Object:
-                            return p.Name + "->ToString()";
+                            return p.Name + "->ToString()->Data()";
                         default:
                             return p.Name;
                     }
