@@ -84,6 +84,10 @@ namespace ReswPlus.Languages
             builderHeader.AppendLine("#include <winrt/Windows.Foundation.h>");
             builderHeader.AppendLine("#include <winrt/Windows.UI.Xaml.Interop.h>");
             builderHeader.AppendLine("using namespace winrt;");
+            if(namespaces != null && namespaces.Any())
+            {
+                builderHeader.AppendLine($"using namespace winrt::{namespaces.Aggregate((a,b)=> a + "::" + b)};");
+            }
             builderHeader.AppendLine("using namespace winrt::Windows::Foundation;");
             builderHeader.AppendLine("using namespace winrt::Windows::ApplicationModel::Resources;");
             builderHeader.AppendLine("using namespace winrt::Windows::UI::Xaml::Interop;");
@@ -282,38 +286,73 @@ namespace ReswPlus.Languages
             builderHeader.AppendLine("void ConverterParameter(Windows::Foundation::IInspectable value){{ _converterParameter = value; }}");
             builderHeader.AppendLine("Windows::Foundation::IInspectable ProvideValue();");
             builderHeader.RemoveLevel();
+            builderHeader.AppendLine("private:");
+            builderHeader.AddLevel();
+            builderHeader.AppendLine($"static hstring KeyEnumToString(KeyEnum key);");
             builderHeader.RemoveLevel();
             builderHeader.AppendLine("};");
         }
 
-        protected override void CppCreateMarkupExtension(CodeStringBuilder builderHeader, string computedNamespace, string resourceFileName, string className, IEnumerable<string> keys)
+        protected override void CppCreateMarkupExtension(CodeStringBuilder builderCpp, string computedNamespace, string resourceFileName, string className, IEnumerable<string> keys)
         {
-            builderHeader.AppendLine($"{computedNamespace}{className}()");
-            builderHeader.AppendLine("{");
-            builderHeader.AddLevel();
-            builderHeader.AppendLine($"_resourceLoader = ResourceLoader::GetForViewIndependentUse(L\"{resourceFileName}\");");
-            builderHeader.RemoveLevel();
-            builderHeader.AppendLine("}");
-            builderHeader.AppendEmptyLine();
-            builderHeader.AppendLine($"IInspectable {computedNamespace}ProvideValue()");
-            builderHeader.AppendLine("{");
-            builderHeader.AddLevel();
-            builderHeader.AppendLine("hstring res;");
-            builderHeader.AppendLine("if(Key() == KeyEnum::__Undefined)");
-            builderHeader.AppendLine("{");
-            builderHeader.AddLevel();
-            builderHeader.AppendLine("res = L\"\";");
-            builderHeader.RemoveLevel();
-            builderHeader.AppendLine("}");
-            builderHeader.AppendLine("else");
-            builderHeader.AppendLine("{");
-            builderHeader.AddLevel();
-            builderHeader.AppendLine("res = _resourceLoader.GetString(L\"TODO\");");
-            builderHeader.RemoveLevel();
-            builderHeader.AppendLine("}");
-            builderHeader.AppendLine("return Converter() == nullptr ? box_value(res) : Converter().Convert(box_value(res), xaml_typename<hstring>(), ConverterParameter(), L\"\");");
-            builderHeader.RemoveLevel();
-            builderHeader.AppendLine("}");
+            builderCpp.AppendLine($"{computedNamespace}{className}()");
+            builderCpp.AppendLine("{");
+            builderCpp.AddLevel();
+            builderCpp.AppendLine($"_resourceLoader = ResourceLoader::GetForViewIndependentUse(L\"{resourceFileName}\");");
+            builderCpp.RemoveLevel();
+            builderCpp.AppendLine("}");
+            builderCpp.AppendEmptyLine();
+            builderCpp.AppendLine($"IInspectable {computedNamespace}ProvideValue()");
+            builderCpp.AppendLine("{");
+            builderCpp.AddLevel();
+            builderCpp.AppendLine("hstring res;");
+            builderCpp.AppendLine("if(Key() == KeyEnum::__Undefined)");
+            builderCpp.AppendLine("{");
+            builderCpp.AddLevel();
+            builderCpp.AppendLine("res = L\"\";");
+            builderCpp.RemoveLevel();
+            builderCpp.AppendLine("}");
+            builderCpp.AppendLine("else");
+            builderCpp.AppendLine("{");
+            builderCpp.AddLevel();
+
+            builderCpp.AppendLine("auto keyStr = KeyEnumToString(Key());");
+            builderCpp.AppendLine("if(keyStr == L\"\")");
+            builderCpp.AppendLine("{");
+            builderCpp.AddLevel();
+            builderCpp.AppendLine("return box_value(L\"\");");
+            builderCpp.RemoveLevel();
+            builderCpp.AppendLine("}");
+            builderCpp.AppendLine("res = _resourceLoader.GetString(keyStr);");
+            builderCpp.RemoveLevel();
+            builderCpp.AppendLine("}");
+            builderCpp.AppendLine("return Converter() == nullptr ? box_value(res) : Converter().Convert(box_value(res), xaml_typename<hstring>(), ConverterParameter(), L\"\");");
+            builderCpp.RemoveLevel();
+            builderCpp.AppendLine("}");
+
+            builderCpp.AppendEmptyLine();
+
+            builderCpp.AppendLine($"hstring {computedNamespace}KeyEnumToString(KeyEnum key)");
+            builderCpp.AppendLine("{");
+            builderCpp.AddLevel();
+            builderCpp.AppendLine("switch(key)");
+            builderCpp.AppendLine("{");
+            builderCpp.AddLevel();
+            foreach (var key in keys)
+            {
+                builderCpp.AppendLine($"case KeyEnum::{key}:");
+                builderCpp.AddLevel();
+                builderCpp.AppendLine($"return hstring(L\"{key}\");");
+                builderCpp.RemoveLevel();
+            }
+            builderCpp.AppendLine("default:");
+            builderCpp.AddLevel();
+            builderCpp.AppendLine("return hstring(L\"\");");
+            builderCpp.RemoveLevel();
+            builderCpp.RemoveLevel();
+            builderCpp.AppendLine("}");
+            builderCpp.RemoveLevel();
+            builderCpp.AppendLine("}");
         }
 
         #region IDL
@@ -421,6 +460,8 @@ namespace ReswPlus.Languages
                 namespaces.AddRange(info.Namespaces);
             }
             namespaces.Add("factory_implementation");
+
+            builderHeader.AppendEmptyLine();
 
             HeaderOpenNamespace(builderHeader, namespaces, true);
             builderHeader.AppendLine($"struct {info.ClassName} : {info.ClassName}T<{info.ClassName}, implementation::{info.ClassName}>");
