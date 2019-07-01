@@ -10,9 +10,7 @@
 
     <Grid>
         <StackPanel Margin="48">
-            <TextBlock FontWeight="Bold" Text="{x:Bind local:Resources.Hello}" />
-            <TextBlock FontWeight="Bold" Text="{local:Resources Key=Hello}" />
-            <TextBlock FontWeight="Bold" Text="{x:Bind local:Resources.TestWithObject_Format(TestObject)}" />
+            <TextBlock Text="{x:Bind local:Resources.Hello}" FontWeight="Bold" />
             <TextBox
                 x:Name="UserNameText"
                 Margin="0,6"
@@ -21,8 +19,8 @@
             <Slider
                 x:Name="EmailsSlider"
                 Margin="0,6"
-                Header="Number of emails:"
                 Maximum="10"
+                Header="Number of emails:"
                 Value="2" />
             <TextBlock Text="{x:Bind local:Resources.YouGotEmails_Format(EmailsSlider.Value, UserNameText.Text), Mode=OneWay}" />
         </StackPanel>

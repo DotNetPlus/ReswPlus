@@ -1,5 +1,5 @@
 ' File generated automatically by ReswPlus. https://github.com/rudyhuyn/ReswPlus
-' The NuGet package PluralNet is necessary to support Pluralization.
+' The NuGet package ReswPlusLib is necessary to support Pluralization.
 Imports System
 Imports Windows.ApplicationModel.Resources
 Imports Windows.UI.Xaml.Markup
@@ -14,13 +14,15 @@ Public Class Resources
     Shared Sub New()
         _resourceLoader = ResourceLoader.GetForViewIndependentUse("Resources")
     End Sub
-
     #Region "FileShared"
     ' <summary>
     '   Get the pluralized version of the string similar to: {0} shared {1} photo from {2}
     ' </summary>
     Public Shared Function FileShared(number As Double) As String
-        Return Huyn.PluralNet.ResourceLoaderExtension.GetPlural(_resourceLoader, "FileShared", CDec(number))
+        If number = 0 Then
+            Return _resourceLoader.GetString("FileShared_None")
+        End If
+        Return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "FileShared", CDec(number))
     End Function
 
     ' <summary>
@@ -36,7 +38,10 @@ Public Class Resources
     '   Get the pluralized version of the string similar to: {0} minute left
     ' </summary>
     Public Shared Function MinutesLeft(number As Double) As String
-        Return Huyn.PluralNet.ResourceLoaderExtension.GetPlural(_resourceLoader, "MinutesLeft", CDec(number))
+        If number = 0 Then
+            Return _resourceLoader.GetString("MinutesLeft_None")
+        End If
+        Return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "MinutesLeft", CDec(number))
     End Function
 
     ' <summary>
@@ -52,7 +57,10 @@ Public Class Resources
     '   Get the pluralized version of the string similar to: This is the singular form
     ' </summary>
     Public Shared Function PluralizationTest(number As Double) As String
-        Return Huyn.PluralNet.ResourceLoaderExtension.GetPlural(_resourceLoader, "PluralizationTest", CDec(number))
+        If number = 0 Then
+            Return _resourceLoader.GetString("PluralizationTest_None")
+        End If
+        Return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "PluralizationTest", CDec(number))
     End Function
     #End Region
 
@@ -61,10 +69,7 @@ Public Class Resources
     '   Get the pluralized version of the string similar to: No new messages from {1}
     ' </summary>
     Public Shared Function ReceivedMessages(number As Double) As String
-        If number = 0 Then
-            Return _resourceLoader.GetString("ReceivedMessages_None")
-        End If
-        Return Huyn.PluralNet.ResourceLoaderExtension.GetPlural(_resourceLoader, "ReceivedMessages", CDec(number))
+        Return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "ReceivedMessages", CDec(number))
     End Function
 
     ' <summary>
@@ -111,6 +116,7 @@ Public Class Resources
     End Function
     #End Region
 
+    #Region "ThisIsATooltip"
     ' <summary>
     '   Looks up a localized string similar to: this is a tooltip text
     ' </summary>
@@ -119,7 +125,9 @@ Public Class Resources
             Return _resourceLoader.GetString("ThisIsATooltip")
         End Get
     End Property
+    #End Region
 
+    #Region "WelcomeTitle"
     ' <summary>
     '   Looks up a localized string similar to: Hello World!
     ' </summary>
@@ -128,6 +136,7 @@ Public Class Resources
             Return _resourceLoader.GetString("WelcomeTitle")
         End Get
     End Property
+    #End Region
 
     #Region "YourAgeAndName"
     ' <summary>
@@ -146,7 +155,6 @@ Public Class Resources
         Return String.Format(YourAgeAndName, paramDouble1, paramString2)
     End Function
     #End Region
-
 End Class
 
 <System.CodeDom.Compiler.GeneratedCodeAttribute("Huyn.ReswPlus", "0.1.0.0")>
@@ -182,4 +190,3 @@ Public Class ResourcesExtension
         Return If(Converter Is Nothing, res, Converter.Convert(res, GetType(String), ConverterParameter, Nothing))
     End Function
 End Class
-

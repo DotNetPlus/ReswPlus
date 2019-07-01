@@ -120,10 +120,6 @@
   <data name="Hello" xml:space="preserve">
     <value>Hello world</value>
   </data>
-  <data name="TestWithObject" xml:space="preserve">
-    <value>Test with object: %ls</value>
-    <comment>#ReswPlusTyped[o(obj)]</comment>
-  </data>
   <data name="YouGotEmails_One" xml:space="preserve">
     <value>Hello %2$ls, you got %1$u email</value>
     <comment>#ReswPlusTyped[Qu(numberMessages), s(username)]</comment>

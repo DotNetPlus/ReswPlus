@@ -65,8 +65,11 @@ namespace winrt::TestCppWinRT::Strings::implementation
         Windows::Foundation::IInspectable ConverterParameter(){{ return _converterParameter; }}
         void ConverterParameter(Windows::Foundation::IInspectable value){{ _converterParameter = value; }}
         Windows::Foundation::IInspectable ProvideValue();
-};
+    private:
+        static hstring KeyEnumToString(KeyEnum key);
+    };
 } // namespace winrt::TestCppWinRT::Strings::implementation
+
 namespace winrt::TestCppWinRT::Strings::factory_implementation
 {
     struct Resources : ResourcesT<Resources, implementation::Resources>

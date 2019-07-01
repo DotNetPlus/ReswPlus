@@ -8,6 +8,7 @@
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.UI.Xaml.Interop.h>
 using namespace winrt;
+using namespace winrt::TestCppWinRT::Strings;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::ApplicationModel::Resources;
 using namespace winrt::Windows::UI::Xaml::Interop;
@@ -70,7 +71,25 @@ IInspectable local::ResourcesExtension::ProvideValue()
     }
     else
     {
-        res = _resourceLoader.GetString(L"TODO");
+        auto keyStr = KeyEnumToString(Key());
+        if(keyStr == L"")
+        {
+            return box_value(L"");
+        }
+        res = _resourceLoader.GetString(keyStr);
     }
     return Converter() == nullptr ? box_value(res) : Converter().Convert(box_value(res), xaml_typename<hstring>(), ConverterParameter(), L"");
+}
+
+hstring local::ResourcesExtension::KeyEnumToString(KeyEnum key)
+{
+    switch(key)
+    {
+        case KeyEnum::Hello:
+            return hstring(L"Hello");
+        case KeyEnum::TestWithObject:
+            return hstring(L"TestWithObject");
+        default:
+            return hstring(L"");
+    }
 }
