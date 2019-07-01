@@ -1,0 +1,28 @@
+<Page
+    x:Class="TestCppCX.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:TestCppCX.Strings"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    mc:Ignorable="d">
+
+    <Grid>
+        <StackPanel Margin="48">
+            <TextBlock Text="{x:Bind local:Resources.Hello}" FontWeight="Bold" />
+            <TextBox
+                x:Name="UserNameText"
+                Margin="0,6"
+                Header="Username:"
+                Text="Sarah" />
+            <Slider
+                x:Name="EmailsSlider"
+                Margin="0,6"
+                Maximum="10"
+                Header="Number of emails:"
+                Value="2" />
+            <TextBlock Text="{x:Bind local:Resources.YouGotEmails_Format(EmailsSlider.Value, UserNameText.Text), Mode=OneWay}" />
+        </StackPanel>
+    </Grid>
+</Page>
