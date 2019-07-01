@@ -152,16 +152,21 @@ namespace ReswPlus.CodeGenerator
         public IEnumerable<GeneratedFile> GenerateCode(string resourcePath, string baseFilename, string content, string defaultNamespace, bool supportPluralization, ProjectItem projectItem)
         {
             var stronglyTypedClass = Parse(resourcePath, content, defaultNamespace, supportPluralization);
-            if(stronglyTypedClass == null)
+            if (stronglyTypedClass == null)
             {
                 return null;
             }
-           
+
             return _codeGenerator.GetGeneratedFiles(baseFilename, stronglyTypedClass, projectItem);
         }
 
         private string[] ExtractNamespace(string defaultNamespace)
         {
+            if (string.IsNullOrEmpty(defaultNamespace))
+            {
+                return new string[0];
+            }
+
             // remove bcp47 tag from the namespace
             var regexNamespace =
                 new Regex("\\.Strings\\.[a-z]{2}(?:[-_](?:Latn|Cyrl|Hant|Hans))?(?:[-_](?:\\d{3}|[A-Z]{2,3}))?$");

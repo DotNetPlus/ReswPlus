@@ -146,7 +146,7 @@
       <Generator>ReswPlusGenerator</Generator>
     </AppxManifest>
     <PRIResource Include="Strings\en\Resources.resw">
-      <Generator>ReswPlusPluralizationGenerator</Generator>
+      <Generator>ReswPlusAdvancedGenerator</Generator>
       <LastGenOutput>Resources.generated.vb</LastGenOutput>
     </PRIResource>
     <None Include="VBTest_TemporaryKey.pfx" />
@@ -207,6 +207,9 @@
     </PackageReference>
     <PackageReference Include="PluralNet">
       <Version>1.0.5</Version>
+    </PackageReference>
+    <PackageReference Include="ReswPlusLib">
+      <Version>0.0.4</Version>
     </PackageReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

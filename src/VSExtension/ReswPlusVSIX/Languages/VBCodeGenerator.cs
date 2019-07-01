@@ -91,7 +91,7 @@ namespace ReswPlus.Languages
             _builder.AppendLine("<System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"0.1.0.0\")>");
             _builder.AppendLine("<System.Diagnostics.DebuggerNonUserCodeAttribute()>");
             _builder.AppendLine("<System.Runtime.CompilerServices.CompilerGeneratedAttribute()>");
-            _builder.AppendLine($"internal override Class {className}");
+            _builder.AppendLine($"Public Class {className}");
             _builder.AddLevel();
             _builder.AppendLine("Private Shared _resourceLoader as ResourceLoader");
             _builder.AppendEmptyLine();
@@ -123,7 +123,7 @@ namespace ReswPlus.Languages
             _builder.AppendLine("' <summary>");
             _builder.AppendLine($"'   {summary}");
             _builder.AppendLine("' </summary>");
-            _builder.AppendLine($"internal override Shared Function {pluralKey}(number As Double) As String");
+            _builder.AppendLine($"Public Shared Function {pluralKey}(number As Double) As String");
             _builder.AddLevel();
             if (!supportNoneState)
             {
@@ -144,7 +144,7 @@ namespace ReswPlus.Languages
             _builder.AppendLine("' <summary>");
             _builder.AppendLine($"'   {summary}");
             _builder.AppendLine("' </summary>");
-            _builder.AppendLine($"internal override Shared ReadOnly Property {key} As String");
+            _builder.AppendLine($"Public Shared ReadOnly Property {key} As String");
             _builder.AddLevel();
             _builder.AppendLine("Get");
             _builder.AddLevel();
@@ -173,7 +173,7 @@ namespace ReswPlus.Languages
                 functionParameters = parameters;
             }
             var parametersStr = functionParameters.Select(p => "ByVal " + p.Name + " As " + GetParameterTypeString(p.Type)).Aggregate((a, b) => a + ", " + b);
-            _builder.AppendLine($"internal override Shared Function {key}_Format({parametersStr}) As String");
+            _builder.AppendLine($"Public Shared Function {key}_Format({parametersStr}) As String");
             var formatParameters = parameters.Select(p => p.Name).Aggregate((a, b) => a + ", " + b);
 
             string sourceForFormat;
@@ -198,10 +198,10 @@ namespace ReswPlus.Languages
             _builder.AppendLine("<System.Diagnostics.DebuggerNonUserCodeAttribute()>");
             _builder.AppendLine("<System.Runtime.CompilerServices.CompilerGeneratedAttribute()>");
             _builder.AppendLine("<MarkupExtensionReturnType(ReturnType:=GetType(String))>");
-            _builder.AppendLine($"internal override Class {className}");
+            _builder.AppendLine($"Public Class {className}");
             _builder.AddLevel();
             _builder.AppendLine("Inherits MarkupExtension");
-            _builder.AppendLine("internal override Enum KeyEnum");
+            _builder.AppendLine("Public Enum KeyEnum");
             _builder.AddLevel();
             _builder.AppendLine("__Undefined = 0");
             foreach (var key in keys)
@@ -218,9 +218,9 @@ namespace ReswPlus.Languages
             _builder.RemoveLevel();
             _builder.AppendLine("End Sub");
             _builder.AppendEmptyLine();
-            _builder.AppendLine("internal override Property Key As KeyEnum");
-            _builder.AppendLine("internal override Property Converter As IValueConverter");
-            _builder.AppendLine("internal override Property ConverterParameter As Object");
+            _builder.AppendLine("Public Property Key As KeyEnum");
+            _builder.AppendLine("Public Property Converter As IValueConverter");
+            _builder.AppendLine("Public Property ConverterParameter As Object");
             _builder.AppendLine("Protected Overrides Function ProvideValue() As Object");
             _builder.AddLevel();
             _builder.AppendLine("Dim res As String");
