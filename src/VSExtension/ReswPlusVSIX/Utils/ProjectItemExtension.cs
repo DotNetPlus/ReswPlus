@@ -1,5 +1,4 @@
 using EnvDTE;
-using System.Diagnostics;
 
 namespace ReswPlus.Utils
 {
@@ -13,14 +12,35 @@ namespace ReswPlus.Utils
 
         private static bool IsCppWinRT(Project project)
         {
+            if (project?.Object == null)
+            {
+                //unknown state
+                return false;
+            }
+
+            dynamic vcproject = project.Object;
+            //Check tools
             try
             {
-                dynamic vcproject = project.Object;
-                return vcproject.ActiveConfiguration.Tools.Item("CppWinRT") != null;
+                if (vcproject.ActiveConfiguration.Tools.Item("CppWinRT") != null)
+                {
+                    return true;
+                }
             }
             catch
+            { }
+
+            //check toolFiles
+            var toolFiles = vcproject.ToolFiles;
+            for (var i = 1; i <= toolFiles.Count; ++i)
             {
+                var value = toolFiles.Item(i).Path as string;
+                if (value != null && value.EndsWith("Microsoft.Windows.CppWinRT.targets", System.StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return true;
+                }
             }
+
             return false;
         }
 

@@ -20,7 +20,7 @@ using IServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 namespace ReswPlus.SingleFileGenerators
 {
 
-    internal class ReswPlusGeneratorBase
+    internal class ReswPlusGeneratorBase: IDisposable
     {
         public ReswPlusGeneratorBase(bool usePluralization)
         {
@@ -88,6 +88,16 @@ namespace ReswPlus.SingleFileGenerators
             Site = pUnkSite;
         }
         public object Site { get; private set; }
+        #endregion
+
+        #region IDisposable
+
+        public void Dispose()
+        {
+            _codeDomProvider?.Dispose();
+            _serviceProvider?.Dispose();
+        }
+
         #endregion
 
         #region Helper
