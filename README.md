@@ -12,7 +12,7 @@ ReswPlus is a Visual Studio extension enriching your existing .resw files with m
 
 Currently supported: 
 - Visual Studio 2017 and 2019 (all versions).
-- C#, VB.Net and C++/CX apps (C++/winrt coming soon).
+- C#, VB.Net, C++/CX apps and C++/WinRT.
 
 ![reswplus](https://user-images.githubusercontent.com/1226538/56525314-a76eb800-64ff-11e9-9e39-1bb4cd2dd012.gif)
 
@@ -98,18 +98,18 @@ ReswPlus can generate strongly typed methods to format your strings. Simply add 
 
 Types currently supported for parameters:
 
-| identifier | C# Type | VB Type  | C++/CX Type       |
-|------------|---------|----------|-------------------|
-| b          | byte    | Byte     | char              |
-| i          | int     | Integer  | int               |
-| u          | uint    | UInteger | unsigned int      |
-| l          | long    | Long     | long              |
-| s          | string  | String   | Platform::String^ |
-| f          | double  | Double   | double            |
-| c          | char    | Char     | wchar_t           |
-| ul         | ulong   | ULong    | unsigned long     |
-| m          | decimal | Decimal  | long double       |
-| o          | Object  | object   | Platform::Object^ |
+| identifier | C# Type | VB Type  | C++/CX Type       | C++/WinRT Type    |
+|------------|---------|----------|-------------------|-------------------|
+| b          | byte    | Byte     | char              | char              |
+| i          | int     | Integer  | int               | int               |
+| u          | uint    | UInteger | unsigned int      | unsigned int      |
+| l          | long    | Long     | long              | long              |
+| s          | string  | String   | Platform::String^ | hstring           |
+| f          | double  | Double   | double            | double            |
+| c          | char    | Char     | wchar_t           | wchar_t           |
+| ul         | ulong   | ULong    | unsigned long     | unsigned long     |
+| m          | decimal | Decimal  | long double       | long double       |
+| o          | Object  | object   | Platform::Object^ | IInspectable      |
 
 Resw also allows you to name the parameters to make the code easy to read.
 
