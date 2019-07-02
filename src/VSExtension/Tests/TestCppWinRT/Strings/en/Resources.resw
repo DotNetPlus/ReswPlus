@@ -117,52 +117,18 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="FileShared_One" xml:space="preserve">
-    <value>{0} shared {1} photo from {2}</value>
-    <comment>#ReswPlusTyped[s(username), Q, s(city)]</comment>
+  <data name="Hello" xml:space="preserve">
+    <value>Hello world</value>
   </data>
-  <data name="FileShared_Other" xml:space="preserve">
-    <value>{0} shared {1} photos from {2}</value>
+  <data name="TestWithObject" xml:space="preserve">
+    <value>Test with object: %ls</value>
+    <comment>#ReswPlusTyped[o(obj)]</comment>
   </data>
-  <data name="ForecastAnnouncement" xml:space="preserve">
-    <value>The current temperature in {2} is {0}°F ({1}°C)</value>
-    <comment>#ReswPlusTyped[d(tempFahrenheit), d(tempCelsius), s(city)]</comment>
+  <data name="YouGotEmails_One" xml:space="preserve">
+    <value>Hello %2$ls, you got %1$u email</value>
+    <comment>#ReswPlusTyped[Qu(numberMessages), s(username)]</comment>
   </data>
-  <data name="GotMessages" xml:space="preserve">
-    <value>Welcome {0}, you got {1} emails!</value>
-    <comment>#ReswPlusTyped[s, u]</comment>
-  </data>
-  <data name="MinutesLeft_One" xml:space="preserve">
-    <value>{0} minute left</value>
-    <comment>#ReswPlusTyped[Q]</comment>
-  </data>
-  <data name="MinutesLeft_Other" xml:space="preserve">
-    <value>{0} minutes left</value>
-  </data>
-  <data name="PluralizationTest_One" xml:space="preserve">
-    <value>This is the singular form</value>
-  </data>
-  <data name="PluralizationTest_Other" xml:space="preserve">
-    <value>This is the plural form</value>
-  </data>
-  <data name="ReceivedMessages_None" xml:space="preserve">
-    <value>No new messages from {1}</value>
-  </data>
-  <data name="ReceivedMessages_One" xml:space="preserve">
-    <value>You got {0} message from {1}</value>
-    <comment>#ReswPlusTyped[Q, s]</comment>
-  </data>
-  <data name="ReceivedMessages_Other" xml:space="preserve">
-    <value>You got {0} messages from {1}</value>
-  </data>
-  <data name="ThisIsATooltip" xml:space="preserve">
-    <value>this is a tooltip text</value>
-  </data>
-  <data name="WelcomeTitle" xml:space="preserve">
-    <value>Hello World!</value>
-  </data>
-  <data name="YourAgeAndName" xml:space="preserve">
-    <value>Your are {0}yo and named {1}!</value>
-    <comment>this string is used in the second tab. #ReswPlusTyped[f, s]</comment>
+  <data name="YouGotEmails_Other" xml:space="preserve">
+    <value>Hello %2$ls, you got %1$u emails</value>
   </data>
 </root>

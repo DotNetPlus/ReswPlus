@@ -205,9 +205,6 @@
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.8</Version>
     </PackageReference>
-    <PackageReference Include="PluralNet">
-      <Version>1.0.5</Version>
-    </PackageReference>
     <PackageReference Include="ReswPlusLib">
       <Version>0.0.4</Version>
     </PackageReference>

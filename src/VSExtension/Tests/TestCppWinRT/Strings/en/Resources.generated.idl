@@ -1,0 +1,30 @@
+namespace TestCppWinRT
+{
+    namespace Strings
+    {
+        static runtimeclass Resources
+        {
+            static String YouGotEmails(Double number);
+            static String YouGotEmails_Format(UInt32 numberMessages, String username);
+            static String Hello{ get; };
+            static String TestWithObject{ get; };
+            static String TestWithObject_Format(Object obj);
+        };
+
+        enum KeyEnum
+        {
+            __Undefined = 0,
+            Hello,
+            TestWithObject,
+        };
+
+        runtimeclass ResourcesExtension: Windows.UI.Xaml.Markup.MarkupExtension
+        {
+            ResourcesExtension();
+            KeyEnum Key;
+            Windows.UI.Xaml.Data.IValueConverter Converter;
+            Object ConverterParameter;
+            overridable Object ProvideValue();
+        };
+    } // namespace Strings
+} // namespace TestCppWinRT

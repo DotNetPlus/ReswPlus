@@ -59,6 +59,7 @@
     <Compile Include="ClassGenerator\Models\StronglyTypedClass.cs" />
     <Compile Include="ContextMenu.cs" />
     <Compile Include="Languages\CodeStringBuilder.cs" />
+    <Compile Include="Languages\CppWinRTCodeGenerator.cs" />
     <Compile Include="Languages\CppCXCodeGenerator.cs" />
     <Compile Include="Languages\CsharpCodeGenerator.cs" />
     <Compile Include="Languages\DotNetGeneratorBase.cs" />
@@ -83,7 +84,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="Key.snk" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>

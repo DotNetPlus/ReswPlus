@@ -3,6 +3,7 @@
 #include <pch.h>
 #include "Resources.generated.h"
 #include <stdio.h>
+
 using namespace Platform;
 using namespace Windows::ApplicationModel::Resources;
 using namespace Windows::UI::Xaml::Interop;
