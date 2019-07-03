@@ -14,12 +14,26 @@ namespace TestCppCX
         public:
             Resources() {}
 
+        /* Methods and properties for GotMessagesFrom */
+        public:
+            /// <summary>
+            ///   Get the pluralized version of the string similar to: You got %d message from her
+            /// </summary>
+            static Platform::String^ GotMessagesFrom(double pluralNumber, int variantId);
+        public:
+            /// <summary>
+            ///   Format the string similar to: You got %d message from her
+            /// </summary>
+            static Platform::String^ GotMessagesFrom_Format(unsigned int numberMessages, int personalPronoun);
+
+        /* Methods and properties for SendMessage */
+
         /* Methods and properties for YouGotEmails */
         public:
             /// <summary>
             ///   Get the pluralized version of the string similar to: Hello %2$ls, you got %1$u email
             /// </summary>
-            static Platform::String^ YouGotEmails(double number);
+            static Platform::String^ YouGotEmails(double pluralNumber);
         public:
             /// <summary>
             ///   Format the string similar to: Hello %2$ls, you got %1$u email
@@ -35,12 +49,28 @@ namespace TestCppCX
             {
                 Platform::String^ get();
             }
+
+        /* Methods and properties for TestWithObject */
+        public:
+            /// <summary>
+            ///   Looks up a localized string similar to: Test with object %s
+            /// </summary>
+            static property Platform::String^ TestWithObject
+            {
+                Platform::String^ get();
+            }
+        public:
+            /// <summary>
+            ///   Format the string similar to: Test with object %s
+            /// </summary>
+            static Platform::String^ TestWithObject_Format(Platform::Object^ obj);
         };
 
         public enum class KeyEnum
         {
             __Undefined = 0,
             Hello,
+            TestWithObject,
         };
 
         public ref class ResourcesExtension sealed: public Windows::UI::Xaml::Markup::MarkupExtension

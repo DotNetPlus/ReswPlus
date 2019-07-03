@@ -22,12 +22,26 @@ namespace winrt::TestCppWinRT::Strings::implementation
         /// <summary>
         ///   Get the pluralized version of the string similar to: Hello %2$ls, you got %1$u email
         /// </summary>
-        static hstring YouGotEmails(double number);
+        static hstring YouGotEmails(double pluralNumber);
     public:
         /// <summary>
         ///   Format the string similar to: Hello %2$ls, you got %1$u email
         /// </summary>
         static hstring YouGotEmails_Format(unsigned int numberMessages, hstring const& username);
+
+    /* Methods and properties for GotMessagesFrom */
+    public:
+        /// <summary>
+        ///   Get the pluralized version of the string similar to: You got %d message from her
+        /// </summary>
+        static hstring GotMessagesFrom(double pluralNumber, int variantId);
+    public:
+        /// <summary>
+        ///   Format the string similar to: You got %d message from her
+        /// </summary>
+        static hstring GotMessagesFrom_Format(unsigned int numberMessages, int personalPronoun);
+
+    /* Methods and properties for SendMessage */
 
     /* Methods and properties for Hello */
     public:
@@ -39,12 +53,12 @@ namespace winrt::TestCppWinRT::Strings::implementation
     /* Methods and properties for TestWithObject */
     public:
         /// <summary>
-        ///   Looks up a localized string similar to: Test with object: %ls
+        ///   Looks up a localized string similar to: Test with object %s
         /// </summary>
         static hstring TestWithObject();
     public:
         /// <summary>
-        ///   Format the string similar to: Test with object: %ls
+        ///   Format the string similar to: Test with object %s
         /// </summary>
         static hstring TestWithObject_Format(Windows::Foundation::IInspectable const& obj);
     };

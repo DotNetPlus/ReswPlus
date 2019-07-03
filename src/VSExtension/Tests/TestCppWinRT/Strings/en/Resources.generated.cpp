@@ -8,6 +8,7 @@
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.UI.Xaml.Interop.h>
 using namespace winrt;
+using namespace std;
 using namespace winrt::TestCppWinRT::Strings;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::ApplicationModel::Resources;
@@ -24,9 +25,9 @@ ResourceLoader local::Resources::GetResourceLoader()
     return _resourceLoader;
 }
 
-hstring local::Resources::YouGotEmails(double number)
+hstring local::Resources::YouGotEmails(double pluralNumber)
 {
-    return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), L"YouGotEmails", number);
+    return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), L"YouGotEmails", pluralNumber);
 }
 
 hstring local::Resources::YouGotEmails_Format(unsigned int numberMessages, hstring const& username)
@@ -36,6 +37,20 @@ hstring local::Resources::YouGotEmails_Format(unsigned int numberMessages, hstri
     _swprintf_p(buffer, needed + 1, YouGotEmails(static_cast<double>(numberMessages)).c_str(), numberMessages, username.c_str());
     return hstring(buffer);
 }
+
+hstring local::Resources::GotMessagesFrom(double pluralNumber, int variantId)
+{
+    return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), hstring(L"GotMessagesFrom_Variant") + to_wstring(variantId), pluralNumber);
+}
+
+hstring local::Resources::GotMessagesFrom_Format(unsigned int numberMessages, int personalPronoun)
+{
+    size_t needed = _swprintf_p(nullptr, 0, GotMessagesFrom(static_cast<double>(numberMessages), personalPronoun).c_str(), numberMessages, personalPronoun);
+    wchar_t *buffer = new wchar_t[needed + 1];
+    _swprintf_p(buffer, needed + 1, GotMessagesFrom(static_cast<double>(numberMessages), personalPronoun).c_str(), numberMessages, personalPronoun);
+    return hstring(buffer);
+}
+
 
 hstring local::Resources::Hello()
 {

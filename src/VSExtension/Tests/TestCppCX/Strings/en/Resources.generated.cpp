@@ -19,9 +19,23 @@ ResourceLoader^ local::Resources::GetResourceLoader()
     return _resourceLoader;
 }
 
-String^ local::Resources::YouGotEmails(double number)
+String^ local::Resources::GotMessagesFrom(double pluralNumber, int variantId)
 {
-    return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), L"YouGotEmails", number);
+    return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), ref new String(L"GotMessagesFrom_Variant") + variantId, pluralNumber);
+}
+
+String^ local::Resources::GotMessagesFrom_Format(unsigned int numberMessages, int personalPronoun)
+{
+    size_t needed = _swprintf_p(nullptr, 0, GotMessagesFrom(static_cast<double>(numberMessages), personalPronoun)->Data(), numberMessages, personalPronoun);
+    wchar_t *buffer = new wchar_t[needed + 1];
+    _swprintf_p(buffer, needed + 1, GotMessagesFrom(static_cast<double>(numberMessages), personalPronoun)->Data(), numberMessages, personalPronoun);
+    return ref new String(buffer);
+}
+
+
+String^ local::Resources::YouGotEmails(double pluralNumber)
+{
+    return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), L"YouGotEmails", pluralNumber);
 }
 
 String^ local::Resources::YouGotEmails_Format(unsigned int numberMessages, String^ username)
@@ -35,6 +49,19 @@ String^ local::Resources::YouGotEmails_Format(unsigned int numberMessages, Strin
 String^ local::Resources::Hello::get()
 {
     return GetResourceLoader()->GetString(L"Hello");
+}
+
+String^ local::Resources::TestWithObject::get()
+{
+    return GetResourceLoader()->GetString(L"TestWithObject");
+}
+
+String^ local::Resources::TestWithObject_Format(Object^ obj)
+{
+    size_t needed = _swprintf_p(nullptr, 0, TestWithObject->Data(), obj->ToString()->Data());
+    wchar_t *buffer = new wchar_t[needed + 1];
+    _swprintf_p(buffer, needed + 1, TestWithObject->Data(), obj->ToString()->Data());
+    return ref new String(buffer);
 }
 
 local::ResourcesExtension::ResourcesExtension()

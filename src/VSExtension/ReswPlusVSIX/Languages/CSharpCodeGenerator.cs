@@ -1,4 +1,3 @@
-using ReswPlus.ClassGenerator.Models;
 using ReswPlus.Resw;
 using System.Collections.Generic;
 using System.Linq;
@@ -111,26 +110,47 @@ namespace ReswPlus.Languages
             _builder.AppendLine("#endregion");
         }
 
-        internal override void CreatePluralizationAccessor(string pluralKey, string summary, bool supportNoneState)
+        internal override void CreateTemplateAccessor(string key, string summary, bool supportPlural, bool pluralSupportNoneState, bool supportVariants)
         {
-
+            if (!supportPlural && !supportVariants)
+            {
+                return;
+            }
+            var parameters = new List<string>();
+            if (supportPlural)
+            {
+                parameters.Add("double pluralNumber");
+            }
+            if (supportVariants)
+            {
+                parameters.Add("int variantId");
+            }
             _builder.AppendLine("/// <summary>");
             _builder.AppendLine($"///   {summary}");
             _builder.AppendLine("/// </summary>");
-            _builder.AppendLine($"public static string {pluralKey}(double number)");
+            _builder.AppendLine($"public static string {key}({parameters.Aggregate((a, b) => a + ", " + b)})");
             _builder.AppendLine("{");
             _builder.AddLevel();
-            if (supportNoneState)
+            if (supportPlural && pluralSupportNoneState)
             {
-                _builder.AppendLine("if(number == 0)");
+                _builder.AppendLine("if(pluralNumber == 0)");
                 _builder.AppendLine("{");
                 _builder.AddLevel();
-                _builder.AppendLine($"return _resourceLoader.GetString(\"{pluralKey}_None\");");
-                _builder.RemoveLevel();
+                var noneKey = supportVariants ? $"\"{key}_Variant\" + variantId + \"_None\"" : $"\"{key}_None\"";
+                _builder.AppendLine($"return _resourceLoader.GetString({noneKey});");
+                _builder.RemoveLevel(); 
                 _builder.AppendLine("}");
             }
 
-            _builder.AppendLine($"return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, \"{pluralKey}\", number);");
+            var stringKey = supportVariants ? $"\"{key}_Variant\" + variantId" : $"\"{key}\"";
+            if (supportPlural)
+            {
+                _builder.AppendLine($"return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, {stringKey}, pluralNumber);");
+            }
+            else
+            {
+                _builder.AppendLine($"return _resourceLoader.GetString({stringKey});");
+            }
             _builder.RemoveLevel();
             _builder.AppendLine("}");
         }
@@ -144,17 +164,17 @@ namespace ReswPlus.Languages
             _builder.AppendLine($"public static string {key} => _resourceLoader.GetString(\"{key}\");");
         }
 
-        internal override void CreateFormatMethod(string key, IEnumerable<FunctionParameter> parameters, string summary = null, FunctionParameter extraParameterForFunction = null, FunctionParameter parameterForPluralization = null)
+        internal override void CreateFormatMethod(string key, IEnumerable<FunctionParameter> parameters, string summary = null, IEnumerable<FunctionParameter> extraParameters = null, FunctionParameter parameterForPluralization = null, FunctionParameter parameterForVariant = null)
         {
             _builder.AppendLine("/// <summary>");
             _builder.AppendLine($"///   {summary}");
             _builder.AppendLine("/// </summary>");
 
             IEnumerable<FunctionParameter> functionParameters;
-            if (extraParameterForFunction != null)
+            if (extraParameters != null && extraParameters.Any())
             {
                 var list = new List<FunctionParameter>(parameters);
-                list.Insert(0, extraParameterForFunction);
+                list.InsertRange(0, extraParameters);
                 functionParameters = list;
             }
             else
@@ -171,11 +191,25 @@ namespace ReswPlus.Languages
             if (parameterForPluralization != null)
             {
                 var doubleValue = parameterForPluralization.TypeToCast.HasValue ? $"({GetParameterTypeString(parameterForPluralization.TypeToCast.Value)}){parameterForPluralization.Name}" : parameterForPluralization.Name;
-                sourceForFormat = $"{key}({doubleValue})";
+                if (parameterForVariant != null)
+                {
+                    sourceForFormat = $"{key}({doubleValue}, {parameterForVariant.Name})";
+                }
+                else
+                {
+                    sourceForFormat = $"{key}({doubleValue})";
+                }
             }
             else
             {
-                sourceForFormat = key;
+                if (parameterForVariant != null)
+                {
+                    sourceForFormat = $"{key}({parameterForVariant.Name})";
+                }
+                else
+                {
+                    sourceForFormat = key;
+                }
             }
 
             _builder.AppendLine($"return string.Format({sourceForFormat}, {formatParameters});");

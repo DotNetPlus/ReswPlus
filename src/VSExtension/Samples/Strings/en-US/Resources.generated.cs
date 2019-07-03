@@ -20,9 +20,9 @@ namespace ReswPlusSample.Strings{
         /// <summary>
         ///   Get the pluralized version of the string similar to: {0} shared {1} photo from {2}
         /// </summary>
-        public static string FileShared(double number)
+        public static string FileShared(double pluralNumber)
         {
-            return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "FileShared", number);
+            return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "FileShared", pluralNumber);
         }
 
         /// <summary>
@@ -38,9 +38,9 @@ namespace ReswPlusSample.Strings{
         /// <summary>
         ///   Get the pluralized version of the string similar to: {0} minute left
         /// </summary>
-        public static string MinutesLeft(double number)
+        public static string MinutesLeft(double pluralNumber)
         {
-            return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "MinutesLeft", number);
+            return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "MinutesLeft", pluralNumber);
         }
 
         /// <summary>
@@ -56,9 +56,9 @@ namespace ReswPlusSample.Strings{
         /// <summary>
         ///   Get the pluralized version of the string similar to: This is the singular form
         /// </summary>
-        public static string PluralizationTest(double number)
+        public static string PluralizationTest(double pluralNumber)
         {
-            return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "PluralizationTest", number);
+            return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "PluralizationTest", pluralNumber);
         }
         #endregion
 
@@ -66,13 +66,13 @@ namespace ReswPlusSample.Strings{
         /// <summary>
         ///   Get the pluralized version of the string similar to: No new messages from {1}
         /// </summary>
-        public static string ReceivedMessages(double number)
+        public static string ReceivedMessages(double pluralNumber)
         {
-            if(number == 0)
+            if(pluralNumber == 0)
             {
                 return _resourceLoader.GetString("ReceivedMessages_None");
             }
-            return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "ReceivedMessages", number);
+            return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "ReceivedMessages", pluralNumber);
         }
 
         /// <summary>

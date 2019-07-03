@@ -64,7 +64,7 @@ namespace ReswPlus.CodeGenerator
             return null;
         }
 
-        private StronglyTypedClass Parse(string resourcePath, string content, string defaultNamespace, bool supportPluralization)
+        private StronglyTypedClass Parse(string resourcePath, string content, string defaultNamespace, bool isAdvanced)
         {
             var namespaceToUse = ExtractNamespace(defaultNamespace);
 
@@ -81,7 +81,7 @@ namespace ReswPlus.CodeGenerator
 
             var result = new StronglyTypedClass()
             {
-                SupportPluralization = supportPluralization,
+                SupportPluralization = isAdvanced,
                 ClassName = filename,
                 Namespaces = namespaceToUse,
                 ResoureFile = resouceNameForResourceLoader
@@ -90,67 +90,102 @@ namespace ReswPlus.CodeGenerator
             var stringItems = reswInfo.Items
                 .Where(i => !i.Key.Contains(".") && !(i.Comment?.Contains(TagIgnore) ?? false)).ToArray();
 
-            if (supportPluralization)
+            if (isAdvanced)
             {
                 //check Pluralization
-                const string regexPluralItem = "_(Zero|One|Other|Many|Few|None)$";
-                var itemsWithPlural = reswInfo.Items
-                    .Where(c => c.Key.Contains("_") && Regex.IsMatch(c.Key, regexPluralItem)).ToArray();
-
-                foreach (var item in (from item in itemsWithPlural
-                                      group item by item.Key.Substring(0, item.Key.LastIndexOf('_'))))
+                var itemsVariantedWithPluralOrVariant = reswInfo.Items.VariantWithPluralAndVariant();
+                foreach (var item in itemsVariantedWithPluralOrVariant)
                 {
-                    var idNone = item.Key + "_None";
-                    var hasNoneForm = reswInfo.Items.Any(i => i.Key == idNone);
-
-                    var singleLineValue = RegexRemoveSpace.Replace(item.FirstOrDefault().Value, " ").Trim();
-
-                    var summary = $"Get the pluralized version of the string similar to: {singleLineValue}";
-                    var localization = new PluralLocalization()
+                    if (item.SupportPlural)
                     {
-                        Key = item.Key,
-                        TemplateAccessorSummary = summary,
-                        SupportNoneState = hasNoneForm
-                    };
+                        var idNone = item.Key + "_None";
+                        var hasNoneForm = reswInfo.Items.Any(i => i.Key == idNone);
 
-                    var commentToUse =
-                        item.FirstOrDefault(i => i.Comment != null && RegexStringFormat.IsMatch(i.Comment));
-                    if (commentToUse != null)
-                    {
-                        ManageFormattedFunction(localization, item.Key, item.FirstOrDefault().Value, commentToUse.Comment);
+                        var singleLineValue = RegexRemoveSpace.Replace(item.Items.FirstOrDefault().Value, " ").Trim();
+
+                        var summary = $"Get the pluralized version of the string similar to: {singleLineValue}";
+
+                        PluralLocalization localization;
+                        if (item.SupportVariants)
+                        {
+                            localization = new PluralVariantLocalization()
+                            {
+                                Key = item.Key,
+                                TemplateAccessorSummary = summary,
+                                SupportNoneState = hasNoneForm,
+                            };
+                        }
+                        else
+                        {
+                            localization = new PluralLocalization()
+                            {
+                                Key = item.Key,
+                                TemplateAccessorSummary = summary,
+                                SupportNoneState = hasNoneForm,
+                            };
+                        }
+                        var commentToUse =
+                            item.Items.FirstOrDefault(i => i.Comment != null && RegexStringFormat.IsMatch(i.Comment));
+                        if (commentToUse != null)
+                        {
+                            ManageFormattedFunction(localization, item.Key, item.Items.FirstOrDefault().Value, commentToUse.Comment);
+                        }
+
+                        result.Localizations.Add(localization);
                     }
+                    else if (item.SupportVariants)
+                    {
+                        var singleLineValue = RegexRemoveSpace.Replace(item.Items.FirstOrDefault().Key, " ").Trim();
+                        var summary = $"Get the variant version of the string similar to: {singleLineValue}";
+                        var commentToUse = item.Items.FirstOrDefault(i => i.Comment != null && RegexStringFormat.IsMatch(i.Comment));
 
-                    result.Localizations.Add(localization);
+                        var localization = new VariantLocalization()
+                        {
+                            Key = item.Key,
+                            TemplateAccessorSummary = summary
+                        };
+
+                        if (!string.IsNullOrEmpty(commentToUse?.Comment))
+                        {
+                            ManageFormattedFunction(localization, item.Key, commentToUse.Value, commentToUse.Comment);
+                        }
+
+                        result.Localizations.Add(localization);
+                    }
                 }
 
-                stringItems = stringItems.Except(itemsWithPlural).ToArray();
+                stringItems = stringItems.Except(itemsVariantedWithPluralOrVariant.SelectMany(e => e.Items)).ToArray();
             }
 
             if (stringItems.Any())
             {
-                foreach (var item in stringItems)
+                if (stringItems.Any())
                 {
-                    var isFormattedFunction = GetFormatString(item.Comment) != null;
-                    var singleLineValue = RegexRemoveSpace.Replace(item.Value, " ").Trim();
-                    var summary = $"Looks up a localized string similar to: {singleLineValue}";
-
-                    var localization = new Localization()
+                    foreach (var item in stringItems)
                     {
-                        Key = item.Key,
-                        AccessorSummary = summary
-                    };
+                        var isFormattedFunction = GetFormatString(item.Comment) != null;
+                        var singleLineValue = RegexRemoveSpace.Replace(item.Value, " ").Trim();
+                        var summary = $"Looks up a localized string similar to: {singleLineValue}";
 
-                    if (isFormattedFunction)
-                    {
-                        ManageFormattedFunction(localization, item.Key, item.Value, item.Comment);
+                        var localization = new Localization()
+                        {
+                            Key = item.Key,
+                            AccessorSummary = summary
+                        };
+
+                        if (isFormattedFunction)
+                        {
+                            ManageFormattedFunction(localization, item.Key, item.Value, item.Comment);
+                        }
+
+                        result.Localizations.Add(localization);
                     }
-
-                    result.Localizations.Add(localization);
                 }
             }
 
             return result;
         }
+
 
         public IEnumerable<GeneratedFile> GenerateCode(string resourcePath, string baseFilename, string content, string defaultNamespace, bool supportPluralization, ProjectItem projectItem)
         {
@@ -213,21 +248,38 @@ namespace ReswPlus.CodeGenerator
             localization.Parameters = tagTypedInfo.Parameters;
             if (localization is PluralLocalization pluralLocalization)
             {
-                FunctionParameter extraParameterForPluralization = null;
                 FunctionParameter pluralizationQuantifier = null;
                 // Add an extra parameter for pluralization if necessary
                 if (tagTypedInfo.PluralizationParameter == null)
                 {
-                    pluralizationQuantifier = extraParameterForPluralization = new FunctionParameter
+                    pluralizationQuantifier = new FunctionParameter
                     { Type = ParameterType.Double, Name = "pluralizationReferenceNumber" };
+                    pluralLocalization.ExtraParameters.Add(pluralizationQuantifier);
                 }
                 else
                 {
                     pluralizationQuantifier = tagTypedInfo.PluralizationParameter;
                 }
 
-                pluralLocalization.ExtraParameterForPluralization = extraParameterForPluralization;
                 pluralLocalization.ParameterToUseForPluralization = pluralizationQuantifier;
+            }
+            if (localization is IVariantLocalization variantLocalization)
+            {
+                FunctionParameter variantParameter = null;
+                // Add an extra parameter for variant if necessary
+                if (tagTypedInfo.VariantParameter == null)
+                {
+                    variantParameter = new FunctionParameter
+                    { Type = ParameterType.Int, Name = "variantId" };
+                    localization.ExtraParameters.Add(variantParameter);
+                }
+                else
+                {
+                    variantParameter = tagTypedInfo.VariantParameter;
+                }
+
+                variantLocalization.ParameterToUseForVariant = variantParameter;
+
             }
 
             return true;

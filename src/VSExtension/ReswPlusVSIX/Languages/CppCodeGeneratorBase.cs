@@ -20,12 +20,12 @@ namespace ReswPlus.Languages
         protected abstract void CppGenerateStronglyTypedClassStaticFunc(CodeStringBuilder builderHeader, string computedNamespace, string resourceFilename);
         protected abstract void HeaderCloseStronglyTypedClass(CodeStringBuilder builderHeader);
 
-        protected abstract void HeaderCreatePluralizationAccessor(CodeStringBuilder builderHeader, string pluralKey, string summary);
-        protected abstract void CppCreatePluralizationAccessor(CodeStringBuilder builderHeader, string computedNamespaces, string pluralKey, bool supportNoneState);
+        protected abstract void HeaderCreateTemplateAccessor(CodeStringBuilder builderHeader, string key, string summary, bool supportPlural, bool supportVariants);
+        protected abstract void CppCreateTemplateAccessor(CodeStringBuilder builderHeader, string computedNamespaces, string key, bool supportPlural, bool pluralSupportNoneState, bool supportVariants);
         protected abstract void HeaderCreateAccessor(CodeStringBuilder builderHeader, string key, string summary);
         protected abstract void CppCreateAccessor(CodeStringBuilder builderHeader, string computedNamespace, string key);
-        protected abstract void HeaderCreateFormatMethod(CodeStringBuilder builderHeader, string key, IEnumerable<FunctionParameter> parameters, string summary = null, FunctionParameter extraParameterForFunction = null, FunctionParameter parameterForPluralization = null);
-        protected abstract void CppCreateFormatMethod(CodeStringBuilder builderHeader, string computedNamespace, string key, IEnumerable<FunctionParameter> parameters, FunctionParameter extraParameterForFunction = null, FunctionParameter parameterForPluralization = null);
+        protected abstract void HeaderCreateFormatMethod(CodeStringBuilder builderHeader, string key, IEnumerable<FunctionParameter> parameters, string summary = null, IEnumerable<FunctionParameter> extraParameters = null);
+        protected abstract void CppCreateFormatMethod(CodeStringBuilder builderHeader, string computedNamespace, string key, IEnumerable<FunctionParameter> parameters, IEnumerable<FunctionParameter> extraParameters = null, FunctionParameter parameterForPluralization = null, FunctionParameter parameterForVariant = null);
         protected abstract void HeaderCreateMarkupExtension(CodeStringBuilder builderHeader, string resourceFileName, string className, IEnumerable<string> keys, IEnumerable<string> namespaces);
         protected abstract void CppCreateMarkupExtension(CodeStringBuilder builderHeader, string computedNamespace, string resourceFileName, string className, IEnumerable<string> keys);
 
@@ -135,13 +135,13 @@ namespace ReswPlus.Languages
                 HeaderOpenRegion(builderHeader, item.Key);
                 if (item is PluralLocalization pluralLocalization)
                 {
-                    HeaderCreatePluralizationAccessor(builderHeader, item.Key, pluralLocalization.TemplateAccessorSummary);
-                    CppCreatePluralizationAccessor(builderCpp, namespaceResourceClass, pluralLocalization.Key, pluralLocalization.SupportNoneState);
+                    HeaderCreateTemplateAccessor(builderHeader, item.Key, pluralLocalization.TemplateAccessorSummary, true, pluralLocalization is IVariantLocalization);
+                    CppCreateTemplateAccessor(builderCpp, namespaceResourceClass, pluralLocalization.Key, true, pluralLocalization.SupportNoneState, pluralLocalization is IVariantLocalization);
                     if (pluralLocalization.Parameters != null && pluralLocalization.Parameters.Any())
                     {
-                        HeaderCreateFormatMethod(builderHeader, pluralLocalization.Key, pluralLocalization.Parameters, pluralLocalization.FormatSummary, pluralLocalization.ExtraParameterForPluralization, pluralLocalization.ParameterToUseForPluralization);
+                        HeaderCreateFormatMethod(builderHeader, pluralLocalization.Key, pluralLocalization.Parameters, pluralLocalization.FormatSummary, pluralLocalization.ExtraParameters);
                         builderCpp.AppendEmptyLine();
-                        CppCreateFormatMethod(builderCpp, namespaceResourceClass, pluralLocalization.Key, pluralLocalization.Parameters, pluralLocalization.ExtraParameterForPluralization, pluralLocalization.ParameterToUseForPluralization);
+                        CppCreateFormatMethod(builderCpp, namespaceResourceClass, pluralLocalization.Key, pluralLocalization.Parameters, pluralLocalization.ExtraParameters, pluralLocalization.ParameterToUseForPluralization, (pluralLocalization as IVariantLocalization)?.ParameterToUseForVariant);
                     }
                 }
                 else if (item is Localization localization)

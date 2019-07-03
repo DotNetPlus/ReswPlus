@@ -15,6 +15,7 @@ namespace ReswPlus.Resw
     {
         public List<FunctionParameter> Parameters { get; set; } = new List<FunctionParameter>();
         public FunctionParameter PluralizationParameter { get; set; }
+        public FunctionParameter VariantParameter { get; set; }
     }
 
     internal class ParameterTypeInfo
@@ -79,6 +80,11 @@ namespace ReswPlus.Resw
                 {
                     result.PluralizationParameter = functionParam;
                 }
+                else if(trimmedType == "G" && result.VariantParameter == null)
+                {
+                    result.VariantParameter = functionParam;
+                }
+
                 result.Parameters.Add(functionParam);
                 ++paramIndex;
             }
@@ -87,7 +93,12 @@ namespace ReswPlus.Resw
 
         public static (ParameterType type, ParameterType? typeToCast) GetParameterType(string key)
         {
-            if (key.StartsWith("Q"))
+            if(key == "G")
+            {
+                return (ParameterType.Int, null);
+
+            }
+            else if (key.StartsWith("Q"))
             {
                 if (key == "Q")
                 {
@@ -101,7 +112,8 @@ namespace ReswPlus.Resw
 
         public static IEnumerable<string> GetParameterSymbols()
         {
-            yield return "Q";
+            yield return "G"; // variant
+            yield return "Q"; // plural
             foreach (var type in _acceptedTypes)
             {
                 yield return type.Key;
