@@ -6,11 +6,11 @@ namespace TestCppWinRT
         {
             static String YouGotEmails(Double number);
             static String YouGotEmails_Format(UInt32 numberMessages, String username);
-            static String GotMessagesFrom(Double number, UInt32 variantId);
-            static String GotMessagesFrom_Format(UInt32 numberMessages, Int32 personalPronoun);
+            static String GotMessagesFrom(Int64 variantId, Double number);
+            static String GotMessagesFrom_Format(UInt32 numberMessages, Int64 personalPronoun);
             static String Hello{ get; };
             static String TestWithObject{ get; };
-            static String TestWithObject_Format(Object obj);
+            static String TestWithObject_Format(Windows.Foundation.IStringable obj);
         };
 
         enum KeyEnum

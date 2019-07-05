@@ -19,16 +19,16 @@ ResourceLoader^ local::Resources::GetResourceLoader()
     return _resourceLoader;
 }
 
-String^ local::Resources::GotMessagesFrom(double pluralNumber, int variantId)
+String^ local::Resources::GotMessagesFrom(long long variantId, double pluralNumber)
 {
     return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), ref new String(L"GotMessagesFrom_Variant") + variantId, pluralNumber);
 }
 
-String^ local::Resources::GotMessagesFrom_Format(unsigned int numberMessages, int personalPronoun)
+String^ local::Resources::GotMessagesFrom_Format(unsigned int numberMessages, long long personalPronoun)
 {
-    size_t needed = _swprintf_p(nullptr, 0, GotMessagesFrom(static_cast<double>(numberMessages), personalPronoun)->Data(), numberMessages, personalPronoun);
+    size_t needed = _swprintf_p(nullptr, 0, GotMessagesFrom(personalPronoun, static_cast<double>(numberMessages))->Data(), numberMessages, personalPronoun);
     wchar_t *buffer = new wchar_t[needed + 1];
-    _swprintf_p(buffer, needed + 1, GotMessagesFrom(static_cast<double>(numberMessages), personalPronoun)->Data(), numberMessages, personalPronoun);
+    _swprintf_p(buffer, needed + 1, GotMessagesFrom(personalPronoun, static_cast<double>(numberMessages))->Data(), numberMessages, personalPronoun);
     return ref new String(buffer);
 }
 

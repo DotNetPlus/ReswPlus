@@ -18,7 +18,7 @@ namespace ReswPlus.Languages
                 case ParameterType.Uint:
                     return "unsigned int";
                 case ParameterType.Long:
-                    return "long";
+                    return "long long";
                 case ParameterType.String:
                     return isHeader ? "Platform::String^" : "String^";
                 case ParameterType.Double:
@@ -26,9 +26,9 @@ namespace ReswPlus.Languages
                 case ParameterType.Char:
                     return "wchar_t";
                 case ParameterType.Ulong:
-                    return "unsigned long";
+                    return "unsigned long long";
                 case ParameterType.Decimal:
-                    return "long double";
+                    return "double";
                 //case ParameterType.Object:
                 default:
                     return isHeader ? "Platform::Object^" : "Object^";
@@ -116,7 +116,7 @@ namespace ReswPlus.Languages
             var parameters = new List<string>();
             if (supportVariants)
             {
-                parameters.Add("long variantId");
+                parameters.Add("long long variantId");
             }
             if (supportPlural)
             {
@@ -136,7 +136,7 @@ namespace ReswPlus.Languages
             var parameters = new List<string>();
             if (supportVariants)
             {
-                parameters.Add("long variantId");
+                parameters.Add("long long variantId");
             }
             if (supportPlural)
             {

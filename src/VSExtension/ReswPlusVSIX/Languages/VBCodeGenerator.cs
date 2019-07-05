@@ -167,9 +167,9 @@ namespace ReswPlus.Languages
             if (supportVariants)
             {
                 _builder.AppendEmptyLine();
-                _builder.AppendLine("/// <summary>");
-                _builder.AppendLine($"///   {summary}");
-                _builder.AppendLine("/// </summary>");
+                _builder.AppendLine("' <summary>");
+                _builder.AppendLine($"'   {summary}");
+                _builder.AppendLine("' </summary>");
                 _builder.AppendLine($"Public Shared Function {key}({genericParameters.Aggregate((a, b) => a + ", " + b)}) As String");
                 _builder.AddLevel();
                 _builder.AppendLine("Try");
@@ -187,6 +187,7 @@ namespace ReswPlus.Languages
                 _builder.AddLevel();
                 _builder.AppendLine("return \"\"");
                 _builder.RemoveLevel();
+                _builder.AppendLine("End Try");
                 _builder.RemoveLevel();
                 _builder.AppendLine("End Function");
             }
@@ -265,7 +266,7 @@ namespace ReswPlus.Languages
                 _builder.AppendLine("' <summary>");
                 _builder.AppendLine($"'   {summary}");
                 _builder.AppendLine("' </summary>");
-                var genericParametersStr = functionParameters.Select(p => (p.IsVariantId ? "object" : GetParameterTypeString(p.Type)) + " " + p.Name).Aggregate((a, b) => a + ", " + b);
+                var genericParametersStr = functionParameters.Select(p => "ByVal " + p.Name + " As " + (p.IsVariantId ? "Object" : GetParameterTypeString(p.Type))).Aggregate((a, b) => a + ", " + b);
                 _builder.AppendLine($"Public Shared Function {key}_Format({genericParametersStr}) As String");
                 _builder.AddLevel();
                 _builder.AppendLine("Try");
@@ -276,6 +277,7 @@ namespace ReswPlus.Languages
                 _builder.AddLevel();
                 _builder.AppendLine("Return \"\"");
                 _builder.RemoveLevel();
+                _builder.AppendLine("End Try");
                 _builder.RemoveLevel();
                 _builder.AppendLine("End Function");
             }

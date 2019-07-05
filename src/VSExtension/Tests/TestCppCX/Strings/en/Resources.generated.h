@@ -19,12 +19,12 @@ namespace TestCppCX
             /// <summary>
             ///   Get the pluralized version of the string similar to: You got %d message from her
             /// </summary>
-            static Platform::String^ GotMessagesFrom(double pluralNumber, int variantId);
+            static Platform::String^ GotMessagesFrom(long long variantId, double pluralNumber);
         public:
             /// <summary>
             ///   Format the string similar to: You got %d message from her
             /// </summary>
-            static Platform::String^ GotMessagesFrom_Format(unsigned int numberMessages, int personalPronoun);
+            static Platform::String^ GotMessagesFrom_Format(unsigned int numberMessages, long long personalPronoun);
 
         /* Methods and properties for SendMessage */
 

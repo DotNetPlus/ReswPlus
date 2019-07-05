@@ -9,7 +9,10 @@
 
     <Grid>
         <StackPanel Margin="48">
-            <TextBlock x:Name="HelloTextBlock" FontWeight="Bold" Text="{x:Bind strings:Resources.Hello}" />
+            <TextBlock
+                x:Name="HelloTextBlock"
+                FontWeight="Bold"
+                Text="{x:Bind strings:Resources.Hello}" />
             <TextBlock FontWeight="Bold" Text="{strings:Resources Key=Hello}" />
             <TextBlock FontWeight="Bold" Text="{x:Bind strings:Resources.TestWithObject_Format(Str)}" />
             <TextBox
@@ -24,13 +27,17 @@
                 Maximum="10"
                 Value="2" />
             <TextBlock Text="{x:Bind strings:Resources.YouGotEmails_Format(EmailsSlider.Value, UserNameText.Text), Mode=OneWay}" />
-            <ComboBox Header="Select a personal pronoun" SelectedIndex="1" x:Name="PronounsComboBox">
+            <ComboBox
+                x:Name="PronounsComboBox"
+                Margin="0,36,0,0"
+                Header="Select a personal pronoun"
+                SelectedIndex="1">
                 <ComboBoxItem>---------</ComboBoxItem>
                 <ComboBoxItem>She/Hers/Her</ComboBoxItem>
                 <ComboBoxItem>He/Him/His</ComboBoxItem>
                 <ComboBoxItem>They/Theirs/Their</ComboBoxItem>
             </ComboBox>
-            <TextBlock Text="{x:Bind strings:Resources.GotMessagesFrom_Format(EmailsSlider.Value, PronounsComboBox.SelectedIndex), Mode=OneWay}" />
+            <TextBlock Text="{x:Bind strings:Resources.GotMessagesFrom_Format(EmailsSlider.Value, PronounsComboBox.SelectedIndex), Mode=OneWay}" FontWeight="Bold" />
         </StackPanel>
     </Grid>
 </Page>

@@ -38,16 +38,16 @@ hstring local::Resources::YouGotEmails_Format(unsigned int numberMessages, hstri
     return hstring(buffer);
 }
 
-hstring local::Resources::GotMessagesFrom(double pluralNumber, int variantId)
+hstring local::Resources::GotMessagesFrom(long variantId, double pluralNumber)
 {
     return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), hstring(L"GotMessagesFrom_Variant") + to_wstring(variantId), pluralNumber);
 }
 
-hstring local::Resources::GotMessagesFrom_Format(unsigned int numberMessages, int personalPronoun)
+hstring local::Resources::GotMessagesFrom_Format(unsigned int numberMessages, long personalPronoun)
 {
-    size_t needed = _swprintf_p(nullptr, 0, GotMessagesFrom(static_cast<double>(numberMessages), personalPronoun).c_str(), numberMessages, personalPronoun);
+    size_t needed = _swprintf_p(nullptr, 0, GotMessagesFrom(personalPronoun, static_cast<double>(numberMessages)).c_str(), numberMessages, personalPronoun);
     wchar_t *buffer = new wchar_t[needed + 1];
-    _swprintf_p(buffer, needed + 1, GotMessagesFrom(static_cast<double>(numberMessages), personalPronoun).c_str(), numberMessages, personalPronoun);
+    _swprintf_p(buffer, needed + 1, GotMessagesFrom(personalPronoun, static_cast<double>(numberMessages)).c_str(), numberMessages, personalPronoun);
     return hstring(buffer);
 }
 
@@ -62,10 +62,9 @@ hstring local::Resources::TestWithObject()
     return GetResourceLoader().GetString(L"TestWithObject");
 }
 
-hstring local::Resources::TestWithObject_Format(IInspectable const& obj)
+hstring local::Resources::TestWithObject_Format(IStringable const& obj)
 {
-    auto _obj_istringable = obj.try_as<IStringable>();
-    auto _obj_string = _obj_istringable == nullptr ? L"" : _obj_istringable.ToString().c_str();
+    auto _obj_string = obj == nullptr ? L"" : obj.ToString().c_str();
     size_t needed = _swprintf_p(nullptr, 0, TestWithObject().c_str(), _obj_string);
     wchar_t *buffer = new wchar_t[needed + 1];
     _swprintf_p(buffer, needed + 1, TestWithObject().c_str(), _obj_string);
