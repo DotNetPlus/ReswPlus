@@ -15,7 +15,6 @@ namespace ReswPlusSample
             InitializeComponent();
             NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[0];
             NavFrame.Navigate(typeof(StronglyTypedSamplePage), null);
-
         }
 
         private void NavigationViewControl_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
@@ -48,6 +47,11 @@ namespace ReswPlusSample
                     case "AdvancedPluralization":
                         {
                             NavFrame.Navigate(typeof(AdvancedPluralizationSamplePage), null, args.RecommendedNavigationTransitionInfo);
+                        }
+                        break;
+                    case "Variants":
+                        {
+                            NavFrame.Navigate(typeof(VariantsSamplePage), null, args.RecommendedNavigationTransitionInfo);
                         }
                         break;
                 }

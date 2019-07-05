@@ -117,6 +117,31 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AnimalTreat_Variant1_One" xml:space="preserve">
+    <value>Reward your pup, give {0} biscuit to {2} the dog!</value>
+    <comment>#ReswPlusTyped[Q(treatNumber), V(petType), s(petName)]</comment>
+  </data>
+  <data name="AnimalTreat_Variant1_Other" xml:space="preserve">
+    <value>Reward your pup, give {0} biscuits to {2} the dog!</value>
+  </data>
+  <data name="AnimalTreat_Variant2_One" xml:space="preserve">
+    <value>Reward your kitty, give {0} treat to your cat {2}!</value>
+  </data>
+  <data name="AnimalTreat_Variant2_Other" xml:space="preserve">
+    <value>Reward your kitty, give {0} treats to your cat {2}!</value>
+  </data>
+  <data name="DriverArrived_Variant1" xml:space="preserve">
+    <value>Your driver is here, she is waiting outside. Do you want to message her?</value>
+  </data>
+  <data name="DriverArrived_Variant2" xml:space="preserve">
+    <value>Your driver is here, he is waiting outside. Do you want to message him?</value>
+  </data>
+  <data name="DriverArrived_Variant3" xml:space="preserve">
+    <value>Your driver is here, they are waiting outside. Do you want to message them?</value>
+  </data>
+  <data name="DriverArrived_Variant4" xml:space="preserve">
+    <value>Your driver is here, ze is waiting outside. Do you want to message hir?</value>
+  </data>
   <data name="FileShared_One" xml:space="preserve">
     <value>{0} shared {1} photo from {2}</value>
     <comment>#ReswPlusTyped[s(username), Q, s(city)]</comment>
@@ -131,6 +156,18 @@
   <data name="GotMessages" xml:space="preserve">
     <value>Welcome {0}, you got {1} emails!</value>
     <comment>#ReswPlusTyped[s, u]</comment>
+  </data>
+  <data name="Greeting_Variant1" xml:space="preserve">
+    <value>Good morning, enjoy your day!</value>
+  </data>
+  <data name="Greeting_Variant2" xml:space="preserve">
+    <value>Good afternoon, have a good time!</value>
+  </data>
+  <data name="Greeting_Variant3" xml:space="preserve">
+    <value>Good evening, hope your day was fine!</value>
+  </data>
+  <data name="Greeting_Variant4" xml:space="preserve">
+    <value>Good night, sleep well, see you tomorrow!</value>
   </data>
   <data name="MinutesLeft_One" xml:space="preserve">
     <value>{0} minute left</value>

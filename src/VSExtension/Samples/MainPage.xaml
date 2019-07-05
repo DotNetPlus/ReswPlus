@@ -33,6 +33,9 @@
                 <NavigationViewItem
                     Content="Advanced Pluralization"
                     Tag="AdvancedPluralization" />
+                <NavigationViewItem
+                    Content="Variants"
+                    Tag="Variants" />
             </NavigationView.MenuItems>
             <Frame x:Name="NavFrame" />
         </NavigationView>
