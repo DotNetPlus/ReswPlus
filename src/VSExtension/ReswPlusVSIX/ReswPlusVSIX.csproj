@@ -65,6 +65,7 @@
     <Compile Include="Languages\DotNetGeneratorBase.cs" />
     <Compile Include="Languages\VBCodeGenerator.cs" />
     <Compile Include="Languages\ICodeGenerator.cs" />
+    <Compile Include="Resw\ReswFilters.cs" />
     <Compile Include="SingleFileGenerators\ReswPlusGeneratorBase.cs" />
     <Compile Include="SingleFileGenerators\ReswPlusAdvancedGenerator.cs" />
     <Compile Include="Languages\CppCodeGeneratorBase.cs" />

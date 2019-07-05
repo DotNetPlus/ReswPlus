@@ -24,7 +24,7 @@ namespace ReswPlus
         public const int GeneratePluralizationCommandId = 0x0201;
 
         /// <summary>
-        /// Command menu group (command set GUID).
+        /// Command menu variant (command set GUID).
         /// </summary>
         public static readonly Guid CommandSet = new Guid("6e52371a-5161-41cf-bd14-72203edf374d");
 

@@ -31,7 +31,7 @@ namespace ReswPlus.Languages
                     return "unsigned long";
                 //case ParameterType.Object:
                 default:
-                    return isHeader ? "Windows::Foundation::IInspectable const&" : "IInspectable const&";
+                    return isHeader ? "Windows::Foundation::IStringable const&" : "IStringable const&";
             }
         }
         protected override bool SupportMultiNamespaceDeclaration(Project project)
@@ -84,9 +84,10 @@ namespace ReswPlus.Languages
             builderHeader.AppendLine("#include <winrt/Windows.Foundation.h>");
             builderHeader.AppendLine("#include <winrt/Windows.UI.Xaml.Interop.h>");
             builderHeader.AppendLine("using namespace winrt;");
-            if(namespaces != null && namespaces.Any())
+            builderHeader.AppendLine("using namespace std;");
+            if (namespaces != null && namespaces.Any())
             {
-                builderHeader.AppendLine($"using namespace winrt::{namespaces.Aggregate((a,b)=> a + "::" + b)};");
+                builderHeader.AppendLine($"using namespace winrt::{namespaces.Aggregate((a, b) => a + "::" + b)};");
             }
             builderHeader.AppendLine("using namespace winrt::Windows::Foundation;");
             builderHeader.AppendLine("using namespace winrt::Windows::ApplicationModel::Resources;");
@@ -131,34 +132,63 @@ namespace ReswPlus.Languages
             builderHeader.AppendLine("};");
         }
 
-        protected override void HeaderCreatePluralizationAccessor(CodeStringBuilder builderHeader, string pluralKey, string summary)
+        protected override void HeaderCreateTemplateAccessor(CodeStringBuilder builderHeader, string key, string summary, bool supportPlural, bool supportVariants)
         {
+            var parameters = new List<string>();
+            if (supportVariants)
+            {
+                parameters.Add("long variantId");
+            }
+            if (supportPlural)
+            {
+                parameters.Add("double pluralNumber");
+            }
+
             builderHeader.AppendLine("public:");
             builderHeader.AddLevel();
             builderHeader.AppendLine("/// <summary>");
             builderHeader.AppendLine($"///   {summary}");
             builderHeader.AppendLine("/// </summary>");
-            builderHeader.AppendLine($"static hstring {pluralKey}(double number);");
+            builderHeader.AppendLine($"static hstring {key}({parameters.Aggregate((a, b) => a + ", " + b)});");
             builderHeader.RemoveLevel();
         }
-        protected override void CppCreatePluralizationAccessor(CodeStringBuilder builderHeader, string computedNamespaces, string pluralKey, bool supportNoneState)
+
+        protected override void CppCreateTemplateAccessor(CodeStringBuilder builderCpp, string computedNamespaces, string key, bool supportPlural, bool pluralSupportNoneState, bool supportVariants)
         {
-            builderHeader.AppendLine($"hstring {computedNamespaces}{pluralKey}(double number)");
-            builderHeader.AppendLine("{");
-            builderHeader.AddLevel();
-            if (supportNoneState)
+            var parameters = new List<string>();
+            if (supportVariants)
             {
-                builderHeader.AppendLine("if(number == 0)");
-                builderHeader.AppendLine("{");
-                builderHeader.AddLevel();
-                builderHeader.AppendLine($"return GetResourceLoader().GetString(L\"{pluralKey}_None\");");
-                builderHeader.RemoveLevel();
-                builderHeader.AppendLine("}");
+                parameters.Add("long variantId");
+            }
+            if (supportPlural)
+            {
+                parameters.Add("double pluralNumber");
             }
 
-            builderHeader.AppendLine($"return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), L\"{pluralKey}\", number);");
-            builderHeader.RemoveLevel();
-            builderHeader.AppendLine("}");
+            builderCpp.AppendLine($"hstring {computedNamespaces}{key}({parameters.Aggregate((a, b) => a + ", " + b)})");
+            builderCpp.AppendLine("{");
+            builderCpp.AddLevel();
+            if (supportPlural && pluralSupportNoneState)
+            {
+                builderCpp.AppendLine("if(pluralNumber == 0)");
+                builderCpp.AppendLine("{");
+                builderCpp.AddLevel();
+                builderCpp.AppendLine($"return GetResourceLoader().GetString(L\"{key}_None\");");
+                builderCpp.RemoveLevel();
+                builderCpp.AppendLine("}");
+            }
+
+            var stringKey = supportVariants ? $"hstring(L\"{key}_Variant\") + to_wstring(variantId)" : $"L\"{key}\"";
+            if (supportPlural)
+            {
+                builderCpp.AppendLine($"return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), {stringKey}, pluralNumber);");
+            }
+            else
+            {
+                builderCpp.AppendLine($"return GetResourceLoader().GetString({stringKey});");
+            }
+            builderCpp.RemoveLevel();
+            builderCpp.AppendLine("}");
         }
 
         protected override void HeaderCreateAccessor(CodeStringBuilder builderHeader, string key, string summary)
@@ -182,13 +212,13 @@ namespace ReswPlus.Languages
             builderHeader.AppendLine("}");
         }
 
-        protected override void HeaderCreateFormatMethod(CodeStringBuilder builderHeader, string key, IEnumerable<FunctionParameter> parameters, string summary = null, FunctionParameter extraParameterForFunction = null, FunctionParameter parameterForPluralization = null)
+        protected override void HeaderCreateFormatMethod(CodeStringBuilder builderHeader, string key, IEnumerable<FunctionParameter> parameters, string summary = null, IEnumerable<FunctionParameter> extraParameters = null)
         {
             IEnumerable<FunctionParameter> functionParameters;
-            if (extraParameterForFunction != null)
+            if (extraParameters != null)
             {
                 var list = new List<FunctionParameter>(parameters);
-                list.Insert(0, extraParameterForFunction);
+                list.InsertRange(0, extraParameters);
                 functionParameters = list;
             }
             else
@@ -205,13 +235,13 @@ namespace ReswPlus.Languages
             builderHeader.RemoveLevel();
         }
 
-        protected override void CppCreateFormatMethod(CodeStringBuilder builderHeader, string computedNamespace, string key, IEnumerable<FunctionParameter> parameters, FunctionParameter extraParameterForFunction = null, FunctionParameter parameterForPluralization = null)
+        protected override void CppCreateFormatMethod(CodeStringBuilder builderHeader, string computedNamespace, string key, IEnumerable<FunctionParameter> parameters, IEnumerable<FunctionParameter> extraParameters = null, FunctionParameter parameterForPluralization = null, FunctionParameter parameterForVariant = null)
         {
             IEnumerable<FunctionParameter> functionParameters;
-            if (extraParameterForFunction != null)
+            if (extraParameters != null)
             {
                 var list = new List<FunctionParameter>(parameters);
-                list.Insert(0, extraParameterForFunction);
+                list.InsertRange(0, extraParameters);
                 functionParameters = list;
             }
             else
@@ -225,8 +255,7 @@ namespace ReswPlus.Languages
             builderHeader.AddLevel();
             foreach (var param in parameters.Where(p => p.Type == ParameterType.Object))
             {
-                builderHeader.AppendLine($"auto _{param.Name}_istringable = {param.Name}.try_as<IStringable>();");
-                builderHeader.AppendLine($"auto _{param.Name}_string = _{param.Name}_istringable == nullptr ? L\"\" : _{param.Name}_istringable.ToString().c_str();");
+                builderHeader.AppendLine($"auto _{param.Name}_string = {param.Name} == nullptr ? L\"\" : {param.Name}.ToString().c_str();");
             }
 
             var formatParameters = parameters
@@ -247,11 +276,25 @@ namespace ReswPlus.Languages
             if (parameterForPluralization != null)
             {
                 var doubleValue = parameterForPluralization.TypeToCast.HasValue ? $"static_cast<{GetParameterTypeString(parameterForPluralization.TypeToCast.Value, false)}>({parameterForPluralization.Name})" : parameterForPluralization.Name;
-                sourceForFormat = $"{key}({doubleValue})";
+                if (parameterForVariant != null)
+                {
+                    sourceForFormat = $"{key}({parameterForVariant.Name}, {doubleValue})";
+                }
+                else
+                {
+                    sourceForFormat = $"{key}({doubleValue})";
+                }
             }
             else
             {
-                sourceForFormat = $"{key}()";
+                if (parameterForVariant != null)
+                {
+                    sourceForFormat = $"{key}({parameterForVariant.Name})";
+                }
+                else
+                {
+                    sourceForFormat = $"{key}()";
+                }
             }
 
             builderHeader.AppendLine($"size_t needed = _swprintf_p(nullptr, 0, {sourceForFormat}.c_str(), {formatParameters});");
@@ -370,9 +413,19 @@ namespace ReswPlus.Languages
             builderHeader.AppendLine("};");
         }
 
-        private void IdlCreatePluralizationAccessor(CodeStringBuilder builderHeader, string pluralKey)
+        private void IdlCreateTemplateAccessor(CodeStringBuilder builderHeader, string key, bool supportPlural, bool supportVariants)
         {
-            builderHeader.AppendLine($"static String {pluralKey}(Double number);");
+            var parameters = new List<string>();
+            if (supportVariants)
+            {
+                parameters.Add("Int64 variantId");
+            }
+            if (supportPlural)
+            {
+                parameters.Add("Double number");
+            }
+
+            builderHeader.AppendLine($"static String {key}({parameters.Aggregate((a, b) => a + ", " + b)});");
         }
 
         private void IdlCreateAccessor(CodeStringBuilder builderHeader, string key, string summary)
@@ -403,17 +456,17 @@ namespace ReswPlus.Languages
                     return "UInt64";
                 //case ParameterType.Object:
                 default:
-                    return "Object";
+                    return "Windows.Foundation.IStringable";
             }
         }
 
-        private void IdlCreateFormatMethod(CodeStringBuilder builderHeader, string key, IEnumerable<FunctionParameter> parameters, string summary = null, FunctionParameter extraParameterForFunction = null, FunctionParameter parameterForPluralization = null)
+        private void IdlCreateFormatMethod(CodeStringBuilder builderHeader, string key, IEnumerable<FunctionParameter> parameters, string summary = null, IEnumerable<FunctionParameter> extraParameters = null, FunctionParameter parameterForPluralization = null)
         {
             IEnumerable<FunctionParameter> functionParameters;
-            if (extraParameterForFunction != null)
+            if (extraParameters != null)
             {
                 var list = new List<FunctionParameter>(parameters);
-                list.Insert(0, extraParameterForFunction);
+                list.InsertRange(0, extraParameters);
                 functionParameters = list;
             }
             else
@@ -484,10 +537,10 @@ namespace ReswPlus.Languages
             {
                 if (item is PluralLocalization pluralLocalization)
                 {
-                    IdlCreatePluralizationAccessor(builderIdl, item.Key);
+                    IdlCreateTemplateAccessor(builderIdl, item.Key, true, pluralLocalization is IVariantLocalization);
                     if (pluralLocalization.Parameters != null && pluralLocalization.Parameters.Any())
                     {
-                        IdlCreateFormatMethod(builderIdl, pluralLocalization.Key, pluralLocalization.Parameters, pluralLocalization.FormatSummary, pluralLocalization.ExtraParameterForPluralization, pluralLocalization.ParameterToUseForPluralization);
+                        IdlCreateFormatMethod(builderIdl, pluralLocalization.Key, pluralLocalization.Parameters, pluralLocalization.FormatSummary, pluralLocalization.ExtraParameters, pluralLocalization.ParameterToUseForPluralization);
                     }
                 }
                 else if (item is Localization localization)

@@ -118,25 +118,78 @@ namespace ReswPlus.Languages
             _builder.AppendLine("#End Region");
         }
 
-        internal override void CreatePluralizationAccessor(string pluralKey, string summary, bool supportNoneState)
+        internal override void CreateTemplateAccessor(string key, string summary, bool supportPlural, bool pluralSupportNoneState, bool supportVariants)
         {
+            if (!supportPlural && !supportVariants)
+            {
+                return;
+            }
             _builder.AppendLine("' <summary>");
             _builder.AppendLine($"'   {summary}");
             _builder.AppendLine("' </summary>");
-            _builder.AppendLine($"Public Shared Function {pluralKey}(number As Double) As String");
-            _builder.AddLevel();
-            if (!supportNoneState)
+
+            var parameters = new List<string>();
+            var genericParameters = new List<string>();
+            if (supportVariants)
             {
-                _builder.AppendLine("If number = 0 Then");
+                parameters.Add("variantId As Long");
+                genericParameters.Add("variantId As Object");
+            }
+            if (supportPlural)
+            {
+                parameters.Add("pluralNumber As Double");
+                genericParameters.Add("pluralNumber As Double");
+            }
+
+            _builder.AppendLine($"Public Shared Function {key}({parameters.Aggregate((a, b) => a + ", " + b)}) As String");
+            _builder.AddLevel();
+            if (supportPlural && pluralSupportNoneState)
+            {
+                _builder.AppendLine("If pluralNumber = 0 Then");
                 _builder.AddLevel();
-                _builder.AppendLine($"Return _resourceLoader.GetString(\"{pluralKey}_None\")");
+                var noneKey = supportVariants ? $"\"{key}_Variant\" & variantId & \"_None\"" : $"\"{key}_None\"";
+                _builder.AppendLine($"Return _resourceLoader.GetString({noneKey})");
                 _builder.RemoveLevel();
                 _builder.AppendLine("End If");
             }
-
-            _builder.AppendLine($"Return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, \"{pluralKey}\", CDec(number))");
+            var stringKey = supportVariants ? $"\"{key}_Variant\" & variantId" : $"\"{key}\"";
+            if (supportPlural)
+            {
+                _builder.AppendLine($"Return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, {stringKey}, CDec(pluralNumber))");
+            }
+            else
+            {
+                _builder.AppendLine($"Return _resourceLoader.GetString({stringKey})");
+            }
             _builder.RemoveLevel();
             _builder.AppendLine("End Function");
+
+            if (supportVariants)
+            {
+                _builder.AppendEmptyLine();
+                _builder.AppendLine("/// <summary>");
+                _builder.AppendLine($"///   {summary}");
+                _builder.AppendLine("/// </summary>");
+                _builder.AppendLine($"Public Shared Function {key}({genericParameters.Aggregate((a, b) => a + ", " + b)}) As String");
+                _builder.AddLevel();
+                _builder.AppendLine("Try");
+                _builder.AddLevel();
+                if (supportPlural)
+                {
+                    _builder.AppendLine($"Return {key}(Convert.ToInt64(variantId), pluralNumber)");
+                }
+                else
+                {
+                    _builder.AppendLine($"Return {key}(Convert.ToInt64(variantId))");
+                }
+                _builder.RemoveLevel();
+                _builder.AppendLine("Catch");
+                _builder.AddLevel();
+                _builder.AppendLine("return \"\"");
+                _builder.RemoveLevel();
+                _builder.RemoveLevel();
+                _builder.AppendLine("End Function");
+            }
         }
 
         internal override void CreateAccessor(string key, string summary)
@@ -155,17 +208,17 @@ namespace ReswPlus.Languages
             _builder.AppendLine("End Property");
         }
 
-        internal override void CreateFormatMethod(string key, IEnumerable<FunctionParameter> parameters, string summary = null, FunctionParameter extraParameterForFunction = null, FunctionParameter parameterForPluralization = null)
+        internal override void CreateFormatMethod(string key, IEnumerable<FunctionParameter> parameters, string summary = null, IEnumerable<FunctionParameter> extraParameters = null, FunctionParameter parameterForPluralization = null, FunctionParameter parameterForVariant = null)
         {
             _builder.AppendLine("' <summary>");
             _builder.AppendLine($"'   {summary}");
             _builder.AppendLine("' </summary>");
 
             IEnumerable<FunctionParameter> functionParameters;
-            if (extraParameterForFunction != null)
+            if (extraParameters != null && extraParameters.Any())
             {
                 var list = new List<FunctionParameter>(parameters);
-                list.Insert(0, extraParameterForFunction);
+                list.InsertRange(0, extraParameters);
                 functionParameters = list;
             }
             else
@@ -180,16 +233,52 @@ namespace ReswPlus.Languages
             if (parameterForPluralization != null)
             {
                 var doubleValue = parameterForPluralization.TypeToCast.HasValue ? $"CType({parameterForPluralization.Name}, {GetParameterTypeString(parameterForPluralization.TypeToCast.Value)})" : parameterForPluralization.Name;
-                sourceForFormat = $"{key}({doubleValue})";
+                if (parameterForVariant != null)
+                {
+                    sourceForFormat = $"{key}({parameterForVariant.Name}, {doubleValue})";
+                }
+                else
+                {
+                    sourceForFormat = $"{key}({doubleValue})";
+                }
             }
             else
             {
-                sourceForFormat = key;
+                if (parameterForVariant != null)
+                {
+                    sourceForFormat = $"{key}({parameterForVariant.Name})";
+                }
+                else
+                {
+                    sourceForFormat = key;
+                }
             }
             _builder.AddLevel();
             _builder.AppendLine($"Return String.Format({sourceForFormat}, {formatParameters})");
             _builder.RemoveLevel();
             _builder.AppendLine("End Function");
+
+            if (parameters.Any(p => p.IsVariantId))
+            {
+                // one of the parameter is a variantId, we must create a second method with object as the variantId type.
+                _builder.AppendEmptyLine();
+                _builder.AppendLine("' <summary>");
+                _builder.AppendLine($"'   {summary}");
+                _builder.AppendLine("' </summary>");
+                var genericParametersStr = functionParameters.Select(p => (p.IsVariantId ? "object" : GetParameterTypeString(p.Type)) + " " + p.Name).Aggregate((a, b) => a + ", " + b);
+                _builder.AppendLine($"Public Shared Function {key}_Format({genericParametersStr}) As String");
+                _builder.AddLevel();
+                _builder.AppendLine("Try");
+                _builder.AddLevel();
+                _builder.AppendLine($"Return {key}_Format({functionParameters.Select(p => p.IsVariantId ? $"Convert.ToInt64({p.Name})" : p.Name).Aggregate((a, b) => a + ", " + b)})");
+                _builder.RemoveLevel();
+                _builder.AppendLine("Catch");
+                _builder.AddLevel();
+                _builder.AppendLine("Return \"\"");
+                _builder.RemoveLevel();
+                _builder.RemoveLevel();
+                _builder.AppendLine("End Function");
+            }
         }
 
         internal override void CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys)

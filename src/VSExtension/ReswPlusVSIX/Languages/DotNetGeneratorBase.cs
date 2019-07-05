@@ -1,11 +1,8 @@
 using EnvDTE;
 using ReswPlus.ClassGenerator.Models;
 using ReswPlus.Resw;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReswPlus.Languages
 {
@@ -21,12 +18,12 @@ namespace ReswPlus.Languages
         internal abstract void CloseStronglyTypedClass();
         internal abstract void OpenRegion(string name);
         internal abstract void CloseRegion();
-        internal abstract void CreatePluralizationAccessor(string pluralKey, string summary, bool supportNoneState);
+        internal abstract void CreateTemplateAccessor(string key, string summary, bool supportPlural, bool pluralSupportNoneState, bool supportVariants);
 
         internal abstract void CreateAccessor(string key, string summary);
 
         internal abstract void CreateFormatMethod(string key, IEnumerable<FunctionParameter> parameters, string summary = null,
-            FunctionParameter extraParameterForFunction = null, FunctionParameter parameterForPluralization = null);
+            IEnumerable<FunctionParameter> extraParameters = null, FunctionParameter parameterForPluralization = null, FunctionParameter parameterForVariant = null);
 
         internal abstract void CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys);
         internal abstract IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename);
@@ -38,10 +35,10 @@ namespace ReswPlus.Languages
             OpenNamespace(info.Namespaces);
             OpenStronglyTypedClass(info.ResoureFile, info.ClassName);
 
-            bool isFirst = true;
+            var isFirst = true;
             foreach (var item in info.Localizations)
             {
-                if(isFirst)
+                if (isFirst)
                 {
                     isFirst = false;
                 }
@@ -52,11 +49,20 @@ namespace ReswPlus.Languages
                 OpenRegion(item.Key);
                 if (item is PluralLocalization pluralLocalization)
                 {
-                    CreatePluralizationAccessor(item.Key, pluralLocalization.TemplateAccessorSummary, pluralLocalization.SupportNoneState);
+                    CreateTemplateAccessor(item.Key, pluralLocalization.TemplateAccessorSummary, true, pluralLocalization.SupportNoneState, pluralLocalization is IVariantLocalization);
                     if (pluralLocalization.Parameters != null && pluralLocalization.Parameters.Any())
                     {
                         AddNewLine();
-                        CreateFormatMethod(pluralLocalization.Key, pluralLocalization.Parameters, pluralLocalization.FormatSummary, pluralLocalization.ExtraParameterForPluralization, pluralLocalization.ParameterToUseForPluralization);
+                        CreateFormatMethod(pluralLocalization.Key, pluralLocalization.Parameters, pluralLocalization.FormatSummary, pluralLocalization.ExtraParameters, pluralLocalization.ParameterToUseForPluralization, (pluralLocalization as IVariantLocalization)?.ParameterToUseForVariant);
+                    }
+                }
+                else if (item is VariantLocalization variantLocalization)
+                {
+                    CreateTemplateAccessor(item.Key, variantLocalization.TemplateAccessorSummary, false, false, true);
+                    if (variantLocalization.Parameters != null && variantLocalization.Parameters.Any())
+                    {
+                        AddNewLine();
+                        CreateFormatMethod(variantLocalization.Key, variantLocalization.Parameters, variantLocalization.FormatSummary, parameterForVariant: variantLocalization.ParameterToUseForVariant);
                     }
                 }
                 else if (item is Localization localization)

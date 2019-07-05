@@ -18,11 +18,8 @@ Public Class Resources
     ' <summary>
     '   Get the pluralized version of the string similar to: {0} shared {1} photo from {2}
     ' </summary>
-    Public Shared Function FileShared(number As Double) As String
-        If number = 0 Then
-            Return _resourceLoader.GetString("FileShared_None")
-        End If
-        Return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "FileShared", CDec(number))
+    Public Shared Function FileShared(pluralNumber As Double) As String
+        Return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "FileShared", CDec(pluralNumber))
     End Function
 
     ' <summary>
@@ -33,15 +30,28 @@ Public Class Resources
     End Function
     #End Region
 
+    #Region "GotMessagesFrom"
+    ' <summary>
+    '   Get the pluralized version of the string similar to: You got {0} message from her
+    ' </summary>
+    Public Shared Function GotMessagesFrom(pluralNumber As Double, variantId As Integer) As String
+        Return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "GotMessagesFrom_Variant" & variantId, CDec(pluralNumber))
+    End Function
+
+    ' <summary>
+    '   Format the string similar to: You got {0} message from her
+    ' </summary>
+    Public Shared Function GotMessagesFrom_Format(ByVal pluralCount As Double, ByVal variantId As Integer) As String
+        Return String.Format(GotMessagesFrom(pluralCount, variantId), pluralCount, variantId)
+    End Function
+    #End Region
+
     #Region "MinutesLeft"
     ' <summary>
     '   Get the pluralized version of the string similar to: {0} minute left
     ' </summary>
-    Public Shared Function MinutesLeft(number As Double) As String
-        If number = 0 Then
-            Return _resourceLoader.GetString("MinutesLeft_None")
-        End If
-        Return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "MinutesLeft", CDec(number))
+    Public Shared Function MinutesLeft(pluralNumber As Double) As String
+        Return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "MinutesLeft", CDec(pluralNumber))
     End Function
 
     ' <summary>
@@ -56,11 +66,8 @@ Public Class Resources
     ' <summary>
     '   Get the pluralized version of the string similar to: This is the singular form
     ' </summary>
-    Public Shared Function PluralizationTest(number As Double) As String
-        If number = 0 Then
-            Return _resourceLoader.GetString("PluralizationTest_None")
-        End If
-        Return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "PluralizationTest", CDec(number))
+    Public Shared Function PluralizationTest(pluralNumber As Double) As String
+        Return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "PluralizationTest", CDec(pluralNumber))
     End Function
     #End Region
 
@@ -68,8 +75,11 @@ Public Class Resources
     ' <summary>
     '   Get the pluralized version of the string similar to: No new messages from {1}
     ' </summary>
-    Public Shared Function ReceivedMessages(number As Double) As String
-        Return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "ReceivedMessages", CDec(number))
+    Public Shared Function ReceivedMessages(pluralNumber As Double) As String
+        If pluralNumber = 0 Then
+            Return _resourceLoader.GetString("ReceivedMessages_None")
+        End If
+        Return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "ReceivedMessages", CDec(pluralNumber))
     End Function
 
     ' <summary>
@@ -77,6 +87,15 @@ Public Class Resources
     ' </summary>
     Public Shared Function ReceivedMessages_Format(ByVal pluralCount As Double, ByVal paramString2 As String) As String
         Return String.Format(ReceivedMessages(pluralCount), pluralCount, paramString2)
+    End Function
+    #End Region
+
+    #Region "SendMessage"
+    ' <summary>
+    '   Get the variant version of the string similar to: SendMessage_Variant1
+    ' </summary>
+    Public Shared Function SendMessage(variantId As Integer) As String
+        Return _resourceLoader.GetString("SendMessage_Variant" & variantId)
     End Function
     #End Region
 

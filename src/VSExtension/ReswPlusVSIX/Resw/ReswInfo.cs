@@ -3,6 +3,8 @@
 // Source: https://github.com/rudyhuyn/ReswPlus
 
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace ReswPlus.Resw
 {

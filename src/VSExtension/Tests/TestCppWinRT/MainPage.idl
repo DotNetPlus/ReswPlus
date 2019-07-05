@@ -10,6 +10,7 @@ namespace TestCppWinRT
         Windows.UI.Xaml.Controls.TextBox UserNameText{ get; };
         Windows.UI.Xaml.Controls.Slider EmailsSlider{ get; };
         Windows.UI.Xaml.Controls.TextBlock HelloTextBlock{ get; };
+        Windows.UI.Xaml.Controls.ComboBox PronounsComboBox{ get; };
         TestStringable Str{ get; };
     }
 }
