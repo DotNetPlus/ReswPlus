@@ -35,9 +35,6 @@ In Visual Studio, select `Tools > Extensions and Updates...`, then select `Onlin
 
 Alternatively, you can directly download the extension here: https://marketplace.visualstudio.com/items?itemName=rudyhuyn.ReswPlus
 
-> If you used ReswPlus 0.2, read [changelog and breaking changes of ReswPlus 0.3](https://github.com/rudyhuyn/ReswPlus/blob/master/CHANGELOG.md) 
-
-
 ## How to activate ReswPlus in my project
 
 In your project, right-click on the resw file of the default language of your application (commonly `/Strings/en/Resources.resw`) and select the menu `ReswPlus`.
@@ -109,7 +106,7 @@ Types currently supported for parameters:
 | c          | char    | Char     | wchar_t           | wchar_t           |
 | ul         | ulong   | ULong    | unsigned long     | unsigned long     |
 | m          | decimal | Decimal  | long double       | long double       |
-| o          | Object  | object   | Platform::Object^ | IInspectable      |
+| o          | Object  | object   | Platform::Object^ | IStringable       |
 
 Resw also allows you to name the parameters to make the code easy to read.
 
