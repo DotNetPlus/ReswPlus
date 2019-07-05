@@ -15,6 +15,75 @@ namespace ReswPlusSample.Strings{
         {
             _resourceLoader = ResourceLoader.GetForViewIndependentUse("Resources");
         }
+        #region AnimalTreat
+        /// <summary>
+        ///   Get the pluralized version of the string similar to: Reward your pup, give {0} biscuit to {2} the dog!
+        /// </summary>
+        public static string AnimalTreat(long variantId, double pluralNumber)
+        {
+            return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "AnimalTreat_Variant" + variantId, pluralNumber);
+        }
+
+        /// <summary>
+        ///   Get the pluralized version of the string similar to: Reward your pup, give {0} biscuit to {2} the dog!
+        /// </summary>
+        public static string AnimalTreat(object variantId, double pluralNumber)
+        {
+            try
+            {
+                return AnimalTreat(Convert.ToInt64(variantId), pluralNumber);
+            }
+            catch
+            {
+                return "";
+            }
+        }
+
+        /// <summary>
+        ///   Format the string similar to: Reward your pup, give {0} biscuit to {2} the dog!
+        /// </summary>
+        public static string AnimalTreat_Format(double treatNumber, long petType, string petName)
+        {
+            return string.Format(AnimalTreat(petType, treatNumber), treatNumber, petType, petName);
+        }
+
+        public static string AnimalTreat_Format(double treatNumber, object petType, string petName)
+        {
+            try
+            {
+                return AnimalTreat_Format(treatNumber, Convert.ToInt64(petType), petName);
+            }
+            catch
+            {
+                return "";
+            }
+        }
+        #endregion
+
+        #region DriverArrived
+        /// <summary>
+        ///   Get the variant version of the string similar to: DriverArrived_Variant1
+        /// </summary>
+        public static string DriverArrived(long variantId)
+        {
+            return _resourceLoader.GetString("DriverArrived_Variant" + variantId);
+        }
+
+        /// <summary>
+        ///   Get the variant version of the string similar to: DriverArrived_Variant1
+        /// </summary>
+        public static string DriverArrived(object variantId)
+        {
+            try
+            {
+                return DriverArrived(Convert.ToInt64(variantId));
+            }
+            catch
+            {
+                return "";
+            }
+        }
+        #endregion
 
         #region FileShared
         /// <summary>
@@ -31,6 +100,31 @@ namespace ReswPlusSample.Strings{
         public static string FileShared_Format(string username, double pluralCount, string city)
         {
             return string.Format(FileShared(pluralCount), username, pluralCount, city);
+        }
+        #endregion
+
+        #region Greeting
+        /// <summary>
+        ///   Get the variant version of the string similar to: Greeting_Variant1
+        /// </summary>
+        public static string Greeting(long variantId)
+        {
+            return _resourceLoader.GetString("Greeting_Variant" + variantId);
+        }
+
+        /// <summary>
+        ///   Get the variant version of the string similar to: Greeting_Variant1
+        /// </summary>
+        public static string Greeting(object variantId)
+        {
+            try
+            {
+                return Greeting(Convert.ToInt64(variantId));
+            }
+            catch
+            {
+                return "";
+            }
         }
         #endregion
 
@@ -114,15 +208,19 @@ namespace ReswPlusSample.Strings{
         }
         #endregion
 
+        #region ThisIsATooltip
         /// <summary>
         ///   Looks up a localized string similar to: this is a tooltip text
         /// </summary>
         public static string ThisIsATooltip => _resourceLoader.GetString("ThisIsATooltip");
+        #endregion
 
+        #region WelcomeTitle
         /// <summary>
         ///   Looks up a localized string similar to: Hello World!
         /// </summary>
         public static string WelcomeTitle => _resourceLoader.GetString("WelcomeTitle");
+        #endregion
 
         #region YourAgeAndName
         /// <summary>
@@ -138,7 +236,6 @@ namespace ReswPlusSample.Strings{
             return string.Format(YourAgeAndName, paramDouble1, paramString2);
         }
         #endregion
-
     }
 
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Huyn.ReswPlus", "0.1.0.0")]
@@ -179,5 +276,4 @@ namespace ReswPlusSample.Strings{
             return Converter == null ? res : Converter.Convert(res, typeof(String), ConverterParameter, null);
         }
     }
-
 } //ReswPlusSample.Strings
