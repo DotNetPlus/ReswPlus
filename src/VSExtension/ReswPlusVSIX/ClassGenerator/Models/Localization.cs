@@ -23,7 +23,6 @@ namespace ReswPlus.ClassGenerator.Models
         public string TemplateAccessorSummary { get; set; }
     }
 
-
     internal interface IVariantLocalization
     {
         FunctionParameter ParameterToUseForVariant { get; set; }

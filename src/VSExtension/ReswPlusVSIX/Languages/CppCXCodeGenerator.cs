@@ -114,14 +114,15 @@ namespace ReswPlus.Languages
         protected override void HeaderCreateTemplateAccessor(CodeStringBuilder builderHeader, string pluralKey, string summary, bool supportPlural, bool supportVariants)
         {
             var parameters = new List<string>();
+            if (supportVariants)
+            {
+                parameters.Add("long variantId");
+            }
             if (supportPlural)
             {
                 parameters.Add("double pluralNumber");
             }
-            if (supportVariants)
-            {
-                parameters.Add("int variantId");
-            }
+
             builderHeader.AppendLine("public:");
             builderHeader.AddLevel();
             builderHeader.AppendLine("/// <summary>");
@@ -133,13 +134,13 @@ namespace ReswPlus.Languages
         protected override void CppCreateTemplateAccessor(CodeStringBuilder builderCpp, string computedNamespaces, string key, bool supportPlural, bool pluralSupportNoneState, bool supportVariants)
         {
             var parameters = new List<string>();
+            if (supportVariants)
+            {
+                parameters.Add("long variantId");
+            }
             if (supportPlural)
             {
                 parameters.Add("double pluralNumber");
-            }
-            if (supportVariants)
-            {
-                parameters.Add("int variantId");
             }
 
             builderCpp.AppendLine($"String^ {computedNamespaces}{key}({parameters.Aggregate((a, b) => a + ", " + b)})");
@@ -255,7 +256,7 @@ namespace ReswPlus.Languages
                 var doubleValue = parameterForPluralization.TypeToCast.HasValue ? $"static_cast<{GetParameterTypeString(parameterForPluralization.TypeToCast.Value, false)}>({parameterForPluralization.Name})" : parameterForPluralization.Name;
                 if (parameterForVariant != null)
                 {
-                    sourceForFormat = $"{key}({doubleValue}, {parameterForVariant.Name})";
+                    sourceForFormat = $"{key}({parameterForVariant.Name}, {doubleValue})";
                 }
                 else
                 {

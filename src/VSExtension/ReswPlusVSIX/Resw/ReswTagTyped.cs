@@ -9,6 +9,7 @@ namespace ReswPlus.Resw
         public ParameterType Type { get; set; }
         public string Name { get; set; }
         public ParameterType? TypeToCast { get; set; }
+        public bool IsVariantId { get; internal set; }
     }
 
     internal class FunctionParametersInfo
@@ -65,7 +66,11 @@ namespace ReswPlus.Resw
                 var paramType = GetParameterType(trimmedType);
                 if (string.IsNullOrEmpty(paramName))
                 {
-                    if (trimmedType.StartsWith("Q"))
+                    if(trimmedType == "V")
+                    {
+                        paramName = "variantId";
+                    }
+                    else if (trimmedType.StartsWith("Q"))
                     {
                         paramName = "pluralCount";
                     }
@@ -75,12 +80,12 @@ namespace ReswPlus.Resw
                     }
                 }
 
-                var functionParam = new FunctionParameter { Type = paramType.type, Name = paramName, TypeToCast = paramType.typeToCast };
+                var functionParam = new FunctionParameter { Type = paramType.type, Name = paramName, TypeToCast = paramType.typeToCast, IsVariantId = paramType.isVariantId };
                 if (trimmedType.StartsWith("Q") && result.PluralizationParameter == null)
                 {
                     result.PluralizationParameter = functionParam;
                 }
-                else if(trimmedType == "G" && result.VariantParameter == null)
+                else if(trimmedType == "V" && result.VariantParameter == null)
                 {
                     result.VariantParameter = functionParam;
                 }
@@ -91,28 +96,29 @@ namespace ReswPlus.Resw
             return result;
         }
 
-        public static (ParameterType type, ParameterType? typeToCast) GetParameterType(string key)
+        public static (ParameterType type, ParameterType? typeToCast, bool isVariantId) GetParameterType(string key)
         {
-            if(key == "G")
+            if(key == "V")
             {
-                return (ParameterType.Int, null);
-
+                // VariantId
+                return (ParameterType.Long, null, true);
             }
             else if (key.StartsWith("Q"))
             {
+                //Quantifier for plural
                 if (key == "Q")
                 {
-                    return (ParameterType.Double, null);
+                    return (ParameterType.Double, null, false);
                 }
                 key = key.Substring(1);
             }
             var info = _acceptedTypes[key];
-            return (info.Type, (info.CanBeQuantifier && info.Type != ParameterType.Double ? (ParameterType?)ParameterType.Double : null));
+            return (info.Type, (info.CanBeQuantifier && info.Type != ParameterType.Double ? (ParameterType?)ParameterType.Double : null), false);
         }
 
         public static IEnumerable<string> GetParameterSymbols()
         {
-            yield return "G"; // variant
+            yield return "V"; // variant
             yield return "Q"; // plural
             foreach (var type in _acceptedTypes)
             {

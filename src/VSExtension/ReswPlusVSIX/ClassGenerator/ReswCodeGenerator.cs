@@ -246,23 +246,7 @@ namespace ReswPlus.CodeGenerator
             var summary = $"Format the string similar to: {singleLineValue}";
             localization.FormatSummary = summary;
             localization.Parameters = tagTypedInfo.Parameters;
-            if (localization is PluralLocalization pluralLocalization)
-            {
-                FunctionParameter pluralizationQuantifier = null;
-                // Add an extra parameter for pluralization if necessary
-                if (tagTypedInfo.PluralizationParameter == null)
-                {
-                    pluralizationQuantifier = new FunctionParameter
-                    { Type = ParameterType.Double, Name = "pluralizationReferenceNumber" };
-                    pluralLocalization.ExtraParameters.Add(pluralizationQuantifier);
-                }
-                else
-                {
-                    pluralizationQuantifier = tagTypedInfo.PluralizationParameter;
-                }
 
-                pluralLocalization.ParameterToUseForPluralization = pluralizationQuantifier;
-            }
             if (localization is IVariantLocalization variantLocalization)
             {
                 FunctionParameter variantParameter = null;
@@ -280,6 +264,24 @@ namespace ReswPlus.CodeGenerator
 
                 variantLocalization.ParameterToUseForVariant = variantParameter;
 
+            }
+
+            if (localization is PluralLocalization pluralLocalization)
+            {
+                FunctionParameter pluralizationQuantifier = null;
+                // Add an extra parameter for pluralization if necessary
+                if (tagTypedInfo.PluralizationParameter == null)
+                {
+                    pluralizationQuantifier = new FunctionParameter
+                    { Type = ParameterType.Double, Name = "pluralizationReferenceNumber" };
+                    pluralLocalization.ExtraParameters.Add(pluralizationQuantifier);
+                }
+                else
+                {
+                    pluralizationQuantifier = tagTypedInfo.PluralizationParameter;
+                }
+
+                pluralLocalization.ParameterToUseForPluralization = pluralizationQuantifier;
             }
 
             return true;

@@ -129,14 +129,18 @@ namespace ReswPlus.Languages
             _builder.AppendLine("' </summary>");
 
             var parameters = new List<string>();
+            var genericParameters = new List<string>();
+            if (supportVariants)
+            {
+                parameters.Add("variantId As Long");
+                genericParameters.Add("variantId As Object");
+            }
             if (supportPlural)
             {
                 parameters.Add("pluralNumber As Double");
+                genericParameters.Add("pluralNumber As Double");
             }
-            if (supportVariants)
-            {
-                parameters.Add("variantId As Integer");
-            }
+
             _builder.AppendLine($"Public Shared Function {key}({parameters.Aggregate((a, b) => a + ", " + b)}) As String");
             _builder.AddLevel();
             if (supportPlural && pluralSupportNoneState)
@@ -159,6 +163,33 @@ namespace ReswPlus.Languages
             }
             _builder.RemoveLevel();
             _builder.AppendLine("End Function");
+
+            if (supportVariants)
+            {
+                _builder.AppendEmptyLine();
+                _builder.AppendLine("/// <summary>");
+                _builder.AppendLine($"///   {summary}");
+                _builder.AppendLine("/// </summary>");
+                _builder.AppendLine($"Public Shared Function {key}({genericParameters.Aggregate((a, b) => a + ", " + b)}) As String");
+                _builder.AddLevel();
+                _builder.AppendLine("Try");
+                _builder.AddLevel();
+                if (supportPlural)
+                {
+                    _builder.AppendLine($"Return {key}(Convert.ToInt64(variantId), pluralNumber)");
+                }
+                else
+                {
+                    _builder.AppendLine($"Return {key}(Convert.ToInt64(variantId))");
+                }
+                _builder.RemoveLevel();
+                _builder.AppendLine("Catch");
+                _builder.AddLevel();
+                _builder.AppendLine("return \"\"");
+                _builder.RemoveLevel();
+                _builder.RemoveLevel();
+                _builder.AppendLine("End Function");
+            }
         }
 
         internal override void CreateAccessor(string key, string summary)
@@ -204,7 +235,7 @@ namespace ReswPlus.Languages
                 var doubleValue = parameterForPluralization.TypeToCast.HasValue ? $"CType({parameterForPluralization.Name}, {GetParameterTypeString(parameterForPluralization.TypeToCast.Value)})" : parameterForPluralization.Name;
                 if (parameterForVariant != null)
                 {
-                    sourceForFormat = $"{key}({doubleValue}, {parameterForVariant.Name})";
+                    sourceForFormat = $"{key}({parameterForVariant.Name}, {doubleValue})";
                 }
                 else
                 {
@@ -226,6 +257,28 @@ namespace ReswPlus.Languages
             _builder.AppendLine($"Return String.Format({sourceForFormat}, {formatParameters})");
             _builder.RemoveLevel();
             _builder.AppendLine("End Function");
+
+            if (parameters.Any(p => p.IsVariantId))
+            {
+                // one of the parameter is a variantId, we must create a second method with object as the variantId type.
+                _builder.AppendEmptyLine();
+                _builder.AppendLine("' <summary>");
+                _builder.AppendLine($"'   {summary}");
+                _builder.AppendLine("' </summary>");
+                var genericParametersStr = functionParameters.Select(p => (p.IsVariantId ? "object" : GetParameterTypeString(p.Type)) + " " + p.Name).Aggregate((a, b) => a + ", " + b);
+                _builder.AppendLine($"Public Shared Function {key}_Format({genericParametersStr}) As String");
+                _builder.AddLevel();
+                _builder.AppendLine("Try");
+                _builder.AddLevel();
+                _builder.AppendLine($"Return {key}_Format({functionParameters.Select(p => p.IsVariantId ? $"Convert.ToInt64({p.Name})" : p.Name).Aggregate((a, b) => a + ", " + b)})");
+                _builder.RemoveLevel();
+                _builder.AppendLine("Catch");
+                _builder.AddLevel();
+                _builder.AppendLine("Return \"\"");
+                _builder.RemoveLevel();
+                _builder.RemoveLevel();
+                _builder.AppendLine("End Function");
+            }
         }
 
         internal override void CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys)

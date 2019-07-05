@@ -14,7 +14,7 @@ namespace ReswPlus.Resw
 
     internal static class ReswFilters
     {
-        private static Regex regexVariantItems = new Regex("(?:_(?<variant>Variant\\d+))?(?:_(?<plural>Zero|One|Other|Many|Few|None))?$");
+        private static Regex regexVariantItems = new Regex("(?:_(?<variant>Variant\\-?\\d+))?(?:_(?<plural>Zero|One|Other|Many|Few|None))?$");
 
         public static IEnumerable<VariantedReswItems> VariantWithPluralAndVariant(this IEnumerable<ReswItem> reswItems)
         {

@@ -31,7 +31,7 @@ namespace ReswPlus.Languages
                     return "unsigned long";
                 //case ParameterType.Object:
                 default:
-                    return isHeader ? "Windows::Foundation::IInspectable const&" : "IInspectable const&";
+                    return isHeader ? "Windows::Foundation::IStringable const&" : "IStringable const&";
             }
         }
         protected override bool SupportMultiNamespaceDeclaration(Project project)
@@ -135,14 +135,15 @@ namespace ReswPlus.Languages
         protected override void HeaderCreateTemplateAccessor(CodeStringBuilder builderHeader, string key, string summary, bool supportPlural, bool supportVariants)
         {
             var parameters = new List<string>();
+            if (supportVariants)
+            {
+                parameters.Add("long variantId");
+            }
             if (supportPlural)
             {
                 parameters.Add("double pluralNumber");
             }
-            if (supportVariants)
-            {
-                parameters.Add("int variantId");
-            }
+
             builderHeader.AppendLine("public:");
             builderHeader.AddLevel();
             builderHeader.AppendLine("/// <summary>");
@@ -151,16 +152,17 @@ namespace ReswPlus.Languages
             builderHeader.AppendLine($"static hstring {key}({parameters.Aggregate((a, b) => a + ", " + b)});");
             builderHeader.RemoveLevel();
         }
+
         protected override void CppCreateTemplateAccessor(CodeStringBuilder builderCpp, string computedNamespaces, string key, bool supportPlural, bool pluralSupportNoneState, bool supportVariants)
         {
             var parameters = new List<string>();
+            if (supportVariants)
+            {
+                parameters.Add("long variantId");
+            }
             if (supportPlural)
             {
                 parameters.Add("double pluralNumber");
-            }
-            if (supportVariants)
-            {
-                parameters.Add("int variantId");
             }
 
             builderCpp.AppendLine($"hstring {computedNamespaces}{key}({parameters.Aggregate((a, b) => a + ", " + b)})");
@@ -253,8 +255,7 @@ namespace ReswPlus.Languages
             builderHeader.AddLevel();
             foreach (var param in parameters.Where(p => p.Type == ParameterType.Object))
             {
-                builderHeader.AppendLine($"auto _{param.Name}_istringable = {param.Name}.try_as<IStringable>();");
-                builderHeader.AppendLine($"auto _{param.Name}_string = _{param.Name}_istringable == nullptr ? L\"\" : _{param.Name}_istringable.ToString().c_str();");
+                builderHeader.AppendLine($"auto _{param.Name}_string = {param.Name} == nullptr ? L\"\" : {param.Name}.ToString().c_str();");
             }
 
             var formatParameters = parameters
@@ -277,7 +278,7 @@ namespace ReswPlus.Languages
                 var doubleValue = parameterForPluralization.TypeToCast.HasValue ? $"static_cast<{GetParameterTypeString(parameterForPluralization.TypeToCast.Value, false)}>({parameterForPluralization.Name})" : parameterForPluralization.Name;
                 if (parameterForVariant != null)
                 {
-                    sourceForFormat = $"{key}({doubleValue}, {parameterForVariant.Name})";
+                    sourceForFormat = $"{key}({parameterForVariant.Name}, {doubleValue})";
                 }
                 else
                 {
@@ -415,13 +416,13 @@ namespace ReswPlus.Languages
         private void IdlCreateTemplateAccessor(CodeStringBuilder builderHeader, string key, bool supportPlural, bool supportVariants)
         {
             var parameters = new List<string>();
+            if (supportVariants)
+            {
+                parameters.Add("Int64 variantId");
+            }
             if (supportPlural)
             {
                 parameters.Add("Double number");
-            }
-            if (supportVariants)
-            {
-                parameters.Add("UInt32 variantId");
             }
 
             builderHeader.AppendLine($"static String {key}({parameters.Aggregate((a, b) => a + ", " + b)});");
@@ -455,7 +456,7 @@ namespace ReswPlus.Languages
                     return "UInt64";
                 //case ParameterType.Object:
                 default:
-                    return "Object";
+                    return "Windows.Foundation.IStringable";
             }
         }
 
