@@ -3,14 +3,14 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:strings="using:TestCppCX.Strings"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:strings="using:TestCppCX.Strings"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
 
     <Grid>
         <StackPanel Margin="48">
-            <TextBlock Text="{x:Bind strings:Resources.Hello}" FontWeight="Bold" />
+            <TextBlock FontWeight="Bold" Text="{x:Bind strings:Resources.Hello}" />
             <TextBox
                 x:Name="UserNameText"
                 Margin="0,6"
@@ -19,17 +19,21 @@
             <Slider
                 x:Name="EmailsSlider"
                 Margin="0,6"
-                Maximum="10"
                 Header="Number of emails:"
+                Maximum="10"
                 Value="2" />
             <TextBlock Text="{x:Bind strings:Resources.YouGotEmails_Format(EmailsSlider.Value, UserNameText.Text), Mode=OneWay}" />
-            <ComboBox Header="Select a personal pronoun" SelectedIndex="1" x:Name="PronounsComboBox">
+            <ComboBox
+                x:Name="PronounsComboBox"
+                Margin="0,36,0,0"
+                Header="Select a personal pronoun"
+                SelectedIndex="1">
                 <ComboBoxItem>---------</ComboBoxItem>
                 <ComboBoxItem>She/Hers/Her</ComboBoxItem>
                 <ComboBoxItem>He/Him/His</ComboBoxItem>
                 <ComboBoxItem>They/Theirs/Their</ComboBoxItem>
             </ComboBox>
-            <TextBlock Text="{x:Bind strings:Resources.GotMessagesFrom_Format(EmailsSlider.Value, PronounsComboBox.SelectedIndex), Mode=OneWay}" />
+            <TextBlock FontWeight="Bold" Text="{x:Bind strings:Resources.GotMessagesFrom_Format(EmailsSlider.Value, PronounsComboBox.SelectedIndex), Mode=OneWay}" />
         </StackPanel>
     </Grid>
 </Page>

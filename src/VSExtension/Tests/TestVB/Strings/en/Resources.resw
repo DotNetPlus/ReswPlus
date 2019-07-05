@@ -134,7 +134,7 @@
   </data>
   <data name="GotMessagesFrom_Variant1_One" xml:space="preserve">
     <value>You got {0} message from her</value>
-    <comment>#ReswPlusTyped[Q, G(variantId)]</comment>
+    <comment>#ReswPlusTyped[Q, V(variantId)]</comment>
   </data>
   <data name="GotMessagesFrom_Variant1_Other" xml:space="preserve">
     <value>You got {0} messages from her</value>

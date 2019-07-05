@@ -34,12 +34,12 @@ namespace winrt::TestCppWinRT::Strings::implementation
         /// <summary>
         ///   Get the pluralized version of the string similar to: You got %d message from her
         /// </summary>
-        static hstring GotMessagesFrom(double pluralNumber, int variantId);
+        static hstring GotMessagesFrom(long variantId, double pluralNumber);
     public:
         /// <summary>
         ///   Format the string similar to: You got %d message from her
         /// </summary>
-        static hstring GotMessagesFrom_Format(unsigned int numberMessages, int personalPronoun);
+        static hstring GotMessagesFrom_Format(unsigned int numberMessages, long personalPronoun);
 
     /* Methods and properties for SendMessage */
 
@@ -60,7 +60,7 @@ namespace winrt::TestCppWinRT::Strings::implementation
         /// <summary>
         ///   Format the string similar to: Test with object %s
         /// </summary>
-        static hstring TestWithObject_Format(Windows::Foundation::IInspectable const& obj);
+        static hstring TestWithObject_Format(Windows::Foundation::IStringable const& obj);
     };
 
     struct ResourcesExtension: ResourcesExtensionT<ResourcesExtension>

@@ -129,7 +129,7 @@
   </data>
   <data name="GotMessagesFrom_Variant1_One" xml:space="preserve">
     <value>You got %d message from her</value>
-    <comment>#ReswPlusTyped[Qu(numberMessages), G(personalPronoun)]</comment>
+    <comment>#ReswPlusTyped[Qu(numberMessages), V(personalPronoun)]</comment>
   </data>
   <data name="GotMessagesFrom_Variant1_Other" xml:space="preserve">
     <value>You got %d messages from her</value>

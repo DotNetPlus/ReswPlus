@@ -34,15 +34,37 @@ Public Class Resources
     ' <summary>
     '   Get the pluralized version of the string similar to: You got {0} message from her
     ' </summary>
-    Public Shared Function GotMessagesFrom(pluralNumber As Double, variantId As Integer) As String
+    Public Shared Function GotMessagesFrom(variantId As Long, pluralNumber As Double) As String
         Return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "GotMessagesFrom_Variant" & variantId, CDec(pluralNumber))
+    End Function
+
+    ' <summary>
+    '   Get the pluralized version of the string similar to: You got {0} message from her
+    ' </summary>
+    Public Shared Function GotMessagesFrom(variantId As Object, pluralNumber As Double) As String
+        Try
+            Return GotMessagesFrom(Convert.ToInt64(variantId), pluralNumber)
+        Catch
+            return ""
+        End Try
     End Function
 
     ' <summary>
     '   Format the string similar to: You got {0} message from her
     ' </summary>
-    Public Shared Function GotMessagesFrom_Format(ByVal pluralCount As Double, ByVal variantId As Integer) As String
-        Return String.Format(GotMessagesFrom(pluralCount, variantId), pluralCount, variantId)
+    Public Shared Function GotMessagesFrom_Format(ByVal pluralCount As Double, ByVal variantId As Long) As String
+        Return String.Format(GotMessagesFrom(variantId, pluralCount), pluralCount, variantId)
+    End Function
+
+    ' <summary>
+    '   Format the string similar to: You got {0} message from her
+    ' </summary>
+    Public Shared Function GotMessagesFrom_Format(ByVal pluralCount As Double, ByVal variantId As Object) As String
+        Try
+            Return GotMessagesFrom_Format(pluralCount, Convert.ToInt64(variantId))
+        Catch
+            Return ""
+        End Try
     End Function
     #End Region
 
@@ -94,8 +116,19 @@ Public Class Resources
     ' <summary>
     '   Get the variant version of the string similar to: SendMessage_Variant1
     ' </summary>
-    Public Shared Function SendMessage(variantId As Integer) As String
+    Public Shared Function SendMessage(variantId As Long) As String
         Return _resourceLoader.GetString("SendMessage_Variant" & variantId)
+    End Function
+
+    ' <summary>
+    '   Get the variant version of the string similar to: SendMessage_Variant1
+    ' </summary>
+    Public Shared Function SendMessage(variantId As Object) As String
+        Try
+            Return SendMessage(Convert.ToInt64(variantId))
+        Catch
+            return ""
+        End Try
     End Function
     #End Region
 
