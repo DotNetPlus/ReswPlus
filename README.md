@@ -240,6 +240,7 @@ Some examples:
 ### Support genders/personal pronouns 
 
 **Resw:**
+
 | Key                   | Value               |
 |-----------------------|---------------------|
 | SendAMessage_Variant1 | Send her a message  |
