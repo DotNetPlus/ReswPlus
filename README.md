@@ -26,6 +26,8 @@ Currently supported:
 | 'None' state                                    |      | ✅               |      |             |
 | Strongly typed string formatting                |      | ✅               |      |             |
 | Support Resources in libraries                  |      | ✅               | ✅    |             |
+| Support Genders                                 |      | ✅               |     |             |
+| Support String variants                         |      | ✅               |     |             |
 
 ## How to install
 
@@ -227,4 +229,52 @@ The following code:
 
 will automatically display `No new messages`, `You got 1 message`, `You got 1 messages` based on the value of `ViewModel.NumberMessage`.
 
+## Variants
 
+It's sometimes necessary to include many variants of the same string in your application to support the different personal pronouns:   (for example: `Send her/his/them/zir a gift`). To support this type of scenario, generally, you must write code in your viewmodel to select the correct text corresponding to the pronoun you want to use. ReswPlus can simplify this task and fully manage the support of string variants for you, a single resource identifier would return different strings depend of your needs. 
+
+Variants can not only be used to represent genders/personal pronouns but also for groups, categories...
+
+Some examples:
+
+### Support genders/personal pronouns 
+
+**Resw:**
+| Key                   | Value               |
+|-----------------------|---------------------|
+| SendAMessage_Variant1 | Send her a message  |
+| SendAMessage_Variant2 | Send him a message  |
+| SendAMessage_Variant3 | Send them a message |
+| SendAMessage_Variant4 | Send zir a message  |
+
+**Usage:**
+
+```csharp
+enum PersonalPronoun{ HER = 1, HIM, THEM, ZIR };
+class Person
+{
+   public PersonalPronoun PronounId{get;set;}
+}
+
+Resources.SendAMessage(Person.PronounId);
+```
+
+### Personalize your strings based on the context
+
+Display a welcome message depending of the current time:
+
+**Resw:**
+
+| Key                | Value                                    |
+|--------------------|------------------------------------------|
+| Greeting_Variant0  | Good morning, enjoy your day             |
+| Greeting_Variant1  | Good afternoon, have a good time         |
+| Greeting_Variant2  | Good evening, hope your day was fine     |
+| Greeting_Variant4  | Good night, sleep well, see you tomorrow |
+
+**Usage:**
+```csharp
+enum PartOfTheDayEnum { MORNING = 0, AFTERNOON = 1, EVENING = 2, NIGHT = 4 };
+
+Resources.Greeting(PartOfTheDay);
+```
