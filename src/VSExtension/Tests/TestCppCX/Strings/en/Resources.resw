@@ -152,6 +152,13 @@
     <value>Test with object %s</value>
     <comment>#ReswPlusTyped[o(obj)]</comment>
   </data>
+  <data name="YouGotEmailsDotNet_One" xml:space="preserve">
+    <value>Hello {1}, you got {0:F0} email (DotNet formatting)</value>
+    <comment>#ReswPlusTyped[Qu(numberMessages), s(username)]</comment>
+  </data>
+  <data name="YouGotEmailsDotNet_Other" xml:space="preserve">
+    <value>Hello {1}, you got {0:F0} emails (DotNet formatting)</value>
+  </data>
   <data name="YouGotEmails_One" xml:space="preserve">
     <value>Hello %2$ls, you got %1$u email</value>
     <comment>#ReswPlusTyped[Qu(numberMessages), s(username)]</comment>

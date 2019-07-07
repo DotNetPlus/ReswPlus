@@ -177,6 +177,7 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </ClInclude>
     <ClInclude Include="PluralConverter.h" />
+    <ClInclude Include="PluralConverterBraces.h" />
     <ClInclude Include="StringFormat.h" />
   </ItemGroup>
   <ItemGroup>
@@ -220,6 +221,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="PluralConverter.cpp" />
+    <ClCompile Include="PluralConverterBraces.cpp" />
     <ClCompile Include="StringFormat.cpp" />
   </ItemGroup>
   <ItemGroup>

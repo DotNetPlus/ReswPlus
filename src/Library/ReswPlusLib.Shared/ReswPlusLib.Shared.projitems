@@ -43,6 +43,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PluralProviders\ZeroToOneProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PluralProviders\ZeroToTwoExcludedProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ResourceLoaderExtension.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StringFormatting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\DoubleExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\IntExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\PluralHelper.cs" />

@@ -8,6 +8,8 @@ namespace TestCppWinRT
             static String YouGotEmails_Format(UInt32 numberMessages, String username);
             static String GotMessagesFrom(Int64 variantId, Double number);
             static String GotMessagesFrom_Format(UInt32 numberMessages, Int64 personalPronoun);
+            static String YouGotEmailsDotNet(Double number);
+            static String YouGotEmailsDotNet_Format(UInt32 numberMessages, String username);
             static String Hello{ get; };
             static String TestWithObject{ get; };
             static String TestWithObject_Format(Windows.Foundation.IStringable obj);

@@ -25,7 +25,7 @@ namespace ReswPlus.Languages
         protected abstract void HeaderCreateAccessor(CodeStringBuilder builderHeader, string key, string summary);
         protected abstract void CppCreateAccessor(CodeStringBuilder builderHeader, string computedNamespace, string key);
         protected abstract void HeaderCreateFormatMethod(CodeStringBuilder builderHeader, string key, IEnumerable<FunctionParameter> parameters, string summary = null, IEnumerable<FunctionParameter> extraParameters = null);
-        protected abstract void CppCreateFormatMethod(CodeStringBuilder builderHeader, string computedNamespace, string key, IEnumerable<FunctionParameter> parameters, IEnumerable<FunctionParameter> extraParameters = null, FunctionParameter parameterForPluralization = null, FunctionParameter parameterForVariant = null);
+        protected abstract void CppCreateFormatMethod(CodeStringBuilder builderHeader, string computedNamespace, string key, bool isDotNetFormatting, IEnumerable<FunctionParameter> parameters, IEnumerable<FunctionParameter> extraParameters = null, FunctionParameter parameterForPluralization = null, FunctionParameter parameterForVariant = null);
         protected abstract void HeaderCreateMarkupExtension(CodeStringBuilder builderHeader, string resourceFileName, string className, IEnumerable<string> keys, IEnumerable<string> namespaces);
         protected abstract void CppCreateMarkupExtension(CodeStringBuilder builderHeader, string computedNamespace, string resourceFileName, string className, IEnumerable<string> keys);
 
@@ -141,7 +141,7 @@ namespace ReswPlus.Languages
                     {
                         HeaderCreateFormatMethod(builderHeader, pluralLocalization.Key, pluralLocalization.Parameters, pluralLocalization.FormatSummary, pluralLocalization.ExtraParameters);
                         builderCpp.AppendEmptyLine();
-                        CppCreateFormatMethod(builderCpp, namespaceResourceClass, pluralLocalization.Key, pluralLocalization.Parameters, pluralLocalization.ExtraParameters, pluralLocalization.ParameterToUseForPluralization, (pluralLocalization as IVariantLocalization)?.ParameterToUseForVariant);
+                        CppCreateFormatMethod(builderCpp, namespaceResourceClass, pluralLocalization.Key, pluralLocalization.IsDotNetFormatting, pluralLocalization.Parameters, pluralLocalization.ExtraParameters, pluralLocalization.ParameterToUseForPluralization, (pluralLocalization as IVariantLocalization)?.ParameterToUseForVariant);
                     }
                 }
                 else if (item is Localization localization)
@@ -152,7 +152,7 @@ namespace ReswPlus.Languages
                     {
                         HeaderCreateFormatMethod(builderHeader, localization.Key, localization.Parameters, localization.FormatSummary);
                         builderCpp.AppendEmptyLine();
-                        CppCreateFormatMethod(builderCpp, namespaceResourceClass, localization.Key, localization.Parameters);
+                        CppCreateFormatMethod(builderCpp, namespaceResourceClass, localization.Key, localization.IsDotNetFormatting, localization.Parameters);
                     }
                 }
 

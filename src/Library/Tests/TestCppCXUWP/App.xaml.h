@@ -1,4 +1,4 @@
-﻿//
+//
 // App.xaml.h
 // Declaration of the App class.
 //
@@ -7,6 +7,7 @@
 
 #include "App.g.h"
 #include "PluralConverter.h"
+#include "PluralConverterBraces.h"
 
 namespace TestCppCXUWP
 {

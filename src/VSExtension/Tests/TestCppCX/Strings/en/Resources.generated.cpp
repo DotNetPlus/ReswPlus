@@ -33,6 +33,16 @@ String^ local::Resources::GotMessagesFrom_Format(unsigned int numberMessages, lo
 }
 
 
+String^ local::Resources::YouGotEmailsDotNet(double pluralNumber)
+{
+    return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), L"YouGotEmailsDotNet", pluralNumber);
+}
+
+String^ local::Resources::YouGotEmailsDotNet_Format(unsigned int numberMessages, String^ username)
+{
+    return ReswPlusLib::StringFormatting::FormatDotNet(YouGotEmailsDotNet(static_cast<double>(numberMessages)), ref new Array<Object^>(2){numberMessages, username});
+}
+
 String^ local::Resources::YouGotEmails(double pluralNumber)
 {
     return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), L"YouGotEmails", pluralNumber);
