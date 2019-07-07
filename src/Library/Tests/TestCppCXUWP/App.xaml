@@ -1,9 +1,10 @@
-﻿<Application
+<Application
     x:Class="TestCppCXUWP.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="using:TestCppCXUWP.Converters">
     <Application.Resources>
         <converters:PluralConverter x:Key="PluralConverter" />
+        <converters:PluralConverterBraces x:Key="PluralConverterBraces" />
     </Application.Resources>
 </Application>

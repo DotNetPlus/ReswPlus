@@ -32,6 +32,9 @@
       <Filter>Converters</Filter>
     </ClCompile>
     <ClCompile Include="StringFormat.cpp" />
+    <ClCompile Include="PluralConverterBraces.cpp">
+      <Filter>Converters</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -41,6 +44,9 @@
       <Filter>Converters</Filter>
     </ClInclude>
     <ClInclude Include="StringFormat.h" />
+    <ClInclude Include="PluralConverterBraces.h">
+      <Filter>Converters</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\LockScreenLogo.scale-200.png">

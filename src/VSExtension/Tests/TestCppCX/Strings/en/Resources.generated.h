@@ -28,6 +28,18 @@ namespace TestCppCX
 
         /* Methods and properties for SendMessage */
 
+        /* Methods and properties for YouGotEmailsDotNet */
+        public:
+            /// <summary>
+            ///   Get the pluralized version of the string similar to: Hello {1}, you got {0:F0} email (DotNet formatting)
+            /// </summary>
+            static Platform::String^ YouGotEmailsDotNet(double pluralNumber);
+        public:
+            /// <summary>
+            ///   Format the string similar to: Hello {1}, you got {0:F0} email (DotNet formatting)
+            /// </summary>
+            static Platform::String^ YouGotEmailsDotNet_Format(unsigned int numberMessages, Platform::String^ username);
+
         /* Methods and properties for YouGotEmails */
         public:
             /// <summary>

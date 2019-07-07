@@ -9,6 +9,7 @@ namespace ReswPlus.ClassGenerator.Models
         public List<FunctionParameter> Parameters { get; set; } = new List<FunctionParameter>();
         public List<FunctionParameter> ExtraParameters { get; } = new List<FunctionParameter>();
         public string FormatSummary { get; set; }
+        public bool IsDotNetFormatting { get; set; }
     }
 
     internal class Localization : LocalizationBase

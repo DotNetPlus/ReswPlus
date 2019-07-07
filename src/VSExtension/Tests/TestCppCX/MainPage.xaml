@@ -23,6 +23,7 @@
                 Maximum="10"
                 Value="2" />
             <TextBlock Text="{x:Bind strings:Resources.YouGotEmails_Format(EmailsSlider.Value, UserNameText.Text), Mode=OneWay}" />
+            <TextBlock Text="{x:Bind strings:Resources.YouGotEmailsDotNet_Format(EmailsSlider.Value, UserNameText.Text), Mode=OneWay}" />
             <ComboBox
                 x:Name="PronounsComboBox"
                 Margin="0,36,0,0"

@@ -43,6 +43,18 @@ namespace winrt::TestCppWinRT::Strings::implementation
 
     /* Methods and properties for SendMessage */
 
+    /* Methods and properties for YouGotEmailsDotNet */
+    public:
+        /// <summary>
+        ///   Get the pluralized version of the string similar to: Hello {1}, you got {0:F0} email (DotNet formatting)
+        /// </summary>
+        static hstring YouGotEmailsDotNet(double pluralNumber);
+    public:
+        /// <summary>
+        ///   Format the string similar to: Hello {1}, you got {0:F0} email (DotNet formatting)
+        /// </summary>
+        static hstring YouGotEmailsDotNet_Format(unsigned int numberMessages, hstring const& username);
+
     /* Methods and properties for Hello */
     public:
         /// <summary>

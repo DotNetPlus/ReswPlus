@@ -122,14 +122,14 @@
   </data>
   <data name="YouGotEmails_One" xml:space="preserve">
     <value>Hello %2$ls, you got %1$u email</value>
-    <comment>#ReswPlusTyped[Qu(numberMessages), s(username)]</comment>
+    <comment>#ReswPlusFormat[Qu(numberMessages), s(username)]</comment>
   </data>
   <data name="YouGotEmails_Other" xml:space="preserve">
     <value>Hello %2$ls, you got %1$u emails</value>
   </data>
   <data name="GotMessagesFrom_Variant1_One" xml:space="preserve">
     <value>You got %d message from her</value>
-    <comment>#ReswPlusTyped[Qu(numberMessages), V(personalPronoun)]</comment>
+    <comment>#ReswPlusFormat[Qu(numberMessages), V(personalPronoun)]</comment>
   </data>
   <data name="GotMessagesFrom_Variant1_Other" xml:space="preserve">
     <value>You got %d messages from her</value>
@@ -157,6 +157,13 @@
   </data>
   <data name="TestWithObject" xml:space="preserve">
     <value>Test with object %s</value>
-    <comment>#ReswPlusTyped[o(obj)]</comment>
+    <comment>#ReswPlusFormat[o(obj)]</comment>
+  </data>
+  <data name="YouGotEmailsDotNet_One" xml:space="preserve">
+    <value>Hello {1}, you got {0:F0} email (DotNet formatting)</value>
+    <comment>#ReswPlusFormatNet[Qu(numberMessages), s(username)]</comment>
+  </data>
+  <data name="YouGotEmailsDotNet_Other" xml:space="preserve">
+    <value>Hello {1}, you got {0:F0} emails (DotNet formatting)</value>
   </data>
 </root>

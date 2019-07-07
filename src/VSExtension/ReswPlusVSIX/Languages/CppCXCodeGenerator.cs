@@ -218,7 +218,7 @@ namespace ReswPlus.Languages
             builderHeader.RemoveLevel();
         }
 
-        protected override void CppCreateFormatMethod(CodeStringBuilder builderHeader, string computedNamespace, string key, IEnumerable<FunctionParameter> parameters, IEnumerable<FunctionParameter> extraParameters = null, FunctionParameter parameterForPluralization = null, FunctionParameter parameterForVariant = null)
+        protected override void CppCreateFormatMethod(CodeStringBuilder builderCpp, string computedNamespace, string key, bool isDotNetFormatting, IEnumerable<FunctionParameter> parameters, IEnumerable<FunctionParameter> extraParameters = null, FunctionParameter parameterForPluralization = null, FunctionParameter parameterForVariant = null)
         {
             IEnumerable<FunctionParameter> functionParameters;
             if (extraParameters != null)
@@ -233,18 +233,18 @@ namespace ReswPlus.Languages
             }
             var parametersStr = functionParameters.Select(p => GetParameterTypeString(p.Type, false) + " " + p.Name).Aggregate((a, b) => a + ", " + b);
 
-            builderHeader.AppendLine($"String^ {computedNamespace}{key}_Format({parametersStr})");
-            builderHeader.AppendLine("{");
-            builderHeader.AddLevel();
+            builderCpp.AppendLine($"String^ {computedNamespace}{key}_Format({parametersStr})");
+            builderCpp.AppendLine("{");
+            builderCpp.AddLevel();
             var formatParameters = parameters
                 .Select(p =>
                 {
                     switch (p.Type)
                     {
                         case ParameterType.String:
-                            return p.Name + "->Data()";
+                            return isDotNetFormatting ? p.Name : p.Name + "->Data()";
                         case ParameterType.Object:
-                            return p.Name + "->ToString()->Data()";
+                            return isDotNetFormatting ? p.Name + "->ToString()" : p.Name + "->ToString()->Data()";
                         default:
                             return p.Name;
                     }
@@ -274,13 +274,19 @@ namespace ReswPlus.Languages
                     sourceForFormat = key;
                 }
             }
-
-            builderHeader.AppendLine($"size_t needed = _swprintf_p(nullptr, 0, {sourceForFormat}->Data(), {formatParameters});");
-            builderHeader.AppendLine($"wchar_t *buffer = new wchar_t[needed + 1];");
-            builderHeader.AppendLine($"_swprintf_p(buffer, needed + 1, {sourceForFormat}->Data(), {formatParameters});");
-            builderHeader.AppendLine($"return ref new String(buffer);");
-            builderHeader.RemoveLevel();
-            builderHeader.AppendLine("}");
+            if (isDotNetFormatting)
+            {
+                builderCpp.AppendLine($"return ReswPlusLib::StringFormatting::FormatDotNet({sourceForFormat}, ref new Array<Object^>({parameters.Count()}){{{formatParameters}}});");
+            }
+            else
+            {
+                builderCpp.AppendLine($"size_t needed = _swprintf_p(nullptr, 0, {sourceForFormat}->Data(), {formatParameters});");
+                builderCpp.AppendLine($"wchar_t *buffer = new wchar_t[needed + 1];");
+                builderCpp.AppendLine($"_swprintf_p(buffer, needed + 1, {sourceForFormat}->Data(), {formatParameters});");
+                builderCpp.AppendLine($"return ref new String(buffer);");
+            }
+            builderCpp.RemoveLevel();
+            builderCpp.AppendLine("}");
         }
 
         protected override void HeaderCreateMarkupExtension(CodeStringBuilder builderHeader, string resourceFileName, string className, IEnumerable<string> keys, IEnumerable<string> namespaces)

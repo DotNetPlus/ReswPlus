@@ -52,6 +52,17 @@ hstring local::Resources::GotMessagesFrom_Format(unsigned int numberMessages, lo
 }
 
 
+hstring local::Resources::YouGotEmailsDotNet(double pluralNumber)
+{
+    return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), L"YouGotEmailsDotNet", pluralNumber);
+}
+
+hstring local::Resources::YouGotEmailsDotNet_Format(unsigned int numberMessages, hstring const& username)
+{
+    array<IInspectable const, 2> _string_parameters = {box_value(numberMessages), box_value(username)};
+    return ReswPlusLib::StringFormatting::FormatDotNet(YouGotEmailsDotNet(static_cast<double>(numberMessages)), _string_parameters);
+}
+
 hstring local::Resources::Hello()
 {
     return GetResourceLoader().GetString(L"Hello");
