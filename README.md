@@ -140,6 +140,8 @@ public static string ForecastAnnouncement_Format(int tempFahrenheit, int tempCel
 #endregion
 ```
 
+C++ developers: You can replace the tag `#Format` by `#FormatNet` if you want to format your strings the .Net way (using `{0}`, `{1:F0}` instead of `%d`, `%s`...`. 
+
 ### Pluralization
 
 ReswPlus can generate methods to easily access your pluralized strings. Simply right-click on your resw file, select `ReswPlus` > `Generate strongly typed class with pluralization`, the nuget package `ReswPlusLib` will be automatically added to your project and generate all the functions necessary to manage your localization.
