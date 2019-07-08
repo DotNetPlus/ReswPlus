@@ -21,12 +21,13 @@ Currently supported:
 |                                                 | Resw | Resw + ReswPlus | Resx | Android XML (for reference) |
 |-------------------------------------------------|------|-----------------|------|-------------|
 | Modify UI properties via resource files (x:uid) | ✅    | ✅               |      |             |
-| Strongly typed accessors                        |      | ✅               | ✅    | ✅           |
-| Plural forms                                    |      | ✅               |      | ✅           |
-| 'None' state                                    |      | ✅               |      |             |
+| Generate strongly typed accessors               |      | ✅               | ✅    | ✅           |
+| Generate String Formatting methods              |      | ✅               |     |            |
+| Support Plural forms                            |      | ✅               |      | ✅           |
+| Support 'None' state                            |      | ✅               |      |             |
 | Strongly typed string formatting                |      | ✅               |      |             |
 | Support Resources in libraries                  |      | ✅               | ✅    |             |
-| Support Genders                                 |      | ✅               |     |             |
+| Support Gender                                  |      | ✅               |     |             |
 | Support String variants                         |      | ✅               |     |             |
 
 ## How to install
