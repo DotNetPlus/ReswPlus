@@ -27,7 +27,7 @@ Currently supported:
 | Support 'None' state                            |      | ✅               |      |             |
 | Strongly typed string formatting                |      | ✅               |      |             |
 | Support Resources in libraries                  |      | ✅               | ✅    |             |
-| Support Gender                                  |      | ✅               |     |             |
+| Support Genders                                 |      | ✅               |     |             |
 | Support String variants                         |      | ✅               |     |             |
 
 ## How to install
