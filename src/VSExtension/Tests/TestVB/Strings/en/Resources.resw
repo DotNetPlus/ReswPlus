@@ -119,22 +119,22 @@
   </resheader>
   <data name="FileShared_One" xml:space="preserve">
     <value>{0} shared {1} photo from {2}</value>
-    <comment>#ReswPlusTyped[s(username), Q, s(city)]</comment>
+    <comment>#Format[s(username), Q, s(city)]</comment>
   </data>
   <data name="FileShared_Other" xml:space="preserve">
     <value>{0} shared {1} photos from {2}</value>
   </data>
   <data name="ForecastAnnouncement" xml:space="preserve">
     <value>The current temperature in {2} is {0}°F ({1}°C)</value>
-    <comment>#ReswPlusTyped[d(tempFahrenheit), d(tempCelsius), s(city)]</comment>
+    <comment>#Format[d(tempFahrenheit), d(tempCelsius), s(city)]</comment>
   </data>
   <data name="GotMessages" xml:space="preserve">
     <value>Welcome {0}, you got {1} emails!</value>
-    <comment>#ReswPlusTyped[s, u]</comment>
+    <comment>#Format[s, u]</comment>
   </data>
   <data name="GotMessagesFrom_Variant1_One" xml:space="preserve">
     <value>You got {0} message from her</value>
-    <comment>#ReswPlusTyped[Q, V(variantId)]</comment>
+    <comment>#Format[Q, V(variantId)]</comment>
   </data>
   <data name="GotMessagesFrom_Variant1_Other" xml:space="preserve">
     <value>You got {0} messages from her</value>
@@ -153,7 +153,7 @@
   </data>
   <data name="MinutesLeft_One" xml:space="preserve">
     <value>{0} minute left</value>
-    <comment>#ReswPlusTyped[Q]</comment>
+    <comment>#Format[Q]</comment>
   </data>
   <data name="MinutesLeft_Other" xml:space="preserve">
     <value>{0} minutes left</value>
@@ -169,7 +169,7 @@
   </data>
   <data name="ReceivedMessages_One" xml:space="preserve">
     <value>You got {0} message from {1}</value>
-    <comment>#ReswPlusTyped[Q, s]</comment>
+    <comment>#Format[Q, s]</comment>
   </data>
   <data name="ReceivedMessages_Other" xml:space="preserve">
     <value>You got {0} messages from {1}</value>
@@ -191,6 +191,6 @@
   </data>
   <data name="YourAgeAndName" xml:space="preserve">
     <value>Your are {0}yo and named {1}!</value>
-    <comment>this string is used in the second tab. #ReswPlusTyped[f, s]</comment>
+    <comment>this string is used in the second tab. #Format[f, s]</comment>
   </data>
 </root>

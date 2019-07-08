@@ -18,8 +18,8 @@ namespace ReswPlus.CodeGenerator
     {
         private const string TagIgnore = "#ReswPlusIgnore";
         private const string Deprecated_TagStrongType = "#ReswPlusTyped";
-        private const string TagFormat = "#ReswPlusFormat";
-        private const string TagFormatDotNet = "#ReswPlusFormatNet";
+        private const string TagFormat = "#Format";
+        private const string TagFormatDotNet = "#FormatNet";
 
         private static readonly Regex _regexStringFormat;
         private static readonly Regex _regexRemoveSpace = new Regex("\\s");
@@ -167,7 +167,6 @@ namespace ReswPlus.CodeGenerator
                 {
                     foreach (var item in stringItems)
                     {
-                        var isFormattedFunction = ParseTag(item.Comment).format != null;
                         var singleLineValue = _regexRemoveSpace.Replace(item.Value, " ").Trim();
                         var summary = $"Looks up a localized string similar to: {singleLineValue}";
 
@@ -178,10 +177,7 @@ namespace ReswPlus.CodeGenerator
                             IsDotNetFormatting = IsDotNetFormatting(item.Value)
                         };
 
-                        if (isFormattedFunction)
-                        {
-                            ManageFormattedFunction(localization, item.Key, item.Value, item.Comment);
-                        }
+                        ManageFormattedFunction(localization, item.Key, item.Value, item.Comment);
 
                         result.Localizations.Add(localization);
                     }
@@ -234,7 +230,12 @@ namespace ReswPlus.CodeGenerator
                 var match = _regexStringFormat.Match(comment);
                 if (match.Success)
                 {
-                    return (match.Groups["formats"].Value, match.Groups["tag"].Value == TagFormatDotNet);
+                    var tag = match.Groups["tag"].Value;
+                    if (tag == Deprecated_TagStrongType)
+                    {
+                        ReswPlusPackage.LogWarning($"{Deprecated_TagStrongType} is deprecated, use {TagFormat} instead");
+                    }
+                    return (match.Groups["formats"].Value, tag == TagFormatDotNet);
                 }
             }
             return (null, false);

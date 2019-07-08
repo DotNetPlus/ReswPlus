@@ -119,7 +119,7 @@
   </resheader>
   <data name="FileShared_One" xml:space="preserve">
     <value>{0} a partagé {1} fichier de {2}</value>
-    <comment>#ReswPlusTyped[s(username), Q, s(city)]</comment>
+    <comment>#Format[s(username), Q, s(city)]</comment>
   </data>
   <data name="FileShared_Other" xml:space="preserve">
     <value>{0} a partagé {1} fichiers de {2}</value>

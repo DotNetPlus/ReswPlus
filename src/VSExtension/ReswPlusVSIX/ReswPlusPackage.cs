@@ -4,7 +4,6 @@
 
 using Microsoft.VisualStudio.Shell;
 using System;
-using System.ComponentModel.Design;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -21,7 +20,7 @@ namespace ReswPlus
         name: "Supported Files",
         expression: "ReswFile",
         termNames: new[] { "ReswFile" },
-        termValues: new[] { "HierSingleSelectionName:.resw$"})]
+        termValues: new[] { "HierSingleSelectionName:.resw$" })]
 
     public sealed class ReswPlusPackage : AsyncPackage
     {
@@ -30,7 +29,27 @@ namespace ReswPlus
         /// </summary>
         public const string PackageGuidString = "8c9d543c-0e65-4319-8395-f7b38088a080";
         public const string _uiContextSupportedFiles = "34551deb-f034-43e9-a279-0e541241687e"; // Must match guid in VsCommandTable.vsct
+        private static ErrorListProvider _errorListProvider;
 
+        public ReswPlusPackage()
+        {
+            _errorListProvider = new ErrorListProvider(this);
+        }
+
+        public static void LogWarning(string message)
+        {
+            if(_errorListProvider == null)
+            {
+                return;
+            }
+
+            _errorListProvider.Tasks.Add(new ErrorTask()
+            {
+                Category = TaskCategory.Misc,
+                ErrorCategory = TaskErrorCategory.Warning,
+                Text = message
+            });
+        }
         #region Package Members
 
         /// <summary>
@@ -47,5 +66,7 @@ namespace ReswPlus
         }
 
         #endregion
+
+
     }
 }

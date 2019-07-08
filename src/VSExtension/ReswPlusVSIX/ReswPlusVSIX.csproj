@@ -93,6 +93,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\ReswPlusGenerateIco.bmp" />
     <Content Include="Resources\ContextMenuPackage.ico" />
     <Content Include="Resources\menuIcon.bmp" />
     <VSCTCompile Include="ReswPlusPackage.vsct">
