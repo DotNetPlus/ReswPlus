@@ -21,12 +21,13 @@ Currently supported:
 |                                                 | Resw | Resw + ReswPlus | Resx | Android XML (for reference) |
 |-------------------------------------------------|------|-----------------|------|-------------|
 | Modify UI properties via resource files (x:uid) | ✅    | ✅               |      |             |
-| Strongly typed accessors                        |      | ✅               | ✅    | ✅           |
-| Plural forms                                    |      | ✅               |      | ✅           |
-| 'None' state                                    |      | ✅               |      |             |
+| Generate strongly typed accessors               |      | ✅               | ✅    | ✅           |
+| Generate String Formatting methods              |      | ✅               |     |            |
+| Support Plural forms                            |      | ✅               |      | ✅           |
+| Support 'None' state                            |      | ✅               |      |             |
 | Strongly typed string formatting                |      | ✅               |      |             |
 | Support Resources in libraries                  |      | ✅               | ✅    |             |
-| Support Genders                                 |      | ✅               |     |             |
+| Support Gender                                  |      | ✅               |     |             |
 | Support String variants                         |      | ✅               |     |             |
 
 ## How to install
@@ -93,7 +94,7 @@ These 3 ways are compile-time verified.
 
 ### String formatting
 
-ReswPlus can generate strongly typed methods to format your strings. Simply add the tag `#ReswPlusTyped[...]` in the comment column and ReswPlus will automatically generate a method YourResourceName_Format(..) with strongly typed parameters.
+ReswPlus can generate strongly typed methods to format your strings. Simply add the tag `#Format[...]` in the comment column and ReswPlus will automatically generate a method YourResourceName_Format(..) with strongly typed parameters.
 
 Types currently supported for parameters:
 
@@ -118,7 +119,7 @@ The resource:
 
 | Key                  | Value                                           | Comment                                                    |
 |----------------------|-------------------------------------------------|------------------------------------------------------------|
-| ForecastAnnouncement | The temperature in {2} is {0}°F ({1}°C)         | #ReswPlusTyped[d(fahrenheit), d(celsius), s(city)]         |
+| ForecastAnnouncement | The temperature in {2} is {0}°F ({1}°C)         | #Format[d(fahrenheit), d(celsius), s(city)]         |
 
 will generate the following code, with strong type and named parameters based on the hashtag in the comment section):
 
@@ -149,7 +150,7 @@ The resources:
 
 | Key               | Value            | Comment           |
 |-------------------|------------------|-------------------|
-| MinutesLeft_One   | {0} minute left  | #ReswPlusTyped[Q] |
+| MinutesLeft_One   | {0} minute left  | #Format[Q] |
 | MinutesLeft_Other | {0} minutes left |                   |
 
 Will automatically generate the following code:
@@ -181,7 +182,7 @@ Pluralization can be used in combination with string formatting.
 
 | Key              | Value                          | Comment                                 |
 |------------------|--------------------------------|-----------------------------------------|
-| FileShared_One   | {0} shared {1} photo from {2}  | #ReswPlusTyped[s(username), Q, s(city)] |
+| FileShared_One   | {0} shared {1} photo from {2}  | #Format[s(username), Q, s(city)] |
 | FileShared_Other | {0} shared {1} photos from {2} |                                         |
 
 Will generate:
@@ -218,7 +219,7 @@ Resources:
 | Key                    | Value                | Comment                           |
 |------------------------|----------------------|-----------------------------------|
 | ReceivedMessages_None  | No new messages      |                                   |
-| ReceivedMessages_One   | You got {0} message  | #ReswPlusTyped[Q(numberMessages)] |
+| ReceivedMessages_One   | You got {0} message  | #Format[Q(numberMessages)] |
 | ReceivedMessages_Other | You got {0} messages |                                   |
 
 The following code:
