@@ -1,9 +1,0 @@
-obj/
-bin/
-Generated Files/
-*.nuspec
-*.user
-*.suo
-*.nupkg
-project.lock.json
-/.vs

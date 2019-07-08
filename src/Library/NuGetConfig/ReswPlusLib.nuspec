@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>ReswPlusLib</id>
+    <version>0.0.5</version>
+    <authors>Rudy Huyn</authors>
+    <owners>Rudy Huyn</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="file">license\LICENSE</license>
+    <projectUrl>https://github.com/rudyhuyn/ReswPlus/</projectUrl>
+    <iconUrl>https://user-images.githubusercontent.com/1226538/56482508-6fbd2d00-6479-11e9-8fc0-b20d5f3171ad.png</iconUrl>
+    <description>Library associated to ReswPlus</description>
+    <releaseNotes>Initial release</releaseNotes>
+    <copyright>Copyright 2019</copyright>
+    <tags>dotnet localization resx resw plural pluralization</tags>
+    <dependencies>
+      <group targetFramework=".NETStandard1.5">
+        <dependency id="NETStandard.Library" version="1.5.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETCore2.0">
+        <dependency id="NETCore.Library" version="2.0.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="UAP10.0">
+        <dependency id="Microsoft.NETCore.UniversalWindowsPlatform" version="5.0.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="native0.0" />
+    </dependencies>
+    <references>
+      <group>
+        <reference file="ReswPlusLib.dll" />
+      </group>
+      <group targetFramework="UAP10.0">
+        <reference file="ReswPlusLib.winmd" />
+      </group>
+      <group targetFramework="native0.0">
+        <reference file="ReswPlusLib.winmd" />
+      </group>
+    </references>
+  </metadata>
+  <files>
+    <file src="..\..\..\LICENSE" target="license\LICENSE" />
+    <file src="..\ReswPlusLib.UWP\bin\Release\ReswPlusLib.winmd" target="lib\native\ReswPlusLib.winmd" />
+    <file src="..\ReswPlusLib.UWP\bin\Release\ReswPlusLib.pri" target="lib\native\ReswPlusLib.pri" />
+    <file src="ReswPlusLib-native.targets" target="build\native\ReswPlusLib.targets" />
+    <file src="..\ReswPlusLib.DotNetCore\bin\Release\netcoreapp2.0\ReswPlusLib.dll" target="lib\netcoreapp2.0\ReswPlusLib.dll" />
+    <file src="..\ReswPlusLib.DotNetStandard\bin\Release\netstandard1.5\ReswPlusLib.dll" target="lib\netstandard1.5\ReswPlusLib.dll" />
+    <file src="..\ReswPlusLib.WinRT\bin\Release\ReswPlusLib.dll" target="lib\portable-win81+wpa81\ReswPlusLib.dll" />
+    <file src="..\ReswPlusLib.UWP\bin\Release\ReswPlusLib.winmd" target="lib\uap10.0\ReswPlusLib.winmd" />
+    <file src="..\ReswPlusLib.UWP\bin\Release\ReswPlusLib.pri" target="lib\uap10.0\ReswPlusLib.pri" />
+</files>
+</package>
