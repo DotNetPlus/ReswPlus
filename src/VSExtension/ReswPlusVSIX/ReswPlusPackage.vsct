@@ -49,17 +49,14 @@
         </Groups>
 
         <Buttons>
-            <!-- Define the button cmdidGenerateStronglyTypedResw inside the myExtensionSubMenuGroup-->
-            <Button guid="guidReswPlusPackageCmdSet" id="cmdidGenerateStronglyTypedResw" priority="0x0100" type="Button">
+            <Button guid="guidReswPlusPackageCmdSet" id="cmdidGenerateStronglyTypedPluralizationResw" priority="0x0100" type="Button">
                 <Parent guid="guidReswPlusPackageCmdSet" id="myExtensionSubMenuGroup" />
                 <Icon guid="reswplusGenerateIcon" id="reswplusGenerateIcon1" />
                 <Strings>
                     <ButtonText>Generate advanced class</ButtonText>
                 </Strings>
             </Button>
-            
-            <!-- Define the button cmdidGenerateStronglyTypedResw inside the myExtensionSubMenuGroup-->
-            <Button guid="guidReswPlusPackageCmdSet" id="cmdidGenerateStronglyTypedPluralizationResw" priority="0x0100" type="Button">
+            <Button guid="guidReswPlusPackageCmdSet" id="cmdidGenerateStronglyTypedResw" priority="0x0200" type="Button">
                 <Parent guid="guidReswPlusPackageCmdSet" id="myExtensionSubMenuGroup" />
                 <Strings>
                     <ButtonText>Generate only accessors</ButtonText>
@@ -78,7 +75,7 @@
     -->
         <VisibilityItem guid="guidReswPlusPackageCmdSet" id="myExtensionSubMenu" context="uiContextSupportedFiles" />
     </VisibilityConstraints>
-    
+
     <Symbols>
         <GuidSymbol name="uiContextSupportedFiles" value="{34551deb-f034-43e9-a279-0e541241687e}" />
         <!-- This is the package guid. -->
@@ -87,7 +84,7 @@
             <IDSymbol name="reswplusGenerateIcon1" value="1" />
         </GuidSymbol>
 
-            <!-- This is the guid used to group the menu commands together -->
+        <!-- This is the guid used to group the menu commands together -->
         <GuidSymbol name="guidReswPlusPackageCmdSet" value="{6e52371a-5161-41cf-bd14-72203edf374d}">
             <!-- Warning!!: Keep the value in sync with the code in ContextMenu.cs -->
             <IDSymbol name="myExtensionSubMenu" value="0x0100"/>

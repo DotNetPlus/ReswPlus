@@ -163,24 +163,21 @@ namespace ReswPlus.CodeGenerator
 
             if (stringItems.Any())
             {
-                if (stringItems.Any())
+                foreach (var item in stringItems)
                 {
-                    foreach (var item in stringItems)
+                    var singleLineValue = _regexRemoveSpace.Replace(item.Value, " ").Trim();
+                    var summary = $"Looks up a localized string similar to: {singleLineValue}";
+
+                    var localization = new Localization()
                     {
-                        var singleLineValue = _regexRemoveSpace.Replace(item.Value, " ").Trim();
-                        var summary = $"Looks up a localized string similar to: {singleLineValue}";
+                        Key = item.Key,
+                        AccessorSummary = summary,
+                        IsDotNetFormatting = IsDotNetFormatting(item.Value)
+                    };
 
-                        var localization = new Localization()
-                        {
-                            Key = item.Key,
-                            AccessorSummary = summary,
-                            IsDotNetFormatting = IsDotNetFormatting(item.Value)
-                        };
+                    ManageFormattedFunction(localization, item.Key, item.Value, item.Comment);
 
-                        ManageFormattedFunction(localization, item.Key, item.Value, item.Comment);
-
-                        result.Localizations.Add(localization);
-                    }
+                    result.Localizations.Add(localization);
                 }
             }
 
@@ -192,9 +189,9 @@ namespace ReswPlus.CodeGenerator
             return _regexDotNetFormatting.IsMatch(source);
         }
 
-        public IEnumerable<GeneratedFile> GenerateCode(string resourcePath, string baseFilename, string content, string defaultNamespace, bool supportPluralization, ProjectItem projectItem)
+        public IEnumerable<GeneratedFile> GenerateCode(string resourcePath, string baseFilename, string content, string defaultNamespace, bool supportPluralizationAndVariants, ProjectItem projectItem)
         {
-            var stronglyTypedClass = Parse(resourcePath, content, defaultNamespace, supportPluralization);
+            var stronglyTypedClass = Parse(resourcePath, content, defaultNamespace, supportPluralizationAndVariants);
             if (stronglyTypedClass == null)
             {
                 return null;

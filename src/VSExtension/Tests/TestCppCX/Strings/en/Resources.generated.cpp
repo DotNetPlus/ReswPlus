@@ -40,10 +40,7 @@ String^ local::Resources::YouGotEmailsDotNet(double pluralNumber)
 
 String^ local::Resources::YouGotEmailsDotNet_Format(unsigned int numberMessages, String^ username)
 {
-    size_t needed = _swprintf_p(nullptr, 0, YouGotEmailsDotNet(static_cast<double>(numberMessages))->Data(), numberMessages, username->Data());
-    wchar_t *buffer = new wchar_t[needed + 1];
-    _swprintf_p(buffer, needed + 1, YouGotEmailsDotNet(static_cast<double>(numberMessages))->Data(), numberMessages, username->Data());
-    return ref new String(buffer);
+    return ReswPlusLib::StringFormatting::FormatDotNet(YouGotEmailsDotNet(static_cast<double>(numberMessages)), ref new Array<Object^>(2){numberMessages, username});
 }
 
 String^ local::Resources::YouGotEmails(double pluralNumber)
