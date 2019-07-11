@@ -43,10 +43,10 @@ Alternatively, you can directly download the extension here: https://marketplace
 In your project, right-click on the resw file of the default language of your application (commonly `/Strings/en/Resources.resw`) and select the menu `ReswPlus`.
 
 In the submenu, select:
-- `Generate strongly typed class`: stronged typed generation, string formatting, custom markup
-- `Generate strongly typed class with pluralization`: all the above + pluralization and empty state support (the nuget package ReswPlusLib will be automatically added to your project)
+- `Generate only accessors`: generate stronged typed generation accessors + custom markup
+- `Generate advanced class`: all the above + pluralization and empty state support + variants + string formatting (the nuget package ReswPlusLib will be automatically added to your project)
 
-<img src="https://user-images.githubusercontent.com/1226538/59745769-57278400-922a-11e9-8395-f87f8faeb4bd.png" height="120" />
+<img src="https://user-images.githubusercontent.com/1226538/61084395-bc623580-a3e2-11e9-9836-eee8f0ea57c6.png" height="120" />
 
 It will automatically generate a file xxx.generated.cs associated to your Resource file.
 
