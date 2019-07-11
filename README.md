@@ -47,10 +47,11 @@ In the submenu, select:
 - `Generate advanced class`: all the above + pluralization and empty state support + variants + string formatting (the nuget package ReswPlusLib will be automatically added to your project)
 
 <img src="https://user-images.githubusercontent.com/1226538/61084395-bc623580-a3e2-11e9-9836-eee8f0ea57c6.png" height="120" />
+
 It will automatically generate a class associated to your Resource file:
 
 <img src="https://user-images.githubusercontent.com/1226538/56481455-f111c100-6473-11e9-8c04-f512a6136fd2.png" height="120" />
-<img src="https://user-images.githubusercontent.com/1226538/61084551-077c4880-a3e3-11e9-8e50-18ac0685d665.png" height="120" style="margin-left:10px" />
+<img src="https://user-images.githubusercontent.com/1226538/61084551-077c4880-a3e3-11e9-8e50-18ac0685d665.png" height="120" />
 
 The generated code file will be automatically updated when the .resw file is modified and saved.
 
