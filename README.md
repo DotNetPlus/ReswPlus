@@ -179,6 +179,8 @@ public static string MinutesLeft_Format(double pluralCount)
 
 ReswPlus will then automatically select one of the string based on the number passed as a parameter. While English has only 2 plural forms, some languages have up to 5 different forms, 196 different languages are supported by this library.
 
+When used with string formatting (like the previous example), you can specify the parameter you want ReswPlus to use to select the correct plural form. Use the type `Q`/`Qd` if you want to pass a double, `Qi` if you want to use an integer, etc... 
+
 Pluralization can be used in combination with string formatting.
 
 **Example:**
