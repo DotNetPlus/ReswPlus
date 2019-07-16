@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IPluralProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MacroProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PluralTypeEnum.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PluralProviders\ArabicProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PluralProviders\BreizhProvider.cs" />
