@@ -27,7 +27,7 @@ Currently supported:
 | Support 'None' state                            |      | ✅               |      |             |
 | Strongly typed string formatting                |      | ✅               |      |             |
 | Support Resources in libraries                  |      | ✅               | ✅    |             |
-| Support Gender                                  |      | ✅               |     |             |
+| Support Genders                                 |      | ✅               |     |             |
 | Support String variants                         |      | ✅               |     |             |
 
 ## How to install
@@ -43,14 +43,15 @@ Alternatively, you can directly download the extension here: https://marketplace
 In your project, right-click on the resw file of the default language of your application (commonly `/Strings/en/Resources.resw`) and select the menu `ReswPlus`.
 
 In the submenu, select:
-- `Generate strongly typed class`: stronged typed generation, string formatting, custom markup
-- `Generate strongly typed class with pluralization`: all the above + pluralization and empty state support (the nuget package ReswPlusLib will be automatically added to your project)
+- `Generate only accessors`: generate stronged typed generation accessors + custom markup
+- `Generate advanced class`: all the above + pluralization and empty state support + variants + string formatting (the nuget package ReswPlusLib will be automatically added to your project)
 
-<img src="https://user-images.githubusercontent.com/1226538/59745769-57278400-922a-11e9-8395-f87f8faeb4bd.png" height="120" />
+<img src="https://user-images.githubusercontent.com/1226538/61084395-bc623580-a3e2-11e9-9836-eee8f0ea57c6.png" height="120" />
 
-It will automatically generate a file xxx.generated.cs associated to your Resource file.
+It will automatically generate a class associated to your Resource file:
 
 <img src="https://user-images.githubusercontent.com/1226538/56481455-f111c100-6473-11e9-8c04-f512a6136fd2.png" height="120" />
+<img src="https://user-images.githubusercontent.com/1226538/61084551-077c4880-a3e3-11e9-8e50-18ac0685d665.png" height="120" />
 
 The generated code file will be automatically updated when the .resw file is modified and saved.
 
@@ -140,6 +141,8 @@ public static string ForecastAnnouncement_Format(int tempFahrenheit, int tempCel
 #endregion
 ```
 
+C++ developers: You can replace the tag `#Format` by `#FormatNet` if you want to format your strings the .Net way (using `{0}`, `{1:F0}` instead of `%d`, `%s`...`. 
+
 ### Pluralization
 
 ReswPlus can generate methods to easily access your pluralized strings. Simply right-click on your resw file, select `ReswPlus` > `Generate strongly typed class with pluralization`, the nuget package `ReswPlusLib` will be automatically added to your project and generate all the functions necessary to manage your localization.
@@ -175,6 +178,8 @@ public static string MinutesLeft_Format(double pluralCount)
 ```
 
 ReswPlus will then automatically select one of the string based on the number passed as a parameter. While English has only 2 plural forms, some languages have up to 5 different forms, 196 different languages are supported by this library.
+
+When used with string formatting (like the previous example), you can specify the parameter you want ReswPlus to use to select the correct plural form. Use the type `Q`/`Qd` if you want to pass a double, `Qi` if you want to use an integer, etc... 
 
 Pluralization can be used in combination with string formatting.
 

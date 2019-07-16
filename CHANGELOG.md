@@ -1,3 +1,15 @@
+## ReswPlus 0.4
+
+### New Features
+
+- Support of **C++/WinRT**
+- Support of string variants, including genders
+- .Net String formatting support ("Hello {0}") added to C++/CX and C++/WinRT
+
+### Changes
+- C++/CX code generator creates now .h+.cpp
+- Menu items renamed
+
 ## ReswPlus 0.3
 
 ### New Features
