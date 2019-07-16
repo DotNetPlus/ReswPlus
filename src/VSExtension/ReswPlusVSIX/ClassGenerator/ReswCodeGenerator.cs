@@ -175,8 +175,10 @@ namespace ReswPlus.CodeGenerator
                         IsDotNetFormatting = IsDotNetFormatting(item.Value)
                     };
 
-                    ManageFormattedFunction(localization, item.Key, item.Value, item.Comment);
-
+                    if (isAdvanced)
+                    {
+                        ManageFormattedFunction(localization, item.Key, item.Value, item.Comment);
+                    }
                     result.Localizations.Add(localization);
                 }
             }
