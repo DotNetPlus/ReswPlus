@@ -47,6 +47,9 @@ namespace ReswPlusSample.Strings{
             return string.Format(AnimalTreat(petType, treatNumber), treatNumber, petType, petName);
         }
 
+        /// <summary>
+        ///   Format the string similar to: Reward your pup, give {0} biscuit to {2} the dog!
+        /// </summary>
         public static string AnimalTreat_Format(double treatNumber, object petType, string petName)
         {
             try

@@ -66,16 +66,20 @@
                 <StackPanel Style="{StaticResource SubPanelStyle}">
 
                     <ComboBox
-                x:Name="PronounsComboBox"
-                Header="Select a personal pronoun"
-                SelectedIndex="1">
+                        x:Name="PronounsComboBox"
+                        Header="Select a personal pronoun"
+                        SelectedIndex="1">
                         <ComboBoxItem>---------</ComboBoxItem>
                         <ComboBoxItem>She/Her/Hers</ComboBoxItem>
                         <ComboBoxItem>He/His/Him</ComboBoxItem>
                         <ComboBoxItem>They/Their/Theirs</ComboBoxItem>
                         <ComboBoxItem>Ze/Hir/Hirs</ComboBoxItem>
                     </ComboBox>
-                    <TextBlock FontWeight="Bold" Text="{x:Bind strings:Resources.DriverArrived(PronounsComboBox.SelectedIndex), Mode=OneWay}" Margin="0,12,0,0" />
+                    <TextBlock
+                        Margin="0,12,0,0"
+                        FontWeight="Bold"
+                        Text="{x:Bind strings:Resources.DriverArrived(PronounsComboBox.SelectedIndex), Mode=OneWay}"
+                        TextWrapping="WrapWholeWords" />
                 </StackPanel>
             </StackPanel>
 
@@ -132,12 +136,29 @@
 
                 <StackPanel Style="{StaticResource SubPanelStyle}">
 
-                    <RadioButton GroupName="PartDayRadioButton" Content="Morning" IsChecked="True" Checked="PartDayMorning_Checked"/>
-                    <RadioButton GroupName="PartDayRadioButton" Content="Afternoon" Checked="PartDayAfternoon_Checked" />
-                    <RadioButton GroupName="PartDayRadioButton" Content="Evening" Checked="PartDayEvening_Checked" />
-                    <RadioButton GroupName="PartDayRadioButton" Content="Night" Checked="PartDayNight_Checked" />
+                    <RadioButton
+                        Checked="PartDayMorning_Checked"
+                        Content="Morning"
+                        GroupName="PartDayRadioButton"
+                        IsChecked="True" />
+                    <RadioButton
+                        Checked="PartDayAfternoon_Checked"
+                        Content="Afternoon"
+                        GroupName="PartDayRadioButton" />
+                    <RadioButton
+                        Checked="PartDayEvening_Checked"
+                        Content="Evening"
+                        GroupName="PartDayRadioButton" />
+                    <RadioButton
+                        Checked="PartDayNight_Checked"
+                        Content="Night"
+                        GroupName="PartDayRadioButton" />
 
-                    <TextBlock FontWeight="Bold" Text="{x:Bind strings:Resources.Greeting(DayPart), Mode=OneWay}" Margin="0,12,0,0" />
+                    <TextBlock
+                        Margin="0,12,0,0"
+                        FontWeight="Bold"
+                        Text="{x:Bind strings:Resources.Greeting(DayPart), Mode=OneWay}"
+                        TextWrapping="WrapWholeWords" />
                 </StackPanel>
             </StackPanel>
 
@@ -174,7 +195,10 @@
                             Grid.Row="1"
                             Grid.Column="2"
                             Text="Reward your pup, give {0} biscuit to {1} the dog" />
-                        <TextBlock Grid.Row="1" Grid.Column="4" Text="#ReswPlusTyped[Q(treatNumber), V(petType), s(petName)]" />
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="4"
+                            Text="#ReswPlusTyped[Q(treatNumber), V(petType), s(petName)]" />
                         <TextBlock Grid.Row="2" Text="AnimalTreat_Variant1_Other" />
                         <TextBlock
                             Grid.Row="2"
@@ -201,12 +225,31 @@
 
                 <StackPanel Style="{StaticResource SubPanelStyle}">
 
-                    <RadioButton GroupName="PetTypeRadioButton" Content="🐶" IsChecked="True" Checked="PetTypeDog_Checked"/>
-                    <RadioButton GroupName="PetTypeRadioButton" Content="🐱" Checked="PetTypeCat_Checked" />
+                    <RadioButton
+                        Checked="PetTypeDog_Checked"
+                        Content="🐶"
+                        GroupName="PetTypeRadioButton"
+                        IsChecked="True" />
+                    <RadioButton
+                        Checked="PetTypeCat_Checked"
+                        Content="🐱"
+                        GroupName="PetTypeRadioButton" />
 
-                    <TextBox x:Name="PetNameTextBox" Header="Pet name" Text="Simba" />
-                    <Slider x:Name="PetNumberTreatsSlider" Header="Number of treats" Minimum="1" Value="4" Maximum="10" />
-                    <TextBlock FontWeight="Bold" Text="{x:Bind strings:Resources.AnimalTreat_Format(PetNumberTreatsSlider.Value, PetType, PetNameTextBox.Text), Mode=OneWay}" Margin="0,12,0,0" />
+                    <TextBox
+                        x:Name="PetNameTextBox"
+                        Header="Pet name"
+                        Text="Simba" />
+                    <Slider
+                        x:Name="PetNumberTreatsSlider"
+                        Header="Number of treats"
+                        Maximum="10"
+                        Minimum="1"
+                        Value="4" />
+                    <TextBlock
+                        Margin="0,12,0,0"
+                        FontWeight="Bold"
+                        Text="{x:Bind strings:Resources.AnimalTreat_Format(PetNumberTreatsSlider.Value, PetType, PetNameTextBox.Text), Mode=OneWay}"
+                        TextWrapping="WrapWholeWords" />
                 </StackPanel>
             </StackPanel>
 

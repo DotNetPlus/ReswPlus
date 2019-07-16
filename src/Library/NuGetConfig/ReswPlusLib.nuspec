@@ -44,7 +44,6 @@
     <file src="ReswPlusLib-native.targets" target="build\native\ReswPlusLib.targets" />
     <file src="..\ReswPlusLib.DotNetCore\bin\Release\netcoreapp2.0\ReswPlusLib.dll" target="lib\netcoreapp2.0\ReswPlusLib.dll" />
     <file src="..\ReswPlusLib.DotNetStandard\bin\Release\netstandard1.5\ReswPlusLib.dll" target="lib\netstandard1.5\ReswPlusLib.dll" />
-    <file src="..\ReswPlusLib.WinRT\bin\Release\ReswPlusLib.dll" target="lib\portable-win81+wpa81\ReswPlusLib.dll" />
     <file src="..\ReswPlusLib.UWP\bin\Release\ReswPlusLib.winmd" target="lib\uap10.0\ReswPlusLib.winmd" />
     <file src="..\ReswPlusLib.UWP\bin\Release\ReswPlusLib.pri" target="lib\uap10.0\ReswPlusLib.pri" />
 </files>
