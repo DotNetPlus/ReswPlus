@@ -35,19 +35,23 @@ namespace ReswPlus.Resw
     {
         private static readonly Dictionary<string, ParameterTypeInfo> _acceptedTypes = new Dictionary<string, ParameterTypeInfo>
         {
-            {"o", new ParameterTypeInfo(ParameterType.Object, false)},
-            {"b", new ParameterTypeInfo(ParameterType.Byte, false)},
-            {"d", new ParameterTypeInfo(ParameterType.Int, true)},
-            {"u", new ParameterTypeInfo(ParameterType.Uint, true)},
-            {"l", new ParameterTypeInfo(ParameterType.Long, true)},
-            {"s", new ParameterTypeInfo(ParameterType.String, false)},
-            {"f", new ParameterTypeInfo(ParameterType.Double, true)},
-            {"c", new ParameterTypeInfo(ParameterType.Char, false)},
-            {"ul", new ParameterTypeInfo(ParameterType.Ulong, true)},
-            {"m", new ParameterTypeInfo(ParameterType.Decimal, true)}
+            {"Object", new ParameterTypeInfo(ParameterType.Object, false)},
+            {"Byte", new ParameterTypeInfo(ParameterType.Byte, false)},
+            {"Int", new ParameterTypeInfo(ParameterType.Int, true)},
+            {"Int32", new ParameterTypeInfo(ParameterType.Int, true)},
+            {"UInt32", new ParameterTypeInfo(ParameterType.Uint, true)},
+            {"UInt", new ParameterTypeInfo(ParameterType.Uint, true)},
+            {"Long", new ParameterTypeInfo(ParameterType.Long, true)},
+            {"Int64", new ParameterTypeInfo(ParameterType.Long, true)},
+            {"ULong", new ParameterTypeInfo(ParameterType.Ulong, true)},
+            {"UInt64", new ParameterTypeInfo(ParameterType.Ulong, true)},
+            {"String", new ParameterTypeInfo(ParameterType.String, false)},
+            {"Double", new ParameterTypeInfo(ParameterType.Double, true)},
+            {"Char", new ParameterTypeInfo(ParameterType.Char, false)},
+            {"Decimal", new ParameterTypeInfo(ParameterType.Decimal, true)}
         };
 
-        private static readonly Regex RegexNamedParameters = new Regex("(?<type>\\w+)(?:\\((?<name>\\w+)\\))?");
+        private static readonly Regex RegexNamedParameters = new Regex("^(?:(?<soloQuantifier>Plural)|(?:(?<quantifier>Plural\\s+)?(?<type>\\w+)\\s*(?<name>\\w+)?))$");
 
         public static FunctionParametersInfo ParseParameters(IEnumerable<string> types)
         {
@@ -55,22 +59,27 @@ namespace ReswPlus.Resw
             var paramIndex = 1;
             foreach (var type in types)
             {
-                var matchNamedParameters = RegexNamedParameters.Match(type);
+                var matchNamedParameters = RegexNamedParameters.Match(type.Trim());
                 if (!matchNamedParameters.Success)
                 {
-                    continue;
+                    return null;
                 }
 
-                var trimmedType = matchNamedParameters.Groups["type"].Value;
+                var isQuantifier = matchNamedParameters.Groups["soloQuantifier"].Success || matchNamedParameters.Groups["quantifier"].Success;
+                var trimmedType = matchNamedParameters.Groups["type"].Value?.Trim() ?? "";
                 var paramName = matchNamedParameters.Groups["name"].Value;
-                var paramType = GetParameterType(trimmedType);
+                var paramType = GetParameterType(trimmedType, isQuantifier);
+                if(!paramType.type.HasValue)
+                {
+                    return null;
+                }
                 if (string.IsNullOrEmpty(paramName))
                 {
-                    if(trimmedType == "V")
+                    if (trimmedType == "Variant")
                     {
                         paramName = "variantId";
                     }
-                    else if (trimmedType.StartsWith("Q"))
+                    else if (isQuantifier)
                     {
                         paramName = "pluralCount";
                     }
@@ -80,12 +89,12 @@ namespace ReswPlus.Resw
                     }
                 }
 
-                var functionParam = new FunctionParameter { Type = paramType.type, Name = paramName, TypeToCast = paramType.typeToCast, IsVariantId = paramType.isVariantId };
-                if (trimmedType.StartsWith("Q") && result.PluralizationParameter == null)
+                var functionParam = new FunctionParameter { Type = paramType.type.Value, Name = paramName, TypeToCast = paramType.typeToCast, IsVariantId = paramType.isVariantId };
+                if (isQuantifier && result.PluralizationParameter == null)
                 {
                     result.PluralizationParameter = functionParam;
                 }
-                else if(trimmedType == "V" && result.VariantParameter == null)
+                else if (trimmedType == "Variant" && result.VariantParameter == null)
                 {
                     result.VariantParameter = functionParam;
                 }
@@ -96,38 +105,26 @@ namespace ReswPlus.Resw
             return result;
         }
 
-        public static (ParameterType type, ParameterType? typeToCast, bool isVariantId) GetParameterType(string key)
+        public static (ParameterType? type, ParameterType? typeToCast, bool isVariantId) GetParameterType(string key, bool isQuantifier)
         {
-            if(key == "V")
+            if (key == "Variant")
             {
                 // VariantId
                 return (ParameterType.Long, null, true);
             }
-            else if (key.StartsWith("Q"))
+            else if (isQuantifier)
             {
                 //Quantifier for plural
-                if (key == "Q")
+                if (string.IsNullOrEmpty(key))
                 {
                     return (ParameterType.Double, null, false);
                 }
-                key = key.Substring(1);
             }
-            var info = _acceptedTypes[key];
-            return (info.Type, (info.CanBeQuantifier && info.Type != ParameterType.Double ? (ParameterType?)ParameterType.Double : null), false);
-        }
-
-        public static IEnumerable<string> GetParameterSymbols()
-        {
-            yield return "V"; // variant
-            yield return "Q"; // plural
-            foreach (var type in _acceptedTypes)
+            if (_acceptedTypes.TryGetValue(key, out var info))
             {
-                yield return type.Key;
-                if (type.Value.CanBeQuantifier)
-                {
-                    yield return "Q" + type.Key;
-                }
+                return (info.Type, (info.CanBeQuantifier && info.Type != ParameterType.Double ? (ParameterType?)ParameterType.Double : null), false);
             }
+            return (null, null, false);
         }
     }
 }

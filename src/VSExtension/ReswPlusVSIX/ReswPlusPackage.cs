@@ -38,7 +38,7 @@ namespace ReswPlus
 
         public static void LogWarning(string message)
         {
-            if(_errorListProvider == null)
+            if (_errorListProvider == null)
             {
                 return;
             }
@@ -47,6 +47,21 @@ namespace ReswPlus
             {
                 Category = TaskCategory.Misc,
                 ErrorCategory = TaskErrorCategory.Warning,
+                Text = message
+            });
+        }
+
+        public static void LogError(string message)
+        {
+            if (_errorListProvider == null)
+            {
+                return;
+            }
+
+            _errorListProvider.Tasks.Add(new ErrorTask()
+            {
+                Category = TaskCategory.Misc,
+                ErrorCategory = TaskErrorCategory.Error,
                 Text = message
             });
         }

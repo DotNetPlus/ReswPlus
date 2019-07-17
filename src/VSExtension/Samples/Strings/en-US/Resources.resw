@@ -119,7 +119,7 @@
   </resheader>
   <data name="AnimalTreat_Variant1_One" xml:space="preserve">
     <value>Reward your pup, give {0} biscuit to {2} the dog!</value>
-    <comment>#Format[Q(treatNumber), V(petType), s(petName)]</comment>
+    <comment>#Format[Plural Double treatNumber, Variant petType, String petName]</comment>
   </data>
   <data name="AnimalTreat_Variant1_Other" xml:space="preserve">
     <value>Reward your pup, give {0} biscuits to {2} the dog!</value>
@@ -144,18 +144,18 @@
   </data>
   <data name="FileShared_One" xml:space="preserve">
     <value>{0} shared {1} photo from {2}</value>
-    <comment>#Format[s(username), Q, s(city)]</comment>
+    <comment>#Format[String username, Plural, String city]</comment>
   </data>
   <data name="FileShared_Other" xml:space="preserve">
     <value>{0} shared {1} photos from {2}</value>
   </data>
   <data name="ForecastAnnouncement" xml:space="preserve">
     <value>The current temperature in {2} is {0}°F ({1}°C)</value>
-    <comment>#Format[d(tempFahrenheit), d(tempCelsius), s(city)]</comment>
+    <comment>#Format[Int32 tempFahrenheit, Int32 tempCelsius, String city]</comment>
   </data>
   <data name="GotMessages" xml:space="preserve">
     <value>Welcome {0}, you got {1} emails!</value>
-    <comment>#Format[s, u]</comment>
+    <comment>#Format[String, UInt32]</comment>
   </data>
   <data name="Greeting_Variant1" xml:space="preserve">
     <value>Good morning, enjoy your day!</value>
@@ -171,7 +171,7 @@
   </data>
   <data name="MinutesLeft_One" xml:space="preserve">
     <value>{0} minute left</value>
-    <comment>#Format[Q]</comment>
+    <comment>#Format[Plural]</comment>
   </data>
   <data name="MinutesLeft_Other" xml:space="preserve">
     <value>{0} minutes left</value>
@@ -187,7 +187,7 @@
   </data>
   <data name="ReceivedMessages_One" xml:space="preserve">
     <value>You got {0} message from {1}</value>
-    <comment>#Format[Q, s]</comment>
+    <comment>#Format[Plural, String]</comment>
   </data>
   <data name="ReceivedMessages_Other" xml:space="preserve">
     <value>You got {0} messages from {1}</value>
@@ -200,6 +200,6 @@
   </data>
   <data name="YourAgeAndName" xml:space="preserve">
     <value>Your are {0}yo and named {1}!</value>
-    <comment>this string is used in the second tab. #Format[f, s]</comment>
+    <comment>this string is used in the second tab. #Format[Double, String]</comment>
   </data>
 </root>

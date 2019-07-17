@@ -22,18 +22,16 @@ namespace ReswPlus.CodeGenerator
         private const string TagFormatDotNet = "#FormatNet";
 
         private static readonly Regex _regexStringFormat;
-        private static readonly Regex _regexRemoveSpace = new Regex("\\s");
+        private static readonly Regex _regexRemoveSpace = new Regex("\\s+");
         private static readonly Regex _regexDotNetFormatting = new Regex(@"(?<!{){\d+(,-?\d+)?(:[^}]+)?}");
         private readonly ProjectItem _projectItem;
         private readonly ICodeGenerator _codeGenerator;
 
         static ReswCodeGenerator()
         {
-            var listFormats = "(?:" + ReswTagTyped.GetParameterSymbols().Aggregate((a, b) => a + "|" + b) + ")";
-            var listFormatsWithName = listFormats + "(?:\\(\\w+\\))?";
             _regexStringFormat =
                 new Regex(
-                    $"(?<tag>{Deprecated_TagStrongType}|{TagFormat}|{TagFormatDotNet})\\[\\s*(?<formats>{listFormatsWithName}(?:\\s*,\\s*{listFormatsWithName}\\s*)*)\\]");
+                    $"(?<tag>{TagFormat}|{TagFormatDotNet})\\[\\s*(?<formats>[^\\]]+)\\s*\\]");
         }
 
         private ReswCodeGenerator(ProjectItem item, ICodeGenerator generator)
@@ -127,6 +125,10 @@ namespace ReswPlus.CodeGenerator
                                 TemplateAccessorSummary = summary,
                                 SupportNoneState = hasNoneForm,
                             };
+                        }
+                        if (item.Items.Any(i => i.Comment != null && i.Comment.Contains(Deprecated_TagStrongType)))
+                        {
+                            ReswPlusPackage.LogError($"{Deprecated_TagStrongType} is no more supported, use {TagFormat} instead. See https://github.com/rudyhuyn/ReswPlus/blob/master/README.md");
                         }
                         var commentToUse =
                             item.Items.FirstOrDefault(i => i.Comment != null && _regexStringFormat.IsMatch(i.Comment));
@@ -230,10 +232,6 @@ namespace ReswPlus.CodeGenerator
                 if (match.Success)
                 {
                     var tag = match.Groups["tag"].Value;
-                    if (tag == Deprecated_TagStrongType)
-                    {
-                        ReswPlusPackage.LogWarning($"{Deprecated_TagStrongType} is deprecated, use {TagFormat} instead");
-                    }
                     return (match.Groups["formats"].Value, tag == TagFormatDotNet);
                 }
             }
@@ -251,6 +249,10 @@ namespace ReswPlus.CodeGenerator
             var singleLineValue = _regexRemoveSpace.Replace(exampleValue, " ").Trim();
             var types = format.Split(',');
             var tagTypedInfo = ReswTagTyped.ParseParameters(types);
+            if (tagTypedInfo == null)
+            {
+                return false;
+            }
 
             var summary = $"Format the string similar to: {singleLineValue}";
             localization.FormatSummary = summary;

@@ -119,7 +119,7 @@
   </resheader>
   <data name="GotMessagesFrom_Variant1_One" xml:space="preserve">
     <value>You got %d message from her</value>
-    <comment>#Format[Qu(numberMessages), V(personalPronoun)]</comment>
+    <comment>#Format[Plural UInt numberMessages, Variant personalPronoun]</comment>
   </data>
   <data name="GotMessagesFrom_Variant1_Other" xml:space="preserve">
     <value>You got %d messages from her</value>
@@ -150,18 +150,18 @@
   </data>
   <data name="TestWithObject" xml:space="preserve">
     <value>Test with object %s</value>
-    <comment>#Format[o(obj)]</comment>
+    <comment>#Format[Object obj]</comment>
   </data>
   <data name="YouGotEmailsDotNet_One" xml:space="preserve">
     <value>Hello {1}, you got {0:F0} email (DotNet formatting)</value>
-    <comment>#FormatNet[Qu(numberMessages), s(username)]</comment>
+    <comment>#FormatNet[Plural UInt numberMessages, String username]</comment>
   </data>
   <data name="YouGotEmailsDotNet_Other" xml:space="preserve">
     <value>Hello {1}, you got {0:F0} emails (DotNet formatting)</value>
   </data>
   <data name="YouGotEmails_One" xml:space="preserve">
     <value>Hello %2$ls, you got %1$u email</value>
-    <comment>#Format[Qu(numberMessages), s(username)]</comment>
+    <comment>#Format[Plural UInt numberMessages, String username]</comment>
   </data>
   <data name="YouGotEmails_Other" xml:space="preserve">
     <value>Hello %2$ls, you got %1$u emails</value>
