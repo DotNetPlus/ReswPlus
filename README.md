@@ -12,7 +12,7 @@ ReswPlus is a Visual Studio extension enriching your existing .resw files with m
 
 Currently supported: 
 - Visual Studio 2017 and 2019 (all versions).
-- C#, VB.Net, C++/CX apps and C++/WinRT.
+- C#, VB.Net, C++/CX and C++/WinRT.
 
 ![reswplus](https://user-images.githubusercontent.com/1226538/56525314-a76eb800-64ff-11e9-9e39-1bb4cd2dd012.gif)
 
