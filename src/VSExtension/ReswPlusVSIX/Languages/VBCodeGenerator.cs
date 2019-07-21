@@ -209,7 +209,7 @@ namespace ReswPlus.Languages
             _builder.AppendLine("End Property");
         }
 
-        internal override void CreateFormatMethod(string key, IEnumerable<FunctionParameter> parameters, string summary = null, IEnumerable<FunctionParameter> extraParameters = null, FunctionParameter parameterForPluralization = null, FunctionParameter parameterForVariant = null)
+        internal override void CreateFormatMethod(string key, IEnumerable<Parameter> parameters, string summary = null, IEnumerable<FunctionParameter> extraParameters = null, FunctionParameter parameterForPluralization = null, FunctionParameter parameterForVariant = null)
         {
             _builder.AppendLine("' <summary>");
             _builder.AppendLine($"'   {summary}");
@@ -218,17 +218,31 @@ namespace ReswPlus.Languages
             IEnumerable<FunctionParameter> functionParameters;
             if (extraParameters != null && extraParameters.Any())
             {
-                var list = new List<FunctionParameter>(parameters);
+                var list = new List<FunctionParameter>(parameters.OfType<FunctionParameter>());
                 list.InsertRange(0, extraParameters);
                 functionParameters = list;
             }
             else
             {
-                functionParameters = parameters;
+                functionParameters = parameters.OfType<FunctionParameter>();
             }
-            var parametersStr = functionParameters.Select(p => "ByVal " + p.Name + " As " + GetParameterTypeString(p.Type)).Aggregate((a, b) => a + ", " + b);
+            var parametersStr = functionParameters.Any() ? functionParameters.Select(p => "ByVal " + p.Name + " As " + GetParameterTypeString(p.Type)).Aggregate((a, b) => a + ", " + b)
+                : "";
             _builder.AppendLine($"Public Shared Function {key}_Format({parametersStr}) As String");
-            var formatParameters = parameters.Select(p => p.Name).Aggregate((a, b) => a + ", " + b);
+            var formatParameters = parameters.Select(p =>
+            {
+                switch (p)
+                {
+                    case FunctionParameter functionParam:
+                        return functionParam.Name;
+                    case ConstStringParameter constStringParameter:
+                        return $"\"{constStringParameter.Value}\"";
+                    default:
+                        //should not happen
+                        return "";
+                }
+            }
+            ).Aggregate((a, b) => a + ", " + b);
 
             string sourceForFormat;
             if (parameterForPluralization != null)
@@ -259,7 +273,7 @@ namespace ReswPlus.Languages
             _builder.RemoveLevel();
             _builder.AppendLine("End Function");
 
-            if (parameters.Any(p => p.IsVariantId))
+            if (parameters.Any(p => p is FunctionParameter functionParam && functionParam.IsVariantId))
             {
                 // one of the parameter is a variantId, we must create a second method with object as the variantId type.
                 _builder.AppendEmptyLine();

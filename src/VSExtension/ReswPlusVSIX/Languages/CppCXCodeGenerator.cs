@@ -208,7 +208,9 @@ namespace ReswPlus.Languages
             {
                 functionParameters = parameters;
             }
-            var parametersStr = functionParameters.Select(p => GetParameterTypeString(p.Type, true) + " " + p.Name).Aggregate((a, b) => a + ", " + b);
+            var parametersStr = functionParameters.Any() ?
+                functionParameters.Select(p => GetParameterTypeString(p.Type, true) + " " + p.Name).Aggregate((a, b) => a + ", " + b)
+                : "";
             builderHeader.AppendLine("public:");
             builderHeader.AddLevel();
             builderHeader.AppendLine("/// <summary>");
@@ -218,20 +220,22 @@ namespace ReswPlus.Languages
             builderHeader.RemoveLevel();
         }
 
-        protected override void CppCreateFormatMethod(CodeStringBuilder builderCpp, string computedNamespace, string key, bool isDotNetFormatting, IEnumerable<FunctionParameter> parameters, IEnumerable<FunctionParameter> extraParameters = null, FunctionParameter parameterForPluralization = null, FunctionParameter parameterForVariant = null)
+        protected override void CppCreateFormatMethod(CodeStringBuilder builderCpp, string computedNamespace, string key, bool isDotNetFormatting, IEnumerable<Parameter> parameters, IEnumerable<FunctionParameter> extraParameters = null, FunctionParameter parameterForPluralization = null, FunctionParameter parameterForVariant = null)
         {
             IEnumerable<FunctionParameter> functionParameters;
             if (extraParameters != null)
             {
-                var list = new List<FunctionParameter>(parameters);
+                var list = new List<FunctionParameter>(parameters.OfType<FunctionParameter>());
                 list.InsertRange(0, extraParameters);
                 functionParameters = list;
             }
             else
             {
-                functionParameters = parameters;
+                functionParameters = parameters.OfType<FunctionParameter>();
             }
-            var parametersStr = functionParameters.Select(p => GetParameterTypeString(p.Type, false) + " " + p.Name).Aggregate((a, b) => a + ", " + b);
+            var parametersStr = functionParameters.Any() ?
+                functionParameters.Select(p => GetParameterTypeString(p.Type, false) + " " + p.Name).Aggregate((a, b) => a + ", " + b)
+                : "";
 
             builderCpp.AppendLine($"String^ {computedNamespace}{key}_Format({parametersStr})");
             builderCpp.AppendLine("{");
@@ -239,14 +243,27 @@ namespace ReswPlus.Languages
             var formatParameters = parameters
                 .Select(p =>
                 {
-                    switch (p.Type)
+                    switch (p)
                     {
-                        case ParameterType.String:
-                            return isDotNetFormatting ? p.Name : p.Name + "->Data()";
-                        case ParameterType.Object:
-                            return isDotNetFormatting ? p.Name + "->ToString()" : p.Name + "->ToString()->Data()";
+                        case ConstStringParameter constStringParam:
+                            {
+                                return $"L\"{constStringParam.Value}\"";
+                            }
+                        case FunctionParameter functionParam:
+                            {
+                                switch (functionParam.Type)
+                                {
+                                    case ParameterType.String:
+                                        return isDotNetFormatting ? functionParam.Name : functionParam.Name + "->Data()";
+                                    case ParameterType.Object:
+                                        return isDotNetFormatting ? functionParam.Name + "->ToString()" : functionParam.Name + "->ToString()->Data()";
+                                    default:
+                                        return functionParam.Name;
+                                }
+                            }
                         default:
-                            return p.Name;
+                            //should not happen
+                            return "";
                     }
                 }).Aggregate((a, b) => a + ", " + b);
 

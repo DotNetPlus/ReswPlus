@@ -166,4 +166,8 @@
   <data name="YouGotEmailsDotNet_Other" xml:space="preserve">
     <value>Hello {1}, you got {0:F0} emails (DotNet formatting)</value>
   </data>
+  <data name="TestFormatWithLiteralString" xml:space="preserve">
+    <value>This '%ls' is a literal string</value>
+    <comment>#Format["Hello world"]</comment>
+  </data>
 </root>

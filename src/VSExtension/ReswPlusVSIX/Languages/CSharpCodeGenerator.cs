@@ -200,7 +200,7 @@ namespace ReswPlus.Languages
             _builder.AppendLine($"public static string {key} => _resourceLoader.GetString(\"{key}\");");
         }
 
-        internal override void CreateFormatMethod(string key, IEnumerable<FunctionParameter> parameters, string summary = null, IEnumerable<FunctionParameter> extraParameters = null, FunctionParameter parameterForPluralization = null, FunctionParameter parameterForVariant = null)
+        internal override void CreateFormatMethod(string key, IEnumerable<Parameter> parameters, string summary = null, IEnumerable<FunctionParameter> extraParameters = null, FunctionParameter parameterForPluralization = null, FunctionParameter parameterForVariant = null)
         {
             _builder.AppendLine("/// <summary>");
             _builder.AppendLine($"///   {summary}");
@@ -209,19 +209,32 @@ namespace ReswPlus.Languages
             IEnumerable<FunctionParameter> functionParameters;
             if (extraParameters != null && extraParameters.Any())
             {
-                var list = new List<FunctionParameter>(parameters);
+                var list = new List<FunctionParameter>(parameters.OfType<FunctionParameter>());
                 list.InsertRange(0, extraParameters);
                 functionParameters = list;
             }
             else
             {
-                functionParameters = parameters;
+                functionParameters = parameters.OfType<FunctionParameter>();
             }
-            var parametersStr = functionParameters.Select(p => GetParameterTypeString(p.Type) + " " + p.Name).Aggregate((a, b) => a + ", " + b);
+            var parametersStr = functionParameters.Any() ?
+                functionParameters.Select(p => GetParameterTypeString(p.Type) + " " + p.Name).Aggregate((a, b) => a + ", " + b)
+                : "";
             _builder.AppendLine($"public static string {key}_Format({parametersStr})");
             _builder.AppendLine("{");
             _builder.AddLevel();
-            var formatParameters = parameters.Select(p => p.Name).Aggregate((a, b) => a + ", " + b);
+            var formatParameters = parameters.Select(p =>
+            {
+                switch (p)
+                {
+                    case FunctionParameter functionParam:
+                        return functionParam.Name;
+                    case ConstStringParameter constStringParameter:
+                        return $"\"{constStringParameter.Value}\"";
+                }
+                //should not happen
+                return "";
+            }).Aggregate((a, b) => a + ", " + b);
 
             string sourceForFormat;
             if (parameterForPluralization != null)
@@ -252,7 +265,7 @@ namespace ReswPlus.Languages
             _builder.RemoveLevel();
             _builder.AppendLine("}");
 
-            if (parameters.Any(p => p.IsVariantId))
+            if (parameters.Any(p => p is FunctionParameter functionParam && functionParam.IsVariantId))
             {
                 // one of the parameter is a variantId, we must create a second method with object as the variantId type.
                 _builder.AppendEmptyLine();
@@ -266,7 +279,7 @@ namespace ReswPlus.Languages
                 _builder.AppendLine("try");
                 _builder.AppendLine("{");
                 _builder.AddLevel();
-                _builder.AppendLine($"return {key}_Format({functionParameters.Select(p => p.IsVariantId? $"Convert.ToInt64({p.Name})" : p.Name).Aggregate((a, b) => a + ", " + b)});");
+                _builder.AppendLine($"return {key}_Format({functionParameters.Select(p => p.IsVariantId ? $"Convert.ToInt64({p.Name})" : p.Name).Aggregate((a, b) => a + ", " + b)});");
                 _builder.RemoveLevel();
                 _builder.AppendLine("}");
                 _builder.AppendLine("catch");

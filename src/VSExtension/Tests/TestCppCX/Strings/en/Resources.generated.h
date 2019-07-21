@@ -62,6 +62,21 @@ namespace TestCppCX
                 Platform::String^ get();
             }
 
+        /* Methods and properties for TestFormatWithLiteralString */
+        public:
+            /// <summary>
+            ///   Looks up a localized string similar to: This '%ls' is a literal string
+            /// </summary>
+            static property Platform::String^ TestFormatWithLiteralString
+            {
+                Platform::String^ get();
+            }
+        public:
+            /// <summary>
+            ///   Format the string similar to: This '%ls' is a literal string
+            /// </summary>
+            static Platform::String^ TestFormatWithLiteralString_Format();
+
         /* Methods and properties for TestWithObject */
         public:
             /// <summary>
@@ -82,6 +97,7 @@ namespace TestCppCX
         {
             __Undefined = 0,
             Hello,
+            TestFormatWithLiteralString,
             TestWithObject,
         };
 

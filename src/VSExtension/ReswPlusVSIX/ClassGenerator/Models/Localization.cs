@@ -6,7 +6,7 @@ namespace ReswPlus.ClassGenerator.Models
     internal class LocalizationBase
     {
         public string Key { get; set; }
-        public List<FunctionParameter> Parameters { get; set; } = new List<FunctionParameter>();
+        public List<Parameter> Parameters { get; set; } = new List<Parameter>();
         public List<FunctionParameter> ExtraParameters { get; } = new List<FunctionParameter>();
         public string FormatSummary { get; set; }
         public bool IsDotNetFormatting { get; set; }

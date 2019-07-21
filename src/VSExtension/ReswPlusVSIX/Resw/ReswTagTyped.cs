@@ -3,8 +3,17 @@ using System.Text.RegularExpressions;
 
 namespace ReswPlus.Resw
 {
+    internal interface Parameter
+    {
 
-    internal class FunctionParameter
+    }
+
+    internal class ConstStringParameter : Parameter
+    {
+        public string Value { get; set; }
+    }
+
+    internal class FunctionParameter : Parameter
     {
         public ParameterType Type { get; set; }
         public string Name { get; set; }
@@ -14,7 +23,7 @@ namespace ReswPlus.Resw
 
     internal class FunctionParametersInfo
     {
-        public List<FunctionParameter> Parameters { get; set; } = new List<FunctionParameter>();
+        public List<Parameter> Parameters { get; set; } = new List<Parameter>();
         public FunctionParameter PluralizationParameter { get; set; }
         public FunctionParameter VariantParameter { get; set; }
     }
@@ -51,7 +60,7 @@ namespace ReswPlus.Resw
             {"Decimal", new ParameterTypeInfo(ParameterType.Decimal, true)}
         };
 
-        private static readonly Regex RegexNamedParameters = new Regex("^(?:(?<soloQuantifier>Plural)|(?:(?<quantifier>Plural\\s+)?(?<type>\\w+)\\s*(?<name>\\w+)?))$");
+        private static readonly Regex RegexNamedParameters = new Regex("^(?:(?:\"(?<constStrings>[^\"]*)\")|(?<soloQuantifier>Plural)|(?:(?<quantifier>Plural\\s+)?(?<type>\\w+)\\s*(?<name>\\w+)?))$");
 
         public static FunctionParametersInfo ParseParameters(IEnumerable<string> types)
         {
@@ -64,43 +73,53 @@ namespace ReswPlus.Resw
                 {
                     return null;
                 }
-
-                var isQuantifier = matchNamedParameters.Groups["soloQuantifier"].Success || matchNamedParameters.Groups["quantifier"].Success;
-                var trimmedType = matchNamedParameters.Groups["type"].Value?.Trim() ?? "";
-                var paramName = matchNamedParameters.Groups["name"].Value;
-                var paramType = GetParameterType(trimmedType, isQuantifier);
-                if(!paramType.type.HasValue)
+                if (matchNamedParameters.Groups["constStrings"].Success)
                 {
-                    return null;
-                }
-                if (string.IsNullOrEmpty(paramName))
-                {
-                    if (trimmedType == "Variant")
+                    var param = new ConstStringParameter()
                     {
-                        paramName = "variantId";
-                    }
-                    else if (isQuantifier)
-                    {
-                        paramName = "pluralCount";
-                    }
-                    else
-                    {
-                        paramName = "param" + paramType.type + paramIndex;
-                    }
-                }
+                        Value = matchNamedParameters.Groups["constStrings"].Value
+                    };
 
-                var functionParam = new FunctionParameter { Type = paramType.type.Value, Name = paramName, TypeToCast = paramType.typeToCast, IsVariantId = paramType.isVariantId };
-                if (isQuantifier && result.PluralizationParameter == null)
-                {
-                    result.PluralizationParameter = functionParam;
+                    result.Parameters.Add(param);
                 }
-                else if (trimmedType == "Variant" && result.VariantParameter == null)
+                else
                 {
-                    result.VariantParameter = functionParam;
-                }
+                    var isQuantifier = matchNamedParameters.Groups["soloQuantifier"].Success || matchNamedParameters.Groups["quantifier"].Success;
+                    var trimmedType = matchNamedParameters.Groups["type"].Value?.Trim() ?? "";
+                    var paramName = matchNamedParameters.Groups["name"].Value;
+                    var paramType = GetParameterType(trimmedType, isQuantifier);
+                    if (!paramType.type.HasValue)
+                    {
+                        return null;
+                    }
+                    if (string.IsNullOrEmpty(paramName))
+                    {
+                        if (trimmedType == "Variant")
+                        {
+                            paramName = "variantId";
+                        }
+                        else if (isQuantifier)
+                        {
+                            paramName = "pluralCount";
+                        }
+                        else
+                        {
+                            paramName = "param" + paramType.type + paramIndex;
+                        }
+                    }
 
-                result.Parameters.Add(functionParam);
-                ++paramIndex;
+                    var functionParam = new FunctionParameter { Type = paramType.type.Value, Name = paramName, TypeToCast = paramType.typeToCast, IsVariantId = paramType.isVariantId };
+                    if (isQuantifier && result.PluralizationParameter == null)
+                    {
+                        result.PluralizationParameter = functionParam;
+                    }
+                    else if (trimmedType == "Variant" && result.VariantParameter == null)
+                    {
+                        result.VariantParameter = functionParam;
+                    }
+                    result.Parameters.Add(functionParam);
+                    ++paramIndex;
+                }
             }
             return result;
         }

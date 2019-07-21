@@ -225,7 +225,9 @@ namespace ReswPlus.Languages
             {
                 functionParameters = parameters;
             }
-            var parametersStr = functionParameters.Select(p => GetParameterTypeString(p.Type, true) + " " + p.Name).Aggregate((a, b) => a + ", " + b);
+            var parametersStr = functionParameters.Any() ?
+                functionParameters.Select(p => GetParameterTypeString(p.Type, true) + " " + p.Name).Aggregate((a, b) => a + ", " + b)
+                : "";
             builderHeader.AppendLine("public:");
             builderHeader.AddLevel();
             builderHeader.AppendLine("/// <summary>");
@@ -235,27 +237,29 @@ namespace ReswPlus.Languages
             builderHeader.RemoveLevel();
         }
 
-        protected override void CppCreateFormatMethod(CodeStringBuilder builderCpp, string computedNamespace, string key, bool isDotNetFormatting, IEnumerable<FunctionParameter> parameters, IEnumerable<FunctionParameter> extraParameters = null, FunctionParameter parameterForPluralization = null, FunctionParameter parameterForVariant = null)
+        protected override void CppCreateFormatMethod(CodeStringBuilder builderCpp, string computedNamespace, string key, bool isDotNetFormatting, IEnumerable<Parameter> parameters, IEnumerable<FunctionParameter> extraParameters = null, FunctionParameter parameterForPluralization = null, FunctionParameter parameterForVariant = null)
         {
             IEnumerable<FunctionParameter> functionParameters;
             if (extraParameters != null)
             {
-                var list = new List<FunctionParameter>(parameters);
+                var list = new List<FunctionParameter>(parameters.OfType<FunctionParameter>());
                 list.InsertRange(0, extraParameters);
                 functionParameters = list;
             }
             else
             {
-                functionParameters = parameters;
+                functionParameters = parameters.OfType<FunctionParameter>();
             }
-            var parametersStr = functionParameters.Select(p => GetParameterTypeString(p.Type, false) + " " + p.Name).Aggregate((a, b) => a + ", " + b);
+            var parametersStr = functionParameters.Any() ?
+                functionParameters.Select(p => GetParameterTypeString(p.Type, false) + " " + p.Name).Aggregate((a, b) => a + ", " + b)
+                : "";
 
             builderCpp.AppendLine($"hstring {computedNamespace}{key}_Format({parametersStr})");
             builderCpp.AppendLine("{");
             builderCpp.AddLevel();
             if (!isDotNetFormatting)
             {
-                foreach (var param in parameters.Where(p => p.Type == ParameterType.Object))
+                foreach (var param in parameters.OfType<FunctionParameter>().Where(p => p.Type == ParameterType.Object))
                 {
                     builderCpp.AppendLine($"auto _{param.Name}_string = {param.Name} == nullptr ? L\"\" : {param.Name}.ToString().c_str();");
                 }
@@ -264,19 +268,33 @@ namespace ReswPlus.Languages
             var formatParameters = parameters
                 .Select(p =>
                 {
-                    if(isDotNetFormatting)
+                    switch (p)
                     {
-                        return $"box_value({p.Name})";
-                    }
-                    switch (p.Type)
-                    {
-                        case ParameterType.String:
-                            return p.Name + ".c_str()";
-                        case ParameterType.Object:
-                            return $"_{p.Name}_string";
+                        case ConstStringParameter constStringParam:
+                            {
+                                return $"L\"{constStringParam.Value}\"";
+                            }
+                        case FunctionParameter functionParam:
+                            {
+                                if (isDotNetFormatting)
+                                {
+                                    return $"box_value({functionParam.Name})";
+                                }
+                                switch (functionParam.Type)
+                                {
+                                    case ParameterType.String:
+                                        return functionParam.Name + ".c_str()";
+                                    case ParameterType.Object:
+                                        return $"_{functionParam.Name}_string";
+                                    default:
+                                        return functionParam.Name;
+                                }
+                            }
                         default:
-                            return p.Name;
+                            //should not happen
+                            return "";
                     }
+
                 }).Aggregate((a, b) => a + ", " + b);
 
             string sourceForFormat;
@@ -488,7 +506,9 @@ namespace ReswPlus.Languages
             {
                 functionParameters = parameters;
             }
-            var parametersStr = functionParameters.Select(p => IdlGetParameterTypeString(p.Type) + " " + p.Name).Aggregate((a, b) => a + ", " + b);
+            var parametersStr = functionParameters.Any() ?
+                functionParameters.Select(p => IdlGetParameterTypeString(p.Type) + " " + p.Name).Aggregate((a, b) => a + ", " + b) :
+                "";
             builderHeader.AppendLine($"static String {key}_Format({parametersStr});");
         }
 
@@ -555,7 +575,7 @@ namespace ReswPlus.Languages
                     IdlCreateTemplateAccessor(builderIdl, item.Key, true, pluralLocalization is IVariantLocalization);
                     if (pluralLocalization.Parameters != null && pluralLocalization.Parameters.Any())
                     {
-                        IdlCreateFormatMethod(builderIdl, pluralLocalization.Key, pluralLocalization.Parameters, pluralLocalization.FormatSummary, pluralLocalization.ExtraParameters, pluralLocalization.ParameterToUseForPluralization);
+                        IdlCreateFormatMethod(builderIdl, pluralLocalization.Key, pluralLocalization.Parameters.OfType<FunctionParameter>(), pluralLocalization.FormatSummary, pluralLocalization.ExtraParameters, pluralLocalization.ParameterToUseForPluralization);
                     }
                 }
                 else if (item is Localization localization)
@@ -563,7 +583,7 @@ namespace ReswPlus.Languages
                     IdlCreateAccessor(builderIdl, localization.Key, localization.AccessorSummary);
                     if (localization.Parameters != null && localization.Parameters.Any())
                     {
-                        IdlCreateFormatMethod(builderIdl, localization.Key, localization.Parameters, localization.FormatSummary);
+                        IdlCreateFormatMethod(builderIdl, localization.Key, localization.Parameters.OfType<FunctionParameter>(), localization.FormatSummary);
                     }
                 }
             }

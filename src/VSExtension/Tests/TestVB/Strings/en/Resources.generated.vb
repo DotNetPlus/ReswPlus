@@ -168,6 +168,24 @@ Public Class Resources
     End Function
     #End Region
 
+    #Region "TestFormatWithLiteralString"
+    ' <summary>
+    '   Looks up a localized string similar to: This '{0}' is a literal string
+    ' </summary>
+    Public Shared ReadOnly Property TestFormatWithLiteralString As String
+        Get
+            Return _resourceLoader.GetString("TestFormatWithLiteralString")
+        End Get
+    End Property
+
+    ' <summary>
+    '   Format the string similar to: This '{0}' is a literal string
+    ' </summary>
+    Public Shared Function TestFormatWithLiteralString_Format() As String
+        Return String.Format(TestFormatWithLiteralString, "Hello world")
+    End Function
+    #End Region
+
     #Region "ThisIsATooltip"
     ' <summary>
     '   Looks up a localized string similar to: this is a tooltip text
@@ -219,6 +237,7 @@ Public Class ResourcesExtension
         __Undefined = 0
         ForecastAnnouncement
         GotMessages
+        TestFormatWithLiteralString
         ThisIsATooltip
         WelcomeTitle
         YourAgeAndName

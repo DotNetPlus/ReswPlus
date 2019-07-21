@@ -22,7 +22,7 @@ namespace ReswPlus.Languages
 
         internal abstract void CreateAccessor(string key, string summary);
 
-        internal abstract void CreateFormatMethod(string key, IEnumerable<FunctionParameter> parameters, string summary = null,
+        internal abstract void CreateFormatMethod(string key, IEnumerable<Parameter> parameters, string summary = null,
             IEnumerable<FunctionParameter> extraParameters = null, FunctionParameter parameterForPluralization = null, FunctionParameter parameterForVariant = null);
 
         internal abstract void CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys);

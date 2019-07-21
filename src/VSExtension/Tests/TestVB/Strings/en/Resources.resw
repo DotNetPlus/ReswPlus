@@ -183,6 +183,10 @@
   <data name="SendMessage_Variant3" xml:space="preserve">
     <value>Send them a message</value>
   </data>
+  <data name="TestFormatWithLiteralString" xml:space="preserve">
+    <value>This '{0}' is a literal string</value>
+    <comment>#Format["Hello world"]</comment>
+  </data>
   <data name="ThisIsATooltip" xml:space="preserve">
     <value>this is a tooltip text</value>
   </data>

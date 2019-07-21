@@ -13,6 +13,8 @@ namespace TestCppWinRT
             static String Hello{ get; };
             static String TestWithObject{ get; };
             static String TestWithObject_Format(Windows.Foundation.IStringable obj);
+            static String TestFormatWithLiteralString{ get; };
+            static String TestFormatWithLiteralString_Format();
         };
 
         enum KeyEnum
@@ -20,6 +22,7 @@ namespace TestCppWinRT
             __Undefined = 0,
             Hello,
             TestWithObject,
+            TestFormatWithLiteralString,
         };
 
         runtimeclass ResourcesExtension: Windows.UI.Xaml.Markup.MarkupExtension

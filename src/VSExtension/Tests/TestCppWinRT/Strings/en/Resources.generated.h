@@ -73,6 +73,18 @@ namespace winrt::TestCppWinRT::Strings::implementation
         ///   Format the string similar to: Test with object %s
         /// </summary>
         static hstring TestWithObject_Format(Windows::Foundation::IStringable const& obj);
+
+    /* Methods and properties for TestFormatWithLiteralString */
+    public:
+        /// <summary>
+        ///   Looks up a localized string similar to: This %0$ls is a literal string
+        /// </summary>
+        static hstring TestFormatWithLiteralString();
+    public:
+        /// <summary>
+        ///   Format the string similar to: This %0$ls is a literal string
+        /// </summary>
+        static hstring TestFormatWithLiteralString_Format();
     };
 
     struct ResourcesExtension: ResourcesExtensionT<ResourcesExtension>

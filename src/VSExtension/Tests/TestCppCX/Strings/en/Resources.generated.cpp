@@ -61,6 +61,19 @@ String^ local::Resources::Hello::get()
     return GetResourceLoader()->GetString(L"Hello");
 }
 
+String^ local::Resources::TestFormatWithLiteralString::get()
+{
+    return GetResourceLoader()->GetString(L"TestFormatWithLiteralString");
+}
+
+String^ local::Resources::TestFormatWithLiteralString_Format()
+{
+    size_t needed = _swprintf_p(nullptr, 0, TestFormatWithLiteralString->Data(), L"Hello world");
+    wchar_t *buffer = new wchar_t[needed + 1];
+    _swprintf_p(buffer, needed + 1, TestFormatWithLiteralString->Data(), L"Hello world");
+    return ref new String(buffer);
+}
+
 String^ local::Resources::TestWithObject::get()
 {
     return GetResourceLoader()->GetString(L"TestWithObject");

@@ -35,6 +35,8 @@
                 <ComboBoxItem>They/Theirs/Their</ComboBoxItem>
             </ComboBox>
             <TextBlock FontWeight="Bold" Text="{x:Bind strings:Resources.GotMessagesFrom_Format(EmailsSlider.Value, PronounsComboBox.SelectedIndex), Mode=OneWay}" />
+            <TextBlock Text="{x:Bind strings:Resources.TestFormatWithLiteralString_Format()}" />
+
         </StackPanel>
     </Grid>
 </Page>
