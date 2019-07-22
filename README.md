@@ -2,6 +2,7 @@
 
 # ReswPlus - Advanced File Code Generator for Resw files.
 [![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/rudyhuyn.ReswPlus.svg?color=green)](https://marketplace.visualstudio.com/items?itemName=rudyhuyn.ReswPlus)
+![GitHub](https://img.shields.io/github/license/rudyhuyn/reswplus.svg)
 
 ReswPlus is a Visual Studio extension enriching your existing .resw files with many high valuable features:
 - Access to strings via strongly typed static properties.
