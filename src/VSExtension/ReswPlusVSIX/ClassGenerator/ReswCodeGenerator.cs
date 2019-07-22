@@ -95,8 +95,10 @@ namespace ReswPlus.CodeGenerator
             if (isAdvanced)
             {
                 //check Pluralization
-                var itemsVariantedWithPluralOrVariant = reswInfo.Items.VariantWithPluralAndVariant();
-                foreach (var item in itemsVariantedWithPluralOrVariant)
+                var itemsWithPluralOrVariant = reswInfo.Items.GetItemsWithVariantOrPlural();
+                var basicItems = stringItems.Except(itemsWithPluralOrVariant.SelectMany(e => e.Items)).ToArray();
+
+                foreach (var item in itemsWithPluralOrVariant)
                 {
                     if (item.SupportPlural)
                     {
@@ -134,7 +136,7 @@ namespace ReswPlus.CodeGenerator
                             item.Items.FirstOrDefault(i => i.Comment != null && _regexStringFormat.IsMatch(i.Comment));
                         if (commentToUse != null)
                         {
-                            ManageFormattedFunction(localization, item.Key, item.Items.FirstOrDefault().Value, commentToUse.Comment);
+                            ManageFormattedFunction(localization, item.Key, item.Items.FirstOrDefault().Value, commentToUse.Comment, basicItems);
                         }
 
                         result.Localizations.Add(localization);
@@ -153,14 +155,14 @@ namespace ReswPlus.CodeGenerator
 
                         if (!string.IsNullOrEmpty(commentToUse?.Comment))
                         {
-                            ManageFormattedFunction(localization, item.Key, commentToUse.Value, commentToUse.Comment);
+                            ManageFormattedFunction(localization, item.Key, commentToUse.Value, commentToUse.Comment, basicItems);
                         }
 
                         result.Localizations.Add(localization);
                     }
                 }
 
-                stringItems = stringItems.Except(itemsVariantedWithPluralOrVariant.SelectMany(e => e.Items)).ToArray();
+                stringItems = basicItems;
             }
 
             if (stringItems.Any())
@@ -179,7 +181,7 @@ namespace ReswPlus.CodeGenerator
 
                     if (isAdvanced)
                     {
-                        ManageFormattedFunction(localization, item.Key, item.Value, item.Comment);
+                        ManageFormattedFunction(localization, item.Key, item.Value, item.Comment, stringItems);
                     }
                     result.Localizations.Add(localization);
                 }
@@ -238,7 +240,7 @@ namespace ReswPlus.CodeGenerator
             return (null, false);
         }
 
-        private bool ManageFormattedFunction(LocalizationBase localization, string key, string exampleValue, string comment)
+        private bool ManageFormattedFunction(LocalizationBase localization, string key, string exampleValue, string comment, IEnumerable<ReswItem> basicLocalizedItems)
         {
             var (format, isDotNetFormatting) = ParseTag(comment);
             if (format == null)
@@ -248,7 +250,7 @@ namespace ReswPlus.CodeGenerator
             localization.IsDotNetFormatting = isDotNetFormatting;
             var singleLineValue = _regexRemoveSpace.Replace(exampleValue, " ").Trim();
             var types = format.Split(',');
-            var tagTypedInfo = ReswTagTyped.ParseParameters(types);
+            var tagTypedInfo = ReswTagTyped.ParseParameters(types, basicLocalizedItems);
             if (tagTypedInfo == null)
             {
                 return false;

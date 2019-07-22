@@ -170,4 +170,8 @@
     <value>This '%ls' is a literal string</value>
     <comment>#Format["Hello world"]</comment>
   </data>
+  <data name="TestFormatWithLocalizationRef" xml:space="preserve">
+    <value>This '%ls' is a localization ref</value>
+    <comment>#Format[Hello()]</comment>
+  </data>
 </root>

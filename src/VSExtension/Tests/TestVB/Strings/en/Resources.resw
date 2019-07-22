@@ -151,6 +151,9 @@
   <data name="GotMessagesFrom_Variant3_Other" xml:space="preserve">
     <value>You got {0} messages from them</value>
   </data>
+  <data name="Hello" xml:space="preserve">
+    <value>Hello world</value>
+  </data>
   <data name="MinutesLeft_One" xml:space="preserve">
     <value>{0} minute left</value>
     <comment>#Format[Plural]</comment>
@@ -186,6 +189,10 @@
   <data name="TestFormatWithLiteralString" xml:space="preserve">
     <value>This '{0}' is a literal string</value>
     <comment>#Format["Hello world"]</comment>
+  </data>
+  <data name="TestFormatWithLocalizationRef" xml:space="preserve">
+    <value>This '{0}' is a localization ref</value>
+    <comment>#Format[Hello()]</comment>
   </data>
   <data name="ThisIsATooltip" xml:space="preserve">
     <value>this is a tooltip text</value>

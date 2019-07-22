@@ -74,6 +74,19 @@ String^ local::Resources::TestFormatWithLiteralString_Format()
     return ref new String(buffer);
 }
 
+String^ local::Resources::TestFormatWithLocalizationRef::get()
+{
+    return GetResourceLoader()->GetString(L"TestFormatWithLocalizationRef");
+}
+
+String^ local::Resources::TestFormatWithLocalizationRef_Format()
+{
+    size_t needed = _swprintf_p(nullptr, 0, TestFormatWithLocalizationRef->Data(), Hello->Data());
+    wchar_t *buffer = new wchar_t[needed + 1];
+    _swprintf_p(buffer, needed + 1, TestFormatWithLocalizationRef->Data(), Hello->Data());
+    return ref new String(buffer);
+}
+
 String^ local::Resources::TestWithObject::get()
 {
     return GetResourceLoader()->GetString(L"TestWithObject");

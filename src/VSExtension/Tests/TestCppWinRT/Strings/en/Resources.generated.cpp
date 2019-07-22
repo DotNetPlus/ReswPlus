@@ -95,6 +95,19 @@ hstring local::Resources::TestFormatWithLiteralString_Format()
     return hstring(buffer);
 }
 
+hstring local::Resources::TestFormatWithLocalizationRef()
+{
+    return GetResourceLoader().GetString(L"TestFormatWithLocalizationRef");
+}
+
+hstring local::Resources::TestFormatWithLocalizationRef_Format()
+{
+    size_t needed = _swprintf_p(nullptr, 0, TestFormatWithLocalizationRef().c_str(), Hello().c_str());
+    wchar_t *buffer = new wchar_t[needed + 1];
+    _swprintf_p(buffer, needed + 1, TestFormatWithLocalizationRef().c_str(), Hello().c_str());
+    return hstring(buffer);
+}
+
 local::ResourcesExtension::ResourcesExtension()
 {
     _resourceLoader = ResourceLoader::GetForViewIndependentUse(L"Resources");
@@ -129,6 +142,8 @@ hstring local::ResourcesExtension::KeyEnumToString(KeyEnum key)
             return hstring(L"TestWithObject");
         case KeyEnum::TestFormatWithLiteralString:
             return hstring(L"TestFormatWithLiteralString");
+        case KeyEnum::TestFormatWithLocalizationRef:
+            return hstring(L"TestFormatWithLocalizationRef");
         default:
             return hstring(L"");
     }

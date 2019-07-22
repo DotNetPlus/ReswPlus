@@ -77,6 +77,21 @@ namespace TestCppCX
             /// </summary>
             static Platform::String^ TestFormatWithLiteralString_Format();
 
+        /* Methods and properties for TestFormatWithLocalizationRef */
+        public:
+            /// <summary>
+            ///   Looks up a localized string similar to: This '%ls' is a localization ref
+            /// </summary>
+            static property Platform::String^ TestFormatWithLocalizationRef
+            {
+                Platform::String^ get();
+            }
+        public:
+            /// <summary>
+            ///   Format the string similar to: This '%ls' is a localization ref
+            /// </summary>
+            static Platform::String^ TestFormatWithLocalizationRef_Format();
+
         /* Methods and properties for TestWithObject */
         public:
             /// <summary>
@@ -98,6 +113,7 @@ namespace TestCppCX
             __Undefined = 0,
             Hello,
             TestFormatWithLiteralString,
+            TestFormatWithLocalizationRef,
             TestWithObject,
         };
 

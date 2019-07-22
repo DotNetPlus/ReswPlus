@@ -40,6 +40,7 @@
             </ComboBox>
             <TextBlock Text="{x:Bind strings:Resources.GotMessagesFrom_Format(EmailsSlider.Value, PronounsComboBox.SelectedIndex), Mode=OneWay}" FontWeight="Bold" />
             <TextBlock Text="{x:Bind strings:Resources.TestFormatWithLiteralString_Format()}" />
+            <TextBlock Text="{x:Bind strings:Resources.TestFormatWithLocalizationRef_Format()}" />
 
         </StackPanel>
     </Grid>

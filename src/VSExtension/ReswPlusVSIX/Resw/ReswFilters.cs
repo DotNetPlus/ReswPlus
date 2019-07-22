@@ -14,14 +14,14 @@ namespace ReswPlus.Resw
 
     internal static class ReswFilters
     {
-        private static Regex regexVariantItems = new Regex("(?:_(?<variant>Variant\\-?\\d+))?(?:_(?<plural>Zero|One|Other|Many|Few|None))?$");
+        private static Regex regexPluralVariantItems = new Regex("(?:_(?<variant>Variant\\-?\\d+))?(?:_(?<plural>Zero|One|Other|Many|Few|None))?$");
 
-        public static IEnumerable<VariantedReswItems> VariantWithPluralAndVariant(this IEnumerable<ReswItem> reswItems)
+        public static IEnumerable<VariantedReswItems> GetItemsWithVariantOrPlural(this IEnumerable<ReswItem> reswItems)
         {
 
             var variantedItems = from item in reswItems
                                where item.Key.Contains("_")
-                               let match = regexVariantItems.Match(item.Key)
+                               let match = regexPluralVariantItems.Match(item.Key)
                                where match.Success
                                let commonKey = item.Key.Substring(0, item.Key.Length - match.Length)
                                group (item: item, isVariant: match.Groups["variant"].Length > 0, isPlural: match.Groups["plural"].Length > 0)

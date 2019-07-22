@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace ReswPlus.Resw
@@ -7,7 +8,10 @@ namespace ReswPlus.Resw
     {
 
     }
-
+    internal class LocalizationRefParameter : Parameter
+    {
+        public string Id { get; set; }
+    }
     internal class ConstStringParameter : Parameter
     {
         public string Value { get; set; }
@@ -60,9 +64,9 @@ namespace ReswPlus.Resw
             {"Decimal", new ParameterTypeInfo(ParameterType.Decimal, true)}
         };
 
-        private static readonly Regex RegexNamedParameters = new Regex("^(?:(?:\"(?<constStrings>[^\"]*)\")|(?<soloQuantifier>Plural)|(?:(?<quantifier>Plural\\s+)?(?<type>\\w+)\\s*(?<name>\\w+)?))$");
+        private static readonly Regex RegexNamedParameters = new Regex("^(?:(?:\"(?<constStrings>[^\"]*)\")|(?:(?<localizationRef>\\w+)\\(\\))|(?:(?<quantifier>Plural\\s+)?(?<type>\\w+)\\s*(?<name>\\w+)?))$");
 
-        public static FunctionParametersInfo ParseParameters(IEnumerable<string> types)
+        public static FunctionParametersInfo ParseParameters(IEnumerable<string> types, IEnumerable<ReswItem> basicLocalizedItems)
         {
             var result = new FunctionParametersInfo();
             var paramIndex = 1;
@@ -84,41 +88,66 @@ namespace ReswPlus.Resw
                 }
                 else
                 {
-                    var isQuantifier = matchNamedParameters.Groups["soloQuantifier"].Success || matchNamedParameters.Groups["quantifier"].Success;
-                    var trimmedType = matchNamedParameters.Groups["type"].Value?.Trim() ?? "";
-                    var paramName = matchNamedParameters.Groups["name"].Value;
-                    var paramType = GetParameterType(trimmedType, isQuantifier);
-                    if (!paramType.type.HasValue)
+                    if (matchNamedParameters.Groups["localizationRef"].Success)
                     {
-                        return null;
-                    }
-                    if (string.IsNullOrEmpty(paramName))
-                    {
-                        if (trimmedType == "Variant")
+                        var localizationRef = matchNamedParameters.Groups["localizationRef"].Value;
+                        // Localization Identifier
+                        if (!basicLocalizedItems.Any(i => i.Key == localizationRef))
                         {
-                            paramName = "variantId";
+                            //Identifier not found
+                            return null;
                         }
-                        else if (isQuantifier)
+                        var param = new LocalizationRefParameter()
                         {
-                            paramName = "pluralCount";
-                        }
-                        else
-                        {
-                            paramName = "param" + paramType.type + paramIndex;
-                        }
-                    }
+                            Id = localizationRef
+                        };
 
-                    var functionParam = new FunctionParameter { Type = paramType.type.Value, Name = paramName, TypeToCast = paramType.typeToCast, IsVariantId = paramType.isVariantId };
-                    if (isQuantifier && result.PluralizationParameter == null)
-                    {
-                        result.PluralizationParameter = functionParam;
+                        result.Parameters.Add(param);
                     }
-                    else if (trimmedType == "Variant" && result.VariantParameter == null)
+                    else
                     {
-                        result.VariantParameter = functionParam;
+                        var paramTypeId = matchNamedParameters.Groups["type"].Value;
+                        var isQuantifier = matchNamedParameters.Groups["quantifier"].Success;
+                        if (!isQuantifier && paramTypeId == "Plural")
+                        {
+                            isQuantifier = true;
+                            paramTypeId = "";
+                        }
+
+                        var paramName = matchNamedParameters.Groups["name"].Value;
+                        var paramType = GetParameterType(paramTypeId, isQuantifier);
+                        if (!paramType.type.HasValue)
+                        {
+                            return null;
+                        }
+                        if (string.IsNullOrEmpty(paramName))
+                        {
+                            if (paramTypeId == "Variant")
+                            {
+                                paramName = "variantId";
+                            }
+                            else if (isQuantifier)
+                            {
+                                paramName = "pluralCount";
+                            }
+                            else
+                            {
+                                paramName = "param" + paramType.type + paramIndex;
+                            }
+                        }
+
+                        var functionParam = new FunctionParameter { Type = paramType.type.Value, Name = paramName, TypeToCast = paramType.typeToCast, IsVariantId = paramType.isVariantId };
+                        if (isQuantifier && result.PluralizationParameter == null)
+                        {
+                            result.PluralizationParameter = functionParam;
+                        }
+                        else if (paramTypeId == "Variant" && result.VariantParameter == null)
+                        {
+                            result.VariantParameter = functionParam;
+                        }
+                        result.Parameters.Add(functionParam);
+                        ++paramIndex;
                     }
-                    result.Parameters.Add(functionParam);
-                    ++paramIndex;
                 }
             }
             return result;

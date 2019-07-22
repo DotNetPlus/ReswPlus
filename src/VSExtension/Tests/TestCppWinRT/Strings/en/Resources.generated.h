@@ -77,14 +77,26 @@ namespace winrt::TestCppWinRT::Strings::implementation
     /* Methods and properties for TestFormatWithLiteralString */
     public:
         /// <summary>
-        ///   Looks up a localized string similar to: This %0$ls is a literal string
+        ///   Looks up a localized string similar to: This '%ls' is a literal string
         /// </summary>
         static hstring TestFormatWithLiteralString();
     public:
         /// <summary>
-        ///   Format the string similar to: This %0$ls is a literal string
+        ///   Format the string similar to: This '%ls' is a literal string
         /// </summary>
         static hstring TestFormatWithLiteralString_Format();
+
+    /* Methods and properties for TestFormatWithLocalizationRef */
+    public:
+        /// <summary>
+        ///   Looks up a localized string similar to: This '%ls' is a localization ref
+        /// </summary>
+        static hstring TestFormatWithLocalizationRef();
+    public:
+        /// <summary>
+        ///   Format the string similar to: This '%ls' is a localization ref
+        /// </summary>
+        static hstring TestFormatWithLocalizationRef_Format();
     };
 
     struct ResourcesExtension: ResourcesExtensionT<ResourcesExtension>

@@ -249,6 +249,10 @@ namespace ReswPlus.Languages
                             {
                                 return $"L\"{constStringParam.Value}\"";
                             }
+                        case LocalizationRefParameter localizationStringParameter:
+                            {
+                                return $"{localizationStringParameter.Id}->Data()";
+                            }
                         case FunctionParameter functionParam:
                             {
                                 switch (functionParam.Type)

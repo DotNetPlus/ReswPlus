@@ -231,9 +231,12 @@ namespace ReswPlus.Languages
                         return functionParam.Name;
                     case ConstStringParameter constStringParameter:
                         return $"\"{constStringParameter.Value}\"";
+                    case LocalizationRefParameter localizationStringParameter:
+                        return localizationStringParameter.Id;
+                    default:
+                        //should not happen
+                        return "";
                 }
-                //should not happen
-                return "";
             }).Aggregate((a, b) => a + ", " + b);
 
             string sourceForFormat;

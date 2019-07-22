@@ -168,6 +168,17 @@ Public Class Resources
     End Function
     #End Region
 
+    #Region "Hello"
+    ' <summary>
+    '   Looks up a localized string similar to: Hello world
+    ' </summary>
+    Public Shared ReadOnly Property Hello As String
+        Get
+            Return _resourceLoader.GetString("Hello")
+        End Get
+    End Property
+    #End Region
+
     #Region "TestFormatWithLiteralString"
     ' <summary>
     '   Looks up a localized string similar to: This '{0}' is a literal string
@@ -183,6 +194,24 @@ Public Class Resources
     ' </summary>
     Public Shared Function TestFormatWithLiteralString_Format() As String
         Return String.Format(TestFormatWithLiteralString, "Hello world")
+    End Function
+    #End Region
+
+    #Region "TestFormatWithLocalizationRef"
+    ' <summary>
+    '   Looks up a localized string similar to: This '{0}' is a localization ref
+    ' </summary>
+    Public Shared ReadOnly Property TestFormatWithLocalizationRef As String
+        Get
+            Return _resourceLoader.GetString("TestFormatWithLocalizationRef")
+        End Get
+    End Property
+
+    ' <summary>
+    '   Format the string similar to: This '{0}' is a localization ref
+    ' </summary>
+    Public Shared Function TestFormatWithLocalizationRef_Format() As String
+        Return String.Format(TestFormatWithLocalizationRef, Hello)
     End Function
     #End Region
 
@@ -237,7 +266,9 @@ Public Class ResourcesExtension
         __Undefined = 0
         ForecastAnnouncement
         GotMessages
+        Hello
         TestFormatWithLiteralString
+        TestFormatWithLocalizationRef
         ThisIsATooltip
         WelcomeTitle
         YourAgeAndName
