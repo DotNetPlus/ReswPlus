@@ -272,11 +272,15 @@ namespace ReswPlus.Languages
                     {
                         case ConstStringParameter constStringParam:
                             {
-                                return $"L\"{constStringParam.Value}\"";
+                                return isDotNetFormatting ? $"box_value(L\"{constStringParam.Value}\")" : $"L\"{constStringParam.Value}\"";
+                            }
+                        case MacroParameter macroParam:
+                            {
+                                return isDotNetFormatting ? $"box_value(ReswPlusLib::Macros::{macroParam.Id}())" : $"ReswPlusLib::Macros::{macroParam.Id}()->c_str()";
                             }
                         case LocalizationRefParameter localizationStringParameter:
                             {
-                                return $"{localizationStringParameter.Id}().c_str()";
+                                return isDotNetFormatting ? $"box_value({localizationStringParameter.Id}())" : $"{localizationStringParameter.Id}().c_str()";
                             }
                         case FunctionParameter functionParam:
                             {

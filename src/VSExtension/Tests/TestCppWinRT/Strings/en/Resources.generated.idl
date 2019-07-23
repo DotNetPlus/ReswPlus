@@ -17,6 +17,8 @@ namespace TestCppWinRT
             static String TestFormatWithLiteralString_Format();
             static String TestFormatWithLocalizationRef{ get; };
             static String TestFormatWithLocalizationRef_Format();
+            static String TestFormatWithMacro{ get; };
+            static String TestFormatWithMacro_Format();
         };
 
         enum KeyEnum
@@ -26,6 +28,7 @@ namespace TestCppWinRT
             TestWithObject,
             TestFormatWithLiteralString,
             TestFormatWithLocalizationRef,
+            TestFormatWithMacro,
         };
 
         runtimeclass ResourcesExtension: Windows.UI.Xaml.Markup.MarkupExtension

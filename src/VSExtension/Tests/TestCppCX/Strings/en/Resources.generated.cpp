@@ -87,6 +87,16 @@ String^ local::Resources::TestFormatWithLocalizationRef_Format()
     return ref new String(buffer);
 }
 
+String^ local::Resources::TestFormatWithMacro::get()
+{
+    return GetResourceLoader()->GetString(L"TestFormatWithMacro");
+}
+
+String^ local::Resources::TestFormatWithMacro_Format()
+{
+    return ReswPlusLib::StringFormatting::FormatDotNet(TestFormatWithMacro, ref new Array<Object^>(3){ReswPlusLib::Macros::AppVersionFull, ReswPlusLib::Macros::LocaleName, ReswPlusLib::Macros::ShortDate});
+}
+
 String^ local::Resources::TestWithObject::get()
 {
     return GetResourceLoader()->GetString(L"TestWithObject");

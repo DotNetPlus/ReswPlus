@@ -249,7 +249,7 @@ namespace ReswPlus.CodeGenerator
             }
             localization.IsDotNetFormatting = isDotNetFormatting;
             var singleLineValue = _regexRemoveSpace.Replace(exampleValue, " ").Trim();
-            var types = format.Split(',');
+            var types = format.Split(',').Select(s=>s.Trim());
             var tagTypedInfo = ReswTagTyped.ParseParameters(types, basicLocalizedItems);
             if (tagTypedInfo == null)
             {

@@ -108,6 +108,17 @@ hstring local::Resources::TestFormatWithLocalizationRef_Format()
     return hstring(buffer);
 }
 
+hstring local::Resources::TestFormatWithMacro()
+{
+    return GetResourceLoader().GetString(L"TestFormatWithMacro");
+}
+
+hstring local::Resources::TestFormatWithMacro_Format()
+{
+    array<IInspectable const, 3> _string_parameters = {box_value(ReswPlusLib::Macros::AppVersionFull()), box_value(ReswPlusLib::Macros::LocaleName()), box_value(ReswPlusLib::Macros::ShortDate())};
+    return ReswPlusLib::StringFormatting::FormatDotNet(TestFormatWithMacro(), _string_parameters);
+}
+
 local::ResourcesExtension::ResourcesExtension()
 {
     _resourceLoader = ResourceLoader::GetForViewIndependentUse(L"Resources");
@@ -144,6 +155,8 @@ hstring local::ResourcesExtension::KeyEnumToString(KeyEnum key)
             return hstring(L"TestFormatWithLiteralString");
         case KeyEnum::TestFormatWithLocalizationRef:
             return hstring(L"TestFormatWithLocalizationRef");
+        case KeyEnum::TestFormatWithMacro:
+            return hstring(L"TestFormatWithMacro");
         default:
             return hstring(L"");
     }
