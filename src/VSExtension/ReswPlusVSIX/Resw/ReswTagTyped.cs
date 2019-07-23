@@ -17,6 +17,11 @@ namespace ReswPlus.Resw
         public string Value { get; set; }
     }
 
+    internal class MacroParameter : Parameter
+    {
+        public string Id { get; set; }
+    }
+
     internal class FunctionParameter : Parameter
     {
         public ParameterType Type { get; set; }
@@ -46,6 +51,31 @@ namespace ReswPlus.Resw
 
     internal class ReswTagTyped
     {
+        private static readonly Dictionary<string, string> _macroAvailable = new Dictionary<string, string>()
+        {
+            { "SHORT_DATE", "ShortDate" },
+            { "LONG_DATE", "LongDate" },
+            { "SHORT_TIME", "ShortTime" },
+            { "LONG_TIME", "LongTime" },
+            { "WEEK_DAY", "WeekDay" },
+            { "YEAR", "Year" },
+            { "SHORT_YEAR", "YearTwoDigits" },
+            { "LOCALE_NAME", "LocaleName" },
+            { "LOCALE_ID", "LocaleId" },
+            { "LOCALE_TWO_LETTERS", "LocaleTwoLetters" },
+            { "VERSION", "AppVersionFull" },
+            { "VERSION_XYZ", "AppVersionMajorMinorBuild" },
+            { "VERSION_XY", "AppVersionMajorMinor" },
+            { "VERSION_X", "AppVersionMajor" },
+            { "ARCHITECTURE", "Architecture" },
+            { "APP_NAME", "ApplicationName" },
+            { "PUBLISHER_NAME", "PublisherName" },
+            { "DEVICE_FAMILY", "DeviceFamily" },
+            { "DEVICE_MANUFACTURER", "DeviceManufacturer" },
+            { "DEVICE_MODEL", "DeviceModel" },
+            { "OS_VERSION", "OperatingSystemVersion" }
+        };
+
         private static readonly Dictionary<string, ParameterTypeInfo> _acceptedTypes = new Dictionary<string, ParameterTypeInfo>
         {
             {"Object", new ParameterTypeInfo(ParameterType.Object, false)},
@@ -108,13 +138,19 @@ namespace ReswPlus.Resw
                     {
                         var paramTypeId = matchNamedParameters.Groups["type"].Value;
                         var isQuantifier = matchNamedParameters.Groups["quantifier"].Success;
-                        if (!isQuantifier && paramTypeId == "Plural")
+                        var paramName = matchNamedParameters.Groups["name"].Value;
+                        if (!isQuantifier && paramTypeId == "Plural" && string.IsNullOrEmpty(paramName))
                         {
                             isQuantifier = true;
-                            paramTypeId = "";
+                            paramTypeId = paramName = "";
                         }
 
-                        var paramName = matchNamedParameters.Groups["name"].Value;
+                        if (!isQuantifier && _macroAvailable.TryGetValue(paramTypeId, out var macroID) && string.IsNullOrEmpty(paramName))
+                        {
+                            result.Parameters.Add(new MacroParameter() { Id = macroID });
+                            continue;
+                        }
+
                         var paramType = GetParameterType(paramTypeId, isQuantifier);
                         if (!paramType.type.HasValue)
                         {

@@ -235,6 +235,8 @@ namespace ReswPlus.Languages
                 {
                     case FunctionParameter functionParam:
                         return functionParam.Name;
+                    case MacroParameter macroParam:
+                        return $"ReswPlusLib.Macros.{macroParam.Id}";
                     case ConstStringParameter constStringParameter:
                         return $"\"{constStringParameter.Value}\"";
                     case LocalizationRefParameter localizationStringParameter:

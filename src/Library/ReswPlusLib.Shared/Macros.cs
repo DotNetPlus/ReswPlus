@@ -388,16 +388,21 @@ namespace ReswPlusLib
 
 #if WINDOWS_UWP
         #region OperatingSystem
-        private static string _operatingSystem = null;
-        public static string OperatingSystem
+        private static string _operatingSystemVersion = null;
+        public static string OperatingSystemVersion
         {
             get
             {
-                if (_operatingSystem == null)
+                if (_operatingSystemVersion == null)
                 {
-                    _operatingSystem = new EasClientDeviceInformation().OperatingSystem;
+                    ulong version = ulong.Parse(AnalyticsInfo.VersionInfo.DeviceFamilyVersion);
+                    var major = (ushort)((version & 0xFFFF000000000000L) >> 48);
+                    var minor = (ushort)((version & 0x0000FFFF00000000L) >> 32);
+                    var build = (ushort)((version & 0x00000000FFFF0000L) >> 16);
+                    var revision = (ushort)(version & 0x000000000000FFFFL);
+                    _operatingSystemVersion = $"{major}.{minor}.{build}.{revision}";
                 }
-                return _operatingSystem;
+                return _operatingSystemVersion;
             }
         }
         #endregion

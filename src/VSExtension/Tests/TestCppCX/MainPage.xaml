@@ -37,6 +37,7 @@
             <TextBlock FontWeight="Bold" Text="{x:Bind strings:Resources.GotMessagesFrom_Format(EmailsSlider.Value, PronounsComboBox.SelectedIndex), Mode=OneWay}" />
             <TextBlock Text="{x:Bind strings:Resources.TestFormatWithLiteralString_Format()}" />
             <TextBlock Text="{x:Bind strings:Resources.TestFormatWithLocalizationRef_Format()}" />
+            <TextBlock Text="{x:Bind strings:Resources.TestFormatWithMacro_Format()}" />
 
         </StackPanel>
     </Grid>

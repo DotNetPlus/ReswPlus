@@ -32,6 +32,7 @@
 
             <TextBlock Text="{x:Bind strings:Resources.TestFormatWithLiteralString_Format()}" />
             <TextBlock Text="{x:Bind strings:Resources.TestFormatWithLocalizationRef_Format()}" />
+            <TextBlock Text="{x:Bind strings:Resources.TestFormatWithMacro_Format()}" />
         </StackPanel>
     </Grid>
 </Page>
