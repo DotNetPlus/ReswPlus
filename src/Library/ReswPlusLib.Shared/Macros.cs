@@ -11,9 +11,9 @@ using Windows.System.Profile;
 using System.Reflection;
 #endif
 
-namespace ReswPlusLib.Shared
+namespace ReswPlusLib
 {
-    public sealed class MacroProvider
+    public static class Macros
     {
         #region ShortDate
         private static string _shortDate = null;
@@ -104,7 +104,6 @@ namespace ReswPlusLib.Shared
             }
         }
         #endregion
-
 
         #region YearTwoDigits
         private static string _yearTwoDigits = null;
@@ -312,6 +311,23 @@ namespace ReswPlusLib.Shared
 #if DOTNETCORE
                     _applicationName = Assembly.GetEntryAssembly().GetName().Name;
 #endif
+                }
+                return _applicationName;
+            }
+        }
+        #endregion
+#endif
+
+#if WINDOWS_UWP
+        #region ApplicationName
+        private static string _publisherName = null;
+        public static string PublisherName
+        {
+            get
+            {
+                if (_publisherName == null)
+                {
+                    _publisherName = Package.Current.Id.Publisher;
                 }
                 return _applicationName;
             }
