@@ -96,7 +96,7 @@ namespace ReswPlus.Resw
 
         private static readonly Regex RegexNamedParameters = new Regex("^(?:(?:\"(?<constStrings>[^\"]*)\")|(?:(?<localizationRef>\\w+)\\(\\))|(?:(?<quantifier>Plural\\s+)?(?<type>\\w+)\\s*(?<name>\\w+)?))$");
 
-        public static FunctionFormatTagParametersInfo ParseParameters(IEnumerable<string> types, IEnumerable<ReswItem> basicLocalizedItems)
+        public static FunctionFormatTagParametersInfo ParseParameters(string key, IEnumerable<string> types, IEnumerable<ReswItem> basicLocalizedItems, string resourceFilename)
         {
             var result = new FunctionFormatTagParametersInfo();
             var paramIndex = 1;
@@ -105,6 +105,7 @@ namespace ReswPlus.Resw
                 var matchNamedParameters = RegexNamedParameters.Match(type.Trim());
                 if (!matchNamedParameters.Success)
                 {
+                    ReswPlusPackage.LogError($"[ReswPlus] Incorrect tag for the key '{key}': incorrect formatting", resourceFilename);
                     return null;
                 }
                 if (matchNamedParameters.Groups["constStrings"].Success)
@@ -125,6 +126,7 @@ namespace ReswPlus.Resw
                         if (!basicLocalizedItems.Any(i => i.Key == localizationRef))
                         {
                             //Identifier not found
+                            ReswPlusPackage.LogError($"ReswPlus: Incorrect tag for the key '{key}': '{localizationRef}' doesn't exist in the resw file.", resourceFilename);
                             return null;
                         }
                         var param = new LocalizationRefFormatTagParameter()
@@ -154,6 +156,7 @@ namespace ReswPlus.Resw
                         var paramType = GetParameterType(paramTypeId, isQuantifier);
                         if (!paramType.type.HasValue)
                         {
+                            ReswPlusPackage.LogError($"ReswPlus: Incorrect tag for the key '{key}': '{paramTypeId}' is not a correct type.", resourceFilename);
                             return null;
                         }
                         if (string.IsNullOrEmpty(paramName))

@@ -36,6 +36,11 @@ namespace ReswPlus
             _errorListProvider = new ErrorListProvider(this);
         }
 
+        public static void ClearErrors()
+        {
+            _errorListProvider.Tasks.Clear();
+        }
+
         public static void LogWarning(string message)
         {
             if (_errorListProvider == null)
@@ -46,12 +51,14 @@ namespace ReswPlus
             _errorListProvider.Tasks.Add(new ErrorTask()
             {
                 Category = TaskCategory.Misc,
+                CanDelete = true,
                 ErrorCategory = TaskErrorCategory.Warning,
                 Text = message
             });
+            _errorListProvider.Show();
         }
 
-        public static void LogError(string message)
+        public static void LogError(string message, string document = null)
         {
             if (_errorListProvider == null)
             {
@@ -62,8 +69,12 @@ namespace ReswPlus
             {
                 Category = TaskCategory.Misc,
                 ErrorCategory = TaskErrorCategory.Error,
-                Text = message
+                CanDelete = true,
+                Document = document,
+                Text = message,
             });
+            _errorListProvider.ForceShowErrors();
+            _errorListProvider.Show();
         }
         #region Package Members
 

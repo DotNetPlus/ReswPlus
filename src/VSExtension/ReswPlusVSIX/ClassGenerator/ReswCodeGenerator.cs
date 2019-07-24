@@ -69,8 +69,8 @@ namespace ReswPlus.CodeGenerator
         private StronglyTypedClass Parse(string resourcePath, string content, string defaultNamespace, bool isAdvanced)
         {
             var namespaceToUse = ExtractNamespace(defaultNamespace);
-
-            var filename = Path.GetFileNameWithoutExtension(resourcePath);
+            var resourceFileName = Path.GetFileName(resourcePath);
+            var className = Path.GetFileNameWithoutExtension(resourcePath);
             var reswInfo = ReswParser.Parse(content);
 
             var projectNameIfLibrary = GetProjectNameIfLibrary(resourcePath);
@@ -78,13 +78,13 @@ namespace ReswPlus.CodeGenerator
             //If the resource file is in a library, the resource id in the .pri file
             //will be <library name>/FilenameWithoutExtension
             var resouceNameForResourceLoader = string.IsNullOrEmpty(projectNameIfLibrary) ?
-                filename : projectNameIfLibrary + "/" + filename;
+                className : projectNameIfLibrary + "/" + className;
 
 
             var result = new StronglyTypedClass()
             {
                 SupportPluralization = isAdvanced,
-                ClassName = filename,
+                ClassName = className,
                 Namespaces = namespaceToUse,
                 ResoureFile = resouceNameForResourceLoader
             };
@@ -136,7 +136,7 @@ namespace ReswPlus.CodeGenerator
                             item.Items.FirstOrDefault(i => i.Comment != null && _regexStringFormat.IsMatch(i.Comment));
                         if (commentToUse != null)
                         {
-                            ManageFormattedFunction(localization, item.Key, item.Items.FirstOrDefault().Value, commentToUse.Comment, basicItems);
+                            ManageFormattedFunction(localization, item.Items.FirstOrDefault().Value, commentToUse.Comment, basicItems, resourceFileName);
                         }
 
                         result.Localizations.Add(localization);
@@ -155,7 +155,7 @@ namespace ReswPlus.CodeGenerator
 
                         if (!string.IsNullOrEmpty(commentToUse?.Comment))
                         {
-                            ManageFormattedFunction(localization, item.Key, commentToUse.Value, commentToUse.Comment, basicItems);
+                            ManageFormattedFunction(localization, commentToUse.Value, commentToUse.Comment, basicItems, resourceFileName);
                         }
 
                         result.Localizations.Add(localization);
@@ -181,7 +181,7 @@ namespace ReswPlus.CodeGenerator
 
                     if (isAdvanced)
                     {
-                        ManageFormattedFunction(localization, item.Key, item.Value, item.Comment, stringItems);
+                        ManageFormattedFunction(localization, item.Value, item.Comment, stringItems, resourceFileName);
                     }
                     result.Localizations.Add(localization);
                 }
@@ -197,6 +197,7 @@ namespace ReswPlus.CodeGenerator
 
         public IEnumerable<GeneratedFile> GenerateCode(string resourcePath, string baseFilename, string content, string defaultNamespace, bool supportPluralizationAndVariants, ProjectItem projectItem)
         {
+            ReswPlusPackage.ClearErrors();
             var stronglyTypedClass = Parse(resourcePath, content, defaultNamespace, supportPluralizationAndVariants);
             if (stronglyTypedClass == null)
             {
@@ -240,7 +241,7 @@ namespace ReswPlus.CodeGenerator
             return (null, false);
         }
 
-        private bool ManageFormattedFunction(LocalizationBase localization, string key, string exampleValue, string comment, IEnumerable<ReswItem> basicLocalizedItems)
+        private bool ManageFormattedFunction(LocalizationBase localization, string exampleValue, string comment, IEnumerable<ReswItem> basicLocalizedItems, string resourceName)
         {
             var (format, isDotNetFormatting) = ParseTag(comment);
             if (format == null)
@@ -249,8 +250,8 @@ namespace ReswPlus.CodeGenerator
             }
             localization.IsDotNetFormatting = isDotNetFormatting;
             var singleLineValue = _regexRemoveSpace.Replace(exampleValue, " ").Trim();
-            var types = format.Split(',').Select(s=>s.Trim());
-            var tagTypedInfo = FormatTag.ParseParameters(types, basicLocalizedItems);
+            var types = format.Split(',').Select(s => s.Trim());
+            var tagTypedInfo = FormatTag.ParseParameters(localization.Key, types, basicLocalizedItems, resourceName);
             if (tagTypedInfo == null)
             {
                 return false;
