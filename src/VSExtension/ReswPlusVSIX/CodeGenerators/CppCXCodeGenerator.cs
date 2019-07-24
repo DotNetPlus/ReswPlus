@@ -195,12 +195,12 @@ namespace ReswPlus.CodeGenerators
             builderHeader.AppendLine("}");
         }
 
-        protected override void HeaderCreateFormatMethod(CodeStringBuilder builderHeader, string key, IEnumerable<FunctionParameter> parameters, string summary = null, IEnumerable<FunctionParameter> extraParameters = null)
+        protected override void HeaderCreateFormatMethod(CodeStringBuilder builderHeader, string key, IEnumerable<FunctionFormatTagParameter> parameters, string summary = null, IEnumerable<FunctionFormatTagParameter> extraParameters = null)
         {
-            IEnumerable<FunctionParameter> functionParameters;
+            IEnumerable<FunctionFormatTagParameter> functionParameters;
             if (extraParameters != null)
             {
-                var list = new List<FunctionParameter>(parameters);
+                var list = new List<FunctionFormatTagParameter>(parameters);
                 list.InsertRange(0, extraParameters);
                 functionParameters = list;
             }
@@ -220,18 +220,18 @@ namespace ReswPlus.CodeGenerators
             builderHeader.RemoveLevel();
         }
 
-        protected override void CppCreateFormatMethod(CodeStringBuilder builderCpp, string computedNamespace, string key, bool isDotNetFormatting, IEnumerable<Parameter> parameters, IEnumerable<FunctionParameter> extraParameters = null, FunctionParameter parameterForPluralization = null, FunctionParameter parameterForVariant = null)
+        protected override void CppCreateFormatMethod(CodeStringBuilder builderCpp, string computedNamespace, string key, bool isDotNetFormatting, IEnumerable<FormatTagParameter> parameters, IEnumerable<FunctionFormatTagParameter> extraParameters = null, FunctionFormatTagParameter parameterForPluralization = null, FunctionFormatTagParameter parameterForVariant = null)
         {
-            IEnumerable<FunctionParameter> functionParameters;
+            IEnumerable<FunctionFormatTagParameter> functionParameters;
             if (extraParameters != null)
             {
-                var list = new List<FunctionParameter>(parameters.OfType<FunctionParameter>());
+                var list = new List<FunctionFormatTagParameter>(parameters.OfType<FunctionFormatTagParameter>());
                 list.InsertRange(0, extraParameters);
                 functionParameters = list;
             }
             else
             {
-                functionParameters = parameters.OfType<FunctionParameter>();
+                functionParameters = parameters.OfType<FunctionFormatTagParameter>();
             }
             var parametersStr = functionParameters.Any() ?
                 functionParameters.Select(p => GetParameterTypeString(p.Type, false) + " " + p.Name).Aggregate((a, b) => a + ", " + b)
@@ -245,19 +245,19 @@ namespace ReswPlus.CodeGenerators
                 {
                     switch (p)
                     {
-                        case ConstStringParameter constStringParam:
+                        case ConstStringFormatTagParameter constStringParam:
                             {
                                 return isDotNetFormatting ? $"ref new String(L\"{constStringParam.Value}\")" : $"L\"{constStringParam.Value}\"";
                             }
-                        case MacroParameter macroParam:
+                        case MacroFormatTagParameter macroParam:
                             {
                                 return isDotNetFormatting ? $"ReswPlusLib::Macros::{macroParam.Id}" : $"ReswPlusLib::Macros::{macroParam.Id}->Data()";
                             }
-                        case LocalizationRefParameter localizationStringParameter:
+                        case LocalizationRefFormatTagParameter localizationStringParameter:
                             {
                                 return isDotNetFormatting ? $"{localizationStringParameter.Id}" : $"{localizationStringParameter.Id}->Data()";
                             }
-                        case FunctionParameter functionParam:
+                        case FunctionFormatTagParameter functionParam:
                             {
                                 switch (functionParam.Type)
                                 {

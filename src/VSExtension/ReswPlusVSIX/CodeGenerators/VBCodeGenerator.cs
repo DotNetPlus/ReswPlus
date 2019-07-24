@@ -13,7 +13,7 @@ namespace ReswPlus.CodeGenerators
             _builder = new CodeStringBuilder("Basic");
         }
 
-        public string GetParameterString(FunctionParameter info)
+        public string GetParameterString(FunctionFormatTagParameter info)
         {
             return GetParameterTypeString(info.Type) +
                 " " +
@@ -209,22 +209,22 @@ namespace ReswPlus.CodeGenerators
             _builder.AppendLine("End Property");
         }
 
-        internal override void CreateFormatMethod(string key, IEnumerable<Parameter> parameters, string summary = null, IEnumerable<FunctionParameter> extraParameters = null, FunctionParameter parameterForPluralization = null, FunctionParameter parameterForVariant = null)
+        internal override void CreateFormatMethod(string key, IEnumerable<FormatTagParameter> parameters, string summary = null, IEnumerable<FunctionFormatTagParameter> extraParameters = null, FunctionFormatTagParameter parameterForPluralization = null, FunctionFormatTagParameter parameterForVariant = null)
         {
             _builder.AppendLine("' <summary>");
             _builder.AppendLine($"'   {summary}");
             _builder.AppendLine("' </summary>");
 
-            IEnumerable<FunctionParameter> functionParameters;
+            IEnumerable<FunctionFormatTagParameter> functionParameters;
             if (extraParameters != null && extraParameters.Any())
             {
-                var list = new List<FunctionParameter>(parameters.OfType<FunctionParameter>());
+                var list = new List<FunctionFormatTagParameter>(parameters.OfType<FunctionFormatTagParameter>());
                 list.InsertRange(0, extraParameters);
                 functionParameters = list;
             }
             else
             {
-                functionParameters = parameters.OfType<FunctionParameter>();
+                functionParameters = parameters.OfType<FunctionFormatTagParameter>();
             }
             var parametersStr = functionParameters.Any() ? functionParameters.Select(p => "ByVal " + p.Name + " As " + GetParameterTypeString(p.Type)).Aggregate((a, b) => a + ", " + b)
                 : "";
@@ -233,13 +233,13 @@ namespace ReswPlus.CodeGenerators
             {
                 switch (p)
                 {
-                    case FunctionParameter functionParam:
+                    case FunctionFormatTagParameter functionParam:
                         return functionParam.Name;
-                    case MacroParameter macroParam:
+                    case MacroFormatTagParameter macroParam:
                         return $"ReswPlusLib.Macros.{macroParam.Id}";
-                    case ConstStringParameter constStringParameter:
+                    case ConstStringFormatTagParameter constStringParameter:
                         return $"\"{constStringParameter.Value}\"";
-                    case LocalizationRefParameter localizationStringParameter:
+                    case LocalizationRefFormatTagParameter localizationStringParameter:
                         return localizationStringParameter.Id;
                     default:
                         //should not happen
@@ -277,7 +277,7 @@ namespace ReswPlus.CodeGenerators
             _builder.RemoveLevel();
             _builder.AppendLine("End Function");
 
-            if (parameters.Any(p => p is FunctionParameter functionParam && functionParam.IsVariantId))
+            if (parameters.Any(p => p is FunctionFormatTagParameter functionParam && functionParam.IsVariantId))
             {
                 // one of the parameter is a variantId, we must create a second method with object as the variantId type.
                 _builder.AppendEmptyLine();

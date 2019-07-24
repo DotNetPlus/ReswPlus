@@ -24,8 +24,8 @@ namespace ReswPlus.CodeGenerators
         protected abstract void CppCreateTemplateAccessor(CodeStringBuilder builderHeader, string computedNamespaces, string key, bool supportPlural, bool pluralSupportNoneState, bool supportVariants);
         protected abstract void HeaderCreateAccessor(CodeStringBuilder builderHeader, string key, string summary);
         protected abstract void CppCreateAccessor(CodeStringBuilder builderHeader, string computedNamespace, string key);
-        protected abstract void HeaderCreateFormatMethod(CodeStringBuilder builderHeader, string key, IEnumerable<FunctionParameter> parameters, string summary = null, IEnumerable<FunctionParameter> extraParameters = null);
-        protected abstract void CppCreateFormatMethod(CodeStringBuilder builderHeader, string computedNamespace, string key, bool isDotNetFormatting, IEnumerable<Parameter> parameters, IEnumerable<FunctionParameter> extraParameters = null, FunctionParameter parameterForPluralization = null, FunctionParameter parameterForVariant = null);
+        protected abstract void HeaderCreateFormatMethod(CodeStringBuilder builderHeader, string key, IEnumerable<FunctionFormatTagParameter> parameters, string summary = null, IEnumerable<FunctionFormatTagParameter> extraParameters = null);
+        protected abstract void CppCreateFormatMethod(CodeStringBuilder builderHeader, string computedNamespace, string key, bool isDotNetFormatting, IEnumerable<FormatTagParameter> parameters, IEnumerable<FunctionFormatTagParameter> extraParameters = null, FunctionFormatTagParameter parameterForPluralization = null, FunctionFormatTagParameter parameterForVariant = null);
         protected abstract void HeaderCreateMarkupExtension(CodeStringBuilder builderHeader, string resourceFileName, string className, IEnumerable<string> keys, IEnumerable<string> namespaces);
         protected abstract void CppCreateMarkupExtension(CodeStringBuilder builderHeader, string computedNamespace, string resourceFileName, string className, IEnumerable<string> keys);
 
@@ -139,7 +139,7 @@ namespace ReswPlus.CodeGenerators
                     CppCreateTemplateAccessor(builderCpp, namespaceResourceClass, pluralLocalization.Key, true, pluralLocalization.SupportNoneState, pluralLocalization is IVariantLocalization);
                     if (pluralLocalization.Parameters != null && pluralLocalization.Parameters.Any())
                     {
-                        HeaderCreateFormatMethod(builderHeader, pluralLocalization.Key, pluralLocalization.Parameters.OfType<FunctionParameter>(), pluralLocalization.FormatSummary, pluralLocalization.ExtraParameters);
+                        HeaderCreateFormatMethod(builderHeader, pluralLocalization.Key, pluralLocalization.Parameters.OfType<FunctionFormatTagParameter>(), pluralLocalization.FormatSummary, pluralLocalization.ExtraParameters);
                         builderCpp.AppendEmptyLine();
                         CppCreateFormatMethod(builderCpp, namespaceResourceClass, pluralLocalization.Key, pluralLocalization.IsDotNetFormatting, pluralLocalization.Parameters, pluralLocalization.ExtraParameters, pluralLocalization.ParameterToUseForPluralization, (pluralLocalization as IVariantLocalization)?.ParameterToUseForVariant);
                     }
@@ -150,7 +150,7 @@ namespace ReswPlus.CodeGenerators
                     CppCreateAccessor(builderCpp, namespaceResourceClass, localization.Key);
                     if (localization.Parameters != null && localization.Parameters.Any())
                     {
-                        HeaderCreateFormatMethod(builderHeader, localization.Key, localization.Parameters.OfType<FunctionParameter>(), localization.FormatSummary);
+                        HeaderCreateFormatMethod(builderHeader, localization.Key, localization.Parameters.OfType<FunctionFormatTagParameter>(), localization.FormatSummary);
                         builderCpp.AppendEmptyLine();
                         CppCreateFormatMethod(builderCpp, namespaceResourceClass, localization.Key, localization.IsDotNetFormatting, localization.Parameters);
                     }

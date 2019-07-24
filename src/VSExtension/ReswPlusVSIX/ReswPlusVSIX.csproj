@@ -71,7 +71,7 @@
     <Compile Include="CodeGenerators\CppCodeGeneratorBase.cs" />
     <Compile Include="Resw\ParameterType.cs" />
     <Compile Include="Resw\ReswParser.cs" />
-    <Compile Include="Resw\ReswTagTyped.cs" />
+    <Compile Include="Resw\FormatTag.cs" />
     <Compile Include="Utils\CodeGeneratorRegistrationAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ClassGenerator\ReswCodeGenerator.cs" />

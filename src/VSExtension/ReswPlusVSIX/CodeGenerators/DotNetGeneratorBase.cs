@@ -22,8 +22,8 @@ namespace ReswPlus.CodeGenerators
 
         internal abstract void CreateAccessor(string key, string summary);
 
-        internal abstract void CreateFormatMethod(string key, IEnumerable<Parameter> parameters, string summary = null,
-            IEnumerable<FunctionParameter> extraParameters = null, FunctionParameter parameterForPluralization = null, FunctionParameter parameterForVariant = null);
+        internal abstract void CreateFormatMethod(string key, IEnumerable<FormatTagParameter> parameters, string summary = null,
+            IEnumerable<FunctionFormatTagParameter> extraParameters = null, FunctionFormatTagParameter parameterForPluralization = null, FunctionFormatTagParameter parameterForVariant = null);
 
         internal abstract void CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys);
         internal abstract IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename);

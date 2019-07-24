@@ -6,8 +6,8 @@ namespace ReswPlus.ClassGenerator.Models
     internal class LocalizationBase
     {
         public string Key { get; set; }
-        public List<Parameter> Parameters { get; set; } = new List<Parameter>();
-        public List<FunctionParameter> ExtraParameters { get; } = new List<FunctionParameter>();
+        public List<FormatTagParameter> Parameters { get; set; } = new List<FormatTagParameter>();
+        public List<FunctionFormatTagParameter> ExtraParameters { get; } = new List<FunctionFormatTagParameter>();
         public string FormatSummary { get; set; }
         public bool IsDotNetFormatting { get; set; }
     }
@@ -20,23 +20,23 @@ namespace ReswPlus.ClassGenerator.Models
     internal class PluralLocalization : LocalizationBase
     {
         public bool SupportNoneState { get; set; }
-        public FunctionParameter ParameterToUseForPluralization { get; set; }
+        public FunctionFormatTagParameter ParameterToUseForPluralization { get; set; }
         public string TemplateAccessorSummary { get; set; }
     }
 
     internal interface IVariantLocalization
     {
-        FunctionParameter ParameterToUseForVariant { get; set; }
+        FunctionFormatTagParameter ParameterToUseForVariant { get; set; }
     }
 
     internal class PluralVariantLocalization : PluralLocalization, IVariantLocalization
     {
-        public FunctionParameter ParameterToUseForVariant { get; set; }
+        public FunctionFormatTagParameter ParameterToUseForVariant { get; set; }
     }
 
     internal class VariantLocalization : LocalizationBase, IVariantLocalization
     {
         public string TemplateAccessorSummary { get; set; }
-        public FunctionParameter ParameterToUseForVariant { get; set; }
+        public FunctionFormatTagParameter ParameterToUseForVariant { get; set; }
     }
 }

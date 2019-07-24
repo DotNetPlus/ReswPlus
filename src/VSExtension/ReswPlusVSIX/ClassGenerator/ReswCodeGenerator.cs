@@ -250,7 +250,7 @@ namespace ReswPlus.CodeGenerator
             localization.IsDotNetFormatting = isDotNetFormatting;
             var singleLineValue = _regexRemoveSpace.Replace(exampleValue, " ").Trim();
             var types = format.Split(',').Select(s=>s.Trim());
-            var tagTypedInfo = ReswTagTyped.ParseParameters(types, basicLocalizedItems);
+            var tagTypedInfo = FormatTag.ParseParameters(types, basicLocalizedItems);
             if (tagTypedInfo == null)
             {
                 return false;
@@ -262,11 +262,11 @@ namespace ReswPlus.CodeGenerator
 
             if (localization is IVariantLocalization variantLocalization)
             {
-                FunctionParameter variantParameter = null;
+                FunctionFormatTagParameter variantParameter = null;
                 // Add an extra parameter for variant if necessary
                 if (tagTypedInfo.VariantParameter == null)
                 {
-                    variantParameter = new FunctionParameter
+                    variantParameter = new FunctionFormatTagParameter
                     { Type = ParameterType.Int, Name = "variantId" };
                     localization.ExtraParameters.Add(variantParameter);
                 }
@@ -281,11 +281,11 @@ namespace ReswPlus.CodeGenerator
 
             if (localization is PluralLocalization pluralLocalization)
             {
-                FunctionParameter pluralizationQuantifier = null;
+                FunctionFormatTagParameter pluralizationQuantifier = null;
                 // Add an extra parameter for pluralization if necessary
                 if (tagTypedInfo.PluralizationParameter == null)
                 {
-                    pluralizationQuantifier = new FunctionParameter
+                    pluralizationQuantifier = new FunctionFormatTagParameter
                     { Type = ParameterType.Double, Name = "pluralizationReferenceNumber" };
                     pluralLocalization.ExtraParameters.Add(pluralizationQuantifier);
                 }
