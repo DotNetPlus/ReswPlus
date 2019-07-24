@@ -121,81 +121,90 @@ namespace ReswPlus
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            var projectItem = GetCurrentProjectItem();
-            if (!projectItem.Name.EndsWith(".resw"))
+            try
             {
-                VsShellUtilities.ShowMessageBox(
-                    package,
-                    "File not compatible with ReswPlus",
-                    "ReswPlus",
-                    OLEMSGICON.OLEMSGICON_INFO,
-                    OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                    OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-                return VSConstants.E_FAIL;
-            }
-            var language = projectItem.GetLanguage();
-            if (language == Utils.Language.CSHARP || language == Utils.Language.VB)
-            {
-                // Reset CustomTool to force the file generation.
-                projectItem.Properties.Item("CustomTool").Value = "";
-                projectItem.Properties.Item("CustomTool").Value = usePluralization ? "ReswPlusAdvancedGenerator" : "ReswPlusGenerator";
-                return VSConstants.S_OK;
-            }
-            else if (language == Utils.Language.CPPCX || language == Utils.Language.CPPWINRT)
-            {
-                // CPP projects doesn't support custom tools, we need to create the file ourselves.
-                var filepath = (string)projectItem.Properties.Item("FullPath").Value;
-                var fileNamespace = (string)projectItem.ContainingProject.Properties.Item("RootNamespace").Value;
-
-                var relativeDirectoryPath = Path.GetDirectoryName((string)projectItem.Properties.Item("RelativePath").Value);
-                var reswNamespace = relativeDirectoryPath;
-                if (!string.IsNullOrEmpty(reswNamespace))
+                var projectItem = GetCurrentProjectItem();
+                if (!projectItem.Name.EndsWith(".resw"))
                 {
-                    fileNamespace += "." + reswNamespace.Replace("\\", ".");
-                }
-
-                var reswCodeGenerator = ReswCodeGenerator.CreateGenerator(projectItem, language);
-                if (reswCodeGenerator == null)
-                {
+                    VsShellUtilities.ShowMessageBox(
+                        package,
+                        "File not compatible with ReswPlus",
+                        "ReswPlus",
+                        OLEMSGICON.OLEMSGICON_INFO,
+                        OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                        OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                     return VSConstants.E_FAIL;
                 }
+                ReswPlusPackage.SetStatusBar($"Generating class for {Path.GetFileName(projectItem.Name)}...");
 
-                var inputFilepath = projectItem.Properties.Item("FullPath").Value as string;
-                var baseFilename = Path.GetFileNameWithoutExtension(filepath) + ".generated";
-                var files = reswCodeGenerator.GenerateCode(inputFilepath, baseFilename, File.ReadAllText(inputFilepath), fileNamespace, usePluralization, projectItem);
-                foreach (var file in files)
+                var language = projectItem.GetLanguage();
+                if (language == Utils.Language.CSHARP || language == Utils.Language.VB)
                 {
-                    var generatedFilePath = Path.Combine(Path.GetDirectoryName(filepath), file.Filename);
-                    using (var streamWriter = File.Create(generatedFilePath))
-                    {
-                        var contentBytes = System.Text.Encoding.UTF8.GetBytes(file.Content);
-                        streamWriter.Write(contentBytes, 0, contentBytes.Length);
-                    }
-                    try
-                    {
-                        projectItem.ProjectItems.AddFromFile(generatedFilePath);
-                    }
-                    catch { }
+                    // Reset CustomTool to force the file generation.
+                    projectItem.Properties.Item("CustomTool").Value = "";
+                    projectItem.Properties.Item("CustomTool").Value = usePluralization ? "ReswPlusAdvancedGenerator" : "ReswPlusGenerator";
+                    return VSConstants.S_OK;
                 }
-
-                //Install nuget package
-                if (usePluralization)
+                else if (language == Utils.Language.CPPCX || language == Utils.Language.CPPWINRT)
                 {
-                    projectItem.ContainingProject.InstallNuGetPackage("ReswPlusLib");
-                }
+                    // CPP projects doesn't support custom tools, we need to create the file ourselves.
+                    var filepath = (string)projectItem.Properties.Item("FullPath").Value;
+                    var fileNamespace = (string)projectItem.ContainingProject.Properties.Item("RootNamespace").Value;
 
-                return VSConstants.S_OK;
+                    var relativeDirectoryPath = Path.GetDirectoryName((string)projectItem.Properties.Item("RelativePath").Value);
+                    var reswNamespace = relativeDirectoryPath;
+                    if (!string.IsNullOrEmpty(reswNamespace))
+                    {
+                        fileNamespace += "." + reswNamespace.Replace("\\", ".");
+                    }
+
+                    var reswCodeGenerator = ReswCodeGenerator.CreateGenerator(projectItem, language);
+                    if (reswCodeGenerator == null)
+                    {
+                        return VSConstants.E_FAIL;
+                    }
+
+                    var inputFilepath = projectItem.Properties.Item("FullPath").Value as string;
+                    var baseFilename = Path.GetFileNameWithoutExtension(filepath) + ".generated";
+                    var files = reswCodeGenerator.GenerateCode(inputFilepath, baseFilename, File.ReadAllText(inputFilepath), fileNamespace, usePluralization, projectItem);
+                    foreach (var file in files)
+                    {
+                        var generatedFilePath = Path.Combine(Path.GetDirectoryName(filepath), file.Filename);
+                        using (var streamWriter = File.Create(generatedFilePath))
+                        {
+                            var contentBytes = System.Text.Encoding.UTF8.GetBytes(file.Content);
+                            streamWriter.Write(contentBytes, 0, contentBytes.Length);
+                        }
+                        try
+                        {
+                            projectItem.ProjectItems.AddFromFile(generatedFilePath);
+                        }
+                        catch { }
+                    }
+
+                    //Install nuget package
+                    if (usePluralization)
+                    {
+                        projectItem.ContainingProject.InstallNuGetPackage("ReswPlusLib");
+                    }
+
+                    return VSConstants.S_OK;
+                }
+                else
+                {
+                    VsShellUtilities.ShowMessageBox(
+                               package,
+                               "Project language not compatible with ReswPlus",
+                               "ReswPlus",
+                               OLEMSGICON.OLEMSGICON_INFO,
+                               OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                               OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                    return VSConstants.E_UNEXPECTED;
+                }
             }
-            else
+            finally
             {
-                VsShellUtilities.ShowMessageBox(
-                           package,
-                           "Project language not compatible with ReswPlus",
-                           "ReswPlus",
-                           OLEMSGICON.OLEMSGICON_INFO,
-                           OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                           OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-                return VSConstants.E_UNEXPECTED;
+                ReswPlusPackage.CleanStatusBar();
             }
         }
     }

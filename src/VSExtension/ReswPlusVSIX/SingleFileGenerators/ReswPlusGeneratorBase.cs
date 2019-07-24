@@ -12,6 +12,7 @@ using ReswPlus.Utils;
 using System;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -20,7 +21,7 @@ using IServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 namespace ReswPlus.SingleFileGenerators
 {
 
-    internal class ReswPlusGeneratorBase: IDisposable
+    internal class ReswPlusGeneratorBase : IDisposable
     {
         public ReswPlusGeneratorBase(bool usePluralizationAndVariant)
         {
@@ -49,6 +50,8 @@ namespace ReswPlus.SingleFileGenerators
                     return VSConstants.E_FAIL;
                 }
                 var inputFilepath = projectItem.Properties.Item("FullPath").Value as string;
+                ReswPlusPackage.SetStatusBar($"Generating class for {Path.GetFileName(inputFilepath)}...");
+
                 var baseFilename = "resources.generated." + GetCodeProvider().FileExtension; //won't be used.
                 var files = reswCodeGenerator.GenerateCode(inputFilepath, baseFilename, inputFileContents, defaultNamespace, _usePluralizationAndVariant, projectItem);
                 if (files.Count() != 1)
@@ -56,9 +59,9 @@ namespace ReswPlus.SingleFileGenerators
                     return VSConstants.E_FAIL;
                 }
 
+
                 // IVsSingleFileGenerator supports only 1 file.
                 output = Encoding.UTF8.GetBytes(files.First().Content);
-
                 //Install nuget package
                 if (_usePluralizationAndVariant)
                 {
@@ -68,6 +71,10 @@ namespace ReswPlus.SingleFileGenerators
             catch (Exception)
             {
                 return VSConstants.E_FAIL;
+            }
+            finally
+            {
+                ReswPlusPackage.CleanStatusBar();
             }
             return VSConstants.S_OK;
         }
