@@ -4,7 +4,7 @@
 
 using EnvDTE;
 using ReswPlus.ClassGenerator.Models;
-using ReswPlus.Languages;
+using ReswPlus.CodeGenerators;
 using ReswPlus.Resw;
 using System.Collections.Generic;
 using System.IO;

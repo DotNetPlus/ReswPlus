@@ -4,7 +4,7 @@ using ReswPlus.Resw;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ReswPlus.Languages
+namespace ReswPlus.CodeGenerators
 {
     internal abstract class DotNetGeneratorBase : ICodeGenerator
     {
