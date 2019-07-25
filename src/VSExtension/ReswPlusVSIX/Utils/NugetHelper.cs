@@ -16,6 +16,7 @@ namespace ReswPlus.Utils
     {
         public static bool InstallNuGetPackage(this Project project, string package, bool dontOverrideLocalDll)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             try
             {
                 var componentModel = (IComponentModel)Package.GetGlobalService(typeof(SComponentModel));
@@ -24,7 +25,7 @@ namespace ReswPlus.Utils
                 bool containsDLL = false;
                 if (dontOverrideLocalDll)
                 {
-                    var vsProject = (VSProject)project.Object;
+                    var vsProject = project.Object as VSProject;
                     if (vsProject != null)
                     {
                         foreach (Reference reference in vsProject.References)
