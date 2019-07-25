@@ -6,6 +6,7 @@ using EnvDTE;
 using ReswPlus.ClassGenerator.Models;
 using ReswPlus.CodeGenerators;
 using ReswPlus.Resw;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -308,7 +309,7 @@ namespace ReswPlus.CodeGenerator
             {
                 try
                 {
-                    var isLibrary = (int)project.Properties.Item("OutputTypeEx").Value == 2;
+                    var isLibrary = Convert.ToInt32(project.Properties.Item("OutputTypeEx").Value) == 2;
                     if (isLibrary)
                     {
                         return project.Name;
