@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.572
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestCppCX", "TestCppCX\TestCppCX.vcxproj", "{FEC66010-7391-48E7-B4B8-AC77861668F1}"
 EndProject
@@ -15,7 +15,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestCppWinRT", "TestCppWinR
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "TestVB", "TestVB\TestVB.vbproj", "{BB62BA42-8391-4C58-B021-C887651FD1A6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{B89EA1A5-CAA4-4F7C-BBEB-9482F29D1D94}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReswPlusLib.UWP", "..\..\Library\ReswPlusLib.UWP\ReswPlusLib.UWP.csproj", "{D14CD365-DE80-4F9F-8019-5EE08CE6D8B0}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\Library\ReswPlusLib.Shared\ReswPlusLib.Shared.projitems*{d14cd365-de80-4f9f-8019-5ee08ce6d8b0}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|ARM = Debug|ARM
@@ -157,6 +164,26 @@ Global
 		{BB62BA42-8391-4C58-B021-C887651FD1A6}.Release|x86.ActiveCfg = Release|x86
 		{BB62BA42-8391-4C58-B021-C887651FD1A6}.Release|x86.Build.0 = Release|x86
 		{BB62BA42-8391-4C58-B021-C887651FD1A6}.Release|x86.Deploy.0 = Release|x86
+		{D14CD365-DE80-4F9F-8019-5EE08CE6D8B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D14CD365-DE80-4F9F-8019-5EE08CE6D8B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D14CD365-DE80-4F9F-8019-5EE08CE6D8B0}.Debug|ARM.ActiveCfg = Debug|ARM
+		{D14CD365-DE80-4F9F-8019-5EE08CE6D8B0}.Debug|ARM.Build.0 = Debug|ARM
+		{D14CD365-DE80-4F9F-8019-5EE08CE6D8B0}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{D14CD365-DE80-4F9F-8019-5EE08CE6D8B0}.Debug|ARM64.Build.0 = Debug|ARM64
+		{D14CD365-DE80-4F9F-8019-5EE08CE6D8B0}.Debug|x64.ActiveCfg = Debug|x64
+		{D14CD365-DE80-4F9F-8019-5EE08CE6D8B0}.Debug|x64.Build.0 = Debug|x64
+		{D14CD365-DE80-4F9F-8019-5EE08CE6D8B0}.Debug|x86.ActiveCfg = Debug|x86
+		{D14CD365-DE80-4F9F-8019-5EE08CE6D8B0}.Debug|x86.Build.0 = Debug|x86
+		{D14CD365-DE80-4F9F-8019-5EE08CE6D8B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D14CD365-DE80-4F9F-8019-5EE08CE6D8B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D14CD365-DE80-4F9F-8019-5EE08CE6D8B0}.Release|ARM.ActiveCfg = Release|ARM
+		{D14CD365-DE80-4F9F-8019-5EE08CE6D8B0}.Release|ARM.Build.0 = Release|ARM
+		{D14CD365-DE80-4F9F-8019-5EE08CE6D8B0}.Release|ARM64.ActiveCfg = Release|ARM64
+		{D14CD365-DE80-4F9F-8019-5EE08CE6D8B0}.Release|ARM64.Build.0 = Release|ARM64
+		{D14CD365-DE80-4F9F-8019-5EE08CE6D8B0}.Release|x64.ActiveCfg = Release|x64
+		{D14CD365-DE80-4F9F-8019-5EE08CE6D8B0}.Release|x64.Build.0 = Release|x64
+		{D14CD365-DE80-4F9F-8019-5EE08CE6D8B0}.Release|x86.ActiveCfg = Release|x86
+		{D14CD365-DE80-4F9F-8019-5EE08CE6D8B0}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -164,6 +191,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{AE471611-06D1-43F5-B0E3-1C20287E3D4C} = {633C7C2D-6DB6-4A26-8A2D-AFEA84E0B68A}
 		{33B50D3B-93A9-4D13-8EA1-FDFAA488F9CB} = {633C7C2D-6DB6-4A26-8A2D-AFEA84E0B68A}
+		{D14CD365-DE80-4F9F-8019-5EE08CE6D8B0} = {B89EA1A5-CAA4-4F7C-BBEB-9482F29D1D94}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DC3D41BD-2235-47BD-856D-DD24D7F2FA88}

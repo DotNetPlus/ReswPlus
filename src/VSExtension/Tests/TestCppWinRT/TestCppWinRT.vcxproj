@@ -168,10 +168,14 @@
   <ItemGroup>
     <PRIResource Include="Strings\en\Resources.resw" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Library\ReswPlusLib.UWP\ReswPlusLib.UWP.csproj">
+      <Project>{d14cd365-de80-4f9f-8019-5ee08ce6d8b0}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.190722.3\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.190722.3\build\native\Microsoft.Windows.CppWinRT.targets')" />
-    <Import Project="..\packages\ReswPlusLib.0.0.6\build\native\ReswPlusLib.targets" Condition="Exists('..\packages\ReswPlusLib.0.0.6\build\native\ReswPlusLib.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -179,6 +183,5 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.190722.3\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.190722.3\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.190722.3\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.190722.3\build\native\Microsoft.Windows.CppWinRT.targets'))" />
-    <Error Condition="!Exists('..\packages\ReswPlusLib.0.0.6\build\native\ReswPlusLib.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ReswPlusLib.0.0.6\build\native\ReswPlusLib.targets'))" />
   </Target>
 </Project>

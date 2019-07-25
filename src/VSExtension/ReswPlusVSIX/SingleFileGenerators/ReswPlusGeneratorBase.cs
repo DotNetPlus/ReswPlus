@@ -25,7 +25,7 @@ namespace ReswPlus.SingleFileGenerators
     {
         public ReswPlusGeneratorBase(bool usePluralizationAndVariant)
         {
-            _usePluralizationAndVariant = usePluralizationAndVariant;
+            _isAdvanced = usePluralizationAndVariant;
         }
 
         #region IVsSingleFileGenerator Members
@@ -53,7 +53,7 @@ namespace ReswPlus.SingleFileGenerators
                 ReswPlusPackage.SetStatusBar($"Generating class for {Path.GetFileName(inputFilepath)}...");
 
                 var baseFilename = "resources.generated." + GetCodeProvider().FileExtension; //won't be used.
-                var files = reswCodeGenerator.GenerateCode(inputFilepath, baseFilename, inputFileContents, defaultNamespace, _usePluralizationAndVariant, projectItem);
+                var files = reswCodeGenerator.GenerateCode(inputFilepath, baseFilename, inputFileContents, defaultNamespace, _isAdvanced, projectItem);
                 if (files.Count() != 1)
                 {
                     return VSConstants.E_FAIL;
@@ -63,9 +63,9 @@ namespace ReswPlus.SingleFileGenerators
                 // IVsSingleFileGenerator supports only 1 file.
                 output = Encoding.UTF8.GetBytes(files.First().Content);
                 //Install nuget package
-                if (_usePluralizationAndVariant)
+                if (_isAdvanced)
                 {
-                    projectItem.ContainingProject.InstallNuGetPackage("ReswPlusLib");
+                    projectItem.ContainingProject.InstallNuGetPackage("ReswPlusLib", true);
                 }
             }
             catch (Exception)
@@ -160,7 +160,7 @@ namespace ReswPlus.SingleFileGenerators
 
         private CodeDomProvider _codeDomProvider;
         private ServiceProvider _serviceProvider;
-        private readonly bool _usePluralizationAndVariant;
+        private readonly bool _isAdvanced;
         #endregion
     }
 }

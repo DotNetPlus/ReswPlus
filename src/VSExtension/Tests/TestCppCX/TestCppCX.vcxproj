@@ -228,16 +228,19 @@
   <ItemGroup>
     <PRIResource Include="Strings\en\Resources.resw" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Library\ReswPlusLib.UWP\ReswPlusLib.UWP.csproj">
+      <Project>{d14cd365-de80-4f9f-8019-5ee08ce6d8b0}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\Microsoft.Toolkit.Uwp.Notifications.5.1.1\build\native\Microsoft.Toolkit.Uwp.Notifications.targets" Condition="Exists('..\packages\Microsoft.Toolkit.Uwp.Notifications.5.1.1\build\native\Microsoft.Toolkit.Uwp.Notifications.targets')" />
-    <Import Project="..\packages\ReswPlusLib.0.0.6\build\native\ReswPlusLib.targets" Condition="Exists('..\packages\ReswPlusLib.0.0.6\build\native\ReswPlusLib.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.Toolkit.Uwp.Notifications.5.1.1\build\native\Microsoft.Toolkit.Uwp.Notifications.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Toolkit.Uwp.Notifications.5.1.1\build\native\Microsoft.Toolkit.Uwp.Notifications.targets'))" />
-    <Error Condition="!Exists('..\packages\ReswPlusLib.0.0.6\build\native\ReswPlusLib.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ReswPlusLib.0.0.6\build\native\ReswPlusLib.targets'))" />
   </Target>
 </Project>

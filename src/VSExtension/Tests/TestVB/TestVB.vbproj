@@ -209,6 +209,12 @@
       <Version>0.0.6</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Library\ReswPlusLib.UWP\ReswPlusLib.UWP.csproj">
+      <Project>{d14cd365-de80-4f9f-8019-5ee08ce6d8b0}</Project>
+      <Name>ReswPlusLib.UWP</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

@@ -117,7 +117,7 @@ namespace ReswPlus
         {
             GenerateResourceFile(false);
         }
-        private int GenerateResourceFile(bool usePluralization)
+        private int GenerateResourceFile(bool isAdvanced)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -142,7 +142,7 @@ namespace ReswPlus
                 {
                     // Reset CustomTool to force the file generation.
                     projectItem.Properties.Item("CustomTool").Value = "";
-                    projectItem.Properties.Item("CustomTool").Value = usePluralization ? "ReswPlusAdvancedGenerator" : "ReswPlusGenerator";
+                    projectItem.Properties.Item("CustomTool").Value = isAdvanced ? "ReswPlusAdvancedGenerator" : "ReswPlusGenerator";
                     return VSConstants.S_OK;
                 }
                 else if (language == Utils.Language.CPPCX || language == Utils.Language.CPPWINRT)
@@ -166,7 +166,7 @@ namespace ReswPlus
 
                     var inputFilepath = projectItem.Properties.Item("FullPath").Value as string;
                     var baseFilename = Path.GetFileNameWithoutExtension(filepath) + ".generated";
-                    var files = reswCodeGenerator.GenerateCode(inputFilepath, baseFilename, File.ReadAllText(inputFilepath), fileNamespace, usePluralization, projectItem);
+                    var files = reswCodeGenerator.GenerateCode(inputFilepath, baseFilename, File.ReadAllText(inputFilepath), fileNamespace, isAdvanced, projectItem);
                     foreach (var file in files)
                     {
                         var generatedFilePath = Path.Combine(Path.GetDirectoryName(filepath), file.Filename);
@@ -183,9 +183,9 @@ namespace ReswPlus
                     }
 
                     //Install nuget package
-                    if (usePluralization)
+                    if (isAdvanced)
                     {
-                        projectItem.ContainingProject.InstallNuGetPackage("ReswPlusLib");
+                        projectItem.ContainingProject.InstallNuGetPackage("ReswPlusLib", true);
                     }
 
                     return VSConstants.S_OK;
