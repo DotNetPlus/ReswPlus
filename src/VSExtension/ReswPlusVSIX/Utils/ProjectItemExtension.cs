@@ -30,17 +30,32 @@ namespace ReswPlus.Utils
             catch
             { }
 
-            //check toolFiles
-            var toolFiles = vcproject.ToolFiles;
-            for (var i = 1; i <= toolFiles.Count; ++i)
+            try
             {
-                var value = toolFiles.Item(i).Path as string;
-                if (value != null && value.EndsWith("Microsoft.Windows.CppWinRT.targets", System.StringComparison.InvariantCultureIgnoreCase))
+                //check toolFiles
+                var toolFiles = vcproject.ToolFiles;
+                for (var i = 1; i <= toolFiles.Count; ++i)
+                {
+                    var value = toolFiles.Item(i).Path as string;
+                    if (value != null && value.EndsWith("Microsoft.Windows.CppWinRT.targets", System.StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch { }
+
+            // check Macro
+            try
+            {
+
+                var iscppWinrtPackage = vcproject.ActiveConfiguration.Evaluate("$(CppWinRTPackage)");
+                if (iscppWinrtPackage == "C++/WinRT")
                 {
                     return true;
                 }
             }
-
+            catch { }
             return false;
         }
 
