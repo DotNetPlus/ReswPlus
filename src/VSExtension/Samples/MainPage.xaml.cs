@@ -39,6 +39,11 @@ namespace ReswPlusSample
                             NavFrame.Navigate(typeof(LiteralStringFormatSamplePage), null, args.RecommendedNavigationTransitionInfo);
                             break;
                         }
+                    case "StringReferenceFormat":
+                        {
+                            NavFrame.Navigate(typeof(ReferenceStringFormatSamplePage), null, args.RecommendedNavigationTransitionInfo);
+                            break;
+                        }
                     case "MacroFormat":
                         {
                             NavFrame.Navigate(typeof(MacroSamplePage), null, args.RecommendedNavigationTransitionInfo);

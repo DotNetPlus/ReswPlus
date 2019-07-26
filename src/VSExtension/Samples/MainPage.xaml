@@ -31,6 +31,9 @@
                     Content="Literals in String Formatting"
                     Tag="LiteralFormat" />
                 <NavigationViewItem
+                    Content="String Ref in String Formatting"
+                    Tag="StringReferenceFormat" />
+                <NavigationViewItem
                     Content="Macro in String Formatting"
                     Tag="MacroFormat" />
                 

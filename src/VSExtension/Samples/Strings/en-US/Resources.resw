@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AndroidApplicationName" xml:space="preserve">
+    <value>Contoso for Android</value>
+  </data>
   <data name="AnimalTreat_Variant1_One" xml:space="preserve">
     <value>Reward your pup, give {0} biscuit to {2} the dog!</value>
     <comment>#Format[Plural Double treatNumber, Variant petType, String petName]</comment>
@@ -141,6 +144,10 @@
   <data name="DonateToAssociation" xml:space="preserve">
     <value>Hey {1}, donate {2:C2} to {0}!</value>
     <comment>#Format["WWF", String username, Int amount]</comment>
+  </data>
+  <data name="DownloadAndroidApp" xml:space="preserve">
+    <value>Click here to download {0}!</value>
+    <comment>#Format[AndroidApplicationName()]</comment>
   </data>
   <data name="DownloadOurApp" xml:space="preserve">
     <value>Download our apps in {0}</value>
@@ -185,6 +192,10 @@
   <data name="Greeting_Variant4" xml:space="preserve">
     <value>Good night, sleep well, see you tomorrow!</value>
   </data>
+  <data name="LearnMoreAboutAndroidApp" xml:space="preserve">
+    <value>To learn more about '{0}', visit our website.</value>
+    <comment>#Format[AndroidApplicationName()]</comment>
+  </data>
   <data name="MinutesLeft_One" xml:space="preserve">
     <value>{0} minute left</value>
     <comment>#Format[Plural]</comment>
@@ -210,6 +221,10 @@
   </data>
   <data name="ThisIsATooltip" xml:space="preserve">
     <value>this is a tooltip text</value>
+  </data>
+  <data name="WelcomeDownloadApp" xml:space="preserve">
+    <value>Hi {0}! Do you want to download {1}?</value>
+    <comment>#Format[String username, AndroidApplicationName()]</comment>
   </data>
   <data name="WelcomeMessageDay" xml:space="preserve">
     <value>Welcome {0}! Have a good {1}!</value>

@@ -181,6 +181,13 @@ namespace ReswPlusSample.Strings{
         }
         #endregion
 
+        #region AndroidApplicationName
+        /// <summary>
+        ///   Looks up a localized string similar to: Contoso for Android
+        /// </summary>
+        public static string AndroidApplicationName => _resourceLoader.GetString("AndroidApplicationName");
+        #endregion
+
         #region AppVersion
         /// <summary>
         ///   Looks up a localized string similar to: version: {0} v{1}
@@ -223,6 +230,21 @@ namespace ReswPlusSample.Strings{
         public static string DonateToAssociation_Format(string username, int amount)
         {
             return string.Format(DonateToAssociation, "WWF", username, amount);
+        }
+        #endregion
+
+        #region DownloadAndroidApp
+        /// <summary>
+        ///   Looks up a localized string similar to: Click here to download {0}!
+        /// </summary>
+        public static string DownloadAndroidApp => _resourceLoader.GetString("DownloadAndroidApp");
+
+        /// <summary>
+        ///   Format the string similar to: Click here to download {0}!
+        /// </summary>
+        public static string DownloadAndroidApp_Format()
+        {
+            return string.Format(DownloadAndroidApp, AndroidApplicationName);
         }
         #endregion
 
@@ -271,11 +293,41 @@ namespace ReswPlusSample.Strings{
         }
         #endregion
 
+        #region LearnMoreAboutAndroidApp
+        /// <summary>
+        ///   Looks up a localized string similar to: To learn more about '{0}', visit our website.
+        /// </summary>
+        public static string LearnMoreAboutAndroidApp => _resourceLoader.GetString("LearnMoreAboutAndroidApp");
+
+        /// <summary>
+        ///   Format the string similar to: To learn more about '{0}', visit our website.
+        /// </summary>
+        public static string LearnMoreAboutAndroidApp_Format()
+        {
+            return string.Format(LearnMoreAboutAndroidApp, AndroidApplicationName);
+        }
+        #endregion
+
         #region ThisIsATooltip
         /// <summary>
         ///   Looks up a localized string similar to: this is a tooltip text
         /// </summary>
         public static string ThisIsATooltip => _resourceLoader.GetString("ThisIsATooltip");
+        #endregion
+
+        #region WelcomeDownloadApp
+        /// <summary>
+        ///   Looks up a localized string similar to: Hi {0}! Do you want to download {1}?
+        /// </summary>
+        public static string WelcomeDownloadApp => _resourceLoader.GetString("WelcomeDownloadApp");
+
+        /// <summary>
+        ///   Format the string similar to: Hi {0}! Do you want to download {1}?
+        /// </summary>
+        public static string WelcomeDownloadApp_Format(string username)
+        {
+            return string.Format(WelcomeDownloadApp, username, AndroidApplicationName);
+        }
         #endregion
 
         #region WelcomeMessageDay
@@ -325,13 +377,17 @@ namespace ReswPlusSample.Strings{
         public enum KeyEnum
         {
             __Undefined = 0,
+            AndroidApplicationName,
             AppVersion,
             CopyrightNotice,
             DonateToAssociation,
+            DownloadAndroidApp,
             DownloadOurApp,
             ForecastAnnouncement,
             GotMessages,
+            LearnMoreAboutAndroidApp,
             ThisIsATooltip,
+            WelcomeDownloadApp,
             WelcomeMessageDay,
             WelcomeTitle,
             YourAgeAndName,
