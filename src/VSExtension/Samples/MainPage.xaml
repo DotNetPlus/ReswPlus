@@ -27,6 +27,11 @@
                 <NavigationViewItem
                     Content="Named String Formatting"
                     Tag="NamedStringFormat" />
+               
+                <NavigationViewItem
+                    Content="Macro in String Formatting"
+                    Tag="MacroFormat" />
+                
                 <NavigationViewItem
                     Content="Pluralization"
                     Tag="Pluralization" />

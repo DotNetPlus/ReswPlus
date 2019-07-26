@@ -90,6 +90,21 @@ namespace ReswPlusLib
         }
         #endregion
 
+        #region ShortWeekDay
+        private static string _shortWeekDay = null;
+        public static string ShortWeekDay
+        {
+            get
+            {
+                if (_shortWeekDay == null)
+                {
+                    _shortWeekDay = DateTime.Now.ToString("ddd");
+                }
+                return _shortWeekDay;
+            }
+        }
+        #endregion
+
         #region Year
         private static string _year = null;
         public static string Year
@@ -306,7 +321,7 @@ namespace ReswPlusLib
                 if (_applicationName == null)
                 {
 #if WINDOWS_UWP
-                    _applicationName = Package.Current.Id.Name;
+                    _applicationName = Package.Current.DisplayName;
 #endif
 #if DOTNETCORE
                     _applicationName = Assembly.GetEntryAssembly().GetName().Name;
@@ -327,9 +342,9 @@ namespace ReswPlusLib
             {
                 if (_publisherName == null)
                 {
-                    _publisherName = Package.Current.Id.Publisher;
+                    _publisherName = Package.Current.PublisherDisplayName;
                 }
-                return _applicationName;
+                return _publisherName;
             }
         }
         #endregion

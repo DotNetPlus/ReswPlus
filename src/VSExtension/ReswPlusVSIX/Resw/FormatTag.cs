@@ -53,22 +53,26 @@ namespace ReswPlus.Resw
     {
         private static readonly Dictionary<string, string> _macroAvailable = new Dictionary<string, string>()
         {
+            /* all */
+            { "DATE", "LongDate" },
             { "SHORT_DATE", "ShortDate" },
-            { "LONG_DATE", "LongDate" },
+            { "TIME", "LongTime" },
             { "SHORT_TIME", "ShortTime" },
-            { "LONG_TIME", "LongTime" },
-            { "WEEK_DAY", "WeekDay" },
+            { "WEEKDAY", "WeekDay" },
+            { "SHORT_WEEKDAY", "ShortWeekDay" },
             { "YEAR", "Year" },
             { "SHORT_YEAR", "YearTwoDigits" },
             { "LOCALE_NAME", "LocaleName" },
             { "LOCALE_ID", "LocaleId" },
             { "LOCALE_TWO_LETTERS", "LocaleTwoLetters" },
+            /* only UWP and .Net Core*/
             { "VERSION", "AppVersionFull" },
             { "VERSION_XYZ", "AppVersionMajorMinorBuild" },
             { "VERSION_XY", "AppVersionMajorMinor" },
             { "VERSION_X", "AppVersionMajor" },
-            { "ARCHITECTURE", "Architecture" },
             { "APP_NAME", "ApplicationName" },
+            /* only UWP */
+            { "ARCHITECTURE", "Architecture" },
             { "PUBLISHER_NAME", "PublisherName" },
             { "DEVICE_FAMILY", "DeviceFamily" },
             { "DEVICE_MANUFACTURER", "DeviceManufacturer" },

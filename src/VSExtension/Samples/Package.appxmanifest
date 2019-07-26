@@ -4,7 +4,7 @@
   <mp:PhoneIdentity PhoneProductId="0f2e2212-1789-4891-919a-9ee91d130aa8" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>ReswPlusSample</DisplayName>
-    <PublisherDisplayName>rudy</PublisherDisplayName>
+    <PublisherDisplayName>Contoso</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>

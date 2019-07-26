@@ -198,7 +198,7 @@
                         <TextBlock
                             Grid.Row="1"
                             Grid.Column="4"
-                            Text="#ReswPlusTyped[Q(treatNumber), V(petType), s(petName)]" />
+                            Text="#Format[Q(treatNumber), V(petType), s(petName)]" />
                         <TextBlock Grid.Row="2" Text="AnimalTreat_Variant1_Other" />
                         <TextBlock
                             Grid.Row="2"

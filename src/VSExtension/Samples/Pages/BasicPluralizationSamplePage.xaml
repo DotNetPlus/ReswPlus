@@ -89,7 +89,7 @@
                         <TextBlock
                             Grid.Row="1"
                             Grid.Column="4"
-                            Text="#ReswPlusTyped[Q]" />
+                            Text="#Format[Q]" />
                         <TextBlock Grid.Row="2" Text="MinutesLeft_Other" />
                         <TextBlock
                             Grid.Row="2"

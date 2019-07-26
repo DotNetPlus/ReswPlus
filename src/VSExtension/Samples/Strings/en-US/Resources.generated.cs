@@ -181,6 +181,66 @@ namespace ReswPlusSample.Strings{
         }
         #endregion
 
+        #region AppVersion
+        /// <summary>
+        ///   Looks up a localized string similar to: version: {0} v{1}
+        /// </summary>
+        public static string AppVersion => _resourceLoader.GetString("AppVersion");
+
+        /// <summary>
+        ///   Format the string similar to: version: {0} v{1}
+        /// </summary>
+        public static string AppVersion_Format()
+        {
+            return string.Format(AppVersion, ReswPlusLib.Macros.ApplicationName, ReswPlusLib.Macros.AppVersionFull);
+        }
+        #endregion
+
+        #region CopyrightNotice
+        /// <summary>
+        ///   Looks up a localized string similar to: © {0} - {1}. All rights reserved.
+        /// </summary>
+        public static string CopyrightNotice => _resourceLoader.GetString("CopyrightNotice");
+
+        /// <summary>
+        ///   Format the string similar to: © {0} - {1}. All rights reserved.
+        /// </summary>
+        public static string CopyrightNotice_Format()
+        {
+            return string.Format(CopyrightNotice, ReswPlusLib.Macros.Year, ReswPlusLib.Macros.PublisherName);
+        }
+        #endregion
+
+        #region DonateToAssociation
+        /// <summary>
+        ///   Looks up a localized string similar to: Hey {1}, donate {2:C2} to {0}!
+        /// </summary>
+        public static string DonateToAssociation => _resourceLoader.GetString("DonateToAssociation");
+
+        /// <summary>
+        ///   Format the string similar to: Hey {1}, donate {2:C2} to {0}!
+        /// </summary>
+        public static string DonateToAssociation_Format(string username, int amount)
+        {
+            return string.Format(DonateToAssociation, "WWF", username, amount);
+        }
+        #endregion
+
+        #region DownloadOurApp
+        /// <summary>
+        ///   Looks up a localized string similar to: Download our apps in {0}
+        /// </summary>
+        public static string DownloadOurApp => _resourceLoader.GetString("DownloadOurApp");
+
+        /// <summary>
+        ///   Format the string similar to: Download our apps in {0}
+        /// </summary>
+        public static string DownloadOurApp_Format()
+        {
+            return string.Format(DownloadOurApp, "Microsoft Store");
+        }
+        #endregion
+
         #region ForecastAnnouncement
         /// <summary>
         ///   Looks up a localized string similar to: The current temperature in {2} is {0}°F ({1}°C)
@@ -218,6 +278,21 @@ namespace ReswPlusSample.Strings{
         public static string ThisIsATooltip => _resourceLoader.GetString("ThisIsATooltip");
         #endregion
 
+        #region WelcomeMessageDay
+        /// <summary>
+        ///   Looks up a localized string similar to: Welcome {0}! Have a good {1}!
+        /// </summary>
+        public static string WelcomeMessageDay => _resourceLoader.GetString("WelcomeMessageDay");
+
+        /// <summary>
+        ///   Format the string similar to: Welcome {0}! Have a good {1}!
+        /// </summary>
+        public static string WelcomeMessageDay_Format(string username)
+        {
+            return string.Format(WelcomeMessageDay, username, ReswPlusLib.Macros.WeekDay);
+        }
+        #endregion
+
         #region WelcomeTitle
         /// <summary>
         ///   Looks up a localized string similar to: Hello World!
@@ -250,9 +325,14 @@ namespace ReswPlusSample.Strings{
         public enum KeyEnum
         {
             __Undefined = 0,
+            AppVersion,
+            CopyrightNotice,
+            DonateToAssociation,
+            DownloadOurApp,
             ForecastAnnouncement,
             GotMessages,
             ThisIsATooltip,
+            WelcomeMessageDay,
             WelcomeTitle,
             YourAgeAndName,
         }

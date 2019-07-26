@@ -130,6 +130,22 @@
   <data name="AnimalTreat_Variant2_Other" xml:space="preserve">
     <value>Reward your kitty, give {0} treats to your cat {2}!</value>
   </data>
+  <data name="AppVersion" xml:space="preserve">
+    <value>version: {0} v{1}</value>
+    <comment>#Format[APP_NAME, VERSION]</comment>
+  </data>
+  <data name="CopyrightNotice" xml:space="preserve">
+    <value>© {0} - {1}. All rights reserved.</value>
+    <comment>#Format[YEAR, PUBLISHER_NAME]</comment>
+  </data>
+  <data name="DonateToAssociation" xml:space="preserve">
+    <value>Hey {1}, donate {2:C2} to {0}!</value>
+    <comment>#Format["WWF", String username, Int amount]</comment>
+  </data>
+  <data name="DownloadOurApp" xml:space="preserve">
+    <value>Download our apps in {0}</value>
+    <comment>#Format["Microsoft Store"]</comment>
+  </data>
   <data name="DriverArrived_Variant1" xml:space="preserve">
     <value>Your driver is here, she is waiting outside. Do you want to message her?</value>
   </data>
@@ -194,6 +210,10 @@
   </data>
   <data name="ThisIsATooltip" xml:space="preserve">
     <value>this is a tooltip text</value>
+  </data>
+  <data name="WelcomeMessageDay" xml:space="preserve">
+    <value>Welcome {0}! Have a good {1}!</value>
+    <comment>#Format[String username, WEEKDAY]</comment>
   </data>
   <data name="WelcomeTitle" xml:space="preserve">
     <value>Hello World!</value>
