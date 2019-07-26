@@ -152,7 +152,7 @@ namespace ReswPlus
                     var fileNamespace = (string)projectItem.ContainingProject.Properties.Item("RootNamespace").Value;
 
                     var relativeDirectoryPath = Path.GetDirectoryName((string)projectItem.Properties.Item("RelativePath").Value);
-                    var reswNamespace = relativeDirectoryPath;
+                    var reswNamespace = relativeDirectoryPath.StartsWith("..") ? "" : relativeDirectoryPath;
                     if (!string.IsNullOrEmpty(reswNamespace))
                     {
                         fileNamespace += "." + reswNamespace.Replace("\\", ".");

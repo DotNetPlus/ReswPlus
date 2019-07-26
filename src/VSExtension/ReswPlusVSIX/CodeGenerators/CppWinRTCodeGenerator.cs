@@ -48,7 +48,7 @@ namespace ReswPlus.CodeGenerators
                 builderHeader.AppendLine("// The NuGet package ReswPlusLib is necessary to support Pluralization.");
             }
 
-            var baseGeneratedFileName = (namespacesOverride == null || namespacesOverride.Count() < 1 ? "" : namespacesOverride.Skip(1).Aggregate((a, b) => a + "." + b) + ".");
+            var baseGeneratedFileName = (namespacesOverride == null || namespacesOverride.Count() <= 1 ? "" : namespacesOverride.Skip(1).Aggregate((a, b) => a + "." + b) + ".");
 
             builderHeader.AppendLine("#pragma once");
             builderHeader.AppendLine($"#include \"{baseGeneratedFileName}{className}.g.h\"");
@@ -75,7 +75,7 @@ namespace ReswPlus.CodeGenerators
             }
             builderHeader.AppendLine($"#include \"{headerFilePath}\"");
 
-            var baseNamespace = namespaces == null || namespaces.Count() < 1 ? "" : namespaces.Skip(1).Aggregate((a, b) => a + "." + b) + ".";
+            var baseNamespace = namespaces == null || namespaces.Count() <= 1 ? "" : namespaces.Skip(1).Aggregate((a, b) => a + "." + b) + ".";
             var gheader = baseNamespace + className;
 
             builderHeader.AppendLine($"#include \"{gheader}.g.cpp\"");
