@@ -27,7 +27,9 @@
                 <NavigationViewItem
                     Content="Named String Formatting"
                     Tag="NamedStringFormat" />
-               
+                <NavigationViewItem
+                    Content="Literals in String Formatting"
+                    Tag="LiteralFormat" />
                 <NavigationViewItem
                     Content="Macro in String Formatting"
                     Tag="MacroFormat" />
