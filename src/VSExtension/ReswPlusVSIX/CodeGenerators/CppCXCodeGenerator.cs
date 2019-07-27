@@ -111,64 +111,6 @@ namespace ReswPlus.CodeGenerators
             builderHeader.AppendLine("};");
         }
 
-        protected override void HeaderCreateTemplateAccessor(CodeStringBuilder builderHeader, string pluralKey, string summary, bool supportPlural, bool supportVariants)
-        {
-            var parameters = new List<string>();
-            if (supportVariants)
-            {
-                parameters.Add("long long variantId");
-            }
-            if (supportPlural)
-            {
-                parameters.Add("double pluralNumber");
-            }
-
-            builderHeader.AppendLine("public:");
-            builderHeader.AddLevel();
-            builderHeader.AppendLine("/// <summary>");
-            builderHeader.AppendLine($"///   {summary}");
-            builderHeader.AppendLine("/// </summary>");
-            builderHeader.AppendLine($"static Platform::String^ {pluralKey}({parameters.Aggregate((a, b) => a + ", " + b)});");
-            builderHeader.RemoveLevel();
-        }
-        protected override void CppCreateTemplateAccessor(CodeStringBuilder builderCpp, string computedNamespaces, string key, bool supportPlural, bool pluralSupportNoneState, bool supportVariants)
-        {
-            var parameters = new List<string>();
-            if (supportVariants)
-            {
-                parameters.Add("long long variantId");
-            }
-            if (supportPlural)
-            {
-                parameters.Add("double pluralNumber");
-            }
-
-            builderCpp.AppendLine($"String^ {computedNamespaces}{key}({parameters.Aggregate((a, b) => a + ", " + b)})");
-            builderCpp.AppendLine("{");
-            builderCpp.AddLevel();
-            if (supportPlural && pluralSupportNoneState)
-            {
-                builderCpp.AppendLine("if(pluralNumber == 0)");
-                builderCpp.AppendLine("{");
-                builderCpp.AddLevel();
-                builderCpp.AppendLine($"return GetResourceLoader()->GetString(L\"{key}_None\");");
-                builderCpp.RemoveLevel();
-                builderCpp.AppendLine("}");
-            }
-
-            var stringKey = supportVariants ? $"ref new String(L\"{key}_Variant\") + variantId" : $"L\"{key}\"";
-            if (supportPlural)
-            {
-                builderCpp.AppendLine($"return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), {stringKey}, pluralNumber);");
-            }
-            else
-            {
-                builderCpp.AppendLine($"return GetResourceLoader()->GetString({stringKey});");
-            }
-            builderCpp.RemoveLevel();
-            builderCpp.AppendLine("}");
-        }
-
         protected override void HeaderCreateAccessor(CodeStringBuilder builderHeader, string key, string summary)
         {
             builderHeader.AppendLine("public:");
@@ -195,7 +137,7 @@ namespace ReswPlus.CodeGenerators
             builderHeader.AppendLine("}");
         }
 
-        protected override void HeaderCreateFormatMethod(CodeStringBuilder builderHeader, string key, IEnumerable<FunctionFormatTagParameter> parameters, string summary = null, IEnumerable<FunctionFormatTagParameter> extraParameters = null)
+        protected override void HeaderCreateFormatMethod(CodeStringBuilder builderHeader, string key, bool isProperty, IEnumerable<FunctionFormatTagParameter> parameters, string summary = null, IEnumerable<FunctionFormatTagParameter> extraParameters = null)
         {
             IEnumerable<FunctionFormatTagParameter> functionParameters;
             if (extraParameters != null)
@@ -208,107 +150,119 @@ namespace ReswPlus.CodeGenerators
             {
                 functionParameters = parameters;
             }
-            var parametersStr = functionParameters.Any() ?
-                functionParameters.Select(p => GetParameterTypeString(p.Type, true) + " " + p.Name).Aggregate((a, b) => a + ", " + b)
-                : "";
-            builderHeader.AppendLine("public:");
-            builderHeader.AddLevel();
-            builderHeader.AppendLine("/// <summary>");
-            builderHeader.AppendLine($"///   {summary}");
-            builderHeader.AppendLine("/// </summary>");
-            builderHeader.AppendLine($"static Platform::String^ {key}_Format({parametersStr});");
-            builderHeader.RemoveLevel();
-        }
 
-        protected override void CppCreateFormatMethod(CodeStringBuilder builderCpp, string computedNamespace, string key, bool isDotNetFormatting, IEnumerable<FormatTagParameter> parameters, IEnumerable<FunctionFormatTagParameter> extraParameters = null, FunctionFormatTagParameter parameterForPluralization = null, FunctionFormatTagParameter parameterForVariant = null)
-        {
-            IEnumerable<FunctionFormatTagParameter> functionParameters;
-            if (extraParameters != null)
+            if (isProperty)
             {
-                var list = new List<FunctionFormatTagParameter>(parameters.OfType<FunctionFormatTagParameter>());
-                list.InsertRange(0, extraParameters);
-                functionParameters = list;
+                HeaderCreateAccessor(builderHeader, key, summary);
             }
             else
             {
-                functionParameters = parameters.OfType<FunctionFormatTagParameter>();
+                builderHeader.AppendLine("public:");
+                builderHeader.AddLevel();
+                builderHeader.AppendLine("/// <summary>");
+                builderHeader.AppendLine($"///   {summary}");
+                builderHeader.AppendLine("/// </summary>");
+
+                var parametersStr = functionParameters == null || !functionParameters.Any() ?
+                    "" :
+                    functionParameters.Select(p => GetParameterTypeString(p.Type, true) + " " + p.Name).Aggregate((a, b) => a + ", " + b); builderHeader.AppendLine($"static Platform::String^ {key}({parametersStr});");
+                builderHeader.RemoveLevel();
             }
-            var parametersStr = functionParameters.Any() ?
+        }
+
+        protected override void CppCreateFormatMethod(CodeStringBuilder builderCpp, string computedNamespace, string key, bool isProperty, bool isDotNetFormatting, IEnumerable<FormatTagParameter> parameters, IEnumerable<FunctionFormatTagParameter> extraParameters = null, FunctionFormatTagParameter parameterForPluralization = null, bool supportNoneState = false, FunctionFormatTagParameter parameterForVariant = null)
+        {
+            if (isProperty)
+            {
+                builderCpp.AppendLine($"String^ {computedNamespace}{key}::get()");
+            }
+            else
+            {
+                var functionParameters = parameters != null ? parameters.OfType<FunctionFormatTagParameter>().ToList() :
+                                   new List<FunctionFormatTagParameter>();
+                if (extraParameters != null && extraParameters.Any())
+                {
+                    functionParameters.InsertRange(0, extraParameters);
+                }
+
+                var parametersStr = functionParameters.Any() ?
                 functionParameters.Select(p => GetParameterTypeString(p.Type, false) + " " + p.Name).Aggregate((a, b) => a + ", " + b)
                 : "";
 
-            builderCpp.AppendLine($"String^ {computedNamespace}{key}_Format({parametersStr})");
+                builderCpp.AppendLine($"String^ {computedNamespace}{key}({parametersStr})");
+            }
+
             builderCpp.AppendLine("{");
             builderCpp.AddLevel();
-            var formatParameters = parameters
-                .Select(p =>
-                {
-                    switch (p)
-                    {
-                        case ConstStringFormatTagParameter constStringParam:
-                            {
-                                return isDotNetFormatting ? $"ref new String(L\"{constStringParam.Value}\")" : $"L\"{constStringParam.Value}\"";
-                            }
-                        case MacroFormatTagParameter macroParam:
-                            {
-                                return isDotNetFormatting ? $"ReswPlusLib::Macros::{macroParam.Id}" : $"ReswPlusLib::Macros::{macroParam.Id}->Data()";
-                            }
-                        case LocalizationRefFormatTagParameter localizationStringParameter:
-                            {
-                                return isDotNetFormatting ? $"{localizationStringParameter.Id}" : $"{localizationStringParameter.Id}->Data()";
-                            }
-                        case FunctionFormatTagParameter functionParam:
-                            {
-                                switch (functionParam.Type)
-                                {
-                                    case ParameterType.String:
-                                        return isDotNetFormatting ? functionParam.Name : functionParam.Name + "->Data()";
-                                    case ParameterType.Object:
-                                        return isDotNetFormatting ? functionParam.Name + "->ToString()" : functionParam.Name + "->ToString()->Data()";
-                                    default:
-                                        return functionParam.Name;
-                                }
-                            }
-                        default:
-                            //should not happen
-                            return "";
-                    }
-                }).Aggregate((a, b) => a + ", " + b);
 
-            string sourceForFormat;
+            string keyToUseStr = parameterForVariant != null ? $"ref new String(L\"{key}_Variant\") + {parameterForVariant.Name}" : $"L\"{key}\"";
+
+            string localizationStr;
             if (parameterForPluralization != null)
             {
-                var doubleValue = parameterForPluralization.TypeToCast.HasValue ? $"static_cast<{GetParameterTypeString(parameterForPluralization.TypeToCast.Value, false)}>({parameterForPluralization.Name})" : parameterForPluralization.Name;
-                if (parameterForVariant != null)
+                var pluralNumber = parameterForPluralization.TypeToCast.HasValue ? $"static_cast<{GetParameterTypeString(parameterForPluralization.TypeToCast.Value, false)}>({parameterForPluralization.Name})" : parameterForPluralization.Name;
+
+                var supportNoneStateStr = supportNoneState ? "true" : "false";
+
+                localizationStr = $"ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), {keyToUseStr}, {pluralNumber}, {supportNoneStateStr})";
+            }
+            else
+            {
+                localizationStr = $"GetResourceLoader()->GetString({keyToUseStr})";
+            }
+
+            if (parameters != null && parameters.Any())
+            {
+                var formatParameters = parameters
+            .Select(p =>
+            {
+                switch (p)
                 {
-                    sourceForFormat = $"{key}({parameterForVariant.Name}, {doubleValue})";
+                    case ConstStringFormatTagParameter constStringParam:
+                        {
+                            return isDotNetFormatting ? $"ref new String(L\"{constStringParam.Value}\")" : $"L\"{constStringParam.Value}\"";
+                        }
+                    case MacroFormatTagParameter macroParam:
+                        {
+                            return isDotNetFormatting ? $"ReswPlusLib::Macros::{macroParam.Id}" : $"ReswPlusLib::Macros::{macroParam.Id}->Data()";
+                        }
+                    case LocalizationRefFormatTagParameter localizationStringParameter:
+                        {
+                            return isDotNetFormatting ? $"{localizationStringParameter.Id}" : $"{localizationStringParameter.Id}->Data()";
+                        }
+                    case FunctionFormatTagParameter functionParam:
+                        {
+                            switch (functionParam.Type)
+                            {
+                                case ParameterType.String:
+                                    return isDotNetFormatting ? functionParam.Name : functionParam.Name + "->Data()";
+                                case ParameterType.Object:
+                                    return isDotNetFormatting ? functionParam.Name + "->ToString()" : functionParam.Name + "->ToString()->Data()";
+                                default:
+                                    return functionParam.Name;
+                            }
+                        }
+                    default:
+                        //should not happen
+                        return "";
+                }
+            }).Aggregate((a, b) => a + ", " + b);
+
+                if (isDotNetFormatting)
+                {
+                    builderCpp.AppendLine($"return ReswPlusLib::StringFormatting::FormatDotNet({localizationStr}, ref new Array<Object^>({parameters.Count()}){{{formatParameters}}});");
                 }
                 else
                 {
-                    sourceForFormat = $"{key}({doubleValue})";
+                    builderCpp.AppendLine($"size_t needed = _swprintf_p(nullptr, 0, {localizationStr}->Data(), {formatParameters});");
+                    builderCpp.AppendLine($"wchar_t *buffer = new wchar_t[needed + 1];");
+                    builderCpp.AppendLine($"_swprintf_p(buffer, needed + 1, {localizationStr}->Data(), {formatParameters});");
+                    builderCpp.AppendLine($"return ref new String(buffer);");
                 }
             }
             else
             {
-                if (parameterForVariant != null)
-                {
-                    sourceForFormat = $"{key}({parameterForVariant.Name})";
-                }
-                else
-                {
-                    sourceForFormat = key;
-                }
-            }
-            if (isDotNetFormatting)
-            {
-                builderCpp.AppendLine($"return ReswPlusLib::StringFormatting::FormatDotNet({sourceForFormat}, ref new Array<Object^>({parameters.Count()}){{{formatParameters}}});");
-            }
-            else
-            {
-                builderCpp.AppendLine($"size_t needed = _swprintf_p(nullptr, 0, {sourceForFormat}->Data(), {formatParameters});");
-                builderCpp.AppendLine($"wchar_t *buffer = new wchar_t[needed + 1];");
-                builderCpp.AppendLine($"_swprintf_p(buffer, needed + 1, {sourceForFormat}->Data(), {formatParameters});");
-                builderCpp.AppendLine($"return ref new String(buffer);");
+                builderCpp.AppendLine($"return {localizationStr};");
             }
             builderCpp.RemoveLevel();
             builderCpp.AppendLine("}");

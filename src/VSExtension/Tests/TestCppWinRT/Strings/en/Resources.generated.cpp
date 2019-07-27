@@ -25,98 +25,76 @@ ResourceLoader local::Resources::GetResourceLoader()
     return _resourceLoader;
 }
 
-hstring local::Resources::YouGotEmails(double pluralNumber)
-{
-    return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), L"YouGotEmails", pluralNumber);
-}
 
-hstring local::Resources::YouGotEmails_Format(unsigned int numberMessages, hstring const& username)
+hstring local::Resources::YouGotEmails(unsigned int numberMessages, hstring const& username)
 {
-    size_t needed = _swprintf_p(nullptr, 0, YouGotEmails(static_cast<double>(numberMessages)).c_str(), numberMessages, username.c_str());
+    size_t needed = _swprintf_p(nullptr, 0, ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), L"YouGotEmails", static_cast<double>(numberMessages), false).c_str(), numberMessages, username.c_str());
     wchar_t *buffer = new wchar_t[needed + 1];
-    _swprintf_p(buffer, needed + 1, YouGotEmails(static_cast<double>(numberMessages)).c_str(), numberMessages, username.c_str());
-    return hstring(buffer);
-}
-
-hstring local::Resources::GotMessagesFrom(long variantId, double pluralNumber)
-{
-    return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), hstring(L"GotMessagesFrom_Variant") + to_wstring(variantId), pluralNumber);
-}
-
-hstring local::Resources::GotMessagesFrom_Format(unsigned int numberMessages, long personalPronoun)
-{
-    size_t needed = _swprintf_p(nullptr, 0, GotMessagesFrom(personalPronoun, static_cast<double>(numberMessages)).c_str(), numberMessages, personalPronoun);
-    wchar_t *buffer = new wchar_t[needed + 1];
-    _swprintf_p(buffer, needed + 1, GotMessagesFrom(personalPronoun, static_cast<double>(numberMessages)).c_str(), numberMessages, personalPronoun);
+    _swprintf_p(buffer, needed + 1, ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), L"YouGotEmails", static_cast<double>(numberMessages), false).c_str(), numberMessages, username.c_str());
     return hstring(buffer);
 }
 
 
-hstring local::Resources::YouGotEmailsDotNet(double pluralNumber)
+hstring local::Resources::GotMessagesFrom(unsigned int numberMessages, long personalPronoun)
 {
-    return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), L"YouGotEmailsDotNet", pluralNumber);
+    size_t needed = _swprintf_p(nullptr, 0, ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), hstring(L"GotMessagesFrom_Variant") + to_wstring(personalPronoun), static_cast<double>(numberMessages), false).c_str(), numberMessages, personalPronoun);
+    wchar_t *buffer = new wchar_t[needed + 1];
+    _swprintf_p(buffer, needed + 1, ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), hstring(L"GotMessagesFrom_Variant") + to_wstring(personalPronoun), static_cast<double>(numberMessages), false).c_str(), numberMessages, personalPronoun);
+    return hstring(buffer);
 }
 
-hstring local::Resources::YouGotEmailsDotNet_Format(unsigned int numberMessages, hstring const& username)
+
+hstring local::Resources::SendMessage(int variantId)
+{
+    return GetResourceLoader().GetString(hstring(L"SendMessage_Variant") + to_wstring(variantId));
+}
+
+
+hstring local::Resources::YouGotEmailsDotNet(unsigned int numberMessages, hstring const& username)
 {
     array<IInspectable const, 2> _string_parameters = {box_value(numberMessages), box_value(username)};
-    return ReswPlusLib::StringFormatting::FormatDotNet(YouGotEmailsDotNet(static_cast<double>(numberMessages)), _string_parameters);
+    return ReswPlusLib::StringFormatting::FormatDotNet(ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), L"YouGotEmailsDotNet", static_cast<double>(numberMessages), false), _string_parameters);
 }
+
 
 hstring local::Resources::Hello()
 {
     return GetResourceLoader().GetString(L"Hello");
 }
 
-hstring local::Resources::TestWithObject()
-{
-    return GetResourceLoader().GetString(L"TestWithObject");
-}
 
-hstring local::Resources::TestWithObject_Format(IStringable const& obj)
+hstring local::Resources::TestWithObject(IStringable const& obj)
 {
     auto _obj_string = obj == nullptr ? L"" : obj.ToString().c_str();
-    size_t needed = _swprintf_p(nullptr, 0, TestWithObject().c_str(), _obj_string);
+    size_t needed = _swprintf_p(nullptr, 0, GetResourceLoader().GetString(L"TestWithObject").c_str(), _obj_string);
     wchar_t *buffer = new wchar_t[needed + 1];
-    _swprintf_p(buffer, needed + 1, TestWithObject().c_str(), _obj_string);
+    _swprintf_p(buffer, needed + 1, GetResourceLoader().GetString(L"TestWithObject").c_str(), _obj_string);
     return hstring(buffer);
 }
+
 
 hstring local::Resources::TestFormatWithLiteralString()
 {
-    return GetResourceLoader().GetString(L"TestFormatWithLiteralString");
-}
-
-hstring local::Resources::TestFormatWithLiteralString_Format()
-{
-    size_t needed = _swprintf_p(nullptr, 0, TestFormatWithLiteralString().c_str(), L"Hello world");
+    size_t needed = _swprintf_p(nullptr, 0, GetResourceLoader().GetString(L"TestFormatWithLiteralString").c_str(), L"Hello world");
     wchar_t *buffer = new wchar_t[needed + 1];
-    _swprintf_p(buffer, needed + 1, TestFormatWithLiteralString().c_str(), L"Hello world");
+    _swprintf_p(buffer, needed + 1, GetResourceLoader().GetString(L"TestFormatWithLiteralString").c_str(), L"Hello world");
     return hstring(buffer);
 }
+
 
 hstring local::Resources::TestFormatWithLocalizationRef()
 {
-    return GetResourceLoader().GetString(L"TestFormatWithLocalizationRef");
-}
-
-hstring local::Resources::TestFormatWithLocalizationRef_Format()
-{
-    size_t needed = _swprintf_p(nullptr, 0, TestFormatWithLocalizationRef().c_str(), Hello().c_str());
+    size_t needed = _swprintf_p(nullptr, 0, GetResourceLoader().GetString(L"TestFormatWithLocalizationRef").c_str(), Hello().c_str());
     wchar_t *buffer = new wchar_t[needed + 1];
-    _swprintf_p(buffer, needed + 1, TestFormatWithLocalizationRef().c_str(), Hello().c_str());
+    _swprintf_p(buffer, needed + 1, GetResourceLoader().GetString(L"TestFormatWithLocalizationRef").c_str(), Hello().c_str());
     return hstring(buffer);
 }
 
+
 hstring local::Resources::TestFormatWithMacro()
 {
-    return GetResourceLoader().GetString(L"TestFormatWithMacro");
-}
-
-hstring local::Resources::TestFormatWithMacro_Format()
-{
     array<IInspectable const, 3> _string_parameters = {box_value(ReswPlusLib::Macros::AppVersionFull()), box_value(ReswPlusLib::Macros::LocaleName()), box_value(ReswPlusLib::Macros::ShortDate())};
-    return ReswPlusLib::StringFormatting::FormatDotNet(TestFormatWithMacro(), _string_parameters);
+    return ReswPlusLib::StringFormatting::FormatDotNet(GetResourceLoader().GetString(L"TestFormatWithMacro"), _string_parameters);
 }
 
 local::ResourcesExtension::ResourcesExtension()
@@ -147,6 +125,14 @@ hstring local::ResourcesExtension::KeyEnumToString(KeyEnum key)
 {
     switch(key)
     {
+        case KeyEnum::YouGotEmails:
+            return hstring(L"YouGotEmails");
+        case KeyEnum::GotMessagesFrom:
+            return hstring(L"GotMessagesFrom");
+        case KeyEnum::SendMessage:
+            return hstring(L"SendMessage");
+        case KeyEnum::YouGotEmailsDotNet:
+            return hstring(L"YouGotEmailsDotNet");
         case KeyEnum::Hello:
             return hstring(L"Hello");
         case KeyEnum::TestWithObject:

@@ -167,7 +167,7 @@
   </data>
   <data name="FileShared_One" xml:space="preserve">
     <value>{0} shared {1} photo from {2}</value>
-    <comment>#Format[String username, Plural, String city]</comment>
+    <comment>#Format[String username, Plural numberPics, String city]</comment>
   </data>
   <data name="FileShared_Other" xml:space="preserve">
     <value>{0} shared {1} photos from {2}</value>

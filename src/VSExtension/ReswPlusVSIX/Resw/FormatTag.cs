@@ -145,13 +145,21 @@ namespace ReswPlus.Resw
                         var paramTypeId = matchNamedParameters.Groups["type"].Value;
                         var isQuantifier = matchNamedParameters.Groups["quantifier"].Success;
                         var paramName = matchNamedParameters.Groups["name"].Value;
-                        if (!isQuantifier && paramTypeId == "Plural" && string.IsNullOrEmpty(paramName))
+
+                        if (isQuantifier && !string.IsNullOrEmpty(paramTypeId) && string.IsNullOrEmpty(paramName))
+                        {
+                            if (!_acceptedTypes.ContainsKey(paramTypeId))
+                            {
+                                paramName = paramTypeId;
+                                paramTypeId = "";
+                            }
+                        }
+                        else if (!isQuantifier && paramTypeId == "Plural" && string.IsNullOrEmpty(paramName))
                         {
                             isQuantifier = true;
                             paramTypeId = paramName = "";
                         }
-
-                        if (!isQuantifier && _macroAvailable.TryGetValue(paramTypeId, out var macroID) && string.IsNullOrEmpty(paramName))
+                        else if (!isQuantifier && _macroAvailable.TryGetValue(paramTypeId, out var macroID) && string.IsNullOrEmpty(paramName))
                         {
                             result.Parameters.Add(new MacroFormatTagParameter() { Id = macroID });
                             continue;

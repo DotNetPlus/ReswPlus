@@ -17,13 +17,10 @@ namespace ReswPlus.CodeGenerators
         internal abstract void OpenStronglyTypedClass(string resourceFileName, string className);
         internal abstract void CloseStronglyTypedClass();
         internal abstract void OpenRegion(string name);
-        internal abstract void CloseRegion();
-        internal abstract void CreateTemplateAccessor(string key, string summary, bool supportPlural, bool pluralSupportNoneState, bool supportVariants);
+        internal abstract void CloseRegion(string name);
 
-        internal abstract void CreateAccessor(string key, string summary);
-
-        internal abstract void CreateFormatMethod(string key, IEnumerable<FormatTagParameter> parameters, string summary = null,
-            IEnumerable<FunctionFormatTagParameter> extraParameters = null, FunctionFormatTagParameter parameterForPluralization = null, FunctionFormatTagParameter parameterForVariant = null);
+        internal abstract void CreateFormatMethod(string key, bool isProperty, IEnumerable<FormatTagParameter> parameters, string summary = null,
+            IEnumerable<FunctionFormatTagParameter> extraParameters = null, FunctionFormatTagParameter parameterForPluralization = null, bool supportNoneState = false, FunctionFormatTagParameter parameterForVariant = null);
 
         internal abstract void CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys);
         internal abstract IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename);
@@ -35,47 +32,23 @@ namespace ReswPlus.CodeGenerators
             OpenNamespace(info.Namespaces);
             OpenStronglyTypedClass(info.ResoureFile, info.ClassName);
 
-            var isFirst = true;
             foreach (var item in info.Localizations)
             {
-                if (isFirst)
-                {
-                    isFirst = false;
-                }
-                else
-                {
-                    AddNewLine();
-                }
-                OpenRegion(item.Key);
-                if (item is PluralLocalization pluralLocalization)
-                {
-                    CreateTemplateAccessor(item.Key, pluralLocalization.TemplateAccessorSummary, true, pluralLocalization.SupportNoneState, pluralLocalization is IVariantLocalization);
-                    if (pluralLocalization.Parameters != null && pluralLocalization.Parameters.Any())
-                    {
-                        AddNewLine();
-                        CreateFormatMethod(pluralLocalization.Key, pluralLocalization.Parameters, pluralLocalization.FormatSummary, pluralLocalization.ExtraParameters, pluralLocalization.ParameterToUseForPluralization, (pluralLocalization as IVariantLocalization)?.ParameterToUseForVariant);
-                    }
-                }
-                else if (item is VariantLocalization variantLocalization)
-                {
-                    CreateTemplateAccessor(item.Key, variantLocalization.TemplateAccessorSummary, false, false, true);
-                    if (variantLocalization.Parameters != null && variantLocalization.Parameters.Any())
-                    {
-                        AddNewLine();
-                        CreateFormatMethod(variantLocalization.Key, variantLocalization.Parameters, variantLocalization.FormatSummary, parameterForVariant: variantLocalization.ParameterToUseForVariant);
-                    }
-                }
-                else if (item is Localization localization)
-                {
-                    CreateAccessor(localization.Key, localization.AccessorSummary);
-                    if (localization.Parameters != null && localization.Parameters.Any())
-                    {
-                        AddNewLine();
-                        CreateFormatMethod(localization.Key, localization.Parameters, localization.FormatSummary);
-                    }
-                }
+                AddNewLine();
 
-                CloseRegion();
+                OpenRegion(item.Key);
+
+                CreateFormatMethod(
+                    item.Key,
+                    item.IsProperty,
+                    item.Parameters,
+                    item.Summary,
+                    item.ExtraParameters,
+                    (item as PluralLocalization)?.ParameterToUseForPluralization,
+                    (item as PluralLocalization)?.SupportNoneState ?? false,
+                    (item as IVariantLocalization)?.ParameterToUseForVariant);
+
+                CloseRegion(item.Key);
             }
 
             CloseStronglyTypedClass();

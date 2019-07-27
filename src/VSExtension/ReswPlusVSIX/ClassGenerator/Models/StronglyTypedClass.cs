@@ -13,6 +13,6 @@ namespace ReswPlus.ClassGenerator.Models
         public string ResoureFile { get; set; }
         public string ClassName { get; set; }
 
-        public List<LocalizationBase> Localizations { get; set; } = new List<LocalizationBase>();
+        public List<Localization> Localizations { get; set; } = new List<Localization>();
     }
 }

@@ -1,4 +1,4 @@
-﻿using ReswPlusLib;
+using ReswPlusLib;
 using System;
 using System.Globalization;
 using System.Resources;

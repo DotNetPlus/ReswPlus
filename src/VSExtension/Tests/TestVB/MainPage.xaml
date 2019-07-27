@@ -12,12 +12,12 @@
         <StackPanel VerticalAlignment="Center">
             <TextBlock Text="{x:Bind strings:Resources.WelcomeTitle}" />
             <TextBlock Text="{strings:Resources Key=WelcomeTitle}" />
-            <TextBlock Text="{x:Bind strings:Resources.GotMessages_Format('Paul', 3)}" />
+            <TextBlock Text="{x:Bind strings:Resources.GotMessages('Paul', 3)}" />
             <Slider
                 x:Name="EmailsSlider"
                 Margin="0,24,0,0"
                 Maximum="10" />
-            <TextBlock Text="{x:Bind strings:Resources.MinutesLeft_Format(EmailsSlider.Value), Mode=OneWay}" />
+            <TextBlock Text="{x:Bind strings:Resources.MinutesLeft(EmailsSlider.Value), Mode=OneWay}" />
             <ComboBox
                 x:Name="PronounsComboBox"
                 Margin="0,42,0,0"
@@ -28,11 +28,11 @@
                 <ComboBoxItem>He/Him/His</ComboBoxItem>
                 <ComboBoxItem>They/Theirs/Their</ComboBoxItem>
             </ComboBox>
-            <TextBlock FontWeight="Bold" Text="{x:Bind strings:Resources.GotMessagesFrom_Format(EmailsSlider.Value, PronounsComboBox.SelectedIndex), Mode=OneWay}" />
+            <TextBlock FontWeight="Bold" Text="{x:Bind strings:Resources.GotMessagesFrom(EmailsSlider.Value, PronounsComboBox.SelectedIndex), Mode=OneWay}" />
 
-            <TextBlock Text="{x:Bind strings:Resources.TestFormatWithLiteralString_Format()}" />
-            <TextBlock Text="{x:Bind strings:Resources.TestFormatWithLocalizationRef_Format()}" />
-            <TextBlock Text="{x:Bind strings:Resources.TestFormatWithMacro_Format()}" />
+            <TextBlock Text="{x:Bind strings:Resources.TestFormatWithLiteralString}" />
+            <TextBlock Text="{x:Bind strings:Resources.TestFormatWithLocalizationRef}" />
+            <TextBlock Text="{x:Bind strings:Resources.TestFormatWithMacro}" />
         </StackPanel>
     </Grid>
 </Page>

@@ -15,65 +15,35 @@ namespace ReswPlusSample.Strings{
         {
             _resourceLoader = ResourceLoader.GetForViewIndependentUse("Resources");
         }
+
         #region AnimalTreat
         /// <summary>
         ///   Get the pluralized version of the string similar to: Reward your pup, give {0} biscuit to {2} the dog!
         /// </summary>
-        public static string AnimalTreat(long variantId, double pluralNumber)
+        public static string AnimalTreat(double treatNumber, object petType, string petName)
         {
-            return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "AnimalTreat_Variant" + variantId, pluralNumber);
+            try
+            {
+                return AnimalTreat(treatNumber, Convert.ToInt64(petType), petName);
+            }
+            catch
+            {
+                return "";
+            }
         }
 
         /// <summary>
         ///   Get the pluralized version of the string similar to: Reward your pup, give {0} biscuit to {2} the dog!
         /// </summary>
-        public static string AnimalTreat(object variantId, double pluralNumber)
+        public static string AnimalTreat(double treatNumber, long petType, string petName)
         {
-            try
-            {
-                return AnimalTreat(Convert.ToInt64(variantId), pluralNumber);
-            }
-            catch
-            {
-                return "";
-            }
-        }
-
-        /// <summary>
-        ///   Format the string similar to: Reward your pup, give {0} biscuit to {2} the dog!
-        /// </summary>
-        public static string AnimalTreat_Format(double treatNumber, long petType, string petName)
-        {
-            return string.Format(AnimalTreat(petType, treatNumber), treatNumber, petType, petName);
-        }
-
-        /// <summary>
-        ///   Format the string similar to: Reward your pup, give {0} biscuit to {2} the dog!
-        /// </summary>
-        public static string AnimalTreat_Format(double treatNumber, object petType, string petName)
-        {
-            try
-            {
-                return AnimalTreat_Format(treatNumber, Convert.ToInt64(petType), petName);
-            }
-            catch
-            {
-                return "";
-            }
+            return string.Format(ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "AnimalTreat_Variant" + petType, treatNumber, false), treatNumber, petType, petName);
         }
         #endregion
 
         #region DriverArrived
         /// <summary>
-        ///   Get the variant version of the string similar to: DriverArrived_Variant1
-        /// </summary>
-        public static string DriverArrived(long variantId)
-        {
-            return _resourceLoader.GetString("DriverArrived_Variant" + variantId);
-        }
-
-        /// <summary>
-        ///   Get the variant version of the string similar to: DriverArrived_Variant1
+        ///   Get the variant version of the string similar to: Your driver is here, she is waiting outside. Do you want to message her?
         /// </summary>
         public static string DriverArrived(object variantId)
         {
@@ -86,37 +56,29 @@ namespace ReswPlusSample.Strings{
                 return "";
             }
         }
+
+        /// <summary>
+        ///   Get the variant version of the string similar to: Your driver is here, she is waiting outside. Do you want to message her?
+        /// </summary>
+        public static string DriverArrived(long variantId)
+        {
+            return _resourceLoader.GetString("DriverArrived_Variant" + variantId);
+        }
         #endregion
 
         #region FileShared
         /// <summary>
         ///   Get the pluralized version of the string similar to: {0} shared {1} photo from {2}
         /// </summary>
-        public static string FileShared(double pluralNumber)
+        public static string FileShared(string username, double numberPics, string city)
         {
-            return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "FileShared", pluralNumber);
-        }
-
-        /// <summary>
-        ///   Format the string similar to: {0} shared {1} photo from {2}
-        /// </summary>
-        public static string FileShared_Format(string username, double pluralCount, string city)
-        {
-            return string.Format(FileShared(pluralCount), username, pluralCount, city);
+            return string.Format(ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "FileShared", numberPics, false), username, numberPics, city);
         }
         #endregion
 
         #region Greeting
         /// <summary>
-        ///   Get the variant version of the string similar to: Greeting_Variant1
-        /// </summary>
-        public static string Greeting(long variantId)
-        {
-            return _resourceLoader.GetString("Greeting_Variant" + variantId);
-        }
-
-        /// <summary>
-        ///   Get the variant version of the string similar to: Greeting_Variant1
+        ///   Get the variant version of the string similar to: Good morning, enjoy your day!
         /// </summary>
         public static string Greeting(object variantId)
         {
@@ -129,23 +91,23 @@ namespace ReswPlusSample.Strings{
                 return "";
             }
         }
+
+        /// <summary>
+        ///   Get the variant version of the string similar to: Good morning, enjoy your day!
+        /// </summary>
+        public static string Greeting(long variantId)
+        {
+            return _resourceLoader.GetString("Greeting_Variant" + variantId);
+        }
         #endregion
 
         #region MinutesLeft
         /// <summary>
         ///   Get the pluralized version of the string similar to: {0} minute left
         /// </summary>
-        public static string MinutesLeft(double pluralNumber)
+        public static string MinutesLeft(double pluralCount)
         {
-            return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "MinutesLeft", pluralNumber);
-        }
-
-        /// <summary>
-        ///   Format the string similar to: {0} minute left
-        /// </summary>
-        public static string MinutesLeft_Format(double pluralCount)
-        {
-            return string.Format(MinutesLeft(pluralCount), pluralCount);
+            return string.Format(ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "MinutesLeft", pluralCount, false), pluralCount);
         }
         #endregion
 
@@ -153,9 +115,9 @@ namespace ReswPlusSample.Strings{
         /// <summary>
         ///   Get the pluralized version of the string similar to: This is the singular form
         /// </summary>
-        public static string PluralizationTest(double pluralNumber)
+        public static string PluralizationTest(double pluralizationReferenceNumber)
         {
-            return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "PluralizationTest", pluralNumber);
+            return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "PluralizationTest", pluralizationReferenceNumber, false);
         }
         #endregion
 
@@ -163,21 +125,9 @@ namespace ReswPlusSample.Strings{
         /// <summary>
         ///   Get the pluralized version of the string similar to: No new messages from {1}
         /// </summary>
-        public static string ReceivedMessages(double pluralNumber)
+        public static string ReceivedMessages(double pluralCount, string paramString2)
         {
-            if(pluralNumber == 0)
-            {
-                return _resourceLoader.GetString("ReceivedMessages_None");
-            }
-            return ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "ReceivedMessages", pluralNumber);
-        }
-
-        /// <summary>
-        ///   Format the string similar to: No new messages from {1}
-        /// </summary>
-        public static string ReceivedMessages_Format(double pluralCount, string paramString2)
-        {
-            return string.Format(ReceivedMessages(pluralCount), pluralCount, paramString2);
+            return string.Format(ReswPlusLib.ResourceLoaderExtension.GetPlural(_resourceLoader, "ReceivedMessages", pluralCount, true), pluralCount, paramString2);
         }
         #endregion
 
@@ -185,21 +135,25 @@ namespace ReswPlusSample.Strings{
         /// <summary>
         ///   Looks up a localized string similar to: Contoso for Android
         /// </summary>
-        public static string AndroidApplicationName => _resourceLoader.GetString("AndroidApplicationName");
+        public static string AndroidApplicationName
+        {
+            get
+            {
+                return _resourceLoader.GetString("AndroidApplicationName");
+            }
+        }
         #endregion
 
         #region AppVersion
         /// <summary>
         ///   Looks up a localized string similar to: version: {0} v{1}
         /// </summary>
-        public static string AppVersion => _resourceLoader.GetString("AppVersion");
-
-        /// <summary>
-        ///   Format the string similar to: version: {0} v{1}
-        /// </summary>
-        public static string AppVersion_Format()
+        public static string AppVersion
         {
-            return string.Format(AppVersion, ReswPlusLib.Macros.ApplicationName, ReswPlusLib.Macros.AppVersionFull);
+            get
+            {
+                return string.Format(_resourceLoader.GetString("AppVersion"), ReswPlusLib.Macros.ApplicationName, ReswPlusLib.Macros.AppVersionFull);
+            }
         }
         #endregion
 
@@ -207,14 +161,12 @@ namespace ReswPlusSample.Strings{
         /// <summary>
         ///   Looks up a localized string similar to: © {0} - {1}. All rights reserved.
         /// </summary>
-        public static string CopyrightNotice => _resourceLoader.GetString("CopyrightNotice");
-
-        /// <summary>
-        ///   Format the string similar to: © {0} - {1}. All rights reserved.
-        /// </summary>
-        public static string CopyrightNotice_Format()
+        public static string CopyrightNotice
         {
-            return string.Format(CopyrightNotice, ReswPlusLib.Macros.Year, ReswPlusLib.Macros.PublisherName);
+            get
+            {
+                return string.Format(_resourceLoader.GetString("CopyrightNotice"), ReswPlusLib.Macros.Year, ReswPlusLib.Macros.PublisherName);
+            }
         }
         #endregion
 
@@ -222,14 +174,9 @@ namespace ReswPlusSample.Strings{
         /// <summary>
         ///   Looks up a localized string similar to: Hey {1}, donate {2:C2} to {0}!
         /// </summary>
-        public static string DonateToAssociation => _resourceLoader.GetString("DonateToAssociation");
-
-        /// <summary>
-        ///   Format the string similar to: Hey {1}, donate {2:C2} to {0}!
-        /// </summary>
-        public static string DonateToAssociation_Format(string username, int amount)
+        public static string DonateToAssociation(string username, int amount)
         {
-            return string.Format(DonateToAssociation, "WWF", username, amount);
+            return string.Format(_resourceLoader.GetString("DonateToAssociation"), "WWF", username, amount);
         }
         #endregion
 
@@ -237,14 +184,12 @@ namespace ReswPlusSample.Strings{
         /// <summary>
         ///   Looks up a localized string similar to: Click here to download {0}!
         /// </summary>
-        public static string DownloadAndroidApp => _resourceLoader.GetString("DownloadAndroidApp");
-
-        /// <summary>
-        ///   Format the string similar to: Click here to download {0}!
-        /// </summary>
-        public static string DownloadAndroidApp_Format()
+        public static string DownloadAndroidApp
         {
-            return string.Format(DownloadAndroidApp, AndroidApplicationName);
+            get
+            {
+                return string.Format(_resourceLoader.GetString("DownloadAndroidApp"), AndroidApplicationName);
+            }
         }
         #endregion
 
@@ -252,14 +197,12 @@ namespace ReswPlusSample.Strings{
         /// <summary>
         ///   Looks up a localized string similar to: Download our apps in {0}
         /// </summary>
-        public static string DownloadOurApp => _resourceLoader.GetString("DownloadOurApp");
-
-        /// <summary>
-        ///   Format the string similar to: Download our apps in {0}
-        /// </summary>
-        public static string DownloadOurApp_Format()
+        public static string DownloadOurApp
         {
-            return string.Format(DownloadOurApp, "Microsoft Store");
+            get
+            {
+                return string.Format(_resourceLoader.GetString("DownloadOurApp"), "Microsoft Store");
+            }
         }
         #endregion
 
@@ -267,14 +210,9 @@ namespace ReswPlusSample.Strings{
         /// <summary>
         ///   Looks up a localized string similar to: The current temperature in {2} is {0}°F ({1}°C)
         /// </summary>
-        public static string ForecastAnnouncement => _resourceLoader.GetString("ForecastAnnouncement");
-
-        /// <summary>
-        ///   Format the string similar to: The current temperature in {2} is {0}°F ({1}°C)
-        /// </summary>
-        public static string ForecastAnnouncement_Format(int tempFahrenheit, int tempCelsius, string city)
+        public static string ForecastAnnouncement(int tempFahrenheit, int tempCelsius, string city)
         {
-            return string.Format(ForecastAnnouncement, tempFahrenheit, tempCelsius, city);
+            return string.Format(_resourceLoader.GetString("ForecastAnnouncement"), tempFahrenheit, tempCelsius, city);
         }
         #endregion
 
@@ -282,14 +220,9 @@ namespace ReswPlusSample.Strings{
         /// <summary>
         ///   Looks up a localized string similar to: Welcome {0}, you got {1} emails!
         /// </summary>
-        public static string GotMessages => _resourceLoader.GetString("GotMessages");
-
-        /// <summary>
-        ///   Format the string similar to: Welcome {0}, you got {1} emails!
-        /// </summary>
-        public static string GotMessages_Format(string paramString1, uint paramUint2)
+        public static string GotMessages(string paramString1, uint paramUint2)
         {
-            return string.Format(GotMessages, paramString1, paramUint2);
+            return string.Format(_resourceLoader.GetString("GotMessages"), paramString1, paramUint2);
         }
         #endregion
 
@@ -297,14 +230,12 @@ namespace ReswPlusSample.Strings{
         /// <summary>
         ///   Looks up a localized string similar to: To learn more about '{0}', visit our website.
         /// </summary>
-        public static string LearnMoreAboutAndroidApp => _resourceLoader.GetString("LearnMoreAboutAndroidApp");
-
-        /// <summary>
-        ///   Format the string similar to: To learn more about '{0}', visit our website.
-        /// </summary>
-        public static string LearnMoreAboutAndroidApp_Format()
+        public static string LearnMoreAboutAndroidApp
         {
-            return string.Format(LearnMoreAboutAndroidApp, AndroidApplicationName);
+            get
+            {
+                return string.Format(_resourceLoader.GetString("LearnMoreAboutAndroidApp"), AndroidApplicationName);
+            }
         }
         #endregion
 
@@ -312,21 +243,22 @@ namespace ReswPlusSample.Strings{
         /// <summary>
         ///   Looks up a localized string similar to: this is a tooltip text
         /// </summary>
-        public static string ThisIsATooltip => _resourceLoader.GetString("ThisIsATooltip");
+        public static string ThisIsATooltip
+        {
+            get
+            {
+                return _resourceLoader.GetString("ThisIsATooltip");
+            }
+        }
         #endregion
 
         #region WelcomeDownloadApp
         /// <summary>
         ///   Looks up a localized string similar to: Hi {0}! Do you want to download {1}?
         /// </summary>
-        public static string WelcomeDownloadApp => _resourceLoader.GetString("WelcomeDownloadApp");
-
-        /// <summary>
-        ///   Format the string similar to: Hi {0}! Do you want to download {1}?
-        /// </summary>
-        public static string WelcomeDownloadApp_Format(string username)
+        public static string WelcomeDownloadApp(string username)
         {
-            return string.Format(WelcomeDownloadApp, username, AndroidApplicationName);
+            return string.Format(_resourceLoader.GetString("WelcomeDownloadApp"), username, AndroidApplicationName);
         }
         #endregion
 
@@ -334,14 +266,9 @@ namespace ReswPlusSample.Strings{
         /// <summary>
         ///   Looks up a localized string similar to: Welcome {0}! Have a good {1}!
         /// </summary>
-        public static string WelcomeMessageDay => _resourceLoader.GetString("WelcomeMessageDay");
-
-        /// <summary>
-        ///   Format the string similar to: Welcome {0}! Have a good {1}!
-        /// </summary>
-        public static string WelcomeMessageDay_Format(string username)
+        public static string WelcomeMessageDay(string username)
         {
-            return string.Format(WelcomeMessageDay, username, ReswPlusLib.Macros.WeekDay);
+            return string.Format(_resourceLoader.GetString("WelcomeMessageDay"), username, ReswPlusLib.Macros.WeekDay);
         }
         #endregion
 
@@ -349,21 +276,22 @@ namespace ReswPlusSample.Strings{
         /// <summary>
         ///   Looks up a localized string similar to: Hello World!
         /// </summary>
-        public static string WelcomeTitle => _resourceLoader.GetString("WelcomeTitle");
+        public static string WelcomeTitle
+        {
+            get
+            {
+                return _resourceLoader.GetString("WelcomeTitle");
+            }
+        }
         #endregion
 
         #region YourAgeAndName
         /// <summary>
         ///   Looks up a localized string similar to: Your are {0}yo and named {1}!
         /// </summary>
-        public static string YourAgeAndName => _resourceLoader.GetString("YourAgeAndName");
-
-        /// <summary>
-        ///   Format the string similar to: Your are {0}yo and named {1}!
-        /// </summary>
-        public static string YourAgeAndName_Format(double paramDouble1, string paramString2)
+        public static string YourAgeAndName(double paramDouble1, string paramString2)
         {
-            return string.Format(YourAgeAndName, paramDouble1, paramString2);
+            return string.Format(_resourceLoader.GetString("YourAgeAndName"), paramDouble1, paramString2);
         }
         #endregion
     }
@@ -377,6 +305,13 @@ namespace ReswPlusSample.Strings{
         public enum KeyEnum
         {
             __Undefined = 0,
+            AnimalTreat,
+            DriverArrived,
+            FileShared,
+            Greeting,
+            MinutesLeft,
+            PluralizationTest,
+            ReceivedMessages,
             AndroidApplicationName,
             AppVersion,
             CopyrightNotice,

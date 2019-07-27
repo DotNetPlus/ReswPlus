@@ -13,20 +13,29 @@ namespace ReswPlus.CodeGenerators
         protected const string LocalNamespaceName = "local";
 
         protected abstract bool SupportMultiNamespaceDeclaration(Project project);
+
         protected abstract string GetParameterTypeString(ParameterType type, bool isHeader);
+
         protected abstract void HeaderFileGenerateHeaders(CodeStringBuilder builderHeader, string className, IEnumerable<string> namespacesOverride, bool supportPluralization);
+
         protected abstract void CppFileGenerateHeaders(CodeStringBuilder builderHeader, string precompiledHeader, string headerFilePath, string localNamespace, string className, IEnumerable<string> namespaces, bool supportPluralization);
+
         protected abstract void HeaderOpenStronglyTypedClass(CodeStringBuilder builderHeader, string resourceFilename, string className);
+
         protected abstract void CppGenerateStronglyTypedClassStaticFunc(CodeStringBuilder builderHeader, string computedNamespace, string resourceFilename);
+
         protected abstract void HeaderCloseStronglyTypedClass(CodeStringBuilder builderHeader);
 
-        protected abstract void HeaderCreateTemplateAccessor(CodeStringBuilder builderHeader, string key, string summary, bool supportPlural, bool supportVariants);
-        protected abstract void CppCreateTemplateAccessor(CodeStringBuilder builderHeader, string computedNamespaces, string key, bool supportPlural, bool pluralSupportNoneState, bool supportVariants);
         protected abstract void HeaderCreateAccessor(CodeStringBuilder builderHeader, string key, string summary);
+
         protected abstract void CppCreateAccessor(CodeStringBuilder builderHeader, string computedNamespace, string key);
-        protected abstract void HeaderCreateFormatMethod(CodeStringBuilder builderHeader, string key, IEnumerable<FunctionFormatTagParameter> parameters, string summary = null, IEnumerable<FunctionFormatTagParameter> extraParameters = null);
-        protected abstract void CppCreateFormatMethod(CodeStringBuilder builderHeader, string computedNamespace, string key, bool isDotNetFormatting, IEnumerable<FormatTagParameter> parameters, IEnumerable<FunctionFormatTagParameter> extraParameters = null, FunctionFormatTagParameter parameterForPluralization = null, FunctionFormatTagParameter parameterForVariant = null);
+
+        protected abstract void HeaderCreateFormatMethod(CodeStringBuilder builderHeader, string key, bool isProperty, IEnumerable<FunctionFormatTagParameter> parameters, string summary = null, IEnumerable<FunctionFormatTagParameter> extraParameters = null);
+
+        protected abstract void CppCreateFormatMethod(CodeStringBuilder builderHeader, string computedNamespace, string key, bool isProperty, bool isDotNetFormatting, IEnumerable<FormatTagParameter> parameters, IEnumerable<FunctionFormatTagParameter> extraParameters = null, FunctionFormatTagParameter parameterForPluralization = null, bool supportNoneState = false, FunctionFormatTagParameter parameterForVariant = null);
+
         protected abstract void HeaderCreateMarkupExtension(CodeStringBuilder builderHeader, string resourceFileName, string className, IEnumerable<string> keys, IEnumerable<string> namespaces);
+
         protected abstract void CppCreateMarkupExtension(CodeStringBuilder builderHeader, string computedNamespace, string resourceFileName, string className, IEnumerable<string> keys);
 
         public void HeaderOpenNamespace(CodeStringBuilder builderHeader, IEnumerable<string> namespaces, bool supportNestedMamespacesAtOnce)
@@ -131,32 +140,19 @@ namespace ReswPlus.CodeGenerators
                     builderHeader.AppendEmptyLine();
                     builderCpp.AppendEmptyLine();
                 }
-
                 HeaderOpenRegion(builderHeader, item.Key);
-                if (item is PluralLocalization pluralLocalization)
-                {
-                    HeaderCreateTemplateAccessor(builderHeader, item.Key, pluralLocalization.TemplateAccessorSummary, true, pluralLocalization is IVariantLocalization);
-                    CppCreateTemplateAccessor(builderCpp, namespaceResourceClass, pluralLocalization.Key, true, pluralLocalization.SupportNoneState, pluralLocalization is IVariantLocalization);
-                    if (pluralLocalization.Parameters != null && pluralLocalization.Parameters.Any())
-                    {
-                        HeaderCreateFormatMethod(builderHeader, pluralLocalization.Key, pluralLocalization.Parameters.OfType<FunctionFormatTagParameter>(), pluralLocalization.FormatSummary, pluralLocalization.ExtraParameters);
-                        builderCpp.AppendEmptyLine();
-                        CppCreateFormatMethod(builderCpp, namespaceResourceClass, pluralLocalization.Key, pluralLocalization.IsDotNetFormatting, pluralLocalization.Parameters, pluralLocalization.ExtraParameters, pluralLocalization.ParameterToUseForPluralization, (pluralLocalization as IVariantLocalization)?.ParameterToUseForVariant);
-                    }
-                }
-                else if (item is Localization localization)
-                {
-                    HeaderCreateAccessor(builderHeader, localization.Key, localization.AccessorSummary);
-                    CppCreateAccessor(builderCpp, namespaceResourceClass, localization.Key);
-                    if (localization.Parameters != null && localization.Parameters.Any())
-                    {
-                        HeaderCreateFormatMethod(builderHeader, localization.Key, localization.Parameters.OfType<FunctionFormatTagParameter>(), localization.FormatSummary);
-                        builderCpp.AppendEmptyLine();
-                        CppCreateFormatMethod(builderCpp, namespaceResourceClass, localization.Key, localization.IsDotNetFormatting, localization.Parameters);
-                    }
-                }
+
+                HeaderCreateFormatMethod(builderHeader, item.Key, item.IsProperty, item.Parameters.OfType<FunctionFormatTagParameter>(), item.Summary, item.ExtraParameters);
+                builderCpp.AppendEmptyLine();
+
+                CppCreateFormatMethod(builderCpp, namespaceResourceClass, item.Key, item.IsProperty, item.IsDotNetFormatting, item.Parameters, item.ExtraParameters,
+                    (item as PluralLocalization)?.ParameterToUseForPluralization,
+                    (item as PluralLocalization)?.SupportNoneState ?? false,
+                    (item as IVariantLocalization)?.ParameterToUseForVariant
+                    );
 
                 HeaderCloseRegion(builderHeader);
+
             }
             HeaderCloseStronglyTypedClass(builderHeader);
             builderHeader.AppendEmptyLine();

@@ -198,7 +198,7 @@
                         <TextBlock
                             Grid.Row="1"
                             Grid.Column="4"
-                            Text="#Format[Q(treatNumber), V(petType), s(petName)]" />
+                            Text="#Format[Plural Double treatNumber, Variant petType, String petName]" />
                         <TextBlock Grid.Row="2" Text="AnimalTreat_Variant1_Other" />
                         <TextBlock
                             Grid.Row="2"
@@ -219,7 +219,7 @@
 
                 <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML:" />
                 <StackPanel Style="{StaticResource SubPanelStyle}">
-                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&lt;RadioButton GroupName=&quot;PetTypeRadioButton&quot; Content=&quot;Dog&quot; IsChecked=&quot;True&quot; Checked=&quot;PetTypeDog_Checked&quot;/&gt;&#x0a;&lt;RadioButton GroupName=&quot;PetTypeRadioButton&quot; Content=&quot;Cat&quot; Checked=&quot;PetTypeCat_Checked&quot; /&gt;&#x0a;&lt;TextBox x:Name=&quot;PetNameTextBox&quot; Header=&quot;Pet name&quot; Text=&quot;Simba&quot; /&gt;&#x0a;&lt;Slider x:Name=&quot;PetNumberTreatsSlider&quot; Header=&quot;Number of treats&quot; Minimum=&quot;1&quot; Value=&quot;4&quot; Maximum=&quot;10&quot; /&gt;&#x0a;&lt;TextBlock FontWeight=&quot;Bold&quot; Text=&quot;{x:Bind strings:Resources.AnimalTreat_Format(PetNumberTreatsSlider.Value, PetType, PetNameTextBox.Text), Mode=OneWay}&quot;/&gt;" />
+                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&lt;RadioButton GroupName=&quot;PetTypeRadioButton&quot; Content=&quot;Dog&quot; IsChecked=&quot;True&quot; Checked=&quot;PetTypeDog_Checked&quot;/&gt;&#x0a;&lt;RadioButton GroupName=&quot;PetTypeRadioButton&quot; Content=&quot;Cat&quot; Checked=&quot;PetTypeCat_Checked&quot; /&gt;&#x0a;&lt;TextBox x:Name=&quot;PetNameTextBox&quot; Header=&quot;Pet name&quot; Text=&quot;Simba&quot; /&gt;&#x0a;&lt;Slider x:Name=&quot;PetNumberTreatsSlider&quot; Header=&quot;Number of treats&quot; Minimum=&quot;1&quot; Value=&quot;4&quot; Maximum=&quot;10&quot; /&gt;&#x0a;&lt;TextBlock FontWeight=&quot;Bold&quot; Text=&quot;{x:Bind strings:Resources.AnimalTreat(PetNumberTreatsSlider.Value, PetType, PetNameTextBox.Text), Mode=OneWay}&quot;/&gt;" />
                 </StackPanel>
                 <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Results:" />
 
@@ -248,7 +248,7 @@
                     <TextBlock
                         Margin="0,12,0,0"
                         FontWeight="Bold"
-                        Text="{x:Bind strings:Resources.AnimalTreat_Format(PetNumberTreatsSlider.Value, PetType, PetNameTextBox.Text), Mode=OneWay}"
+                        Text="{x:Bind strings:Resources.AnimalTreat(PetNumberTreatsSlider.Value, PetType, PetNameTextBox.Text), Mode=OneWay}"
                         TextWrapping="WrapWholeWords" />
                 </StackPanel>
             </StackPanel>
