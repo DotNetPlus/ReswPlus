@@ -4,26 +4,24 @@ namespace TestCppWinRT
     {
         static runtimeclass Resources
         {
-            static String YouGotEmails(Double number);
-            static String YouGotEmails_Format(UInt32 numberMessages, String username);
-            static String GotMessagesFrom(Int64 variantId, Double number);
-            static String GotMessagesFrom_Format(UInt32 numberMessages, Int64 personalPronoun);
-            static String YouGotEmailsDotNet(Double number);
-            static String YouGotEmailsDotNet_Format(UInt32 numberMessages, String username);
+            static String YouGotEmails(UInt32 numberMessages, String username);
+            static String GotMessagesFrom(UInt32 numberMessages, Int64 personalPronoun);
+            static String SendMessage(Int32 variantId);
+            static String YouGotEmailsDotNet(UInt32 numberMessages, String username);
             static String Hello{ get; };
-            static String TestWithObject{ get; };
-            static String TestWithObject_Format(Windows.Foundation.IStringable obj);
+            static String TestWithObject(Windows.Foundation.IStringable obj);
             static String TestFormatWithLiteralString{ get; };
-            static String TestFormatWithLiteralString_Format();
             static String TestFormatWithLocalizationRef{ get; };
-            static String TestFormatWithLocalizationRef_Format();
             static String TestFormatWithMacro{ get; };
-            static String TestFormatWithMacro_Format();
         };
 
         enum KeyEnum
         {
             __Undefined = 0,
+            YouGotEmails,
+            GotMessagesFrom,
+            SendMessage,
+            YouGotEmailsDotNet,
             Hello,
             TestWithObject,
             TestFormatWithLiteralString,

@@ -23,28 +23,38 @@ namespace ReswPlusLib
         private static readonly object _objLock = new object();
 
 #if WINRT || DOTNETCORE || NETSTANDARD
-        public static string GetPlural(this ResourceManager resource, string key, double number)
+        public static string GetPlural(this ResourceManager resource, string key, double number, bool supportNoneState = false)
         {
-            return GetPluralInternal<ResourceManager>((reskey) => resource.GetString(reskey), key, number);
+            return GetPluralInternal<ResourceManager>((reskey) => resource.GetString(reskey), key, number, supportNoneState);
         }
 #endif
 
 #if WINRT || WINDOWS_UWP
+        public static string GetPlural(this ResourceLoader resource, string key, double number, bool supportNoneState)
+        {
+            return GetPluralInternal<ResourceLoader>((reskey) => resource.GetString(reskey), key, number, supportNoneState);
+        }
+
         public static string GetPlural(this ResourceLoader resource, string key, double number)
         {
-            return GetPluralInternal<ResourceLoader>((reskey) => resource.GetString(reskey), key, number);
+            return GetPluralInternal<ResourceLoader>((reskey) => resource.GetString(reskey), key, number, false);
         }
 #endif
 
 #if DOTNETCORE
-        public static string GetPlural(this IStringLocalizer resource, string key, double number)
+        public static string GetPlural(this IStringLocalizer resource, string key, double number, bool supportNoneState = false)
         {
-            return GetPluralInternal<IStringLocalizer>((reskey) => resource.GetString(reskey), key, number);
+            return GetPluralInternal<IStringLocalizer>((reskey) => resource.GetString(reskey), key, number, supportNoneState);
         }
 #endif
 
-        private static string GetPluralInternal<T>(Func<string, string> getString, string key, double number)
+        private static string GetPluralInternal<T>(Func<string, string> getString, string key, double number, bool supportNoneState = false)
         {
+            if(supportNoneState && number == 0)
+            {
+                return getString(key + "_None");
+            }
+
             if (_pluralProvider == null)
             {
                 CreatePluralProvider();

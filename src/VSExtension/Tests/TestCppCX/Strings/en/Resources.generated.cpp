@@ -19,94 +19,72 @@ ResourceLoader^ local::Resources::GetResourceLoader()
     return _resourceLoader;
 }
 
-String^ local::Resources::GotMessagesFrom(long long variantId, double pluralNumber)
-{
-    return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), ref new String(L"GotMessagesFrom_Variant") + variantId, pluralNumber);
-}
 
-String^ local::Resources::GotMessagesFrom_Format(unsigned int numberMessages, long long personalPronoun)
+String^ local::Resources::GotMessagesFrom(unsigned int numberMessages, long long personalPronoun)
 {
-    size_t needed = _swprintf_p(nullptr, 0, GotMessagesFrom(personalPronoun, static_cast<double>(numberMessages))->Data(), numberMessages, personalPronoun);
+    size_t needed = _swprintf_p(nullptr, 0, ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), ref new String(L"GotMessagesFrom_Variant") + personalPronoun, static_cast<double>(numberMessages), false)->Data(), numberMessages, personalPronoun);
     wchar_t *buffer = new wchar_t[needed + 1];
-    _swprintf_p(buffer, needed + 1, GotMessagesFrom(personalPronoun, static_cast<double>(numberMessages))->Data(), numberMessages, personalPronoun);
+    _swprintf_p(buffer, needed + 1, ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), ref new String(L"GotMessagesFrom_Variant") + personalPronoun, static_cast<double>(numberMessages), false)->Data(), numberMessages, personalPronoun);
     return ref new String(buffer);
 }
 
 
-String^ local::Resources::YouGotEmailsDotNet(double pluralNumber)
+String^ local::Resources::SendMessage(int variantId)
 {
-    return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), L"YouGotEmailsDotNet", pluralNumber);
+    return GetResourceLoader()->GetString(ref new String(L"SendMessage_Variant") + variantId);
 }
 
-String^ local::Resources::YouGotEmailsDotNet_Format(unsigned int numberMessages, String^ username)
+
+String^ local::Resources::YouGotEmailsDotNet(unsigned int numberMessages, String^ username)
 {
-    return ReswPlusLib::StringFormatting::FormatDotNet(YouGotEmailsDotNet(static_cast<double>(numberMessages)), ref new Array<Object^>(2){numberMessages, username});
+    return ReswPlusLib::StringFormatting::FormatDotNet(ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), L"YouGotEmailsDotNet", static_cast<double>(numberMessages), false), ref new Array<Object^>(2){numberMessages, username});
 }
 
-String^ local::Resources::YouGotEmails(double pluralNumber)
-{
-    return ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), L"YouGotEmails", pluralNumber);
-}
 
-String^ local::Resources::YouGotEmails_Format(unsigned int numberMessages, String^ username)
+String^ local::Resources::YouGotEmails(unsigned int numberMessages, String^ username)
 {
-    size_t needed = _swprintf_p(nullptr, 0, YouGotEmails(static_cast<double>(numberMessages))->Data(), numberMessages, username->Data());
+    size_t needed = _swprintf_p(nullptr, 0, ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), L"YouGotEmails", static_cast<double>(numberMessages), false)->Data(), numberMessages, username->Data());
     wchar_t *buffer = new wchar_t[needed + 1];
-    _swprintf_p(buffer, needed + 1, YouGotEmails(static_cast<double>(numberMessages))->Data(), numberMessages, username->Data());
+    _swprintf_p(buffer, needed + 1, ReswPlusLib::ResourceLoaderExtension::GetPlural(GetResourceLoader(), L"YouGotEmails", static_cast<double>(numberMessages), false)->Data(), numberMessages, username->Data());
     return ref new String(buffer);
 }
+
 
 String^ local::Resources::Hello::get()
 {
     return GetResourceLoader()->GetString(L"Hello");
 }
 
+
 String^ local::Resources::TestFormatWithLiteralString::get()
 {
-    return GetResourceLoader()->GetString(L"TestFormatWithLiteralString");
-}
-
-String^ local::Resources::TestFormatWithLiteralString_Format()
-{
-    size_t needed = _swprintf_p(nullptr, 0, TestFormatWithLiteralString->Data(), L"Hello world");
+    size_t needed = _swprintf_p(nullptr, 0, GetResourceLoader()->GetString(L"TestFormatWithLiteralString")->Data(), L"Hello world");
     wchar_t *buffer = new wchar_t[needed + 1];
-    _swprintf_p(buffer, needed + 1, TestFormatWithLiteralString->Data(), L"Hello world");
+    _swprintf_p(buffer, needed + 1, GetResourceLoader()->GetString(L"TestFormatWithLiteralString")->Data(), L"Hello world");
     return ref new String(buffer);
 }
+
 
 String^ local::Resources::TestFormatWithLocalizationRef::get()
 {
-    return GetResourceLoader()->GetString(L"TestFormatWithLocalizationRef");
-}
-
-String^ local::Resources::TestFormatWithLocalizationRef_Format()
-{
-    size_t needed = _swprintf_p(nullptr, 0, TestFormatWithLocalizationRef->Data(), Hello->Data());
+    size_t needed = _swprintf_p(nullptr, 0, GetResourceLoader()->GetString(L"TestFormatWithLocalizationRef")->Data(), Hello->Data());
     wchar_t *buffer = new wchar_t[needed + 1];
-    _swprintf_p(buffer, needed + 1, TestFormatWithLocalizationRef->Data(), Hello->Data());
+    _swprintf_p(buffer, needed + 1, GetResourceLoader()->GetString(L"TestFormatWithLocalizationRef")->Data(), Hello->Data());
     return ref new String(buffer);
 }
 
+
 String^ local::Resources::TestFormatWithMacro::get()
 {
-    return GetResourceLoader()->GetString(L"TestFormatWithMacro");
+    return ReswPlusLib::StringFormatting::FormatDotNet(GetResourceLoader()->GetString(L"TestFormatWithMacro"), ref new Array<Object^>(3){ReswPlusLib::Macros::AppVersionFull, ReswPlusLib::Macros::LocaleName, ReswPlusLib::Macros::ShortDate});
 }
 
-String^ local::Resources::TestFormatWithMacro_Format()
-{
-    return ReswPlusLib::StringFormatting::FormatDotNet(TestFormatWithMacro, ref new Array<Object^>(3){ReswPlusLib::Macros::AppVersionFull, ReswPlusLib::Macros::LocaleName, ReswPlusLib::Macros::ShortDate});
-}
 
-String^ local::Resources::TestWithObject::get()
+String^ local::Resources::TestWithObject(Object^ obj)
 {
-    return GetResourceLoader()->GetString(L"TestWithObject");
-}
-
-String^ local::Resources::TestWithObject_Format(Object^ obj)
-{
-    size_t needed = _swprintf_p(nullptr, 0, TestWithObject->Data(), obj->ToString()->Data());
+    size_t needed = _swprintf_p(nullptr, 0, GetResourceLoader()->GetString(L"TestWithObject")->Data(), obj->ToString()->Data());
     wchar_t *buffer = new wchar_t[needed + 1];
-    _swprintf_p(buffer, needed + 1, TestWithObject->Data(), obj->ToString()->Data());
+    _swprintf_p(buffer, needed + 1, GetResourceLoader()->GetString(L"TestWithObject")->Data(), obj->ToString()->Data());
     return ref new String(buffer);
 }
 

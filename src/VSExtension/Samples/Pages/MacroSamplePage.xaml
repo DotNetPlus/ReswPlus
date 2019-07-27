@@ -386,16 +386,16 @@
              
                 <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML:" />
                 <StackPanel Style="{StaticResource SubPanelStyle}">
-                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&lt;TextBlock Text=&quot;{x:Bind strings:Resources.CopyrightNotice_Format()}&quot; /&gt;&#x0a;&lt;TextBlock Text=&quot;{x:Bind strings:Resources.AppVersion_Format()}&quot; /&gt;&#x0a;&lt;TextBox x:Name=&quot;UsernameTextBox&quot; Header=&quot;Enter username:&quot; Text=&quot;Rudy&quot; Margin=&quot;0,12,0,0&quot; /&gt;&#x0a;&lt;TextBlock Text=&quot;{x:Bind strings:Resources.WelcomeMessageDay_Format(UsernameTextBox.Text), Mode=OneWay}&quot; /&gt;" />
+                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&lt;TextBlock Text=&quot;{x:Bind strings:Resources.CopyrightNotice}&quot; /&gt;&#x0a;&lt;TextBlock Text=&quot;{x:Bind strings:Resources.AppVersion}&quot; /&gt;&#x0a;&lt;TextBox x:Name=&quot;UsernameTextBox&quot; Header=&quot;Enter username:&quot; Text=&quot;Rudy&quot; Margin=&quot;0,12,0,0&quot; /&gt;&#x0a;&lt;TextBlock Text=&quot;{x:Bind strings:Resources.WelcomeMessageDay(UsernameTextBox.Text), Mode=OneWay}&quot; /&gt;" />
                 </StackPanel>
                 <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Results:" />
 
                 <StackPanel Style="{StaticResource SubPanelStyle}">
-                    <TextBlock Text="{x:Bind strings:Resources.CopyrightNotice_Format()}" />
-                    <TextBlock Text="{x:Bind strings:Resources.AppVersion_Format()}" />
+                    <TextBlock Text="{x:Bind strings:Resources.CopyrightNotice}" />
+                    <TextBlock Text="{x:Bind strings:Resources.AppVersion}" />
 
                     <TextBox x:Name="UsernameTextBox" Header="Enter username:" Text="Rudy" Margin="0,12,0,0" />
-                    <TextBlock Text="{x:Bind strings:Resources.WelcomeMessageDay_Format(UsernameTextBox.Text), Mode=OneWay}" />
+                    <TextBlock Text="{x:Bind strings:Resources.WelcomeMessageDay(UsernameTextBox.Text), Mode=OneWay}" />
                 </StackPanel>
             </StackPanel>
 

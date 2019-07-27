@@ -14,7 +14,7 @@
                 FontWeight="Bold"
                 Text="{x:Bind strings:Resources.Hello}" />
             <TextBlock FontWeight="Bold" Text="{strings:Resources Key=Hello}" />
-            <TextBlock FontWeight="Bold" Text="{x:Bind strings:Resources.TestWithObject_Format(Str)}" />
+            <TextBlock FontWeight="Bold" Text="{x:Bind strings:Resources.TestWithObject(Str)}" />
             <TextBox
                 x:Name="UserNameText"
                 Margin="0,6"
@@ -26,8 +26,8 @@
                 Header="Number of emails:"
                 Maximum="10"
                 Value="2" />
-            <TextBlock Text="{x:Bind strings:Resources.YouGotEmails_Format(EmailsSlider.Value, UserNameText.Text), Mode=OneWay}" />
-            <TextBlock Text="{x:Bind strings:Resources.YouGotEmailsDotNet_Format(EmailsSlider.Value, UserNameText.Text), Mode=OneWay}" />
+            <TextBlock Text="{x:Bind strings:Resources.YouGotEmails(EmailsSlider.Value, UserNameText.Text), Mode=OneWay}" />
+            <TextBlock Text="{x:Bind strings:Resources.YouGotEmailsDotNet(EmailsSlider.Value, UserNameText.Text), Mode=OneWay}" />
             <ComboBox
                 x:Name="PronounsComboBox"
                 Margin="0,36,0,0"
@@ -38,10 +38,10 @@
                 <ComboBoxItem>He/Him/His</ComboBoxItem>
                 <ComboBoxItem>They/Theirs/Their</ComboBoxItem>
             </ComboBox>
-            <TextBlock Text="{x:Bind strings:Resources.GotMessagesFrom_Format(EmailsSlider.Value, PronounsComboBox.SelectedIndex), Mode=OneWay}" FontWeight="Bold" />
-            <TextBlock Text="{x:Bind strings:Resources.TestFormatWithLiteralString_Format()}" />
-            <TextBlock Text="{x:Bind strings:Resources.TestFormatWithLocalizationRef_Format()}" />
-            <TextBlock Text="{x:Bind strings:Resources.TestFormatWithMacro_Format()}" />
+            <TextBlock Text="{x:Bind strings:Resources.GotMessagesFrom(EmailsSlider.Value, PronounsComboBox.SelectedIndex), Mode=OneWay}" FontWeight="Bold" />
+            <TextBlock Text="{x:Bind strings:Resources.TestFormatWithLiteralString}" />
+            <TextBlock Text="{x:Bind strings:Resources.TestFormatWithLocalizationRef}" />
+            <TextBlock Text="{x:Bind strings:Resources.TestFormatWithMacro}" />
 
         </StackPanel>
     </Grid>

@@ -67,13 +67,13 @@
 
                 <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML:" />
                 <StackPanel Style="{StaticResource SubPanelStyle}">
-                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&lt;Button Content=&quot;{x:Bind strings:Resources.DownloadAndroidApp_Format()}&quot; /&gt;&#x0a;&lt;TextBlock Text=&quot;{x:Bind strings:Resources.LearnMoreAboutAndroidApp_Format()}&quot; /&gt;" />
+                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&lt;Button Content=&quot;{x:Bind strings:Resources.DownloadAndroidApp}&quot; /&gt;&#x0a;&lt;TextBlock Text=&quot;{x:Bind strings:Resources.LearnMoreAboutAndroidApp}&quot; /&gt;" />
                 </StackPanel>
                 <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Results:" />
 
                 <StackPanel Style="{StaticResource SubPanelStyle}">
-                    <Button Content="{x:Bind strings:Resources.DownloadAndroidApp_Format()}" />
-                    <TextBlock Text="{x:Bind strings:Resources.LearnMoreAboutAndroidApp_Format()}" />
+                    <Button Content="{x:Bind strings:Resources.DownloadAndroidApp}" />
+                    <TextBlock Text="{x:Bind strings:Resources.LearnMoreAboutAndroidApp}" />
                 </StackPanel>
             </StackPanel>
 
@@ -122,13 +122,13 @@
                 </StackPanel>
                 <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML:" />
                 <StackPanel Style="{StaticResource SubPanelStyle}">
-                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&lt;TextBox x:Name=&quot;UsernameTextbox&quot; Header=&quot;Username&quot; Text=&quot;Roger&quot; /&gt;&#x0a;&lt;TextBlock Text=&quot;{x:Bind strings:Resources.WelcomeDownloadApp_Format(UsernameTextbox.Text), Mode=OneWay}&quot; /&gt;" />
+                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&lt;TextBox x:Name=&quot;UsernameTextbox&quot; Header=&quot;Username&quot; Text=&quot;Roger&quot; /&gt;&#x0a;&lt;TextBlock Text=&quot;{x:Bind strings:Resources.WelcomeDownloadApp(UsernameTextbox.Text), Mode=OneWay}&quot; /&gt;" />
                 </StackPanel>
                 <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Results:" />
 
                 <StackPanel Style="{StaticResource SubPanelStyle}">
                     <TextBox x:Name="UsernameTextbox" Header="Username" Text="Roger" />
-                    <TextBlock Text="{x:Bind strings:Resources.WelcomeDownloadApp_Format(UsernameTextbox.Text), Mode=OneWay}" />
+                    <TextBlock Text="{x:Bind strings:Resources.WelcomeDownloadApp(UsernameTextbox.Text), Mode=OneWay}" />
                 </StackPanel>
             </StackPanel>
         </StackPanel>

@@ -116,7 +116,7 @@ namespace ReswPlus.CodeGenerator
                             localization = new PluralVariantLocalization()
                             {
                                 Key = item.Key,
-                                TemplateAccessorSummary = summary,
+                                Summary = summary,
                                 SupportNoneState = hasNoneForm,
                             };
                         }
@@ -125,7 +125,7 @@ namespace ReswPlus.CodeGenerator
                             localization = new PluralLocalization()
                             {
                                 Key = item.Key,
-                                TemplateAccessorSummary = summary,
+                                Summary = summary,
                                 SupportNoneState = hasNoneForm,
                             };
                         }
@@ -135,29 +135,24 @@ namespace ReswPlus.CodeGenerator
                         }
                         var commentToUse =
                             item.Items.FirstOrDefault(i => i.Comment != null && _regexStringFormat.IsMatch(i.Comment));
-                        if (commentToUse != null)
-                        {
-                            ManageFormattedFunction(localization, item.Items.FirstOrDefault().Value, commentToUse.Comment, basicItems, resourceFileName);
-                        }
+
+                        ManageFormattedFunction(localization, commentToUse?.Comment, basicItems, resourceFileName);
 
                         result.Localizations.Add(localization);
                     }
                     else if (item.SupportVariants)
                     {
-                        var singleLineValue = _regexRemoveSpace.Replace(item.Items.FirstOrDefault().Key, " ").Trim();
+                        var singleLineValue = _regexRemoveSpace.Replace(item.Items.FirstOrDefault().Value, " ").Trim();
                         var summary = $"Get the variant version of the string similar to: {singleLineValue}";
                         var commentToUse = item.Items.FirstOrDefault(i => i.Comment != null && _regexStringFormat.IsMatch(i.Comment));
 
                         var localization = new VariantLocalization()
                         {
                             Key = item.Key,
-                            TemplateAccessorSummary = summary,
+                            Summary = summary,
                         };
 
-                        if (!string.IsNullOrEmpty(commentToUse?.Comment))
-                        {
-                            ManageFormattedFunction(localization, commentToUse.Value, commentToUse.Comment, basicItems, resourceFileName);
-                        }
+                        ManageFormattedFunction(localization, commentToUse?.Comment, basicItems, resourceFileName);
 
                         result.Localizations.Add(localization);
                     }
@@ -173,16 +168,16 @@ namespace ReswPlus.CodeGenerator
                     var singleLineValue = _regexRemoveSpace.Replace(item.Value, " ").Trim();
                     var summary = $"Looks up a localized string similar to: {singleLineValue}";
 
-                    var localization = new Localization()
+                    var localization = new RegularLocalization()
                     {
                         Key = item.Key,
-                        AccessorSummary = summary,
+                        Summary = summary,
                         IsDotNetFormatting = IsDotNetFormatting(item.Value)
                     };
 
                     if (isAdvanced)
                     {
-                        ManageFormattedFunction(localization, item.Value, item.Comment, stringItems, resourceFileName);
+                        ManageFormattedFunction(localization, item.Comment, stringItems, resourceFileName);
                     }
                     result.Localizations.Add(localization);
                 }
@@ -242,34 +237,29 @@ namespace ReswPlus.CodeGenerator
             return (null, false);
         }
 
-        private bool ManageFormattedFunction(LocalizationBase localization, string exampleValue, string comment, IEnumerable<ReswItem> basicLocalizedItems, string resourceName)
+        private bool ManageFormattedFunction(Localization localization, string comment, IEnumerable<ReswItem> basicLocalizedItems, string resourceName)
         {
+            FunctionFormatTagParametersInfo tagTypedInfo = null;
             var (format, isDotNetFormatting) = ParseTag(comment);
-            if (format == null)
+            if (format != null)
             {
-                return false;
+                localization.IsDotNetFormatting = isDotNetFormatting;
+                var types = format.Split(',').Select(s => s.Trim());
+                tagTypedInfo = FormatTag.ParseParameters(localization.Key, types, basicLocalizedItems, resourceName);
+                if (tagTypedInfo != null)
+                {
+                    localization.Parameters = tagTypedInfo.Parameters;
+                }
             }
-            localization.IsDotNetFormatting = isDotNetFormatting;
-            var singleLineValue = _regexRemoveSpace.Replace(exampleValue, " ").Trim();
-            var types = format.Split(',').Select(s => s.Trim());
-            var tagTypedInfo = FormatTag.ParseParameters(localization.Key, types, basicLocalizedItems, resourceName);
-            if (tagTypedInfo == null)
-            {
-                return false;
-            }
-
-            var summary = $"Format the string similar to: {singleLineValue}";
-            localization.FormatSummary = summary;
-            localization.Parameters = tagTypedInfo.Parameters;
 
             if (localization is IVariantLocalization variantLocalization)
             {
                 FunctionFormatTagParameter variantParameter = null;
                 // Add an extra parameter for variant if necessary
-                if (tagTypedInfo.VariantParameter == null)
+                if (tagTypedInfo?.VariantParameter == null)
                 {
                     variantParameter = new FunctionFormatTagParameter
-                    { Type = ParameterType.Int, Name = "variantId" };
+                    { Type = ParameterType.Long, Name = "variantId", IsVariantId = true };
                     localization.ExtraParameters.Add(variantParameter);
                 }
                 else
@@ -285,7 +275,7 @@ namespace ReswPlus.CodeGenerator
             {
                 FunctionFormatTagParameter pluralizationQuantifier = null;
                 // Add an extra parameter for pluralization if necessary
-                if (tagTypedInfo.PluralizationParameter == null)
+                if (tagTypedInfo?.PluralizationParameter == null)
                 {
                     pluralizationQuantifier = new FunctionFormatTagParameter
                     { Type = ParameterType.Double, Name = "pluralizationReferenceNumber" };
