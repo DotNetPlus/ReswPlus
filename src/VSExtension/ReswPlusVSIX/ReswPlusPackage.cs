@@ -26,12 +26,14 @@ namespace ReswPlus
 
     public sealed class ReswPlusPackage : AsyncPackage
     {
+        public const string ReswPlusExtensionVersion = "0.5.0";
+        public static Version ReswPlusLibMinVersion = new Version(0, 0, 7);
+
         /// <summary>
         /// ReswPlusPackage GUID string.
         /// </summary>
         public const string PackageGuidString = "8c9d543c-0e65-4319-8395-f7b38088a080";
         public const string _uiContextSupportedFiles = "34551deb-f034-43e9-a279-0e541241687e"; // Must match guid in VsCommandTable.vsct
-        public const string ReswPlusExtensionVersion = "0.5.0";
         private static ErrorListProvider _errorListProvider;
         private static ReswPlusPackage _instance;
         public ReswPlusPackage()
