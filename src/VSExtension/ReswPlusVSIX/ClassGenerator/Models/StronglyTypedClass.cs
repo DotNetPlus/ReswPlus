@@ -8,7 +8,7 @@ namespace ReswPlus.ClassGenerator.Models
 {
     class StronglyTypedClass
     {
-        public bool SupportPluralization{ get; set; }
+        public bool IsAdvanced{ get; set; }
         public string[] Namespaces { get; set; }
         public string ResoureFile { get; set; }
         public string ClassName { get; set; }

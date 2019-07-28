@@ -6,6 +6,7 @@ using EnvDTE;
 using ReswPlus.ClassGenerator.Models;
 using ReswPlus.CodeGenerators;
 using ReswPlus.Resw;
+using ReswPlus.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -66,7 +67,6 @@ namespace ReswPlus.CodeGenerator
             return null;
         }
 
-
         private StronglyTypedClass Parse(string resourcePath, string content, string defaultNamespace, bool isAdvanced)
         {
             var namespaceToUse = ExtractNamespace(defaultNamespace);
@@ -84,7 +84,7 @@ namespace ReswPlus.CodeGenerator
 
             var result = new StronglyTypedClass()
             {
-                SupportPluralization = isAdvanced,
+                IsAdvanced = isAdvanced,
                 ClassName = className,
                 Namespaces = namespaceToUse,
                 ResoureFile = resouceNameForResourceLoader
@@ -172,7 +172,6 @@ namespace ReswPlus.CodeGenerator
                     {
                         Key = item.Key,
                         Summary = summary,
-                        IsDotNetFormatting = IsDotNetFormatting(item.Value)
                     };
 
                     if (isAdvanced)
@@ -191,16 +190,27 @@ namespace ReswPlus.CodeGenerator
             return _regexDotNetFormatting.IsMatch(source);
         }
 
-        public IEnumerable<GeneratedFile> GenerateCode(string resourcePath, string baseFilename, string content, string defaultNamespace, bool supportPluralizationAndVariants, ProjectItem projectItem)
+        public IEnumerable<GeneratedFile> GenerateCode(string resourcePath, string baseFilename, string content, string defaultNamespace, bool isAdvanced, ProjectItem projectItem)
         {
             ReswPlusPackage.ClearErrors();
-            var stronglyTypedClass = Parse(resourcePath, content, defaultNamespace, supportPluralizationAndVariants);
-            if (stronglyTypedClass == null)
+            var stronglyTypedClassInfo = Parse(resourcePath, content, defaultNamespace, isAdvanced);
+            if (stronglyTypedClassInfo == null)
             {
                 return null;
             }
 
-            return _codeGenerator.GetGeneratedFiles(baseFilename, stronglyTypedClass, projectItem);
+            var filesGenerated = _codeGenerator.GetGeneratedFiles(baseFilename, stronglyTypedClassInfo, projectItem);
+
+            if (filesGenerated != null && filesGenerated.Any())
+            {
+                var mustInstallRewsPlusLib = stronglyTypedClassInfo.Localizations.Any(l => l.IsDotNetFormatting || l is PluralLocalization || l.Parameters.Any(p => p is MacroFormatTagParameter));
+                if (mustInstallRewsPlusLib)
+                {
+                    Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+                    projectItem.ContainingProject.InstallNuGetPackage("ReswPlusLib", true);
+                }
+            }
+            return filesGenerated;
         }
 
         private string[] ExtractNamespace(string defaultNamespace)

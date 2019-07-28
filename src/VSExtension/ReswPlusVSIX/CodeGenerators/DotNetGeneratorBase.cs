@@ -27,7 +27,7 @@ namespace ReswPlus.CodeGenerators
 
         public IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename, StronglyTypedClass info, ProjectItem projectItem)
         {
-            GenerateHeaders(info.SupportPluralization);
+            GenerateHeaders(info.IsAdvanced);
             AddNewLine();
             OpenNamespace(info.Namespaces);
             OpenStronglyTypedClass(info.ResoureFile, info.ClassName);

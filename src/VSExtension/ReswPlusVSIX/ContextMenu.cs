@@ -182,12 +182,6 @@ namespace ReswPlus
                         catch { }
                     }
 
-                    //Install nuget package
-                    if (isAdvanced)
-                    {
-                        projectItem.ContainingProject.InstallNuGetPackage("ReswPlusLib", true);
-                    }
-
                     return VSConstants.S_OK;
                 }
                 else

@@ -62,11 +62,6 @@ namespace ReswPlus.SingleFileGenerators
 
                 // IVsSingleFileGenerator supports only 1 file.
                 output = Encoding.UTF8.GetBytes(files.First().Content);
-                //Install nuget package
-                if (_isAdvanced)
-                {
-                    projectItem.ContainingProject.InstallNuGetPackage("ReswPlusLib", true);
-                }
             }
             catch (Exception)
             {

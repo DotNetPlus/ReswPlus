@@ -117,13 +117,13 @@ namespace ReswPlus.CodeGenerators
             var namespaceResourceClass = $"{localNamespace}{info.ClassName}::";
             var namespaceMarkupExtensionClass = $"{localNamespace}{markupClassName}::";
 
-            HeaderFileGenerateHeaders(builderHeader, info.ClassName, info.Namespaces, info.SupportPluralization);
+            HeaderFileGenerateHeaders(builderHeader, info.ClassName, info.Namespaces, info.IsAdvanced);
             builderHeader.AppendEmptyLine();
             HeaderOpenNamespace(builderHeader, namespacesToUse, supportMultiNamespaceDeclaration);
             HeaderOpenStronglyTypedClass(builderHeader, info.ResoureFile, info.ClassName);
             builderHeader.AppendEmptyLine();
 
-            CppFileGenerateHeaders(builderCpp, precompiledHeader, headerFileName, baseNamespace, info.ClassName, info.Namespaces, info.SupportPluralization);
+            CppFileGenerateHeaders(builderCpp, precompiledHeader, headerFileName, baseNamespace, info.ClassName, info.Namespaces, info.IsAdvanced);
             builderCpp.AppendEmptyLine();
             CppGenerateStronglyTypedClassStaticFunc(builderCpp, namespaceResourceClass, info.ResoureFile);
             builderCpp.AppendEmptyLine();
