@@ -88,7 +88,7 @@ namespace ReswPlus.CodeGenerators
         internal override void OpenStronglyTypedClass(string resourceFilename, string className)
         {
 
-            _builder.AppendLine("<System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"0.1.0.0\")>");
+            _builder.AppendLine($"<System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"{ReswPlusPackage.ReswPlusExtensionVersion}\")>");
             _builder.AppendLine("<System.Diagnostics.DebuggerNonUserCodeAttribute()>");
             _builder.AppendLine("<System.Runtime.CompilerServices.CompilerGeneratedAttribute()>");
             _builder.AppendLine($"Public Class {className}");
@@ -229,7 +229,7 @@ namespace ReswPlus.CodeGenerators
 
         internal override void CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys)
         {
-            _builder.AppendLine("<System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"0.1.0.0\")>");
+            _builder.AppendLine($"<System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"{ReswPlusPackage.ReswPlusExtensionVersion}\")>");
             _builder.AppendLine("<System.Diagnostics.DebuggerNonUserCodeAttribute()>");
             _builder.AppendLine("<System.Runtime.CompilerServices.CompilerGeneratedAttribute()>");
             _builder.AppendLine("<MarkupExtensionReturnType(ReturnType:=GetType(String))>");
