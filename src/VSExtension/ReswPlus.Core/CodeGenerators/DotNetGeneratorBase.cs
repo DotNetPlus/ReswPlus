@@ -1,6 +1,5 @@
-using EnvDTE;
 using ReswPlus.Core.ClassGenerator.Models;
-using ReswPlus.Core.Resw;
+using ReswPlus.Core.ResourceParser;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,37 +7,39 @@ namespace ReswPlus.Core.CodeGenerators
 {
     public abstract class DotNetGeneratorBase : ICodeGenerator
     {
-        public abstract void AddNewLine();
-        public abstract void GenerateHeaders(bool supportPluralization);
+        protected abstract void AddNewLine(CodeStringBuilder builder);
+        protected abstract void GenerateHeaders(CodeStringBuilder builder, bool supportPluralization);
 
-        public abstract void OpenNamespace(IEnumerable<string> namespaceName);
-        public abstract void CloseNamespace(IEnumerable<string> namespaceName);
+        protected abstract void OpenNamespace(CodeStringBuilder builder, IEnumerable<string> namespaceName);
+        protected abstract void CloseNamespace(CodeStringBuilder builder, IEnumerable<string> namespaceName);
 
-        public abstract void OpenStronglyTypedClass(string resourceFileName, string className);
-        public abstract void CloseStronglyTypedClass();
-        public abstract void OpenRegion(string name);
-        public abstract void CloseRegion(string name);
+        protected abstract void OpenStronglyTypedClass(CodeStringBuilder builder, string resourceFileName, string className);
+        protected abstract void CloseStronglyTypedClass(CodeStringBuilder builder);
+        protected abstract void OpenRegion(CodeStringBuilder builder, string name);
+        protected abstract void CloseRegion(CodeStringBuilder builder, string name);
 
-        public abstract void CreateFormatMethod(string key, bool isProperty, IEnumerable<FormatTagParameter> parameters, string summary = null,
+        protected abstract void CreateFormatMethod(CodeStringBuilder builder, string key, bool isProperty, IEnumerable<FormatTagParameter> parameters, string summary = null,
             IEnumerable<FunctionFormatTagParameter> extraParameters = null, FunctionFormatTagParameter parameterForPluralization = null, bool supportNoneState = false, FunctionFormatTagParameter parameterForVariant = null);
 
-        public abstract void CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys);
-        public abstract IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename);
+        protected abstract void CreateMarkupExtension(CodeStringBuilder builder, string resourceFileName, string className, IEnumerable<string> keys);
+        protected abstract IEnumerable<GeneratedFile> GetGeneratedFiles(CodeStringBuilder builder, string baseFilename);
 
-        public IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename, StronglyTypedClass info, ProjectItem projectItem)
+        public IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename, StronglyTypedClass info, ResourceInfo.IResourceFileInfo resourceFileInfo)
         {
-            GenerateHeaders(info.IsAdvanced);
-            AddNewLine();
-            OpenNamespace(info.Namespaces);
-            OpenStronglyTypedClass(info.ResoureFile, info.ClassName);
+            var builder = new CodeStringBuilder(resourceFileInfo.ContainingProject.GetIndentString());
+            GenerateHeaders(builder, info.IsAdvanced);
+            AddNewLine(builder);
+            OpenNamespace(builder, info.Namespaces);
+            OpenStronglyTypedClass(builder, info.ResoureFile, info.ClassName);
 
             foreach (var item in info.Localizations)
             {
-                AddNewLine();
+                AddNewLine(builder);
 
-                OpenRegion(item.Key);
+                OpenRegion(builder, item.Key);
 
                 CreateFormatMethod(
+                    builder,
                     item.Key,
                     item.IsProperty,
                     item.Parameters,
@@ -48,15 +49,14 @@ namespace ReswPlus.Core.CodeGenerators
                     (item as PluralLocalization)?.SupportNoneState ?? false,
                     (item as IVariantLocalization)?.ParameterToUseForVariant);
 
-                CloseRegion(item.Key);
+                CloseRegion(builder, item.Key);
             }
 
-            CloseStronglyTypedClass();
-            AddNewLine();
-            CreateMarkupExtension(info.ResoureFile, info.ClassName + "Extension", info.Localizations.Where(i => i is Localization).Select(s => s.Key));
-            CloseNamespace(info.Namespaces);
-            return GetGeneratedFiles(baseFilename);
+            CloseStronglyTypedClass(builder);
+            AddNewLine(builder);
+            CreateMarkupExtension(builder, info.ResoureFile, info.ClassName + "Extension", info.Localizations.Where(i => i is Localization).Select(s => s.Key));
+            CloseNamespace(builder, info.Namespaces);
+            return GetGeneratedFiles(builder, baseFilename);
         }
-
     }
 }

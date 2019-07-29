@@ -29,7 +29,7 @@ String^ local::Resources::GotMessagesFrom(unsigned int numberMessages, long long
 }
 
 
-String^ local::Resources::SendMessage(int variantId)
+String^ local::Resources::SendMessage(long long variantId)
 {
     return GetResourceLoader()->GetString(ref new String(L"SendMessage_Variant") + variantId);
 }

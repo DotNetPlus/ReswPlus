@@ -1,4 +1,4 @@
-using ReswPlus.Core.Resw;
+using ReswPlus.Core.ResourceParser;
 using System.Collections.Generic;
 using System.Linq;
 

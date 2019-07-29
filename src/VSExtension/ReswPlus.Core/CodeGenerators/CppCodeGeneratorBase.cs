@@ -1,7 +1,6 @@
-using EnvDTE;
 using ReswPlus.Core.ClassGenerator.Models;
-using ReswPlus.Core.Resw;
-using ReswPlus.Core.Utils;
+using ReswPlus.Core.ResourceInfo;
+using ReswPlus.Core.ResourceParser;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +11,7 @@ namespace ReswPlus.Core.CodeGenerators
     {
         protected const string LocalNamespaceName = "local";
 
-        protected abstract bool SupportMultiNamespaceDeclaration(Project project);
+        protected abstract bool SupportMultiNamespaceDeclaration();
 
         protected abstract string GetParameterTypeString(ParameterType type, bool isHeader);
 
@@ -90,9 +89,9 @@ namespace ReswPlus.Core.CodeGenerators
         {
         }
 
-        public virtual IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename, StronglyTypedClass info, ProjectItem projectItem)
+        public virtual IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename, StronglyTypedClass info, IResourceFileInfo resourceFileInfo)
         {
-            return GeneratedFiles(baseFilename, info, projectItem, null);
+            return GeneratedFiles(baseFilename, info, resourceFileInfo, null);
         }
 
         protected virtual void HeaderAddExtra(CodeStringBuilder builderHeader, StronglyTypedClass info)
@@ -100,19 +99,20 @@ namespace ReswPlus.Core.CodeGenerators
 
         }
 
-        public virtual IEnumerable<GeneratedFile> GeneratedFiles(string baseFilename, StronglyTypedClass info, ProjectItem projectItem, IEnumerable<string> namespaceOverride)
+        public virtual IEnumerable<GeneratedFile> GeneratedFiles(string baseFilename, StronglyTypedClass info, IResourceFileInfo resourceInfo, IEnumerable<string> namespaceOverride)
         {
-            var supportMultiNamespaceDeclaration = SupportMultiNamespaceDeclaration(projectItem.ContainingProject);
+            var supportMultiNamespaceDeclaration = SupportMultiNamespaceDeclaration();
             var namespacesToUse = namespaceOverride ?? info.Namespaces;
             var markupClassName = info.ClassName + "Extension";
             var headerFileName = baseFilename + ".h";
             var cppFileName = baseFilename + ".cpp";
             var baseNamespace = namespacesToUse == null || !namespacesToUse.Any() ? "" : namespacesToUse.Aggregate((a, b) => a + "::" + b);
 
-            var builderHeader = new CodeStringBuilder("Cpp");
-            var builderCpp = new CodeStringBuilder("Cpp");
+            var indentStr = resourceInfo.ContainingProject.GetIndentString();
+            var builderHeader = new CodeStringBuilder(indentStr);
+            var builderCpp = new CodeStringBuilder(indentStr);
 
-            var precompiledHeader = projectItem.GetPrecompiledHeader();
+            var precompiledHeader = resourceInfo.ContainingProject.GetPrecompiledHeader();
             var localNamespace = baseNamespace == "" ? "" : $"{LocalNamespaceName}::";
             var namespaceResourceClass = $"{localNamespace}{info.ClassName}::";
             var namespaceMarkupExtensionClass = $"{localNamespace}{markupClassName}::";

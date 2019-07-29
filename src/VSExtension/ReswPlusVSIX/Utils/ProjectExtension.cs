@@ -1,16 +1,16 @@
 using EnvDTE;
+using System;
+using Language = ReswPlus.Core.ResourceInfo.Language;
 
-namespace ReswPlus.Core.Utils
+namespace ReswPlus.Utils
 {
-    public enum Language { Unknown, CSHARP, VB, CPPCX, CPPWINRT }
-    public static class ProjectItemExtension
+    public static class ProjectExtension
     {
         private const string LANGUAGE_VISUAL_C = "{B5E9BD32-6D3E-4B5D-925E-8A43B79820B4}";
         private const string LANGUAGE_CSHARP = "{B5E9BD34-6D3E-4B5D-925E-8A43B79820B4}";
         private const string LANGUAGE_VBNET = "{B5E9BD33-6D3E-4B5D-925E-8A43B79820B4}";
 
-
-        private static bool IsCppWinRT(Project project)
+        private static bool IsCppWinRT(this Project project)
         {
             if (project?.Object == null)
             {
@@ -59,7 +59,6 @@ namespace ReswPlus.Core.Utils
             return false;
         }
 
-
         public static string GetCppVersion(this Project project)
         {
             try
@@ -75,12 +74,12 @@ namespace ReswPlus.Core.Utils
             return "";
         }
 
-        public static string GetPrecompiledHeader(this ProjectItem projectItem)
+        public static string GetPrecompiledHeader(this Project project)
         {
             try
             {
                 //VCProject not available via NuGet, we will use a dynamic type to limit dependencies.
-                dynamic vcproject = projectItem?.ContainingProject?.Object;
+                dynamic vcproject = project?.Object;
                 if (vcproject == null)
                 {
                     return null;
@@ -101,9 +100,13 @@ namespace ReswPlus.Core.Utils
         }
 
 
-        public static Language GetLanguage(this ProjectItem projectItem)
+        public static Language GetLanguage(this Project project)
         {
-            var language = projectItem.ContainingProject.CodeModel.Language;
+            if (project == null)
+            {
+                return Language.Unknown;
+            }
+            var language = project.CodeModel.Language;
             switch (language)
             {
                 case LANGUAGE_CSHARP:
@@ -113,7 +116,7 @@ namespace ReswPlus.Core.Utils
                 case LANGUAGE_VISUAL_C:
                     {
 
-                        if (IsCppWinRT(projectItem.ContainingProject))
+                        if (IsCppWinRT(project))
                         {
                             return Language.CPPWINRT;
                         }
@@ -121,6 +124,18 @@ namespace ReswPlus.Core.Utils
                     }
                 default:
                     return Language.Unknown;
+            }
+        }
+
+        public static bool IsLibrary(this Project project)
+        {
+            try
+            {
+                return Convert.ToInt32(project.Properties.Item("OutputTypeEx").Value) == 2;
+            }
+            catch
+            {
+                return false;
             }
         }
     }

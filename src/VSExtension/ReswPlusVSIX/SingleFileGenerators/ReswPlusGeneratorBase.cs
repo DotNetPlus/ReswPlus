@@ -8,11 +8,9 @@ using Microsoft.VisualStudio.Designer.Interfaces;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using ReswPlus.Core.ClassGenerator;
-using ReswPlus.Core.Utils;
 using System;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -46,17 +44,20 @@ namespace ReswPlus.SingleFileGenerators
             output = null;
             try
             {
-                var language = projectItem.GetLanguage();
-                var reswCodeGenerator = ReswClassGenerator.CreateGenerator(projectItem, language, VSUIIntegration.Instance);
+                var resourceFileInfo = ResourceInfo.ResourceFileInfoBuilder.Create(projectItem);
+                if(resourceFileInfo == null)
+                {
+                    return VSConstants.E_FAIL;
+                }
+                var reswCodeGenerator = ReswClassGenerator.CreateGenerator(resourceFileInfo, VSUIIntegration.Instance);
                 if (reswCodeGenerator == null)
                 {
                     return VSConstants.E_FAIL;
                 }
-                var inputFilepath = projectItem.Properties.Item("FullPath").Value as string;
-                VSUIIntegration.Instance?.SetStatusBar($"Generating class for {Path.GetFileName(inputFilepath)}...");
+                VSUIIntegration.Instance?.SetStatusBar($"Generating class for {projectItem.Document.Name}...");
 
                 var baseFilename = "resources.generated." + GetCodeProvider().FileExtension; //won't be used.
-                var generationResult = reswCodeGenerator.GenerateCode(inputFilepath, baseFilename, inputFileContents, defaultNamespace, _isAdvanced);
+                var generationResult = reswCodeGenerator.GenerateCode(baseFilename, inputFileContents, defaultNamespace, _isAdvanced);
                 if (generationResult.Files.Count() != 1)
                 {
                     return VSConstants.E_FAIL;

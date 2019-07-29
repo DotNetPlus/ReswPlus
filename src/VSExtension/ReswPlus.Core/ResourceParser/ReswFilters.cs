@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace ReswPlus.Core.Resw
+namespace ReswPlus.Core.ResourceParser
 {
     public class VariantedReswItems
     {

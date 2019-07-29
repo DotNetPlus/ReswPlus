@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 // Source: https://github.com/rudyhuyn/ReswPlus
 
-namespace ReswPlus.Core.Resw
+namespace ReswPlus.Core.ResourceParser
 {
     public class ReswItem
     {

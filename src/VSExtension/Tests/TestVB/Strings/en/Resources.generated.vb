@@ -5,7 +5,7 @@ Imports Windows.ApplicationModel.Resources
 Imports Windows.UI.Xaml.Markup
 Imports Windows.UI.Xaml.Data
 
-<System.CodeDom.Compiler.GeneratedCodeAttribute("Huyn.ReswPlus", "0.1.0.0")>
+<System.CodeDom.Compiler.GeneratedCodeAttribute("Huyn.ReswPlus", "0.5.0")>
 <System.Diagnostics.DebuggerNonUserCodeAttribute()>
 <System.Runtime.CompilerServices.CompilerGeneratedAttribute()>
 Public Class Resources
@@ -86,7 +86,7 @@ Public Class Resources
     ' <summary>
     '   Get the variant version of the string similar to: Send her a message
     ' </summary>
-    Public Shared Function SendMessage(ByVal variantId As Integer) As String
+    Public Shared Function SendMessage(ByVal variantId As Long) As String
         Return _resourceLoader.GetString("SendMessage_Variant" & variantId)
     End Function
     #End Region
@@ -185,7 +185,7 @@ Public Class Resources
     #End Region
 End Class
 
-<System.CodeDom.Compiler.GeneratedCodeAttribute("Huyn.ReswPlus", "0.1.0.0")>
+<System.CodeDom.Compiler.GeneratedCodeAttribute("Huyn.ReswPlus", "0.5.0")>
 <System.Diagnostics.DebuggerNonUserCodeAttribute()>
 <System.Runtime.CompilerServices.CompilerGeneratedAttribute()>
 <MarkupExtensionReturnType(ReturnType:=GetType(String))>

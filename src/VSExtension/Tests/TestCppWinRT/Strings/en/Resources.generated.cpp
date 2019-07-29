@@ -44,7 +44,7 @@ hstring local::Resources::GotMessagesFrom(unsigned int numberMessages, long pers
 }
 
 
-hstring local::Resources::SendMessage(int variantId)
+hstring local::Resources::SendMessage(long variantId)
 {
     return GetResourceLoader().GetString(hstring(L"SendMessage_Variant") + to_wstring(variantId));
 }

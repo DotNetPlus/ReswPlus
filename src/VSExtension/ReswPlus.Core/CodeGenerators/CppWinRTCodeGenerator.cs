@@ -1,6 +1,5 @@
-using EnvDTE;
 using ReswPlus.Core.ClassGenerator.Models;
-using ReswPlus.Core.Resw;
+using ReswPlus.Core.ResourceParser;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -34,7 +33,7 @@ namespace ReswPlus.Core.CodeGenerators
                     return isHeader ? "Windows::Foundation::IStringable const&" : "IStringable const&";
             }
         }
-        protected override bool SupportMultiNamespaceDeclaration(Project project)
+        protected override bool SupportMultiNamespaceDeclaration()
         {
             return true;
         }
@@ -501,9 +500,8 @@ namespace ReswPlus.Core.CodeGenerators
             HeaderCloseNamespace(builderHeader, namespaces, true);
         }
 
-        private GeneratedFile GenerateIdlFile(string baseFilename, StronglyTypedClass info, ProjectItem projectItem)
+        private GeneratedFile GenerateIdlFile(CodeStringBuilder builderIdl, string baseFilename, StronglyTypedClass info)
         {
-            var builderIdl = new CodeStringBuilder("Cpp");
             HeaderOpenNamespace(builderIdl, info.Namespaces, false);
             IdlOpenStronglyTypedClass(builderIdl, info.ClassName);
 
@@ -522,7 +520,7 @@ namespace ReswPlus.Core.CodeGenerators
 
         #endregion
 
-        public override IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename, StronglyTypedClass info, ProjectItem projectItem)
+        public override IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename, StronglyTypedClass info, ResourceInfo.IResourceFileInfo resourceFileInfo)
         {
             // Generate .cpp and .h files
             var namespaces = new List<string>
@@ -535,15 +533,14 @@ namespace ReswPlus.Core.CodeGenerators
             }
             namespaces.Add("implementation");
 
-            var generatedFiles = GeneratedFiles(baseFilename, info, projectItem, namespaces);
+            var generatedFiles = GeneratedFiles(baseFilename, info, resourceFileInfo, namespaces);
             foreach (var file in generatedFiles)
             {
                 yield return file;
             }
-
+            var builderIdl = new CodeStringBuilder(resourceFileInfo.ContainingProject.GetIndentString());
             // Generate .idl file
-            yield return GenerateIdlFile(baseFilename, info, projectItem);
-
+            yield return GenerateIdlFile(builderIdl, baseFilename, info);
         }
     }
 }

@@ -1,5 +1,4 @@
-using EnvDTE;
-using ReswPlus.Core.Resw;
+using ReswPlus.Core.ResourceParser;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -35,7 +34,7 @@ namespace ReswPlus.Core.CodeGenerators
             }
         }
 
-        protected override bool SupportMultiNamespaceDeclaration(Project project)
+        protected override bool SupportMultiNamespaceDeclaration()
         {
             //TODO: Must find a way to detect if the project uses C++17 or higher
             return false;

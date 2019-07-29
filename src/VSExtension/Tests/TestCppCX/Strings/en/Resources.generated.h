@@ -26,7 +26,7 @@ namespace TestCppCX
             /// <summary>
             ///   Get the variant version of the string similar to: Send her a message
             /// </summary>
-            static Platform::String^ SendMessage(int variantId);
+            static Platform::String^ SendMessage(long long variantId);
 
         /* Methods and properties for YouGotEmailsDotNet */
         public:

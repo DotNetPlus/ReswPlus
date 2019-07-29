@@ -6,7 +6,7 @@ namespace TestCppWinRT
         {
             static String YouGotEmails(UInt32 numberMessages, String username);
             static String GotMessagesFrom(UInt32 numberMessages, Int64 personalPronoun);
-            static String SendMessage(Int32 variantId);
+            static String SendMessage(Int64 variantId);
             static String YouGotEmailsDotNet(UInt32 numberMessages, String username);
             static String Hello{ get; };
             static String TestWithObject(Windows.Foundation.IStringable obj);

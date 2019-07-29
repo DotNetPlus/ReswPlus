@@ -36,7 +36,7 @@ namespace winrt::TestCppWinRT::Strings::implementation
         /// <summary>
         ///   Get the variant version of the string similar to: Send her a message
         /// </summary>
-        static hstring SendMessage(int variantId);
+        static hstring SendMessage(long variantId);
 
     /* Methods and properties for YouGotEmailsDotNet */
     public:

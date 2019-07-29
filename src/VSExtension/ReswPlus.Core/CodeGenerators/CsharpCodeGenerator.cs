@@ -1,4 +1,4 @@
-using ReswPlus.Core.Resw;
+using ReswPlus.Core.ResourceParser;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,14 +6,7 @@ namespace ReswPlus.Core.CodeGenerators
 {
     public class CSharpCodeGenerator : DotNetGeneratorBase
     {
-        private readonly CodeStringBuilder _builder;
-
-        public CSharpCodeGenerator()
-        {
-            _builder = new CodeStringBuilder("CSharp");
-        }
-
-        public string GetParameterTypeString(ParameterType type)
+        protected string GetParameterTypeString(ParameterType type)
         {
             switch (type)
             {
@@ -41,87 +34,87 @@ namespace ReswPlus.Core.CodeGenerators
             }
         }
 
-        public override IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename)
+        protected override IEnumerable<GeneratedFile> GetGeneratedFiles(CodeStringBuilder builder, string baseFilename)
         {
-            yield return new GeneratedFile() { Filename = baseFilename + ".cs", Content = _builder.GetString() };
+            yield return new GeneratedFile() { Filename = baseFilename + ".cs", Content = builder.GetString() };
         }
 
-        public override void GenerateHeaders(bool supportPluralization)
+        protected override void GenerateHeaders(CodeStringBuilder builder, bool supportPluralization)
         {
-            _builder.AppendLine("// File generated automatically by ReswPlus. https://github.com/rudyhuyn/ReswPlus");
+            builder.AppendLine("// File generated automatically by ReswPlus. https://github.com/rudyhuyn/ReswPlus");
             if (supportPluralization)
             {
-                _builder.AppendLine("// The NuGet package ReswPlusLib is necessary to support Pluralization.");
+                builder.AppendLine("// The NuGet package ReswPlusLib is necessary to support Pluralization.");
             }
-            _builder.AppendLine("using System;");
-            _builder.AppendLine("using Windows.ApplicationModel.Resources;");
-            _builder.AppendLine("using Windows.UI.Xaml.Markup;");
-            _builder.AppendLine("using Windows.UI.Xaml.Data;");
+            builder.AppendLine("using System;");
+            builder.AppendLine("using Windows.ApplicationModel.Resources;");
+            builder.AppendLine("using Windows.UI.Xaml.Markup;");
+            builder.AppendLine("using Windows.UI.Xaml.Data;");
         }
 
-        public override void OpenNamespace(IEnumerable<string> namespaces)
+        protected override void OpenNamespace(CodeStringBuilder builder, IEnumerable<string> namespaces)
         {
             if (namespaces != null && namespaces.Any())
             {
-                _builder.AppendLine($"namespace {namespaces.Aggregate((a, b) => a + "." + b)}{{");
-                _builder.AddLevel();
+                builder.AppendLine($"namespace {namespaces.Aggregate((a, b) => a + "." + b)}{{");
+                builder.AddLevel();
             }
         }
 
-        public override void CloseNamespace(IEnumerable<string> namespaces)
+        protected override void CloseNamespace(CodeStringBuilder builder, IEnumerable<string> namespaces)
         {
             if (namespaces != null && namespaces.Any())
             {
-                _builder.RemoveLevel();
-                _builder.AppendLine($"}} //{namespaces.Aggregate((a, b) => a + "." + b)}");
+                builder.RemoveLevel();
+                builder.AppendLine($"}} //{namespaces.Aggregate((a, b) => a + "." + b)}");
             }
         }
 
-        public override void OpenStronglyTypedClass(string resourceFilename, string className)
+        protected override void OpenStronglyTypedClass(CodeStringBuilder builder, string resourceFilename, string className)
         {
 
-            _builder.AppendLine($"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"{Constants.ReswPlusExtensionVersion}\")]");
-            _builder.AppendLine("[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]");
-            _builder.AppendLine("[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]");
-            _builder.AppendLine($"public class {className} {{");
-            _builder.AddLevel();
-            _builder.AppendLine("private static ResourceLoader _resourceLoader;");
-            _builder.AppendLine($"static {className}()");
-            _builder.AppendLine("{");
-            _builder.AddLevel();
-            _builder.AppendLine($"_resourceLoader = ResourceLoader.GetForViewIndependentUse(\"{resourceFilename}\");");
-            _builder.RemoveLevel();
-            _builder.AppendLine("}");
+            builder.AppendLine($"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"{Constants.ReswPlusExtensionVersion}\")]");
+            builder.AppendLine("[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]");
+            builder.AppendLine("[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]");
+            builder.AppendLine($"public class {className} {{");
+            builder.AddLevel();
+            builder.AppendLine("private static ResourceLoader _resourceLoader;");
+            builder.AppendLine($"static {className}()");
+            builder.AppendLine("{");
+            builder.AddLevel();
+            builder.AppendLine($"_resourceLoader = ResourceLoader.GetForViewIndependentUse(\"{resourceFilename}\");");
+            builder.RemoveLevel();
+            builder.AppendLine("}");
         }
 
-        public override void CloseStronglyTypedClass()
+        protected override void CloseStronglyTypedClass(CodeStringBuilder builder)
         {
-            _builder.RemoveLevel();
-            _builder.AppendLine("}");
+            builder.RemoveLevel();
+            builder.AppendLine("}");
         }
 
-        public override void OpenRegion(string name)
+        protected override void OpenRegion(CodeStringBuilder builder, string name)
         {
-            _builder.AppendLine($"#region {name}");
+            builder.AppendLine($"#region {name}");
         }
 
-        public override void CloseRegion(string name)
+        protected override void CloseRegion(CodeStringBuilder builder, string name)
         {
-            _builder.AppendLine($"#endregion");
+            builder.AppendLine($"#endregion");
         }
 
-        public override void CreateFormatMethod(string key, bool isProperty, IEnumerable<FormatTagParameter> parameters, string summary = null, IEnumerable<FunctionFormatTagParameter> extraParameters = null, FunctionFormatTagParameter parameterForPluralization = null, bool supportNoneState = false, FunctionFormatTagParameter parameterForVariant = null)
+        protected override void CreateFormatMethod(CodeStringBuilder builder, string key, bool isProperty, IEnumerable<FormatTagParameter> parameters, string summary = null, IEnumerable<FunctionFormatTagParameter> extraParameters = null, FunctionFormatTagParameter parameterForPluralization = null, bool supportNoneState = false, FunctionFormatTagParameter parameterForVariant = null)
         {
-            _builder.AppendLine("/// <summary>");
-            _builder.AppendLine($"///   {summary}");
-            _builder.AppendLine("/// </summary>");
+            builder.AppendLine("/// <summary>");
+            builder.AppendLine($"///   {summary}");
+            builder.AppendLine("/// </summary>");
 
             if (isProperty)
             {
-                _builder.AppendLine($"public static string {key}");
-                _builder.AppendLine("{");
-                _builder.AddLevel();
-                _builder.AppendLine("get");
+                builder.AppendLine($"public static string {key}");
+                builder.AppendLine("{");
+                builder.AddLevel();
+                builder.AppendLine("get");
             }
             else
             {
@@ -136,34 +129,34 @@ namespace ReswPlus.Core.CodeGenerators
                 {
                     // one of the parameter is a variantId, we must create a second method with object as the variantId type.
                     var genericParametersStr = functionParameters.Select(p => (p.IsVariantId ? "object" : GetParameterTypeString(p.Type)) + " " + p.Name).Aggregate((a, b) => a + ", " + b);
-                    _builder.AppendLine($"public static string {key}({genericParametersStr})");
-                    _builder.AppendLine("{");
-                    _builder.AddLevel();
-                    _builder.AppendLine("try");
-                    _builder.AppendLine("{");
-                    _builder.AddLevel();
-                    _builder.AppendLine($"return {key}({functionParameters.Select(p => p.IsVariantId ? $"Convert.ToInt64({p.Name})" : p.Name).Aggregate((a, b) => a + ", " + b)});");
-                    _builder.RemoveLevel();
-                    _builder.AppendLine("}");
-                    _builder.AppendLine("catch");
-                    _builder.AppendLine("{");
-                    _builder.AddLevel();
-                    _builder.AppendLine("return \"\";");
-                    _builder.RemoveLevel();
-                    _builder.AppendLine("}");
-                    _builder.RemoveLevel();
-                    _builder.AppendLine("}");
-                    _builder.AppendEmptyLine();
-                    _builder.AppendLine("/// <summary>");
-                    _builder.AppendLine($"///   {summary}");
-                    _builder.AppendLine("/// </summary>");
+                    builder.AppendLine($"public static string {key}({genericParametersStr})");
+                    builder.AppendLine("{");
+                    builder.AddLevel();
+                    builder.AppendLine("try");
+                    builder.AppendLine("{");
+                    builder.AddLevel();
+                    builder.AppendLine($"return {key}({functionParameters.Select(p => p.IsVariantId ? $"Convert.ToInt64({p.Name})" : p.Name).Aggregate((a, b) => a + ", " + b)});");
+                    builder.RemoveLevel();
+                    builder.AppendLine("}");
+                    builder.AppendLine("catch");
+                    builder.AppendLine("{");
+                    builder.AddLevel();
+                    builder.AppendLine("return \"\";");
+                    builder.RemoveLevel();
+                    builder.AppendLine("}");
+                    builder.RemoveLevel();
+                    builder.AppendLine("}");
+                    builder.AppendEmptyLine();
+                    builder.AppendLine("/// <summary>");
+                    builder.AppendLine($"///   {summary}");
+                    builder.AppendLine("/// </summary>");
                 }
 
                 var parametersStr = functionParameters.Select(p => GetParameterTypeString(p.Type) + " " + p.Name).Aggregate((a, b) => a + ", " + b);
-                _builder.AppendLine($"public static string {key}({parametersStr})");
+                builder.AppendLine($"public static string {key}({parametersStr})");
             }
-            _builder.AppendLine("{");
-            _builder.AddLevel();
+            builder.AppendLine("{");
+            builder.AddLevel();
 
             string keyToUseStr = $"\"{key}\"";
             if (parameterForVariant != null)
@@ -204,79 +197,79 @@ namespace ReswPlus.Core.CodeGenerators
                             return "";
                     }
                 }).Aggregate((a, b) => a + ", " + b);
-                _builder.AppendLine($"return string.Format({localizationStr}, {formatParameters});");
+                builder.AppendLine($"return string.Format({localizationStr}, {formatParameters});");
             }
             else
             {
-                _builder.AppendLine($"return {localizationStr};");
+                builder.AppendLine($"return {localizationStr};");
             }
 
             if (isProperty)
             {
-                _builder.RemoveLevel();
-                _builder.AppendLine("}");
+                builder.RemoveLevel();
+                builder.AppendLine("}");
             }
-            _builder.RemoveLevel();
-            _builder.AppendLine("}");
+            builder.RemoveLevel();
+            builder.AppendLine("}");
 
         }
 
-        public override void CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys)
+        protected override void CreateMarkupExtension(CodeStringBuilder builder, string resourceFileName, string className, IEnumerable<string> keys)
         {
-            _builder.AppendLine($"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"{Constants.ReswPlusExtensionVersion}\")]");
-            _builder.AppendLine("[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]");
-            _builder.AppendLine("[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]");
-            _builder.AppendLine("[MarkupExtensionReturnType(ReturnType = typeof(string))]");
-            _builder.AppendLine($"public class {className}: MarkupExtension");
-            _builder.AppendLine("{");
-            _builder.AddLevel();
-            _builder.AppendLine("public enum KeyEnum");
-            _builder.AppendLine("{");
-            _builder.AddLevel();
-            _builder.AppendLine("__Undefined = 0,");
+            builder.AppendLine($"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"{Constants.ReswPlusExtensionVersion}\")]");
+            builder.AppendLine("[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]");
+            builder.AppendLine("[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]");
+            builder.AppendLine("[MarkupExtensionReturnType(ReturnType = typeof(string))]");
+            builder.AppendLine($"public class {className}: MarkupExtension");
+            builder.AppendLine("{");
+            builder.AddLevel();
+            builder.AppendLine("public enum KeyEnum");
+            builder.AppendLine("{");
+            builder.AddLevel();
+            builder.AppendLine("__Undefined = 0,");
             foreach (var key in keys)
             {
-                _builder.AppendLine($"{key},");
+                builder.AppendLine($"{key},");
             }
-            _builder.RemoveLevel();
-            _builder.AppendLine("}");
-            _builder.AppendEmptyLine();
-            _builder.AppendLine("private static ResourceLoader _resourceLoader;");
-            _builder.AppendLine($"static {className}()");
-            _builder.AppendLine("{");
-            _builder.AddLevel();
-            _builder.AppendLine($"_resourceLoader = ResourceLoader.GetForViewIndependentUse(\"{resourceFileName}\");");
-            _builder.RemoveLevel();
-            _builder.AppendLine("}");
-            _builder.AppendLine("public KeyEnum Key { get; set;}");
-            _builder.AppendLine("public IValueConverter Converter { get; set;}");
-            _builder.AppendLine("public object ConverterParameter { get; set;}");
-            _builder.AppendLine("protected override object ProvideValue()");
-            _builder.AppendLine("{");
-            _builder.AddLevel();
-            _builder.AppendLine("string res;");
-            _builder.AppendLine("if(Key == KeyEnum.__Undefined)");
-            _builder.AppendLine("{");
-            _builder.AddLevel();
-            _builder.AppendLine("res = \"\";");
-            _builder.RemoveLevel();
-            _builder.AppendLine("}");
-            _builder.AppendLine("else");
-            _builder.AppendLine("{");
-            _builder.AddLevel();
-            _builder.AppendLine("res = _resourceLoader.GetString(Key.ToString());");
-            _builder.RemoveLevel();
-            _builder.AppendLine("}");
-            _builder.AppendLine("return Converter == null ? res : Converter.Convert(res, typeof(String), ConverterParameter, null);");
-            _builder.RemoveLevel();
-            _builder.AppendLine("}");
-            _builder.RemoveLevel();
-            _builder.AppendLine("}");
+            builder.RemoveLevel();
+            builder.AppendLine("}");
+            builder.AppendEmptyLine();
+            builder.AppendLine("private static ResourceLoader _resourceLoader;");
+            builder.AppendLine($"static {className}()");
+            builder.AppendLine("{");
+            builder.AddLevel();
+            builder.AppendLine($"_resourceLoader = ResourceLoader.GetForViewIndependentUse(\"{resourceFileName}\");");
+            builder.RemoveLevel();
+            builder.AppendLine("}");
+            builder.AppendLine("public KeyEnum Key { get; set;}");
+            builder.AppendLine("public IValueConverter Converter { get; set;}");
+            builder.AppendLine("public object ConverterParameter { get; set;}");
+            builder.AppendLine("protected override object ProvideValue()");
+            builder.AppendLine("{");
+            builder.AddLevel();
+            builder.AppendLine("string res;");
+            builder.AppendLine("if(Key == KeyEnum.__Undefined)");
+            builder.AppendLine("{");
+            builder.AddLevel();
+            builder.AppendLine("res = \"\";");
+            builder.RemoveLevel();
+            builder.AppendLine("}");
+            builder.AppendLine("else");
+            builder.AppendLine("{");
+            builder.AddLevel();
+            builder.AppendLine("res = _resourceLoader.GetString(Key.ToString());");
+            builder.RemoveLevel();
+            builder.AppendLine("}");
+            builder.AppendLine("return Converter == null ? res : Converter.Convert(res, typeof(String), ConverterParameter, null);");
+            builder.RemoveLevel();
+            builder.AppendLine("}");
+            builder.RemoveLevel();
+            builder.AppendLine("}");
         }
 
-        public override void AddNewLine()
+        protected override void AddNewLine(CodeStringBuilder builder)
         {
-            _builder.AppendEmptyLine();
+            builder.AppendEmptyLine();
         }
     }
 }

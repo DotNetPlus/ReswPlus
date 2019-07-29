@@ -1,4 +1,4 @@
-namespace ReswPlus.Core.Resw
+namespace ReswPlus.Core.ResourceParser
 {
     public enum ParameterType
     {

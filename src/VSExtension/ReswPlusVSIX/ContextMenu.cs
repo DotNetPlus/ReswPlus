@@ -3,13 +3,13 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using ReswPlus.Core.ClassGenerator;
-using ReswPlus.Core.Utils;
+using ReswPlus.ResourceInfo;
 using ReswPlus.Utils;
 using System;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Runtime.InteropServices;
-using Language = ReswPlus.Core.Utils.Language;
+using Language = ReswPlus.Core.ResourceInfo.Language;
 using Task = System.Threading.Tasks.Task;
 
 namespace ReswPlus
@@ -140,7 +140,7 @@ namespace ReswPlus
                 }
                 VSUIIntegration.Instance?.SetStatusBar($"Generating class for {Path.GetFileName(projectItem.Name)}...");
 
-                var language = projectItem.GetLanguage();
+                var language = projectItem.ContainingProject.GetLanguage();
                 if (language == Language.CSHARP || language == Language.VB)
                 {
                     // Reset CustomTool to force the file generation.
@@ -161,7 +161,12 @@ namespace ReswPlus
                         fileNamespace += "." + reswNamespace.Replace("\\", ".");
                     }
 
-                    var reswCodeGenerator = ReswClassGenerator.CreateGenerator(projectItem, language, VSUIIntegration.Instance);
+                    var resourceFileInfo = ResourceFileInfoBuilder.Create(projectItem);
+                    if(resourceFileInfo == null)
+                    {
+                        return VSConstants.E_FAIL;
+                    }
+                    var reswCodeGenerator = ReswClassGenerator.CreateGenerator(resourceFileInfo, VSUIIntegration.Instance);
                     if (reswCodeGenerator == null)
                     {
                         return VSConstants.E_FAIL;
@@ -169,7 +174,7 @@ namespace ReswPlus
 
                     var inputFilepath = projectItem.Properties.Item("FullPath").Value as string;
                     var baseFilename = Path.GetFileNameWithoutExtension(filepath) + ".generated";
-                    var generationResult = reswCodeGenerator.GenerateCode(inputFilepath, baseFilename, File.ReadAllText(inputFilepath), fileNamespace, isAdvanced);
+                    var generationResult = reswCodeGenerator.GenerateCode(baseFilename, File.ReadAllText(inputFilepath), fileNamespace, isAdvanced);
                     foreach (var file in generationResult.Files)
                     {
                         var generatedFilePath = Path.Combine(Path.GetDirectoryName(filepath), file.Filename);

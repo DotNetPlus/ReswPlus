@@ -2,17 +2,16 @@
 // Licensed under the MIT License.
 // Source: https://github.com/rudyhuyn/ReswPlus
 
-using EnvDTE;
 using ReswPlus.Core.Interfaces;
 using ReswPlus.Core.ClassGenerator.Models;
 using ReswPlus.Core.CodeGenerators;
-using ReswPlus.Core.Resw;
-using ReswPlus.Core.Utils;
+using ReswPlus.Core.ResourceParser;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using ReswPlus.Core.ResourceInfo;
 
 namespace ReswPlus.Core.ClassGenerator
 {
@@ -26,7 +25,7 @@ namespace ReswPlus.Core.ClassGenerator
         private static readonly Regex _regexStringFormat;
         private static readonly Regex _regexRemoveSpace = new Regex("\\s+");
         private static readonly Regex _regexDotNetFormatting = new Regex(@"(?<!{){\d+(,-?\d+)?(:[^}]+)?}");
-        private readonly ProjectItem _projectItem;
+        private readonly IResourceFileInfo _resourceFileInfo;
         private readonly ICodeGenerator _codeGenerator;
         private readonly IErrorLogger _logger;
 
@@ -37,46 +36,46 @@ namespace ReswPlus.Core.ClassGenerator
                     $"(?<tag>{TagFormat}|{TagFormatDotNet})\\[\\s*(?<formats>[^\\]]+)\\s*\\]");
         }
 
-        private ReswClassGenerator(ProjectItem item, ICodeGenerator generator, IErrorLogger logger)
+        private ReswClassGenerator(IResourceFileInfo resourceInfo, ICodeGenerator generator, IErrorLogger logger)
         {
-            _projectItem = item;
+            _resourceFileInfo = resourceInfo;
             _codeGenerator = generator;
             _logger = logger;
         }
 
-        public static ReswClassGenerator CreateGenerator(ProjectItem item, Utils.Language language, IErrorLogger logger)
+        public static ReswClassGenerator CreateGenerator(IResourceFileInfo resourceFileInfo, IErrorLogger logger)
         {
             ICodeGenerator codeGenerator = null;
-            switch (language)
+            switch (resourceFileInfo.ContainingProject.Language)
             {
-                case Utils.Language.CSHARP:
+                case ResourceInfo.Language.CSHARP:
                     codeGenerator = new CSharpCodeGenerator();
                     break;
-                case Utils.Language.VB:
+                case ResourceInfo.Language.VB:
                     codeGenerator = new VBCodeGenerator();
                     break;
-                case Utils.Language.CPPCX:
+                case ResourceInfo.Language.CPPCX:
                     codeGenerator = new CppCXCodeGenerator();
                     break;
-                case Utils.Language.CPPWINRT:
+                case ResourceInfo.Language.CPPWINRT:
                     codeGenerator = new CppWinRTCodeGenerator();
                     break;
             }
             if (codeGenerator != null)
             {
-                return new ReswClassGenerator(item, codeGenerator, logger);
+                return new ReswClassGenerator(resourceFileInfo, codeGenerator, logger);
             }
             return null;
         }
 
-        private StronglyTypedClass Parse(string resourcePath, string content, string defaultNamespace, bool isAdvanced)
+        private StronglyTypedClass Parse(string content, string defaultNamespace, bool isAdvanced)
         {
             var namespaceToUse = ExtractNamespace(defaultNamespace);
-            var resourceFileName = Path.GetFileName(resourcePath);
-            var className = Path.GetFileNameWithoutExtension(resourcePath);
+            var resourceFileName = Path.GetFileName(_resourceFileInfo.Path);
+            var className = Path.GetFileNameWithoutExtension(_resourceFileInfo.Path);
             var reswInfo = ReswParser.Parse(content);
 
-            var projectNameIfLibrary = GetProjectNameIfLibrary(resourcePath);
+            var projectNameIfLibrary = _resourceFileInfo.ContainingProject.IsLibrary? _resourceFileInfo.ContainingProject.Name : null;
 
             //If the resource file is in a library, the resource id in the .pri file
             //will be <library name>/FilenameWithoutExtension
@@ -192,15 +191,15 @@ namespace ReswPlus.Core.ClassGenerator
             return _regexDotNetFormatting.IsMatch(source);
         }
 
-        public GenerationResult GenerateCode(string resourcePath, string baseFilename, string content, string defaultNamespace, bool isAdvanced)
+        public GenerationResult GenerateCode(string baseFilename, string content, string defaultNamespace, bool isAdvanced)
         {
-            var stronglyTypedClassInfo = Parse(resourcePath, content, defaultNamespace, isAdvanced);
+            var stronglyTypedClassInfo = Parse(content, defaultNamespace, isAdvanced);
             if (stronglyTypedClassInfo == null)
             {
                 return null;
             }
 
-            var filesGenerated = _codeGenerator.GetGeneratedFiles(baseFilename, stronglyTypedClassInfo, _projectItem);
+            var filesGenerated = _codeGenerator.GetGeneratedFiles(baseFilename, stronglyTypedClassInfo, _resourceFileInfo);
             var result = new GenerationResult()
             {
                 Files = filesGenerated
@@ -302,23 +301,5 @@ namespace ReswPlus.Core.ClassGenerator
             return true;
         }
 
-        private string GetProjectNameIfLibrary(string filepath)
-        {
-            var project = _projectItem?.ContainingProject;
-            if (project != null)
-            {
-                try
-                {
-                    var isLibrary = Convert.ToInt32(project.Properties.Item("OutputTypeEx").Value) == 2;
-                    if (isLibrary)
-                    {
-                        return project.Name;
-                    }
-                }
-                catch { }
-            }
-
-            return null;
-        }
     }
 }

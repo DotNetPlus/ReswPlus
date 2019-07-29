@@ -1,6 +1,3 @@
-using EnvDTE;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 using System.Text;
 
 namespace ReswPlus.Core.CodeGenerators
@@ -11,11 +8,11 @@ namespace ReswPlus.Core.CodeGenerators
         private readonly string _indentString;
         private uint _level;
 
-        public CodeStringBuilder(string language)
+        public CodeStringBuilder(string indentString)
         {
             _level = 0;
             _stringBuilder = new StringBuilder();
-            _indentString = GetIndentString(language);
+            _indentString = indentString;
         }
 
         public void AppendLine(string value)
@@ -54,36 +51,5 @@ namespace ReswPlus.Core.CodeGenerators
         {
             return _stringBuilder.ToString();
         }
-
-        public string GetIndentString(string language)
-        {
-            try
-            {
-                var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
-                if (dte != null)
-                {
-                    var textEditorSetting = dte.Properties["TextEditor", language];
-                    if ((bool)textEditorSetting.Item("InsertTabs").Value)
-                    {
-                        return "\t";
-                    }
-                    else
-                    {
-                        var res = "";
-                        var numberCharacters = (int)textEditorSetting.Item("IndentSize").Value;
-                        for (var i = 0; i < numberCharacters; ++i)
-                        {
-                            res += " ";
-                        }
-                        return res;
-                    }
-                }
-            }
-            catch
-            {
-            }
-            return "    ";
-        }
-
     }
 }
