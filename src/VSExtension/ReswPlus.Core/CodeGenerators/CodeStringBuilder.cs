@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System.Text;
 
-namespace ReswPlus.CodeGenerators
+namespace ReswPlusCore.CodeGenerators
 {
     public class CodeStringBuilder
     {
@@ -57,7 +57,6 @@ namespace ReswPlus.CodeGenerators
 
         public string GetIndentString(string language)
         {
-            ThreadHelper.ThrowIfNotOnUIThread();
             try
             {
                 var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;

@@ -8,7 +8,6 @@ using Microsoft.VisualStudio.Shell;
 
 namespace ReswPlus.Utils
 {
-
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public sealed class CodeGeneratorRegistrationAttribute : RegistrationAttribute
     {

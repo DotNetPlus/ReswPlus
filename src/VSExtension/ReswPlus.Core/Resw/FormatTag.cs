@@ -1,43 +1,44 @@
+using ReswPlus.Core.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace ReswPlus.Resw
+namespace ReswPlusCore.Resw
 {
-    internal interface FormatTagParameter
+    public interface FormatTagParameter
     {
 
     }
-    internal class LocalizationRefFormatTagParameter : FormatTagParameter
+    public class LocalizationRefFormatTagParameter : FormatTagParameter
     {
         public string Id { get; set; }
     }
-    internal class ConstStringFormatTagParameter : FormatTagParameter
+    public class ConstStringFormatTagParameter : FormatTagParameter
     {
         public string Value { get; set; }
     }
 
-    internal class MacroFormatTagParameter : FormatTagParameter
+    public class MacroFormatTagParameter : FormatTagParameter
     {
         public string Id { get; set; }
     }
 
-    internal class FunctionFormatTagParameter : FormatTagParameter
+    public class FunctionFormatTagParameter : FormatTagParameter
     {
         public ParameterType Type { get; set; }
         public string Name { get; set; }
         public ParameterType? TypeToCast { get; set; }
-        public bool IsVariantId { get; internal set; }
+        public bool IsVariantId { get; set; }
     }
 
-    internal class FunctionFormatTagParametersInfo
+    public class FunctionFormatTagParametersInfo
     {
         public List<FormatTagParameter> Parameters { get; set; } = new List<FormatTagParameter>();
         public FunctionFormatTagParameter PluralizationParameter { get; set; }
         public FunctionFormatTagParameter VariantParameter { get; set; }
     }
 
-    internal class FormatTagParameterTypeInfo
+    public class FormatTagParameterTypeInfo
     {
         public ParameterType Type { get; }
         public bool CanBeQuantifier { get; }
@@ -49,7 +50,7 @@ namespace ReswPlus.Resw
         }
     }
 
-    internal class FormatTag
+    public class FormatTag
     {
         private static readonly Dictionary<string, string> _macroAvailable = new Dictionary<string, string>()
         {
@@ -100,7 +101,7 @@ namespace ReswPlus.Resw
 
         private static readonly Regex RegexNamedParameters = new Regex("^(?:(?:\"(?<constStrings>[^\"]*)\")|(?:(?<localizationRef>\\w+)\\(\\))|(?:(?<quantifier>Plural\\s+)?(?<type>\\w+)\\s*(?<name>\\w+)?))$");
 
-        public static FunctionFormatTagParametersInfo ParseParameters(string key, IEnumerable<string> types, IEnumerable<ReswItem> basicLocalizedItems, string resourceFilename)
+        public static FunctionFormatTagParametersInfo ParseParameters(string key, IEnumerable<string> types, IEnumerable<ReswItem> basicLocalizedItems, string resourceFilename, IErrorLogger logger)
         {
             var result = new FunctionFormatTagParametersInfo();
             var paramIndex = 1;
@@ -109,7 +110,7 @@ namespace ReswPlus.Resw
                 var matchNamedParameters = RegexNamedParameters.Match(type.Trim());
                 if (!matchNamedParameters.Success)
                 {
-                    ReswPlusPackage.LogError($"[ReswPlus] Incorrect tag for the key '{key}': incorrect formatting", resourceFilename);
+                    logger?.LogError($"[ReswPlus] Incorrect tag for the key '{key}': incorrect formatting", resourceFilename);
                     return null;
                 }
                 if (matchNamedParameters.Groups["constStrings"].Success)
@@ -130,7 +131,7 @@ namespace ReswPlus.Resw
                         if (!basicLocalizedItems.Any(i => i.Key == localizationRef))
                         {
                             //Identifier not found
-                            ReswPlusPackage.LogError($"ReswPlus: Incorrect tag for the key '{key}': '{localizationRef}' doesn't exist in the resw file.", resourceFilename);
+                            logger?.LogError($"ReswPlus: Incorrect tag for the key '{key}': '{localizationRef}' doesn't exist in the resw file.", resourceFilename);
                             return null;
                         }
                         var param = new LocalizationRefFormatTagParameter()
@@ -168,7 +169,7 @@ namespace ReswPlus.Resw
                         var paramType = GetParameterType(paramTypeId, isQuantifier);
                         if (!paramType.type.HasValue)
                         {
-                            ReswPlusPackage.LogError($"ReswPlus: Incorrect tag for the key '{key}': '{paramTypeId}' is not a correct type.", resourceFilename);
+                            logger?.LogError($"ReswPlus: Incorrect tag for the key '{key}': '{paramTypeId}' is not a correct type.", resourceFilename);
                             return null;
                         }
                         if (string.IsNullOrEmpty(paramName))

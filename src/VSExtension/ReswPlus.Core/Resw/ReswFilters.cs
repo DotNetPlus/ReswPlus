@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace ReswPlus.Resw
+namespace ReswPlusCore.Resw
 {
-    internal class VariantedReswItems
+    public class VariantedReswItems
     {
         public List<ReswItem> Items { get; set; }
         public string Key { get; set; }
@@ -12,7 +12,7 @@ namespace ReswPlus.Resw
         public bool SupportVariants { get; set; }
     }
 
-    internal static class ReswFilters
+    public static class ReswFilters
     {
         private static Regex regexPluralVariantItems = new Regex("(?:_(?<variant>Variant\\-?\\d+))?(?:_(?<plural>Zero|One|Other|Many|Few|None))?$");
 

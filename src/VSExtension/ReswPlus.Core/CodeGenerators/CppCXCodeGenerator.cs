@@ -1,11 +1,11 @@
 using EnvDTE;
-using ReswPlus.Resw;
+using ReswPlusCore.Resw;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ReswPlus.CodeGenerators
+namespace ReswPlusCore.CodeGenerators
 {
-    internal class CppCXCodeGenerator : CppCodeGeneratorBase
+    public class CppCXCodeGenerator : CppCodeGeneratorBase
     {
         protected override string GetParameterTypeString(ParameterType type, bool isHeader)
         {

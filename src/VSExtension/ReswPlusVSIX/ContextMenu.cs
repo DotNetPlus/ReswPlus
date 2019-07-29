@@ -2,12 +2,13 @@ using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using ReswPlus.CodeGenerator;
-using ReswPlus.Utils;
+using ReswPlusCore.CodeGenerator;
+using ReswPlusCore.Utils;
 using System;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Runtime.InteropServices;
+using Language = ReswPlusCore.Utils.Language;
 using Task = System.Threading.Tasks.Task;
 
 namespace ReswPlus
@@ -120,6 +121,7 @@ namespace ReswPlus
         private int GenerateResourceFile(bool isAdvanced)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
+            VSUIIntegration.Instance?.ClearErrors();
 
             try
             {
@@ -135,17 +137,17 @@ namespace ReswPlus
                         OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                     return VSConstants.E_FAIL;
                 }
-                ReswPlusPackage.SetStatusBar($"Generating class for {Path.GetFileName(projectItem.Name)}...");
+                VSUIIntegration.Instance?.SetStatusBar($"Generating class for {Path.GetFileName(projectItem.Name)}...");
 
                 var language = projectItem.GetLanguage();
-                if (language == Utils.Language.CSHARP || language == Utils.Language.VB)
+                if (language == Language.CSHARP || language == Language.VB)
                 {
                     // Reset CustomTool to force the file generation.
                     projectItem.Properties.Item("CustomTool").Value = "";
                     projectItem.Properties.Item("CustomTool").Value = isAdvanced ? "ReswPlusAdvancedGenerator" : "ReswPlusGenerator";
                     return VSConstants.S_OK;
                 }
-                else if (language == Utils.Language.CPPCX || language == Utils.Language.CPPWINRT)
+                else if (language == Language.CPPCX || language == Language.CPPWINRT)
                 {
                     // CPP projects doesn't support custom tools, we need to create the file ourselves.
                     var filepath = (string)projectItem.Properties.Item("FullPath").Value;
@@ -158,7 +160,7 @@ namespace ReswPlus
                         fileNamespace += "." + reswNamespace.Replace("\\", ".");
                     }
 
-                    var reswCodeGenerator = ReswCodeGenerator.CreateGenerator(projectItem, language);
+                    var reswCodeGenerator = ReswCodeGenerator.CreateGenerator(projectItem, language, VSUIIntegration.Instance);
                     if (reswCodeGenerator == null)
                     {
                         return VSConstants.E_FAIL;
@@ -166,7 +168,7 @@ namespace ReswPlus
 
                     var inputFilepath = projectItem.Properties.Item("FullPath").Value as string;
                     var baseFilename = Path.GetFileNameWithoutExtension(filepath) + ".generated";
-                    var files = reswCodeGenerator.GenerateCode(inputFilepath, baseFilename, File.ReadAllText(inputFilepath), fileNamespace, isAdvanced, projectItem);
+                    var files = reswCodeGenerator.GenerateCode(inputFilepath, baseFilename, File.ReadAllText(inputFilepath), fileNamespace, isAdvanced);
                     foreach (var file in files)
                     {
                         var generatedFilePath = Path.Combine(Path.GetDirectoryName(filepath), file.Filename);
@@ -198,7 +200,7 @@ namespace ReswPlus
             }
             finally
             {
-                ReswPlusPackage.CleanStatusBar();
+                VSUIIntegration.Instance?.CleanStatusBar();
             }
         }
     }

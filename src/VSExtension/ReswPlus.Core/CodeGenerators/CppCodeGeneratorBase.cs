@@ -1,14 +1,14 @@
 using EnvDTE;
-using ReswPlus.ClassGenerator.Models;
-using ReswPlus.Resw;
-using ReswPlus.Utils;
+using ReswPlusCore.ClassGenerator.Models;
+using ReswPlusCore.Resw;
+using ReswPlusCore.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ReswPlus.CodeGenerators
+namespace ReswPlusCore.CodeGenerators
 {
-    internal abstract class CppCodeGeneratorBase : ICodeGenerator
+    public abstract class CppCodeGeneratorBase : ICodeGenerator
     {
         protected const string LocalNamespaceName = "local";
 

@@ -1,10 +1,10 @@
-using ReswPlus.Resw;
+using ReswPlusCore.Resw;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ReswPlus.CodeGenerators
+namespace ReswPlusCore.CodeGenerators
 {
-    internal class CSharpCodeGenerator : DotNetGeneratorBase
+    public class CSharpCodeGenerator : DotNetGeneratorBase
     {
         private readonly CodeStringBuilder _builder;
 
@@ -41,12 +41,12 @@ namespace ReswPlus.CodeGenerators
             }
         }
 
-        internal override IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename)
+        public override IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename)
         {
             yield return new GeneratedFile() { Filename = baseFilename + ".cs", Content = _builder.GetString() };
         }
 
-        internal override void GenerateHeaders(bool supportPluralization)
+        public override void GenerateHeaders(bool supportPluralization)
         {
             _builder.AppendLine("// File generated automatically by ReswPlus. https://github.com/rudyhuyn/ReswPlus");
             if (supportPluralization)
@@ -59,7 +59,7 @@ namespace ReswPlus.CodeGenerators
             _builder.AppendLine("using Windows.UI.Xaml.Data;");
         }
 
-        internal override void OpenNamespace(IEnumerable<string> namespaces)
+        public override void OpenNamespace(IEnumerable<string> namespaces)
         {
             if (namespaces != null && namespaces.Any())
             {
@@ -68,7 +68,7 @@ namespace ReswPlus.CodeGenerators
             }
         }
 
-        internal override void CloseNamespace(IEnumerable<string> namespaces)
+        public override void CloseNamespace(IEnumerable<string> namespaces)
         {
             if (namespaces != null && namespaces.Any())
             {
@@ -77,10 +77,10 @@ namespace ReswPlus.CodeGenerators
             }
         }
 
-        internal override void OpenStronglyTypedClass(string resourceFilename, string className)
+        public override void OpenStronglyTypedClass(string resourceFilename, string className)
         {
 
-            _builder.AppendLine($"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"{ReswPlusPackage.ReswPlusExtensionVersion}\")]");
+            _builder.AppendLine($"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"{Constants.ReswPlusExtensionVersion}\")]");
             _builder.AppendLine("[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]");
             _builder.AppendLine("[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]");
             _builder.AppendLine($"public class {className} {{");
@@ -94,23 +94,23 @@ namespace ReswPlus.CodeGenerators
             _builder.AppendLine("}");
         }
 
-        internal override void CloseStronglyTypedClass()
+        public override void CloseStronglyTypedClass()
         {
             _builder.RemoveLevel();
             _builder.AppendLine("}");
         }
 
-        internal override void OpenRegion(string name)
+        public override void OpenRegion(string name)
         {
             _builder.AppendLine($"#region {name}");
         }
 
-        internal override void CloseRegion(string name)
+        public override void CloseRegion(string name)
         {
             _builder.AppendLine($"#endregion");
         }
 
-        internal override void CreateFormatMethod(string key, bool isProperty, IEnumerable<FormatTagParameter> parameters, string summary = null, IEnumerable<FunctionFormatTagParameter> extraParameters = null, FunctionFormatTagParameter parameterForPluralization = null, bool supportNoneState = false, FunctionFormatTagParameter parameterForVariant = null)
+        public override void CreateFormatMethod(string key, bool isProperty, IEnumerable<FormatTagParameter> parameters, string summary = null, IEnumerable<FunctionFormatTagParameter> extraParameters = null, FunctionFormatTagParameter parameterForPluralization = null, bool supportNoneState = false, FunctionFormatTagParameter parameterForVariant = null)
         {
             _builder.AppendLine("/// <summary>");
             _builder.AppendLine($"///   {summary}");
@@ -221,9 +221,9 @@ namespace ReswPlus.CodeGenerators
 
         }
 
-        internal override void CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys)
+        public override void CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys)
         {
-            _builder.AppendLine($"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"{ReswPlusPackage.ReswPlusExtensionVersion}\")]");
+            _builder.AppendLine($"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"{Constants.ReswPlusExtensionVersion}\")]");
             _builder.AppendLine("[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]");
             _builder.AppendLine("[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]");
             _builder.AppendLine("[MarkupExtensionReturnType(ReturnType = typeof(string))]");
@@ -274,7 +274,7 @@ namespace ReswPlus.CodeGenerators
             _builder.AppendLine("}");
         }
 
-        internal override void AddNewLine()
+        public override void AddNewLine()
         {
             _builder.AppendEmptyLine();
         }

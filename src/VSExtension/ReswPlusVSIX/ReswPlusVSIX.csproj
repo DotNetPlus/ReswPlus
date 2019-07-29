@@ -45,6 +45,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -55,32 +56,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ClassGenerator\Models\Localization.cs" />
-    <Compile Include="ClassGenerator\Models\StronglyTypedClass.cs" />
     <Compile Include="ContextMenu.cs" />
-    <Compile Include="CodeGenerators\CodeStringBuilder.cs" />
-    <Compile Include="CodeGenerators\CppWinRTCodeGenerator.cs" />
-    <Compile Include="CodeGenerators\CppCXCodeGenerator.cs" />
-    <Compile Include="CodeGenerators\CsharpCodeGenerator.cs" />
-    <Compile Include="CodeGenerators\DotNetGeneratorBase.cs" />
-    <Compile Include="CodeGenerators\VBCodeGenerator.cs" />
-    <Compile Include="CodeGenerators\ICodeGenerator.cs" />
-    <Compile Include="Resw\ReswFilters.cs" />
+    <Compile Include="VSUIIntegration.cs" />
     <Compile Include="SingleFileGenerators\ReswPlusGeneratorBase.cs" />
     <Compile Include="SingleFileGenerators\ReswPlusAdvancedGenerator.cs" />
-    <Compile Include="CodeGenerators\CppCodeGeneratorBase.cs" />
-    <Compile Include="Resw\ParameterType.cs" />
-    <Compile Include="Resw\ReswParser.cs" />
-    <Compile Include="Resw\FormatTag.cs" />
-    <Compile Include="Utils\CodeGeneratorRegistrationAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ClassGenerator\ReswCodeGenerator.cs" />
-    <Compile Include="Resw\ReswInfo.cs" />
-    <Compile Include="Resw\ReswItem.cs" />
     <Compile Include="SingleFileGenerators\ReswPlusGenerator.cs" />
     <Compile Include="ReswPlusPackage.cs" />
-    <Compile Include="Utils\NugetHelper.cs" />
-    <Compile Include="Utils\ProjectItemExtension.cs" />
+    <Compile Include="Utils\CodeGeneratorRegistrationAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -244,7 +227,12 @@
     <Analyzer Include="..\..\packages\Microsoft.VisualStudio.SDK.Analyzers.15.8.36\analyzers\cs\Microsoft.VisualStudio.SDK.Analyzers.dll" />
     <Analyzer Include="..\..\packages\Microsoft.VisualStudio.Threading.Analyzers.15.8.168\analyzers\cs\Microsoft.VisualStudio.Threading.Analyzers.dll" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\ReswPlus.Core\ReswPlus.Core.csproj">
+      <Project>{4aa7dbfd-ddde-4bf2-a2d9-e41a886ea61f}</Project>
+      <Name>ReswPlus.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -1,17 +1,17 @@
 using EnvDTE;
-using ReswPlus.ClassGenerator.Models;
-using ReswPlus.Resw;
+using ReswPlusCore.ClassGenerator.Models;
+using ReswPlusCore.Resw;
 using System.Collections.Generic;
 
-namespace ReswPlus.CodeGenerators
+namespace ReswPlusCore.CodeGenerators
 {
-    internal class GeneratedFile
+    public class GeneratedFile
     {
         public string Filename { get; set; }
         public string Content { get; set; }
     }
 
-    internal interface ICodeGenerator
+    public interface ICodeGenerator
     {
         IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename, StronglyTypedClass info, ProjectItem projectItem);
     }

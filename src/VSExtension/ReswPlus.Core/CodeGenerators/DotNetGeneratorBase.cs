@@ -1,29 +1,29 @@
 using EnvDTE;
-using ReswPlus.ClassGenerator.Models;
-using ReswPlus.Resw;
+using ReswPlusCore.ClassGenerator.Models;
+using ReswPlusCore.Resw;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ReswPlus.CodeGenerators
+namespace ReswPlusCore.CodeGenerators
 {
-    internal abstract class DotNetGeneratorBase : ICodeGenerator
+    public abstract class DotNetGeneratorBase : ICodeGenerator
     {
-        internal abstract void AddNewLine();
-        internal abstract void GenerateHeaders(bool supportPluralization);
+        public abstract void AddNewLine();
+        public abstract void GenerateHeaders(bool supportPluralization);
 
-        internal abstract void OpenNamespace(IEnumerable<string> namespaceName);
-        internal abstract void CloseNamespace(IEnumerable<string> namespaceName);
+        public abstract void OpenNamespace(IEnumerable<string> namespaceName);
+        public abstract void CloseNamespace(IEnumerable<string> namespaceName);
 
-        internal abstract void OpenStronglyTypedClass(string resourceFileName, string className);
-        internal abstract void CloseStronglyTypedClass();
-        internal abstract void OpenRegion(string name);
-        internal abstract void CloseRegion(string name);
+        public abstract void OpenStronglyTypedClass(string resourceFileName, string className);
+        public abstract void CloseStronglyTypedClass();
+        public abstract void OpenRegion(string name);
+        public abstract void CloseRegion(string name);
 
-        internal abstract void CreateFormatMethod(string key, bool isProperty, IEnumerable<FormatTagParameter> parameters, string summary = null,
+        public abstract void CreateFormatMethod(string key, bool isProperty, IEnumerable<FormatTagParameter> parameters, string summary = null,
             IEnumerable<FunctionFormatTagParameter> extraParameters = null, FunctionFormatTagParameter parameterForPluralization = null, bool supportNoneState = false, FunctionFormatTagParameter parameterForVariant = null);
 
-        internal abstract void CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys);
-        internal abstract IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename);
+        public abstract void CreateMarkupExtension(string resourceFileName, string className, IEnumerable<string> keys);
+        public abstract IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename);
 
         public IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename, StronglyTypedClass info, ProjectItem projectItem)
         {

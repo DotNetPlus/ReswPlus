@@ -1,12 +1,12 @@
 using EnvDTE;
-using ReswPlus.ClassGenerator.Models;
-using ReswPlus.Resw;
+using ReswPlusCore.ClassGenerator.Models;
+using ReswPlusCore.Resw;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ReswPlus.CodeGenerators
+namespace ReswPlusCore.CodeGenerators
 {
-    internal class CppWinRTCodeGenerator : CppCodeGeneratorBase
+    public class CppWinRTCodeGenerator : CppCodeGeneratorBase
     {
         protected override string GetParameterTypeString(ParameterType type, bool isHeader)
         {

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ReswPlus.ClassGenerator.Models
+namespace ReswPlusCore.ClassGenerator.Models
 {
-    class StronglyTypedClass
+    public class StronglyTypedClass
     {
         public bool IsAdvanced{ get; set; }
         public string[] Namespaces { get; set; }

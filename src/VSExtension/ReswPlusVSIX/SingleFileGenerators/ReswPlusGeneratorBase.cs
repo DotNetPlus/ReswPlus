@@ -7,8 +7,8 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Designer.Interfaces;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using ReswPlus.CodeGenerator;
-using ReswPlus.Utils;
+using ReswPlusCore.CodeGenerator;
+using ReswPlusCore.Utils;
 using System;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
@@ -40,20 +40,22 @@ namespace ReswPlus.SingleFileGenerators
           string defaultNamespace, out byte[] output, IVsGeneratorProgress generateProgress)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
+            VSUIIntegration.Instance?.ClearErrors();
+
             output = null;
             try
             {
                 var language = projectItem.GetLanguage();
-                var reswCodeGenerator = ReswCodeGenerator.CreateGenerator(projectItem, language);
+                var reswCodeGenerator = ReswCodeGenerator.CreateGenerator(projectItem, language, VSUIIntegration.Instance);
                 if (reswCodeGenerator == null)
                 {
                     return VSConstants.E_FAIL;
                 }
                 var inputFilepath = projectItem.Properties.Item("FullPath").Value as string;
-                ReswPlusPackage.SetStatusBar($"Generating class for {Path.GetFileName(inputFilepath)}...");
+                VSUIIntegration.Instance?.SetStatusBar($"Generating class for {Path.GetFileName(inputFilepath)}...");
 
                 var baseFilename = "resources.generated." + GetCodeProvider().FileExtension; //won't be used.
-                var files = reswCodeGenerator.GenerateCode(inputFilepath, baseFilename, inputFileContents, defaultNamespace, _isAdvanced, projectItem);
+                var files = reswCodeGenerator.GenerateCode(inputFilepath, baseFilename, inputFileContents, defaultNamespace, _isAdvanced);
                 if (files.Count() != 1)
                 {
                     return VSConstants.E_FAIL;
@@ -69,7 +71,7 @@ namespace ReswPlus.SingleFileGenerators
             }
             finally
             {
-                ReswPlusPackage.CleanStatusBar();
+                VSUIIntegration.Instance?.CleanStatusBar();
             }
             return VSConstants.S_OK;
         }

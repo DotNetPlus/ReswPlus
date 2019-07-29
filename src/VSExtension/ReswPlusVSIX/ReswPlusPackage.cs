@@ -34,122 +34,12 @@ namespace ReswPlus
         /// </summary>
         public const string PackageGuidString = "8c9d543c-0e65-4319-8395-f7b38088a080";
         public const string _uiContextSupportedFiles = "34551deb-f034-43e9-a279-0e541241687e"; // Must match guid in VsCommandTable.vsct
-        private static ErrorListProvider _errorListProvider;
         private static ReswPlusPackage _instance;
+
         public ReswPlusPackage()
         {
-            _errorListProvider = new ErrorListProvider(this);
             _instance = this;
         }
-
-        public static void ClearErrors()
-        {
-            _errorListProvider.Tasks.Clear();
-        }
-
-        public static void LogWarning(string message)
-        {
-            if (_errorListProvider == null)
-            {
-                return;
-            }
-
-            _errorListProvider.Tasks.Add(new ErrorTask()
-            {
-                Category = TaskCategory.Misc,
-                CanDelete = true,
-                ErrorCategory = TaskErrorCategory.Warning,
-                Text = message
-            });
-            _errorListProvider.Show();
-        }
-
-        public static void LogError(string message, string document = null)
-        {
-            if (_errorListProvider == null)
-            {
-                return;
-            }
-
-            _errorListProvider.Tasks.Add(new ErrorTask()
-            {
-                Category = TaskCategory.Misc,
-                ErrorCategory = TaskErrorCategory.Error,
-                CanDelete = true,
-                Document = document,
-                Text = message,
-            });
-            _errorListProvider.ForceShowErrors();
-            _errorListProvider.Show();
-        }
-
-        public static void DisplayMessageOutput(string message)
-        {
-            if (_instance == null)
-            {
-                return;
-            }
-            ThreadHelper.ThrowIfNotOnUIThread();
-            var outputWindow = _instance.GetService(typeof(SVsOutputWindow)) as IVsOutputWindow;
-            if (outputWindow == null)
-            {
-                return;
-            }
-            Guid customGuid = new Guid("CD10903C-5DF9-4DD1-A027-FFFC7F88426F");
-            string customTitle = "ReswPlus";
-            outputWindow.CreatePane(ref customGuid, customTitle, 1, 1);
-
-            outputWindow.GetPane(ref customGuid, out IVsOutputWindowPane pane);
-            if (pane != null)
-            {
-                pane.OutputString(message + "\n");
-            }
-        }
-
-        public static void SetStatusBar(string message)
-        {
-            if (_instance == null)
-            {
-                return;
-            }
-            ThreadHelper.ThrowIfNotOnUIThread();
-            var statusBar = _instance.GetService(typeof(SVsStatusbar)) as IVsStatusbar;
-            if (statusBar == null)
-            {
-                return;
-            }
-
-            statusBar.IsFrozen(out int frozen);
-            if (frozen == 0)
-            {
-                object icon = (short)Microsoft.VisualStudio.Shell.Interop.Constants.SBAI_Build;
-                statusBar.Animation(1, ref icon);
-                statusBar.SetText(message);
-            }
-        }
-
-        public static void CleanStatusBar()
-        {
-            if (_instance == null)
-            {
-                return;
-            }
-            ThreadHelper.ThrowIfNotOnUIThread();
-            var statusBar = _instance.GetService(typeof(SVsStatusbar)) as IVsStatusbar;
-            if (statusBar == null)
-            {
-                return;
-            }
-
-            statusBar.IsFrozen(out int frozen);
-            if (frozen == 0)
-            {
-                statusBar.Clear();
-                object icon = (short)Microsoft.VisualStudio.Shell.Interop.Constants.SBAI_Build;
-                statusBar.Animation(0, icon);
-            }
-        }
-
 
         #region Package Members
 

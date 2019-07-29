@@ -10,13 +10,12 @@ using System.Text;
 using System.Threading.Tasks;
 using VSLangProj;
 
-namespace ReswPlus.Utils
+namespace ReswPlusCore.Utils
 {
     public static class NugetHelper
     {
         public static bool InstallNuGetPackage(this Project project, string package, bool dontOverrideLocalDll)
         {
-            ThreadHelper.ThrowIfNotOnUIThread();
             try
             {
                 var componentModel = (IComponentModel)Package.GetGlobalService(typeof(SComponentModel));
@@ -47,7 +46,7 @@ namespace ReswPlus.Utils
                     return true;
                 }
 
-                if (currentlyInstalledPackage == null || (Version.TryParse(currentlyInstalledPackage.VersionString, out Version nugetLibVersion) && nugetLibVersion < ReswPlusPackage.ReswPlusLibMinVersion))
+                if (currentlyInstalledPackage == null || (Version.TryParse(currentlyInstalledPackage.VersionString, out Version nugetLibVersion) && nugetLibVersion < Constants.ReswPlusLibMinVersion))
                 {
                     var installer = componentModel.GetService<IVsPackageInstaller>();
                     installer.InstallPackage(null, project, package, (System.Version)null, false);

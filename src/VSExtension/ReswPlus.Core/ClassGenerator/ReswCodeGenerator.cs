@@ -3,20 +3,21 @@
 // Source: https://github.com/rudyhuyn/ReswPlus
 
 using EnvDTE;
-using ReswPlus.ClassGenerator.Models;
-using ReswPlus.CodeGenerators;
-using ReswPlus.Resw;
-using ReswPlus.Utils;
+using ReswPlus.Core.Interfaces;
+using ReswPlusCore.ClassGenerator.Models;
+using ReswPlusCore.CodeGenerators;
+using ReswPlusCore.Resw;
+using ReswPlusCore.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace ReswPlus.CodeGenerator
+namespace ReswPlusCore.CodeGenerator
 {
 
-    internal class ReswCodeGenerator
+    public class ReswCodeGenerator
     {
         private const string TagIgnore = "#ReswPlusIgnore";
         private const string Deprecated_TagStrongType = "#ReswPlusTyped";
@@ -28,6 +29,7 @@ namespace ReswPlus.CodeGenerator
         private static readonly Regex _regexDotNetFormatting = new Regex(@"(?<!{){\d+(,-?\d+)?(:[^}]+)?}");
         private readonly ProjectItem _projectItem;
         private readonly ICodeGenerator _codeGenerator;
+        private readonly IErrorLogger _logger;
 
         static ReswCodeGenerator()
         {
@@ -36,13 +38,14 @@ namespace ReswPlus.CodeGenerator
                     $"(?<tag>{TagFormat}|{TagFormatDotNet})\\[\\s*(?<formats>[^\\]]+)\\s*\\]");
         }
 
-        private ReswCodeGenerator(ProjectItem item, ICodeGenerator generator)
+        private ReswCodeGenerator(ProjectItem item, ICodeGenerator generator, IErrorLogger logger)
         {
             _projectItem = item;
             _codeGenerator = generator;
+            _logger = logger;
         }
 
-        public static ReswCodeGenerator CreateGenerator(ProjectItem item, Utils.Language language)
+        public static ReswCodeGenerator CreateGenerator(ProjectItem item, Utils.Language language, IErrorLogger logger)
         {
             ICodeGenerator codeGenerator = null;
             switch (language)
@@ -62,7 +65,7 @@ namespace ReswPlus.CodeGenerator
             }
             if (codeGenerator != null)
             {
-                return new ReswCodeGenerator(item, codeGenerator);
+                return new ReswCodeGenerator(item, codeGenerator, logger);
             }
             return null;
         }
@@ -131,7 +134,7 @@ namespace ReswPlus.CodeGenerator
                         }
                         if (item.Items.Any(i => i.Comment != null && i.Comment.Contains(Deprecated_TagStrongType)))
                         {
-                            ReswPlusPackage.LogError($"{Deprecated_TagStrongType} is no more supported, use {TagFormat} instead. See https://github.com/rudyhuyn/ReswPlus/blob/master/README.md");
+                            _logger?.LogError($"{Deprecated_TagStrongType} is no more supported, use {TagFormat} instead. See https://github.com/rudyhuyn/ReswPlus/blob/master/README.md");
                         }
                         var commentToUse =
                             item.Items.FirstOrDefault(i => i.Comment != null && _regexStringFormat.IsMatch(i.Comment));
@@ -190,24 +193,22 @@ namespace ReswPlus.CodeGenerator
             return _regexDotNetFormatting.IsMatch(source);
         }
 
-        public IEnumerable<GeneratedFile> GenerateCode(string resourcePath, string baseFilename, string content, string defaultNamespace, bool isAdvanced, ProjectItem projectItem)
+        public IEnumerable<GeneratedFile> GenerateCode(string resourcePath, string baseFilename, string content, string defaultNamespace, bool isAdvanced)
         {
-            ReswPlusPackage.ClearErrors();
             var stronglyTypedClassInfo = Parse(resourcePath, content, defaultNamespace, isAdvanced);
             if (stronglyTypedClassInfo == null)
             {
                 return null;
             }
 
-            var filesGenerated = _codeGenerator.GetGeneratedFiles(baseFilename, stronglyTypedClassInfo, projectItem);
+            var filesGenerated = _codeGenerator.GetGeneratedFiles(baseFilename, stronglyTypedClassInfo, _projectItem);
 
             if (filesGenerated != null && filesGenerated.Any())
             {
                 var mustInstallRewsPlusLib = stronglyTypedClassInfo.Localizations.Any(l => l.IsDotNetFormatting || l is PluralLocalization || l.Parameters.Any(p => p is MacroFormatTagParameter));
                 if (mustInstallRewsPlusLib)
                 {
-                    Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
-                    projectItem.ContainingProject.InstallNuGetPackage("ReswPlusLib", true);
+                    _projectItem.ContainingProject.InstallNuGetPackage("ReswPlusLib", true);
                 }
             }
             return filesGenerated;
@@ -255,7 +256,7 @@ namespace ReswPlus.CodeGenerator
             {
                 localization.IsDotNetFormatting = isDotNetFormatting;
                 var types = format.Split(',').Select(s => s.Trim());
-                tagTypedInfo = FormatTag.ParseParameters(localization.Key, types, basicLocalizedItems, resourceName);
+                tagTypedInfo = FormatTag.ParseParameters(localization.Key, types, basicLocalizedItems, resourceName, _logger);
                 if (tagTypedInfo != null)
                 {
                     localization.Parameters = tagTypedInfo.Parameters;
