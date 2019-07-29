@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace ReswPlusCore.Resw
+namespace ReswPlus.Core.Resw
 {
     class ReswParser
     {

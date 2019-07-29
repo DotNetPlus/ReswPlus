@@ -1,10 +1,10 @@
 using EnvDTE;
-using ReswPlusCore.ClassGenerator.Models;
-using ReswPlusCore.Resw;
+using ReswPlus.Core.ClassGenerator.Models;
+using ReswPlus.Core.Resw;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ReswPlusCore.CodeGenerators
+namespace ReswPlus.Core.CodeGenerators
 {
     public class CppWinRTCodeGenerator : CppCodeGeneratorBase
     {

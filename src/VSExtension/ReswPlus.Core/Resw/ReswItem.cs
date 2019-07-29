@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 // Source: https://github.com/rudyhuyn/ReswPlus
 
-namespace ReswPlusCore.Resw
+namespace ReswPlus.Core.Resw
 {
     public class ReswItem
     {

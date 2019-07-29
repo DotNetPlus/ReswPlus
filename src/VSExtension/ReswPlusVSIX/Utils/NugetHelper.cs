@@ -3,14 +3,11 @@ using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using NuGet.VisualStudio;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSLangProj;
 
-namespace ReswPlusCore.Utils
+namespace ReswPlus.Utils
 {
     public static class NugetHelper
     {
@@ -46,7 +43,7 @@ namespace ReswPlusCore.Utils
                     return true;
                 }
 
-                if (currentlyInstalledPackage == null || (Version.TryParse(currentlyInstalledPackage.VersionString, out Version nugetLibVersion) && nugetLibVersion < Constants.ReswPlusLibMinVersion))
+                if (currentlyInstalledPackage == null || (Version.TryParse(currentlyInstalledPackage.VersionString, out Version nugetLibVersion) && nugetLibVersion < ReswPlus.Core.Constants.ReswPlusLibMinVersion))
                 {
                     var installer = componentModel.GetService<IVsPackageInstaller>();
                     installer.InstallPackage(null, project, package, (System.Version)null, false);

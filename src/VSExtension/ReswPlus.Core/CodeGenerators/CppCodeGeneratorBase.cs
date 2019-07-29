@@ -1,12 +1,12 @@
 using EnvDTE;
-using ReswPlusCore.ClassGenerator.Models;
-using ReswPlusCore.Resw;
-using ReswPlusCore.Utils;
+using ReswPlus.Core.ClassGenerator.Models;
+using ReswPlus.Core.Resw;
+using ReswPlus.Core.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ReswPlusCore.CodeGenerators
+namespace ReswPlus.Core.CodeGenerators
 {
     public abstract class CppCodeGeneratorBase : ICodeGenerator
     {

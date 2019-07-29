@@ -57,6 +57,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ContextMenu.cs" />
+    <Compile Include="Utils\NugetHelper.cs" />
     <Compile Include="VSUIIntegration.cs" />
     <Compile Include="SingleFileGenerators\ReswPlusGeneratorBase.cs" />
     <Compile Include="SingleFileGenerators\ReswPlusAdvancedGenerator.cs" />

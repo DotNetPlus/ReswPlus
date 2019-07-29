@@ -7,8 +7,8 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Designer.Interfaces;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using ReswPlusCore.CodeGenerator;
-using ReswPlusCore.Utils;
+using ReswPlus.Core.ClassGenerator;
+using ReswPlus.Core.Utils;
 using System;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
@@ -17,6 +17,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using IServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+using ReswPlus.Utils;
 
 namespace ReswPlus.SingleFileGenerators
 {
@@ -46,7 +47,7 @@ namespace ReswPlus.SingleFileGenerators
             try
             {
                 var language = projectItem.GetLanguage();
-                var reswCodeGenerator = ReswCodeGenerator.CreateGenerator(projectItem, language, VSUIIntegration.Instance);
+                var reswCodeGenerator = ReswClassGenerator.CreateGenerator(projectItem, language, VSUIIntegration.Instance);
                 if (reswCodeGenerator == null)
                 {
                     return VSConstants.E_FAIL;
@@ -55,15 +56,20 @@ namespace ReswPlus.SingleFileGenerators
                 VSUIIntegration.Instance?.SetStatusBar($"Generating class for {Path.GetFileName(inputFilepath)}...");
 
                 var baseFilename = "resources.generated." + GetCodeProvider().FileExtension; //won't be used.
-                var files = reswCodeGenerator.GenerateCode(inputFilepath, baseFilename, inputFileContents, defaultNamespace, _isAdvanced);
-                if (files.Count() != 1)
+                var generationResult = reswCodeGenerator.GenerateCode(inputFilepath, baseFilename, inputFileContents, defaultNamespace, _isAdvanced);
+                if (generationResult.Files.Count() != 1)
                 {
                     return VSConstants.E_FAIL;
                 }
 
 
                 // IVsSingleFileGenerator supports only 1 file.
-                output = Encoding.UTF8.GetBytes(files.First().Content);
+                output = Encoding.UTF8.GetBytes(generationResult.Files.First().Content);
+
+                if (generationResult.MustInstallReswPlusLib)
+                {
+                    projectItem.ContainingProject.InstallNuGetPackage("ReswPlusLib", true);
+                }
             }
             catch (Exception)
             {

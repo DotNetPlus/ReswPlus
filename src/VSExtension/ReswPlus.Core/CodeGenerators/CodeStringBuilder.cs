@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System.Text;
 
-namespace ReswPlusCore.CodeGenerators
+namespace ReswPlus.Core.CodeGenerators
 {
     public class CodeStringBuilder
     {

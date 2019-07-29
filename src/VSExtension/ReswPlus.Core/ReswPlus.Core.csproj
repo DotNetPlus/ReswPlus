@@ -144,7 +144,8 @@
   <ItemGroup>
     <Compile Include="ClassGenerator\Models\Localization.cs" />
     <Compile Include="ClassGenerator\Models\StronglyTypedClass.cs" />
-    <Compile Include="ClassGenerator\ReswCodeGenerator.cs" />
+    <Compile Include="ClassGenerator\ReswClassGenerator.cs" />
+    <Compile Include="ClassGenerator\GenerationResult.cs" />
     <Compile Include="CodeGenerators\CodeStringBuilder.cs" />
     <Compile Include="CodeGenerators\CppCodeGeneratorBase.cs" />
     <Compile Include="CodeGenerators\CppCXCodeGenerator.cs" />
@@ -162,7 +163,6 @@
     <Compile Include="Resw\ReswInfo.cs" />
     <Compile Include="Resw\ReswItem.cs" />
     <Compile Include="Resw\ReswParser.cs" />
-    <Compile Include="Utils\NugetHelper.cs" />
     <Compile Include="Utils\ProjectItemExtension.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,8 +1,8 @@
-using ReswPlusCore.Resw;
+using ReswPlus.Core.Resw;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ReswPlusCore.CodeGenerators
+namespace ReswPlus.Core.CodeGenerators
 {
     public class VBCodeGenerator : DotNetGeneratorBase
     {

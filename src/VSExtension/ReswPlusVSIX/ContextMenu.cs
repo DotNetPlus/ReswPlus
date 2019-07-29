@@ -2,13 +2,14 @@ using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using ReswPlusCore.CodeGenerator;
-using ReswPlusCore.Utils;
+using ReswPlus.Core.ClassGenerator;
+using ReswPlus.Core.Utils;
+using ReswPlus.Utils;
 using System;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Runtime.InteropServices;
-using Language = ReswPlusCore.Utils.Language;
+using Language = ReswPlus.Core.Utils.Language;
 using Task = System.Threading.Tasks.Task;
 
 namespace ReswPlus
@@ -160,7 +161,7 @@ namespace ReswPlus
                         fileNamespace += "." + reswNamespace.Replace("\\", ".");
                     }
 
-                    var reswCodeGenerator = ReswCodeGenerator.CreateGenerator(projectItem, language, VSUIIntegration.Instance);
+                    var reswCodeGenerator = ReswClassGenerator.CreateGenerator(projectItem, language, VSUIIntegration.Instance);
                     if (reswCodeGenerator == null)
                     {
                         return VSConstants.E_FAIL;
@@ -168,8 +169,8 @@ namespace ReswPlus
 
                     var inputFilepath = projectItem.Properties.Item("FullPath").Value as string;
                     var baseFilename = Path.GetFileNameWithoutExtension(filepath) + ".generated";
-                    var files = reswCodeGenerator.GenerateCode(inputFilepath, baseFilename, File.ReadAllText(inputFilepath), fileNamespace, isAdvanced);
-                    foreach (var file in files)
+                    var generationResult = reswCodeGenerator.GenerateCode(inputFilepath, baseFilename, File.ReadAllText(inputFilepath), fileNamespace, isAdvanced);
+                    foreach (var file in generationResult.Files)
                     {
                         var generatedFilePath = Path.Combine(Path.GetDirectoryName(filepath), file.Filename);
                         using (var streamWriter = File.Create(generatedFilePath))
@@ -184,6 +185,10 @@ namespace ReswPlus
                         catch { }
                     }
 
+                    if (generationResult.MustInstallReswPlusLib)
+                    {
+                        projectItem.ContainingProject.InstallNuGetPackage("ReswPlusLib", true);
+                    }
                     return VSConstants.S_OK;
                 }
                 else

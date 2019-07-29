@@ -1,4 +1,4 @@
-namespace ReswPlusCore.Resw
+namespace ReswPlus.Core.Resw
 {
     public enum ParameterType
     {

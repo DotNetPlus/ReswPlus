@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace ReswPlusCore.Resw
+namespace ReswPlus.Core.Resw
 {
     class ReswInfo
     {

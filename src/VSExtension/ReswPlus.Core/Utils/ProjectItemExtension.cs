@@ -1,6 +1,6 @@
 using EnvDTE;
 
-namespace ReswPlusCore.Utils
+namespace ReswPlus.Core.Utils
 {
     public enum Language { Unknown, CSHARP, VB, CPPCX, CPPWINRT }
     public static class ProjectItemExtension

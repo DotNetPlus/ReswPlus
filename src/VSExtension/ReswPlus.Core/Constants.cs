@@ -4,7 +4,7 @@
 
 using System;
 
-namespace ReswPlusCore
+namespace ReswPlus.Core
 {
     public sealed class Constants
     {

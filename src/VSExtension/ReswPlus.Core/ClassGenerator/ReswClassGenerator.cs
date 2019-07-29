@@ -4,20 +4,19 @@
 
 using EnvDTE;
 using ReswPlus.Core.Interfaces;
-using ReswPlusCore.ClassGenerator.Models;
-using ReswPlusCore.CodeGenerators;
-using ReswPlusCore.Resw;
-using ReswPlusCore.Utils;
+using ReswPlus.Core.ClassGenerator.Models;
+using ReswPlus.Core.CodeGenerators;
+using ReswPlus.Core.Resw;
+using ReswPlus.Core.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace ReswPlusCore.CodeGenerator
+namespace ReswPlus.Core.ClassGenerator
 {
-
-    public class ReswCodeGenerator
+    public class ReswClassGenerator
     {
         private const string TagIgnore = "#ReswPlusIgnore";
         private const string Deprecated_TagStrongType = "#ReswPlusTyped";
@@ -31,21 +30,21 @@ namespace ReswPlusCore.CodeGenerator
         private readonly ICodeGenerator _codeGenerator;
         private readonly IErrorLogger _logger;
 
-        static ReswCodeGenerator()
+        static ReswClassGenerator()
         {
             _regexStringFormat =
                 new Regex(
                     $"(?<tag>{TagFormat}|{TagFormatDotNet})\\[\\s*(?<formats>[^\\]]+)\\s*\\]");
         }
 
-        private ReswCodeGenerator(ProjectItem item, ICodeGenerator generator, IErrorLogger logger)
+        private ReswClassGenerator(ProjectItem item, ICodeGenerator generator, IErrorLogger logger)
         {
             _projectItem = item;
             _codeGenerator = generator;
             _logger = logger;
         }
 
-        public static ReswCodeGenerator CreateGenerator(ProjectItem item, Utils.Language language, IErrorLogger logger)
+        public static ReswClassGenerator CreateGenerator(ProjectItem item, Utils.Language language, IErrorLogger logger)
         {
             ICodeGenerator codeGenerator = null;
             switch (language)
@@ -65,7 +64,7 @@ namespace ReswPlusCore.CodeGenerator
             }
             if (codeGenerator != null)
             {
-                return new ReswCodeGenerator(item, codeGenerator, logger);
+                return new ReswClassGenerator(item, codeGenerator, logger);
             }
             return null;
         }
@@ -193,7 +192,7 @@ namespace ReswPlusCore.CodeGenerator
             return _regexDotNetFormatting.IsMatch(source);
         }
 
-        public IEnumerable<GeneratedFile> GenerateCode(string resourcePath, string baseFilename, string content, string defaultNamespace, bool isAdvanced)
+        public GenerationResult GenerateCode(string resourcePath, string baseFilename, string content, string defaultNamespace, bool isAdvanced)
         {
             var stronglyTypedClassInfo = Parse(resourcePath, content, defaultNamespace, isAdvanced);
             if (stronglyTypedClassInfo == null)
@@ -202,16 +201,16 @@ namespace ReswPlusCore.CodeGenerator
             }
 
             var filesGenerated = _codeGenerator.GetGeneratedFiles(baseFilename, stronglyTypedClassInfo, _projectItem);
+            var result = new GenerationResult()
+            {
+                Files = filesGenerated
+            };
 
             if (filesGenerated != null && filesGenerated.Any())
             {
-                var mustInstallRewsPlusLib = stronglyTypedClassInfo.Localizations.Any(l => l.IsDotNetFormatting || l is PluralLocalization || l.Parameters.Any(p => p is MacroFormatTagParameter));
-                if (mustInstallRewsPlusLib)
-                {
-                    _projectItem.ContainingProject.InstallNuGetPackage("ReswPlusLib", true);
-                }
+                result.MustInstallReswPlusLib = stronglyTypedClassInfo.Localizations.Any(l => l.IsDotNetFormatting || l is PluralLocalization || l.Parameters.Any(p => p is MacroFormatTagParameter));
             }
-            return filesGenerated;
+            return result;
         }
 
         private string[] ExtractNamespace(string defaultNamespace)

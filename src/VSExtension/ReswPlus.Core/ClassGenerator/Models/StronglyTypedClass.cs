@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ReswPlusCore.ClassGenerator.Models
+namespace ReswPlus.Core.ClassGenerator.Models
 {
     public class StronglyTypedClass
     {
