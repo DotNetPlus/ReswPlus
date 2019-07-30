@@ -18,7 +18,9 @@ namespace ReswPlusUnitTests
                 "test",
                 "Plural",
                 "Int",
-                "LONG_TEXT_AAAAAAAAAAAAAAAAAAAAAAAAA"
+                "LONG_TEXT_AAAAAAAAAAAAAAAAAAAAAAAAA",
+                "TEXT WITH ] CHAR",
+                "TEXT WITH \\\" CHAR"
             })
             {
                 var basicLocalizedItems = new ReswItem[0];

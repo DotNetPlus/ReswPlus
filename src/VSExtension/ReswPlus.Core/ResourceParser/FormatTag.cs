@@ -99,7 +99,7 @@ namespace ReswPlus.Core.ResourceParser
             {"Decimal", new FormatTagParameterTypeInfo(ParameterType.Decimal, true)}
         };
 
-        private static readonly Regex RegexNamedParameters = new Regex("^(?:(?:\"(?<constStrings>[^\"]*)\")|(?:(?<localizationRef>\\w+)\\(\\))|(?:(?<quantifier>Plural\\s+)?(?<type>\\w+)\\s*(?<name>\\w+)?))$");
+        private static readonly Regex RegexNamedParameters = new Regex("^(?:(?:\"(?<literalString>(?:\\\\.|[^\\\"])*)\")|(?:(?<localizationRef>\\w+)\\(\\))|(?:(?<quantifier>Plural\\s+)?(?<type>\\w+)\\s*(?<name>\\w+)?))$");
 
         public static FunctionFormatTagParametersInfo ParseParameters(string key, IEnumerable<string> types, IEnumerable<ReswItem> basicLocalizedItems, string resourceFilename, IErrorLogger logger)
         {
@@ -113,11 +113,11 @@ namespace ReswPlus.Core.ResourceParser
                     logger?.LogError($"[ReswPlus] Incorrect tag for the key '{key}': incorrect formatting", resourceFilename);
                     return null;
                 }
-                if (matchNamedParameters.Groups["constStrings"].Success)
+                if (matchNamedParameters.Groups["literalString"].Success)
                 {
                     var param = new LiteralStringFormatTagParameter()
                     {
-                        Value = matchNamedParameters.Groups["constStrings"].Value
+                        Value = matchNamedParameters.Groups["literalString"].Value
                     };
 
                     result.Parameters.Add(param);

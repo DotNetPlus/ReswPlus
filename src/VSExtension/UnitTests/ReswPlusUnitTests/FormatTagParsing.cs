@@ -47,11 +47,19 @@ namespace ReswPlusUnitTests
                 "String test, \"BBB\", Variant v",
                 "String test, \"Hello\", \"Hello\", Plural Int",
                 "\"Hello\", \"Hello\", Plural Int test",
+                "\"Hello ] World\"", //literal with ']'
+                "\"Hello \\\" World\"", //literal with '"'
+                "\"Hello , World\"", //literal with ','
+                "\"Hello ( World\"", //literal with ')'
+                "\"Hello ) World\"", //literal with '('
+                "\"Hello () World\"", //literal with '()'
+
             })
             {
                 var res = ReswClassGenerator.ParseTag($"#Format[{parameters}]");
                 Assert.False(res.isDotNetFormatting);
                 Assert.True(res.format != null && res.format.Any());
+                Assert.Equal(res.format, parameters);
                 res = ReswClassGenerator.ParseTag($"#FormatNet[{parameters}]");
                 Assert.True(res.isDotNetFormatting);
                 Assert.True(res.format != null && res.format.Any());

@@ -33,7 +33,13 @@ namespace ReswPlus.Core.ClassGenerator
         {
             _regexStringFormat =
                 new Regex(
-                    $"(?<tag>{TagFormat}|{TagFormatDotNet})\\[(?<formats>[^\\]]+)]");
+                    $"(?<tag>{TagFormat}|{TagFormatDotNet})\\[" +
+                    "(?<formats>(?:" +
+                         "[^\\\"]|" +
+                         "\"(?:[^\\\"]|\\\\.)*\"" +
+                         ")+" +
+                       ")" +
+                    "\\]");
         }
 
         private ReswClassGenerator(IResourceFileInfo resourceInfo, ICodeGenerator generator, IErrorLogger logger)
@@ -75,7 +81,7 @@ namespace ReswPlus.Core.ClassGenerator
             var className = Path.GetFileNameWithoutExtension(_resourceFileInfo.Path);
             var reswInfo = ReswParser.Parse(content);
 
-            var projectNameIfLibrary = _resourceFileInfo.ContainingProject.IsLibrary? _resourceFileInfo.ContainingProject.Name : null;
+            var projectNameIfLibrary = _resourceFileInfo.ContainingProject.IsLibrary ? _resourceFileInfo.ContainingProject.Name : null;
 
             //If the resource file is in a library, the resource id in the .pri file
             //will be <library name>/FilenameWithoutExtension
