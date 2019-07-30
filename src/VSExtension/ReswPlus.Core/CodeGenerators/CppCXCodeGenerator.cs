@@ -225,7 +225,7 @@ namespace ReswPlus.Core.CodeGenerators
                         {
                             return isDotNetFormatting ? $"ReswPlusLib::Macros::{macroParam.Id}" : $"ReswPlusLib::Macros::{macroParam.Id}->Data()";
                         }
-                    case LocalizationRefFormatTagParameter localizationStringParameter:
+                    case StringRefFormatTagParameter localizationStringParameter:
                         {
                             return isDotNetFormatting ? $"{localizationStringParameter.Id}" : $"{localizationStringParameter.Id}->Data()";
                         }

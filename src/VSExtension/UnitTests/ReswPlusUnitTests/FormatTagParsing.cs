@@ -34,6 +34,54 @@ namespace ReswPlusUnitTests
             }
         }
 
+        [Fact]
+        public void TestTagLiteral()
+        {
+            foreach (var parameters in new string[]{
+                "\"Hello\"",
+                "\"Hello world\", Double",
+                "UInt test, \"World is small\"",
+                "Plural, \"Test\"",
+                "String test, Plural, String test2, \"Hello\"",
+                "Variant v, \"AAAA\"",
+                "String test, \"BBB\", Variant v",
+                "String test, \"Hello\", \"Hello\", Plural Int",
+                "\"Hello\", \"Hello\", Plural Int test",
+            })
+            {
+                var res = ReswClassGenerator.ParseTag($"#Format[{parameters}]");
+                Assert.False(res.isDotNetFormatting);
+                Assert.True(res.format != null && res.format.Any());
+                res = ReswClassGenerator.ParseTag($"#FormatNet[{parameters}]");
+                Assert.True(res.isDotNetFormatting);
+                Assert.True(res.format != null && res.format.Any());
+            }
+        }
+
+        [Fact]
+        public void TestTagStringRef()
+        {
+            foreach (var parameters in new string[]{
+                "Test()",
+                "Int, String()",
+                "Hello(), Char character",
+                "Plural, Welcome_Message()",
+                "String test, Hello(), String test2, UInt test3",
+                "Variant v, Test(), Test()",
+                "hello(), String test, World(), Variant v",
+                "String test, Variant v, Hello(), Plural Int",
+                "String test, Hello(), Variant v, Plural Int test",
+            })
+            {
+                var res = ReswClassGenerator.ParseTag($"#Format[{parameters}]");
+                Assert.False(res.isDotNetFormatting);
+                Assert.True(res.format != null && res.format.Any());
+                res = ReswClassGenerator.ParseTag($"#FormatNet[{parameters}]");
+                Assert.True(res.isDotNetFormatting);
+                Assert.True(res.format != null && res.format.Any());
+            }
+        }
+
 
         [Fact]
         public void TestTagMacros()

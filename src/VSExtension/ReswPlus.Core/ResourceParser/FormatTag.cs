@@ -9,7 +9,7 @@ namespace ReswPlus.Core.ResourceParser
     {
 
     }
-    public class LocalizationRefFormatTagParameter : IFormatTagParameter
+    public class StringRefFormatTagParameter : IFormatTagParameter
     {
         public string Id { get; set; }
     }
@@ -134,7 +134,7 @@ namespace ReswPlus.Core.ResourceParser
                             logger?.LogError($"ReswPlus: Incorrect tag for the key '{key}': '{localizationRef}' doesn't exist in the resw file.", resourceFilename);
                             return null;
                         }
-                        var param = new LocalizationRefFormatTagParameter()
+                        var param = new StringRefFormatTagParameter()
                         {
                             Id = localizationRef
                         };

@@ -191,7 +191,7 @@ namespace ReswPlus.Core.CodeGenerators
                         return $"ReswPlusLib.Macros.{macroParam.Id}";
                     case LiteralStringFormatTagParameter constStringParameter:
                         return $"\"{constStringParameter.Value}\"";
-                    case LocalizationRefFormatTagParameter localizationStringParameter:
+                    case StringRefFormatTagParameter localizationStringParameter:
                         return localizationStringParameter.Id;
                     default:
                         //should not happen
