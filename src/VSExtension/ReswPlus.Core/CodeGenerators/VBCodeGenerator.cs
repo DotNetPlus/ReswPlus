@@ -111,7 +111,7 @@ namespace ReswPlus.Core.CodeGenerators
             builder.AppendLine($"#End Region");
         }
 
-        protected override void CreateFormatMethod(CodeStringBuilder builder, string key, bool isProperty, IEnumerable<FormatTagParameter> parameters, string summary = null, IEnumerable<FunctionFormatTagParameter> extraParameters = null, FunctionFormatTagParameter parameterForPluralization = null, bool supportNoneState = false, FunctionFormatTagParameter parameterForVariant = null)
+        protected override void CreateFormatMethod(CodeStringBuilder builder, string key, bool isProperty, IEnumerable<IFormatTagParameter> parameters, string summary = null, IEnumerable<FunctionFormatTagParameter> extraParameters = null, FunctionFormatTagParameter parameterForPluralization = null, bool supportNoneState = false, FunctionFormatTagParameter parameterForVariant = null)
         {
             builder.AppendLine("' <summary>");
             builder.AppendLine($"'   {summary}");
@@ -189,7 +189,7 @@ namespace ReswPlus.Core.CodeGenerators
                         return functionParam.Name;
                     case MacroFormatTagParameter macroParam:
                         return $"ReswPlusLib.Macros.{macroParam.Id}";
-                    case ConstStringFormatTagParameter constStringParameter:
+                    case LiteralStringFormatTagParameter constStringParameter:
                         return $"\"{constStringParameter.Value}\"";
                     case LocalizationRefFormatTagParameter localizationStringParameter:
                         return localizationStringParameter.Id;

@@ -18,7 +18,7 @@ namespace ReswPlus.Core.CodeGenerators
         protected abstract void OpenRegion(CodeStringBuilder builder, string name);
         protected abstract void CloseRegion(CodeStringBuilder builder, string name);
 
-        protected abstract void CreateFormatMethod(CodeStringBuilder builder, string key, bool isProperty, IEnumerable<FormatTagParameter> parameters, string summary = null,
+        protected abstract void CreateFormatMethod(CodeStringBuilder builder, string key, bool isProperty, IEnumerable<IFormatTagParameter> parameters, string summary = null,
             IEnumerable<FunctionFormatTagParameter> extraParameters = null, FunctionFormatTagParameter parameterForPluralization = null, bool supportNoneState = false, FunctionFormatTagParameter parameterForVariant = null);
 
         protected abstract void CreateMarkupExtension(CodeStringBuilder builder, string resourceFileName, string className, IEnumerable<string> keys);

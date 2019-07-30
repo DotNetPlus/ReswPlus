@@ -5,25 +5,25 @@ using System.Text.RegularExpressions;
 
 namespace ReswPlus.Core.ResourceParser
 {
-    public interface FormatTagParameter
+    public interface IFormatTagParameter
     {
 
     }
-    public class LocalizationRefFormatTagParameter : FormatTagParameter
+    public class LocalizationRefFormatTagParameter : IFormatTagParameter
     {
         public string Id { get; set; }
     }
-    public class ConstStringFormatTagParameter : FormatTagParameter
+    public class LiteralStringFormatTagParameter : IFormatTagParameter
     {
         public string Value { get; set; }
     }
 
-    public class MacroFormatTagParameter : FormatTagParameter
+    public class MacroFormatTagParameter : IFormatTagParameter
     {
         public string Id { get; set; }
     }
 
-    public class FunctionFormatTagParameter : FormatTagParameter
+    public class FunctionFormatTagParameter : IFormatTagParameter
     {
         public ParameterType Type { get; set; }
         public string Name { get; set; }
@@ -33,7 +33,7 @@ namespace ReswPlus.Core.ResourceParser
 
     public class FunctionFormatTagParametersInfo
     {
-        public List<FormatTagParameter> Parameters { get; set; } = new List<FormatTagParameter>();
+        public List<IFormatTagParameter> Parameters { get; set; } = new List<IFormatTagParameter>();
         public FunctionFormatTagParameter PluralizationParameter { get; set; }
         public FunctionFormatTagParameter VariantParameter { get; set; }
     }
@@ -52,7 +52,7 @@ namespace ReswPlus.Core.ResourceParser
 
     public class FormatTag
     {
-        private static readonly Dictionary<string, string> _macroAvailable = new Dictionary<string, string>()
+        public static readonly Dictionary<string, string> MacrosAvailable = new Dictionary<string, string>()
         {
             /* all */
             { "DATE", "LongDate" },
@@ -81,7 +81,7 @@ namespace ReswPlus.Core.ResourceParser
             { "OS_VERSION", "OperatingSystemVersion" }
         };
 
-        private static readonly Dictionary<string, FormatTagParameterTypeInfo> _acceptedTypes = new Dictionary<string, FormatTagParameterTypeInfo>
+        public static readonly Dictionary<string, FormatTagParameterTypeInfo> AcceptedTypes = new Dictionary<string, FormatTagParameterTypeInfo>
         {
             {"Object", new FormatTagParameterTypeInfo(ParameterType.Object, false)},
             {"Byte", new FormatTagParameterTypeInfo(ParameterType.Byte, false)},
@@ -115,7 +115,7 @@ namespace ReswPlus.Core.ResourceParser
                 }
                 if (matchNamedParameters.Groups["constStrings"].Success)
                 {
-                    var param = new ConstStringFormatTagParameter()
+                    var param = new LiteralStringFormatTagParameter()
                     {
                         Value = matchNamedParameters.Groups["constStrings"].Value
                     };
@@ -149,7 +149,7 @@ namespace ReswPlus.Core.ResourceParser
 
                         if (isQuantifier && !string.IsNullOrEmpty(paramTypeId) && string.IsNullOrEmpty(paramName))
                         {
-                            if (!_acceptedTypes.ContainsKey(paramTypeId))
+                            if (!AcceptedTypes.ContainsKey(paramTypeId))
                             {
                                 paramName = paramTypeId;
                                 paramTypeId = "";
@@ -160,7 +160,7 @@ namespace ReswPlus.Core.ResourceParser
                             isQuantifier = true;
                             paramTypeId = paramName = "";
                         }
-                        else if (!isQuantifier && _macroAvailable.TryGetValue(paramTypeId, out var macroID) && string.IsNullOrEmpty(paramName))
+                        else if (!isQuantifier && MacrosAvailable.TryGetValue(paramTypeId, out var macroID) && string.IsNullOrEmpty(paramName))
                         {
                             result.Parameters.Add(new MacroFormatTagParameter() { Id = macroID });
                             continue;
@@ -193,8 +193,13 @@ namespace ReswPlus.Core.ResourceParser
                         {
                             result.PluralizationParameter = functionParam;
                         }
-                        else if (paramTypeId == "Variant" && result.VariantParameter == null)
+                        else if (paramTypeId == "Variant")
                         {
+                            if (result.VariantParameter != null)
+                            {
+                                logger?.LogError($"ReswPlus: The key '{key}' has more than 1 Variant parameter", resourceFilename);
+                                return null;
+                            }
                             result.VariantParameter = functionParam;
                         }
                         result.Parameters.Add(functionParam);
@@ -220,9 +225,9 @@ namespace ReswPlus.Core.ResourceParser
                     return (ParameterType.Double, null, false);
                 }
             }
-            if (_acceptedTypes.TryGetValue(key, out var info))
+            if (AcceptedTypes.TryGetValue(key, out var info))
             {
-                return (info.Type, (info.CanBeQuantifier && info.Type != ParameterType.Double ? (ParameterType?)ParameterType.Double : null), false);
+                return (info.Type, (isQuantifier && info.CanBeQuantifier && info.Type != ParameterType.Double ? (ParameterType?)ParameterType.Double : null), false);
             }
             return (null, null, false);
         }

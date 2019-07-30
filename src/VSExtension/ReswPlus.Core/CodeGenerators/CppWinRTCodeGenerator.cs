@@ -183,7 +183,7 @@ namespace ReswPlus.Core.CodeGenerators
             builderHeader.RemoveLevel();
         }
 
-        protected override void CppCreateFormatMethod(CodeStringBuilder builderCpp, string computedNamespace, string key, bool isProperty, bool isDotNetFormatting, IEnumerable<FormatTagParameter> parameters, IEnumerable<FunctionFormatTagParameter> extraParameters = null, FunctionFormatTagParameter parameterForPluralization = null, bool supportNoneState = false, FunctionFormatTagParameter parameterForVariant = null)
+        protected override void CppCreateFormatMethod(CodeStringBuilder builderCpp, string computedNamespace, string key, bool isProperty, bool isDotNetFormatting, IEnumerable<IFormatTagParameter> parameters, IEnumerable<FunctionFormatTagParameter> extraParameters = null, FunctionFormatTagParameter parameterForPluralization = null, bool supportNoneState = false, FunctionFormatTagParameter parameterForVariant = null)
         {
             var functionParameters = parameters != null ? parameters.OfType<FunctionFormatTagParameter>().ToList() :
                                new List<FunctionFormatTagParameter>();
@@ -223,7 +223,7 @@ namespace ReswPlus.Core.CodeGenerators
                     {
                         switch (p)
                         {
-                            case ConstStringFormatTagParameter constStringParam:
+                            case LiteralStringFormatTagParameter constStringParam:
                                 {
                                     return isDotNetFormatting ? $"box_value(L\"{constStringParam.Value}\")" : $"L\"{constStringParam.Value}\"";
                                 }

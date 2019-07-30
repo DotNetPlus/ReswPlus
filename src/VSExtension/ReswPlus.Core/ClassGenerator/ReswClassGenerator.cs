@@ -33,7 +33,7 @@ namespace ReswPlus.Core.ClassGenerator
         {
             _regexStringFormat =
                 new Regex(
-                    $"(?<tag>{TagFormat}|{TagFormatDotNet})\\[\\s*(?<formats>[^\\]]+)\\s*\\]");
+                    $"(?<tag>{TagFormat}|{TagFormatDotNet})\\[(?<formats>[^\\]]+)]");
         }
 
         private ReswClassGenerator(IResourceFileInfo resourceInfo, ICodeGenerator generator, IErrorLogger logger)
@@ -231,16 +231,15 @@ namespace ReswPlus.Core.ClassGenerator
             return defaultNamespace.Split('.');
         }
 
-        private (string format, bool isDotNetFormatting) ParseTag(string comment)
+        public static (string format, bool isDotNetFormatting) ParseTag(string comment)
         {
             if (!string.IsNullOrWhiteSpace(comment))
             {
-
                 var match = _regexStringFormat.Match(comment);
                 if (match.Success)
                 {
                     var tag = match.Groups["tag"].Value;
-                    return (match.Groups["formats"].Value, tag == TagFormatDotNet);
+                    return (match.Groups["formats"].Value.Trim(), tag == TagFormatDotNet);
                 }
             }
             return (null, false);

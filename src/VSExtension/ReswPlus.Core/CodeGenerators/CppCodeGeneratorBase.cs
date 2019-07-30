@@ -31,7 +31,7 @@ namespace ReswPlus.Core.CodeGenerators
 
         protected abstract void HeaderCreateFormatMethod(CodeStringBuilder builderHeader, string key, bool isProperty, IEnumerable<FunctionFormatTagParameter> parameters, string summary = null, IEnumerable<FunctionFormatTagParameter> extraParameters = null);
 
-        protected abstract void CppCreateFormatMethod(CodeStringBuilder builderHeader, string computedNamespace, string key, bool isProperty, bool isDotNetFormatting, IEnumerable<FormatTagParameter> parameters, IEnumerable<FunctionFormatTagParameter> extraParameters = null, FunctionFormatTagParameter parameterForPluralization = null, bool supportNoneState = false, FunctionFormatTagParameter parameterForVariant = null);
+        protected abstract void CppCreateFormatMethod(CodeStringBuilder builderHeader, string computedNamespace, string key, bool isProperty, bool isDotNetFormatting, IEnumerable<IFormatTagParameter> parameters, IEnumerable<FunctionFormatTagParameter> extraParameters = null, FunctionFormatTagParameter parameterForPluralization = null, bool supportNoneState = false, FunctionFormatTagParameter parameterForVariant = null);
 
         protected abstract void HeaderCreateMarkupExtension(CodeStringBuilder builderHeader, string resourceFileName, string className, IEnumerable<string> keys, IEnumerable<string> namespaces);
 
