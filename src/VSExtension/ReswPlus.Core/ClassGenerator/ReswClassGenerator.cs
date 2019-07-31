@@ -258,7 +258,7 @@ namespace ReswPlus.Core.ClassGenerator
             if (format != null)
             {
                 localization.IsDotNetFormatting = isDotNetFormatting;
-                var types = format.Split(',').Select(s => s.Trim());
+                var types = FormatTag.SplitParameters(format);
                 tagTypedInfo = FormatTag.ParseParameters(localization.Key, types, basicLocalizedItems, resourceName, _logger);
                 if (tagTypedInfo != null)
                 {

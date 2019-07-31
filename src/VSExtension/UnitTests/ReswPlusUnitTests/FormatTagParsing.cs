@@ -164,5 +164,46 @@ namespace ReswPlusUnitTests
                 Assert.Null(res.format);
             }
         }
+
+        [Fact]
+        public void TestSplittingParameters()
+        {
+            var parametersList = new List<string[]>(){
+                new string[]
+            {
+                "hi",
+                "\"test\"",
+                "hello",
+                "world"
+            },
+            new string[]
+            {
+                "test",
+                "\"hello, world\"", // the comma in the string would cause the test to fail if we used .Split(',')
+                "HI"
+            },
+            new string[]
+            {
+                "test",
+                "\"hello\\\" world\"",
+                "HI"
+            },
+            new string[]
+            {
+                "  test ",
+                " \"hello[] world\" ",
+                "HI   "
+            },
+              new string[]
+            {"Hello" }
+        };
+
+            foreach (var parameters in parametersList)
+            {
+                var parametersStr = parameters.Aggregate((a, b) => a + "," + b);
+                var resultParameters = FormatTag.SplitParameters(parametersStr).ToList();
+                Assert.True(parameters.Select(s => s.Trim()).SequenceEqual(resultParameters));
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
 using ReswPlus.Core.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -230,6 +231,23 @@ namespace ReswPlus.Core.ResourceParser
                 return (info.Type, (isQuantifier && info.CanBeQuantifier && info.Type != ParameterType.Double ? (ParameterType?)ParameterType.Double : null), false);
             }
             return (null, null, false);
+        }
+
+
+        /// <summary>
+        /// Extract parameters but ignore \" and , in literal strings.
+        /// </summary>
+        public static IEnumerable<string> SplitParameters(string source)
+        {
+            var regex = new Regex(@"(?:(?<param>(?:\x22(?:\\.|[^\x22])*\x22)|(?:\w[^\x22,]*?))\s*(?:,|$)\s*)+");
+            var match = regex.Match(source);
+            if (match.Success)
+            {
+                foreach (Capture capture in match.Groups["param"].Captures)
+                {
+                    yield return capture.Value;
+                }
+            }
         }
     }
 }
