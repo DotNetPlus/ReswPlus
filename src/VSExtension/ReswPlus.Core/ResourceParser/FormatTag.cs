@@ -239,9 +239,10 @@ namespace ReswPlus.Core.ResourceParser
         /// </summary>
         public static IEnumerable<string> SplitParameters(string source)
         {
+            source = source.Trim();
             var regex = new Regex(@"(?:(?<param>(?:\x22(?:\\.|[^\x22])*\x22)|(?:\w[^\x22,]*?))\s*(?:,|$)\s*)+");
             var match = regex.Match(source);
-            if (match.Success)
+            if (match.Success && match.Length == source.Length)
             {
                 foreach (Capture capture in match.Groups["param"].Captures)
                 {
