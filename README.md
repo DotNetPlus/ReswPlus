@@ -64,7 +64,7 @@ Contrary to `ResourceLoader.GetString("IdString"),` the compiler will verify how
 
 This feature will allow you to localize your applications using bindings (including native bindings) and code-behind (similar to .resx files in WPF/Silverlight applications) and will allow you to use converter, functions, etc...
 
-The privilegied way to access strings XAML-side is using native bindings. An alternative is normal binding, but these don't provide verification at compilation time. To fix this issue, ReswPlus also generates a custom MarkupExtension (verified at compilation time), also supporting Converters.
+The recommended way to access localization strings in your XAML is using native bindings. An alternative is normal binding, but these don't provide verification at compilation time. To fix this issue, ReswPlus also generates a custom MarkupExtension (verified at compilation time), also supporting Converters.
 
 **Code generated:**
 ```csharp
