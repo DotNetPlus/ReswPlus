@@ -1,7 +1,9 @@
 <img src="https://user-images.githubusercontent.com/1226538/56482508-6fbd2d00-6479-11e9-8fc0-b20d5f3171ad.png" height="80" />
 
 # ReswPlus - Advanced File Code Generator for Resw files.
-[![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/rudyhuyn.ReswPlus.svg?color=green)](https://marketplace.visualstudio.com/items?itemName=rudyhuyn.ReswPlus)
+![Type](https://img.shields.io/badge/type-Visual%20Studio%20Extension-blueviolet)
+![Compatibility](https://img.shields.io/badge/compatibility-UWP%2C%20.Net%20Core%2C%20.Net%20Standard%2C%20ASP.Net-blue)
+![LanguageSupported](https://img.shields.io/badge/languages-C%23%2C%20VB.Net%2C%20C%2B%2B%2FCX%2C%20C%2B%2B%2FWinRT-brightgreen)
 ![GitHub](https://img.shields.io/github/license/rudyhuyn/reswplus.svg)
 
 ReswPlus is a Visual Studio extension enriching your existing .resw files with many high valuable features:
