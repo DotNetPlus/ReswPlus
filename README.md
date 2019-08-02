@@ -29,8 +29,12 @@ Supported:
 | Support Plural forms                            |      | ✅               |      | ✅           |
 | Support 'None' state                            |      | ✅               |      |             |
 | Strongly typed string formatting                |      | ✅               |      |             |
+| Support literal strings in string formatter                |      | ✅               |      |             |
+| Support Macros in string formatter                |      | ✅               |      |             |
+| Support String reference in string formatter                |      | ✅               |      |             |
+| Strongly typed string formatting                |      | ✅               |      |             |
 | Support Resources in libraries                  |      | ✅               | ✅    |             |
-| Support Genders                                 |      | ✅               |     |             |
+| Support Variants/Genders                                 |      | ✅               |     |             |
 | Support String variants                         |      | ✅               |     |             |
 
 ## 📦 Guide
