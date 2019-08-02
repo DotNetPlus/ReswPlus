@@ -34,8 +34,7 @@ Supported:
 | Support String references in string formatter                |      | ✅               |      |             |
 | Strongly typed string formatting                |      | ✅               |      |             |
 | Support Resources in libraries                  |      | ✅               | ✅    |             |
-| Support Variants/Genders                                 |      | ✅               |     |             |
-| Support String variants                         |      | ✅               |     |             |
+| Support String variants (including genders)                        |      | ✅               |     |             |
 
 ## 📦 Guide
 ⚡ [How to install ReswPlus](./How-to-install-ReswPlus) - Learn how to install ReswPlus for Visual Studio 2017 and 2019<br>
