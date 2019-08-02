@@ -37,35 +37,35 @@ Supported:
 | Support String variants (including genders)                        |      | ✅               |     |             |
 
 ## 📦 Guide
-⚡ [How to install ReswPlus](./wiki/How-to-install-ReswPlus) - Learn how to install ReswPlus for Visual Studio 2017 and 2019<br>
-⚡ [Use ReswPlus in your project](./wiki/Use-ReswPlus-in-my-project) - Learn how to use ReswPlus in your projects
+⚡ [How to install ReswPlus](https://github.com/reswplus/ReswPlus/wiki/How-to-install-ReswPlus) - Learn how to install ReswPlus for Visual Studio 2017 and 2019<br>
+⚡ [Use ReswPlus in your project](https://github.com/reswplus/ReswPlus/wiki/Use-ReswPlus-in-my-project) - Learn how to use ReswPlus in your projects
 
 ## 🔧 Features
 ### Strongly Typed class generator
 _ReswPlus can generate a class exposing all strings from your .resw files as strongly typed static properties, providing a compile-time-safe way to access those strings XAML-side or code-side._
 
-🗨 [How to generate a strongly typed class](./wiki/Features:-Strongly-typed-properties)
+🗨 [How to generate a strongly typed class](https://github.com/reswplus/ReswPlus/wiki/Features:-Strongly-typed-properties)
 ### Pluralization
 _ReswPlus can add support of pluralization and plural forms to your localization strings. Plural forms of 196 languages are currently supported by ReswPlus._
 
-🗨 [How to add pluralization](./wiki/Features:-Pluralization-support)<br>
-⚙️ [Support Empty States](./wiki/Features:-Pluralization---Empty-states)<br>
-⚙️ [Languages supported](./wiki/Languages-supported-for-pluralization)
+🗨 [How to add pluralization](https://github.com/reswplus/ReswPlus/wiki/Features:-Pluralization-support)<br>
+⚙️ [Support Empty States](https://github.com/reswplus/ReswPlus/wiki/Features:-Pluralization---Empty-states)<br>
+⚙️ [Languages supported](https://github.com/reswplus/ReswPlus/wiki/Languages-supported-for-pluralization)
 ### String Formatting
 _To simplify your ViewModels and Views, ReswPlus can directly manage the formatting of your localization and generate strongly typed methods to format your strings._
 
-🗨 [How to use String Formatting](./wiki/Features:-String-Formatting)<br>
-⚙️ [Named parameters](./wiki/Features:-Named-parameters-for-String-Formatting)<br>
-⚙️ [Use String References](./wiki/Features:-String-References-in-String-Formatting)<br>
-⚙️ [Use Literal Strings](./wiki/Features:-Literal-Strings-in-String-Formatting)<br>
-⚙️ [Use Macros](./wiki/Features:-Macros-in-String-Formatting)
+🗨 [How to use String Formatting](https://github.com/reswplus/ReswPlus/wiki/Features:-String-Formatting)<br>
+⚙️ [Named parameters](https://github.com/reswplus/ReswPlus/wiki/Features:-Named-parameters-for-String-Formatting)<br>
+⚙️ [Use String References](https://github.com/reswplus/ReswPlus/wiki/Features:-String-References-in-String-Formatting)<br>
+⚙️ [Use Literal Strings](https://github.com/reswplus/ReswPlus/wiki/Features:-Literal-Strings-in-String-Formatting)<br>
+⚙️ [Use Macros](https://github.com/reswplus/ReswPlus/wiki/Features:-Macros-in-String-Formatting)
 
 ### Variants
 _ReswPlus can support many variants/versions of the same string and allow you to display the one you want based on some criteria (variants to support genders, different messages depend of some criteria...)_
 
-🗨 [How to use variants](./wiki/Features:-Variants)
+🗨 [How to use variants](https://github.com/reswplus/ReswPlus/wiki/Features:-Variants)
 
 ### .Net String formatting for C++ projects
 _String formatting in C++ is a quite different and a more complicated than in C#/VB.Net. ReswPlus provides you a way to use the same string templates than in you use in .Net (via `String.Format`) but in your C++ project, making your resource files shareable with .Net libraries and simplifying your code._
 
-🗨 [Use .Net String Formatting](./wiki/Features:-.Net-String-Formatting-for-Cpp)
+🗨 [Use .Net String Formatting](https://github.com/reswplus/ReswPlus/wiki/Features:-.Net-String-Formatting-for-Cpp)
