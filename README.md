@@ -33,11 +33,11 @@ Supported:
 | Support Genders                                 |      | ✅               |     |             |
 | Support String variants                         |      | ✅               |     |             |
 
-# 📦 Guide
+## 📦 Guide
 ⚡ [How to install ReswPlus](./How-to-install-ReswPlus) - Learn how to install ReswPlus for Visual Studio 2017 and 2019<br>
 ⚡ [Use ReswPlus in your project](./Use-ReswPlus-in-my-project) - Learn how to use ReswPlus in your projects
 
-# 🔧 Features
+## 🔧 Features
 ### Strongly Typed class generator
 _ReswPlus can generate a class exposing all strings from your .resw files as strongly typed static properties, providing a compile-time-safe way to access those strings XAML-side or code-side._
 
