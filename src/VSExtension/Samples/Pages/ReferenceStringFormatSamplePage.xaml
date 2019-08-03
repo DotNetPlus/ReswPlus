@@ -8,7 +8,7 @@
     mc:Ignorable="d">
     <ScrollViewer>
         <StackPanel Margin="24">
-            <TextBlock Style="{StaticResource SectionDescriptionTextBlockStyle}" Text="When using String Formatting, you can replace one or many parameters by one a reference to another string in your resw. This powerful feature will simplify your localizations and save you from having to translate the same string several times." />
+            <TextBlock Style="{StaticResource SectionDescriptionTextBlockStyle}" Text="When using String Formatting, you can replace one or many parameters by a reference to another string in your resw. This powerful feature will simplify your localizations and save you from having to translate the same string several times." />
 
             <StackPanel Style="{StaticResource PartStyle}">
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Reference other string when using String Formatting" />
@@ -37,7 +37,7 @@
                             Grid.Column="4"
                             FontWeight="Bold"
                             Text="Comment" />
-                        <TextBlock Grid.Row="1" Text="AndroidApplicationNameName" />
+                        <TextBlock Grid.Row="1" Text="AndroidApplicationName" />
                         <TextBlock
                             Grid.Row="1"
                             Grid.Column="2"
@@ -103,7 +103,7 @@
                             Grid.Column="4"
                             FontWeight="Bold"
                             Text="Comment" />
-                        <TextBlock Grid.Row="1" Text="AndroidApplicationNameName" />
+                        <TextBlock Grid.Row="1" Text="AndroidApplicationName" />
                         <TextBlock
                             Grid.Row="1"
                             Grid.Column="2"
@@ -117,7 +117,7 @@
                         <TextBlock
                             Grid.Row="2"
                             Grid.Column="4"
-                            Text="#Format[String username, AndroidApplicationNameName()]" />
+                            Text="#Format[String username, AndroidApplicationName()]" />
                     </Grid>
                 </StackPanel>
                 <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML:" />

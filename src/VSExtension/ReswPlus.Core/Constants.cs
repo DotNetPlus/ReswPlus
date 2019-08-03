@@ -8,7 +8,7 @@ namespace ReswPlus.Core
 {
     public sealed class Constants
     {
-        public const string ReswPlusExtensionVersion = "0.5.0";
-        public static Version ReswPlusLibMinVersion = new Version(0, 0, 7);
+        public const string ReswPlusExtensionVersion = "1.0.0";
+        public static Version ReswPlusLibMinVersion = new Version(1, 0, 0);
     }
 }

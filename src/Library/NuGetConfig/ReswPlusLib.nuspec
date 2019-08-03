@@ -2,12 +2,12 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>ReswPlusLib</id>
-    <version>0.0.7</version>
+    <version>1.0.0</version>
     <authors>Rudy Huyn</authors>
     <owners>Rudy Huyn</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="file">license\LICENSE</license>
-    <projectUrl>https://github.com/rudyhuyn/ReswPlus/</projectUrl>
+    <projectUrl>https://github.com/reswplus/ReswPlus/</projectUrl>
     <iconUrl>https://user-images.githubusercontent.com/1226538/56482508-6fbd2d00-6479-11e9-8fc0-b20d5f3171ad.png</iconUrl>
     <description>Library associated to ReswPlus</description>
     <releaseNotes>Initial release</releaseNotes>
