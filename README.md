@@ -8,9 +8,11 @@
 
 ReswPlus is a Visual Studio extension enriching your existing .resw files with many high valuable features:
 - Access to strings via strongly typed static properties.
-- Generates methods to format your strings with named and strongly typed parameters.
-- Adds pluralization support (support plural rules for 196 languages!).
-- In addition to pluralization, also supports empty states when the number of items is zero.
+- Automatically generate methods to format your strings
+    - Support typed and named parameters, literal strings, string references and Macros
+- Pluralization support (for 196 languages!).
+    - Support also empty states when the number of items is zero.
+- Variants support 
 - Generate a Markup extension to access to your strings with compile-time verification.
 
 Supported: 
@@ -21,7 +23,7 @@ Supported:
 
 
 
-|                                                 | Resw | Resw + ReswPlus | Resx | Android XML (for reference) |
+|                                                 | Resw | Resw with ReswPlus | Resx | Android XML (for reference) |
 |-------------------------------------------------|------|-----------------|------|-------------|
 | Modify UI properties via resource files (x:uid) | ✅    | ✅               |      |             |
 | Generate strongly typed accessors               |      | ✅               | ✅    | ✅           |
