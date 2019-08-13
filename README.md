@@ -6,12 +6,12 @@
 ![LanguageSupported](https://img.shields.io/badge/languages-C%23%2C%20VB.Net%2C%20C%2B%2B%2FCX%2C%20C%2B%2B%2FWinRT-brightgreen)
 ![GitHub](https://img.shields.io/github/license/rudyhuyn/reswplus.svg)
 
-ReswPlus is a Visual Studio extension enriching your existing .resw files with many high valuable features:
+ReswPlus is a Visual Studio extension enriching your existing .resw files with many highly valuable features:
 - Access to strings via strongly typed static properties.
 - Automatically generate methods to format your strings
     - Support typed and named parameters, literal strings, string references and Macros
 - Pluralization support (for 196 languages!).
-    - Support also empty states when the number of items is zero.
+    - Support empty states when the number of items is zero.
 - Variants support 
 - Generate a Markup extension to access to your strings with compile-time verification.
 
@@ -63,11 +63,11 @@ _To simplify your ViewModels and Views, ReswPlus can directly manage the formatt
 ⚙️ [Use Macros](https://github.com/reswplus/ReswPlus/wiki/Features:-Macros-in-String-Formatting)
 
 ### Variants
-_ReswPlus can support many variants/versions of the same string and allow you to display the one you want based on some criteria (variants to support genders, different messages depend of some criteria...)_
+_ReswPlus can support many variants/versions of the same string and allow you to display the one you want based on criteria (variants to support genders, different messages depend on some criteria...)_
 
 🗨 [How to use variants](https://github.com/reswplus/ReswPlus/wiki/Features:-Variants)
 
 ### .Net String formatting for C++ projects
-_String formatting in C++ is a quite different and a more complicated than in C#/VB.Net. ReswPlus provides you a way to use the same string templates than in you use in .Net (via `String.Format`) but in your C++ project, making your resource files shareable with .Net libraries and simplifying your code._
+_String formatting in C++ is quite different and more complicated than in C#/VB.Net. ReswPlus provides a way to use the same string templates as you use in .Net (via `String.Format`) but in your C++ project, making your resource files shareable with .Net libraries and simplifying your code._
 
 🗨 [Use .Net String Formatting](https://github.com/reswplus/ReswPlus/wiki/Features:-.Net-String-Formatting-for-Cpp)
