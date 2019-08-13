@@ -117,6 +117,54 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AndroidApplicationName" xml:space="preserve">
+    <value>Contoso for Android</value>
+  </data>
+  <data name="AnimalTreat_Variant1_One" xml:space="preserve">
+    <value>Récompensez votre chiot, donnez {0} biscuit à {1} !</value>
+    <comment>#Format[Plural Double treatNumber, Variant petType, String petName]</comment>
+  </data>
+  <data name="AnimalTreat_Variant1_Other" xml:space="preserve">
+    <value>Récompensez votre chiot, donnez {0} biscuits à {1} !</value>
+  </data>
+  <data name="AnimalTreat_Variant2_One" xml:space="preserve">
+    <value>Récompensez votre chaton, donnez {0} biscuit à votre chat {2} !</value>
+  </data>
+  <data name="AnimalTreat_Variant2_Other" xml:space="preserve">
+    <value>Récompensez votre chaton, donnez {0} biscuits à votre chat {2} !</value>
+  </data>
+  <data name="AppVersion" xml:space="preserve">
+    <value>version : {0} v{1}</value>
+    <comment>#Format[APP_NAME, VERSION]</comment>
+  </data>
+  <data name="CopyrightNotice" xml:space="preserve">
+    <value>© {0} - {1}. Tous droits reservés.</value>
+    <comment>#Format[YEAR, PUBLISHER_NAME]</comment>
+  </data>
+  <data name="DonateToAssociation" xml:space="preserve">
+    <value>Bonjour {1}, faites une donation à {2:C2} de {0}!</value>
+    <comment>#Format["WWF", String username, Int amount]</comment>
+  </data>
+  <data name="DownloadAndroidApp" xml:space="preserve">
+    <value>Cliquez ici pour télécharger {0}!</value>
+    <comment>#Format[AndroidApplicationName()]</comment>
+  </data>
+  <data name="DownloadOurApp" xml:space="preserve">
+    <value>Téléchargez l'application sur le {0}</value>
+    <comment>#Format["Microsoft Store"]</comment>
+  </data>
+  <data name="DriverArrived_Variant1" xml:space="preserve">
+    <value>Votre chauffeuse est là, elle attend dehors. Voulez-vous la contacter ?</value>
+  </data>
+  <data name="DriverArrived_Variant2" xml:space="preserve">
+    <value>Votre chauffeur est là, il attend dehors. Voulez-vous le contacter ?</value>
+  </data>
+  <data name="DriverArrived_Variant3" xml:space="preserve">
+    <value>Votre chauffeu.r.se est là, il.elle attend dehors. Voulez-vous le.la contacter ?</value>
+  </data>
+  <data name="DriverArrived_Variant4" xml:space="preserve">
+    <value>Votre chauffeure est là, lel attend dehors. Voulez-vous lo contacter ?</value>
+  </data>
   <data name="FileShared_One" xml:space="preserve">
     <value>{0} a partagé {1} fichier de {2}</value>
     <comment>#Format[s(username), Q, s(city)]</comment>
@@ -129,6 +177,22 @@
   </data>
   <data name="GotMessages" xml:space="preserve">
     <value>Bienvenue {0}, vous avez {1} messages!</value>
+  </data>
+  <data name="Greeting_Variant1" xml:space="preserve">
+    <value>Bonjour, bonne journée !</value>
+  </data>
+  <data name="Greeting_Variant2" xml:space="preserve">
+    <value>Bon après-midi, amusez-vous bien !</value>
+  </data>
+  <data name="Greeting_Variant3" xml:space="preserve">
+    <value>Bonsoir, nous espérons que votre journée s'est bien passée !</value>
+  </data>
+  <data name="Greeting_Variant4" xml:space="preserve">
+    <value>Bonne nuit, dormez bien, à demain !</value>
+  </data>
+  <data name="LearnMoreAboutAndroidApp" xml:space="preserve">
+    <value>Pour en savoir plus à propos de '{0}', visitez notre site internet.</value>
+    <comment>#Format[AndroidApplicationName()]</comment>
   </data>
   <data name="MinutesLeft_One" xml:space="preserve">
     <value>{0} minute restante</value>
@@ -154,10 +218,18 @@
   <data name="ThisIsATooltip" xml:space="preserve">
     <value>Ceci est un message tooltip</value>
   </data>
+  <data name="WelcomeDownloadApp" xml:space="preserve">
+    <value>Bonjour {0} ! Voulez-vous télécharger {1}?</value>
+    <comment>#Format[String username, AndroidApplicationName()]</comment>
+  </data>
+  <data name="WelcomeMessageDay" xml:space="preserve">
+    <value>Bienvenue {0}! On vous souhaite un bon {1} !</value>
+    <comment>#Format[String username, WEEKDAY]</comment>
+  </data>
   <data name="WelcomeTitle" xml:space="preserve">
     <value>Bonjour Le Monde!</value>
   </data>
   <data name="YourAgeAndName" xml:space="preserve">
-    <value>Your are {0}yo and named {1}!</value>
+    <value>Vous avez {0} ans et votre nom est {1} !</value>
   </data>
 </root>
