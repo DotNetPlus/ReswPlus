@@ -2,7 +2,7 @@
 
 # ReswPlus - Advanced File Code Generator for Resw files.
 ![Type](https://img.shields.io/badge/type-Visual%20Studio%20Extension-blueviolet)
-![Compatibility](https://img.shields.io/badge/compatibility-UWP%2C%20.Net%20Core%2C%20.Net%20Standard%2C%20ASP.Net-blue)
+![Compatibility](https://img.shields.io/badge/compatibility-UWP%2C%20.Net%20Core%2C%20.Net%20Standard%2C%20ASP.Net%20Core-blue)
 ![LanguageSupported](https://img.shields.io/badge/languages-C%23%2C%20VB.Net%2C%20C%2B%2B%2FCX%2C%20C%2B%2B%2FWinRT-brightgreen)
 ![GitHub](https://img.shields.io/github/license/rudyhuyn/reswplus.svg)
 
