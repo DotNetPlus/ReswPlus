@@ -1,9 +1,4 @@
 using ReswPlus.Core.ResourceInfo;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ReswPlus.Utils;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -11,7 +6,6 @@ using EnvDTE;
 
 namespace ReswPlus.ResourceInfo
 {
-
     public class ProjectInfo : IProject
     {
         private readonly ProjectItem _projectItem;
@@ -22,6 +16,7 @@ namespace ReswPlus.ResourceInfo
 
         public ProjectInfo(ProjectItem projectItem)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             _projectItem = projectItem;
             var project = projectItem.ContainingProject;
             IsLibrary = project.IsLibrary();
@@ -31,6 +26,7 @@ namespace ReswPlus.ResourceInfo
 
         public string GetPrecompiledHeader()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (Language == Core.ResourceInfo.Language.CPPWINRT || Language == Core.ResourceInfo.Language.CPPCX)
             {
                 return _projectItem.ContainingProject.GetPrecompiledHeader();
@@ -55,6 +51,7 @@ namespace ReswPlus.ResourceInfo
 
         public string GetIndentString()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             try
             {
                 var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
@@ -83,18 +80,5 @@ namespace ReswPlus.ResourceInfo
             return "    ";
         }
 
-    }
-
-    public class ResourceFileInfo : IResourceFileInfo
-    {
-
-        public string Path { get; }
-        public IProject ContainingProject { get; }
-
-        public ResourceFileInfo(ProjectItem projectItem)
-        {
-            Path = projectItem.Properties.Item("FullPath").Value as string;
-            ContainingProject = new ProjectInfo(projectItem);
-        }
     }
 }

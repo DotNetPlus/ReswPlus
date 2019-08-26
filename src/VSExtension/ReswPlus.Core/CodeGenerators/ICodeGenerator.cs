@@ -12,6 +12,6 @@ namespace ReswPlus.Core.CodeGenerators
 
     public interface ICodeGenerator
     {
-        IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename, StronglyTypedClass info, IResourceFileInfo projectItem);
+        IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename, StronglyTypedClass info, ResourceFileInfo projectItem);
     }
 }

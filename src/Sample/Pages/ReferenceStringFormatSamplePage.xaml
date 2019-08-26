@@ -1,4 +1,5 @@
-<Page x:Class="ReswPlusSample.Pages.ReferenceStringFormatSamplePage"
+<Page
+    x:Class="ReswPlusSample.Pages.ReferenceStringFormatSamplePage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -127,7 +128,10 @@
                 <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Results:" />
 
                 <StackPanel Style="{StaticResource SubPanelStyle}">
-                    <TextBox x:Name="UsernameTextbox" Header="Username" Text="Roger" />
+                    <TextBox
+                        x:Name="UsernameTextbox"
+                        Header="Username"
+                        Text="Roger" />
                     <TextBlock Text="{x:Bind strings:Resources.WelcomeDownloadApp(UsernameTextbox.Text), Mode=OneWay}" />
                 </StackPanel>
             </StackPanel>

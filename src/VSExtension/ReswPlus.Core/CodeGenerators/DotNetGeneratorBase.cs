@@ -24,9 +24,9 @@ namespace ReswPlus.Core.CodeGenerators
         protected abstract void CreateMarkupExtension(CodeStringBuilder builder, string resourceFileName, string className, IEnumerable<string> keys);
         protected abstract IEnumerable<GeneratedFile> GetGeneratedFiles(CodeStringBuilder builder, string baseFilename);
 
-        public IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename, StronglyTypedClass info, ResourceInfo.IResourceFileInfo resourceFileInfo)
+        public IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename, StronglyTypedClass info, ResourceInfo.ResourceFileInfo resourceFileInfo)
         {
-            var builder = new CodeStringBuilder(resourceFileInfo.ContainingProject.GetIndentString());
+            var builder = new CodeStringBuilder(resourceFileInfo.ParentProject.GetIndentString());
             GenerateHeaders(builder, info.IsAdvanced);
             AddNewLine(builder);
             OpenNamespace(builder, info.Namespaces);

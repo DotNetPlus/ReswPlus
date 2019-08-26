@@ -25,7 +25,7 @@ namespace ReswPlus.Core.ClassGenerator
         private static readonly Regex _regexStringFormat;
         private static readonly Regex _regexRemoveSpace = new Regex("\\s+");
         private static readonly Regex _regexDotNetFormatting = new Regex(@"(?<!{){\d+(,-?\d+)?(:[^}]+)?}");
-        private readonly IResourceFileInfo _resourceFileInfo;
+        private readonly ResourceFileInfo _resourceFileInfo;
         private readonly ICodeGenerator _codeGenerator;
         private readonly IErrorLogger _logger;
 
@@ -42,17 +42,17 @@ namespace ReswPlus.Core.ClassGenerator
                     "\\]");
         }
 
-        private ReswClassGenerator(IResourceFileInfo resourceInfo, ICodeGenerator generator, IErrorLogger logger)
+        private ReswClassGenerator(ResourceFileInfo resourceInfo, ICodeGenerator generator, IErrorLogger logger)
         {
             _resourceFileInfo = resourceInfo;
             _codeGenerator = generator;
             _logger = logger;
         }
 
-        public static ReswClassGenerator CreateGenerator(IResourceFileInfo resourceFileInfo, IErrorLogger logger)
+        public static ReswClassGenerator CreateGenerator(ResourceFileInfo resourceFileInfo, IErrorLogger logger)
         {
             ICodeGenerator codeGenerator = null;
-            switch (resourceFileInfo.ContainingProject.Language)
+            switch (resourceFileInfo.ParentProject.Language)
             {
                 case ResourceInfo.Language.CSHARP:
                     codeGenerator = new CSharpCodeGenerator();
@@ -81,7 +81,7 @@ namespace ReswPlus.Core.ClassGenerator
             var className = Path.GetFileNameWithoutExtension(_resourceFileInfo.Path);
             var reswInfo = ReswParser.Parse(content);
 
-            var projectNameIfLibrary = _resourceFileInfo.ContainingProject.IsLibrary ? _resourceFileInfo.ContainingProject.Name : null;
+            var projectNameIfLibrary = _resourceFileInfo.ParentProject.IsLibrary ? _resourceFileInfo.ParentProject.Name : null;
 
             //If the resource file is in a library, the resource id in the .pri file
             //will be <library name>/FilenameWithoutExtension

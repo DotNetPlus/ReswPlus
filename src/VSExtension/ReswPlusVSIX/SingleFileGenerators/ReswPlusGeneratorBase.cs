@@ -63,7 +63,6 @@ namespace ReswPlus.SingleFileGenerators
                     return VSConstants.E_FAIL;
                 }
 
-
                 // IVsSingleFileGenerator supports only 1 file.
                 output = Encoding.UTF8.GetBytes(generationResult.Files.First().Content);
 

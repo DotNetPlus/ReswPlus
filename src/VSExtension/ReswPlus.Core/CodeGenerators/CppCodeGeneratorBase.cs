@@ -89,7 +89,7 @@ namespace ReswPlus.Core.CodeGenerators
         {
         }
 
-        public virtual IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename, StronglyTypedClass info, IResourceFileInfo resourceFileInfo)
+        public virtual IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename, StronglyTypedClass info, ResourceFileInfo resourceFileInfo)
         {
             return GeneratedFiles(baseFilename, info, resourceFileInfo, null);
         }
@@ -99,7 +99,7 @@ namespace ReswPlus.Core.CodeGenerators
 
         }
 
-        public virtual IEnumerable<GeneratedFile> GeneratedFiles(string baseFilename, StronglyTypedClass info, IResourceFileInfo resourceInfo, IEnumerable<string> namespaceOverride)
+        public virtual IEnumerable<GeneratedFile> GeneratedFiles(string baseFilename, StronglyTypedClass info, ResourceFileInfo resourceInfo, IEnumerable<string> namespaceOverride)
         {
             var supportMultiNamespaceDeclaration = SupportMultiNamespaceDeclaration();
             var namespacesToUse = namespaceOverride ?? info.Namespaces;
@@ -108,11 +108,11 @@ namespace ReswPlus.Core.CodeGenerators
             var cppFileName = baseFilename + ".cpp";
             var baseNamespace = namespacesToUse == null || !namespacesToUse.Any() ? "" : namespacesToUse.Aggregate((a, b) => a + "::" + b);
 
-            var indentStr = resourceInfo.ContainingProject.GetIndentString();
+            var indentStr = resourceInfo.ParentProject.GetIndentString();
             var builderHeader = new CodeStringBuilder(indentStr);
             var builderCpp = new CodeStringBuilder(indentStr);
 
-            var precompiledHeader = resourceInfo.ContainingProject.GetPrecompiledHeader();
+            var precompiledHeader = resourceInfo.ParentProject.GetPrecompiledHeader();
             var localNamespace = baseNamespace == "" ? "" : $"{LocalNamespaceName}::";
             var namespaceResourceClass = $"{localNamespace}{info.ClassName}::";
             var namespaceMarkupExtensionClass = $"{localNamespace}{markupClassName}::";

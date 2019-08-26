@@ -520,7 +520,7 @@ namespace ReswPlus.Core.CodeGenerators
 
         #endregion
 
-        public override IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename, StronglyTypedClass info, ResourceInfo.IResourceFileInfo resourceFileInfo)
+        public override IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename, StronglyTypedClass info, ResourceInfo.ResourceFileInfo resourceFileInfo)
         {
             // Generate .cpp and .h files
             var namespaces = new List<string>
@@ -538,7 +538,7 @@ namespace ReswPlus.Core.CodeGenerators
             {
                 yield return file;
             }
-            var builderIdl = new CodeStringBuilder(resourceFileInfo.ContainingProject.GetIndentString());
+            var builderIdl = new CodeStringBuilder(resourceFileInfo.ParentProject.GetIndentString());
             // Generate .idl file
             yield return GenerateIdlFile(builderIdl, baseFilename, info);
         }

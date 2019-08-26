@@ -70,8 +70,9 @@
     <Compile Include="Interfaces\IErrorLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="ResourceInfo\IProject.cs" />
     <Compile Include="ResourceInfo\Language.cs" />
-    <Compile Include="ResourceInfo\IResourceFileInfo.cs" />
+    <Compile Include="ResourceInfo\ResourceFileInfo.cs" />
     <Compile Include="ResourceParser\FormatTag.cs" />
     <Compile Include="ResourceParser\ParameterType.cs" />
     <Compile Include="ResourceParser\ReswFilters.cs" />
