@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting.AppContainer;
-using ReswPlusLib.Shared.EmphasisedStrings;
+using ReswPlusLib.Html;
 using Windows.UI.Text;
 using Windows.UI.Xaml.Documents;
 

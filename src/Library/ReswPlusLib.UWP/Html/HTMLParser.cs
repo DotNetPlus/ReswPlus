@@ -3,11 +3,11 @@ using System.Xml.Linq;
 using Windows.UI.Text;
 using Windows.UI.Xaml.Documents;
 
-namespace ReswPlusLib.Shared.EmphasisedStrings
+namespace ReswPlusLib.Html
 {
     public static class HTMLParser
     {
-        private static IEnumerable<Run> Parse(IEnumerable<XNode> nodes, FontWeight fontWeight, FontStyle fontStyle, TextDecorations textDecoration)
+        private static IEnumerable<Inline> Parse(IEnumerable<XNode> nodes, FontWeight fontWeight, FontStyle fontStyle, TextDecorations textDecoration)
         {
             foreach (var current in nodes)
             {
@@ -62,7 +62,7 @@ namespace ReswPlusLib.Shared.EmphasisedStrings
             }
         }
 
-        public static IEnumerable<Run> Parse(string source)
+        public static IEnumerable<Inline> Parse(string source)
         {
             if (!string.IsNullOrEmpty(source))
             {
