@@ -18,34 +18,17 @@
             OpenPaneLength="220"
             PaneDisplayMode="Top">
             <NavigationView.MenuItems>
-                <NavigationViewItem
-                    Content="Strongly typed resources"
-                    Tag="StronglyTyped" />
-                <NavigationViewItem
-                    Content="String Formatting"
-                    Tag="StringFormat" />
-                <NavigationViewItem
-                    Content="Named String Formatting"
-                    Tag="NamedStringFormat" />
-                <NavigationViewItem
-                    Content="Literals in String Formatting"
-                    Tag="LiteralFormat" />
-                <NavigationViewItem
-                    Content="String Ref in String Formatting"
-                    Tag="StringReferenceFormat" />
-                <NavigationViewItem
-                    Content="Macro in String Formatting"
-                    Tag="MacroFormat" />
-                
-                <NavigationViewItem
-                    Content="Pluralization"
-                    Tag="Pluralization" />
-                <NavigationViewItem
-                    Content="Advanced Pluralization"
-                    Tag="AdvancedPluralization" />
-                <NavigationViewItem
-                    Content="Variants"
-                    Tag="Variants" />
+                <NavigationViewItem Content="Strongly typed resources" Tag="StronglyTyped" />
+                <NavigationViewItem Content="String Formatting" Tag="StringFormat" />
+                <NavigationViewItem Content="Named String Formatting" Tag="NamedStringFormat" />
+                <NavigationViewItem Content="Literals in String Formatting" Tag="LiteralFormat" />
+                <NavigationViewItem Content="String Ref in String Formatting" Tag="StringReferenceFormat" />
+                <NavigationViewItem Content="Macro in String Formatting" Tag="MacroFormat" />
+
+                <NavigationViewItem Content="Pluralization" Tag="Pluralization" />
+                <NavigationViewItem Content="Advanced Pluralization" Tag="AdvancedPluralization" />
+                <NavigationViewItem Content="Variants" Tag="Variants" />
+                <NavigationViewItem Content="HTML formatting" Tag="HtmlText" />
             </NavigationView.MenuItems>
             <Frame x:Name="NavFrame" />
         </NavigationView>

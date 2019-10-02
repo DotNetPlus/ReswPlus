@@ -192,6 +192,10 @@
   <data name="Greeting_Variant4" xml:space="preserve">
     <value>Good night, sleep well, see you tomorrow!</value>
   </data>
+  <data name="HelloUsername" xml:space="preserve">
+    <value>Hello &lt;b&gt;{0}&lt;/b&gt;, have a good {1}?</value>
+    <comment>#Format[String username, WEEKDAY]</comment>
+  </data>
   <data name="LearnMoreAboutAndroidApp" xml:space="preserve">
     <value>To learn more about '{0}', visit our website.</value>
     <comment>#Format[AndroidApplicationName()]</comment>
@@ -202,6 +206,9 @@
   </data>
   <data name="MinutesLeft_Other" xml:space="preserve">
     <value>{0} minutes left</value>
+  </data>
+  <data name="PleaseInstallNetFramework" xml:space="preserve">
+    <value>Please &lt;b&gt;Install &lt;i&gt;.Net Framework 4.6&lt;/i&gt;&lt;/b&gt; first.</value>
   </data>
   <data name="PluralizationTest_One" xml:space="preserve">
     <value>This is the singular form</value>
@@ -219,8 +226,15 @@
   <data name="ReceivedMessages_Other" xml:space="preserve">
     <value>You got {0} messages from {1}</value>
   </data>
+  <data name="SendDocumentToUser" xml:space="preserve">
+    <value>Send &lt;i&gt;{0}&lt;/i&gt; to &lt;b&gt;{1}&lt;/b&gt;.</value>
+    <comment>#Format[String filename, String username]</comment>
+  </data>
   <data name="ThisIsATooltip" xml:space="preserve">
     <value>this is a tooltip text</value>
+  </data>
+  <data name="UseDesktopBridge" xml:space="preserve">
+    <value>Use &lt;strike&gt;Centennial&lt;/strike&gt; Desktop Bridge to convert your app</value>
   </data>
   <data name="WelcomeDownloadApp" xml:space="preserve">
     <value>Hi {0}! Do you want to download {1}?</value>

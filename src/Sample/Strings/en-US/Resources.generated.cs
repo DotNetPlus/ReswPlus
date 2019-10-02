@@ -6,7 +6,7 @@ using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Data;
 
 namespace ReswPlusSample.Strings{
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Huyn.ReswPlus", "0.1.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Huyn.ReswPlus", "1.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -226,6 +226,16 @@ namespace ReswPlusSample.Strings{
         }
         #endregion
 
+        #region HelloUsername
+        /// <summary>
+        ///   Looks up a localized string similar to: Hello <b>{0}</b>, have a good {1}?
+        /// </summary>
+        public static string HelloUsername(string username)
+        {
+            return string.Format(_resourceLoader.GetString("HelloUsername"), username, ReswPlusLib.Macros.WeekDay);
+        }
+        #endregion
+
         #region LearnMoreAboutAndroidApp
         /// <summary>
         ///   Looks up a localized string similar to: To learn more about '{0}', visit our website.
@@ -239,6 +249,29 @@ namespace ReswPlusSample.Strings{
         }
         #endregion
 
+        #region PleaseInstallNetFramework
+        /// <summary>
+        ///   Looks up a localized string similar to: Please <b>Install <i>.Net Framework 4.6</i></b> first.
+        /// </summary>
+        public static string PleaseInstallNetFramework
+        {
+            get
+            {
+                return _resourceLoader.GetString("PleaseInstallNetFramework");
+            }
+        }
+        #endregion
+
+        #region SendDocumentToUser
+        /// <summary>
+        ///   Looks up a localized string similar to: Send <i>{0}</i> to <b>{1}</b>.
+        /// </summary>
+        public static string SendDocumentToUser(string filename, string username)
+        {
+            return string.Format(_resourceLoader.GetString("SendDocumentToUser"), filename, username);
+        }
+        #endregion
+
         #region ThisIsATooltip
         /// <summary>
         ///   Looks up a localized string similar to: this is a tooltip text
@@ -248,6 +281,19 @@ namespace ReswPlusSample.Strings{
             get
             {
                 return _resourceLoader.GetString("ThisIsATooltip");
+            }
+        }
+        #endregion
+
+        #region UseDesktopBridge
+        /// <summary>
+        ///   Looks up a localized string similar to: Use <strike>Centennial</strike> Desktop Bridge to convert your app
+        /// </summary>
+        public static string UseDesktopBridge
+        {
+            get
+            {
+                return _resourceLoader.GetString("UseDesktopBridge");
             }
         }
         #endregion
@@ -296,7 +342,7 @@ namespace ReswPlusSample.Strings{
         #endregion
     }
 
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Huyn.ReswPlus", "0.1.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Huyn.ReswPlus", "1.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [MarkupExtensionReturnType(ReturnType = typeof(string))]
@@ -320,8 +366,12 @@ namespace ReswPlusSample.Strings{
             DownloadOurApp,
             ForecastAnnouncement,
             GotMessages,
+            HelloUsername,
             LearnMoreAboutAndroidApp,
+            PleaseInstallNetFramework,
+            SendDocumentToUser,
             ThisIsATooltip,
+            UseDesktopBridge,
             WelcomeDownloadApp,
             WelcomeMessageDay,
             WelcomeTitle,

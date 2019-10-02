@@ -69,6 +69,11 @@ namespace ReswPlusSample
                             NavFrame.Navigate(typeof(VariantsSamplePage), null, args.RecommendedNavigationTransitionInfo);
                         }
                         break;
+                    case "HtmlText":
+                        {
+                            NavFrame.Navigate(typeof(HtmlStringSamplePage), null, args.RecommendedNavigationTransitionInfo);
+                        }
+                        break;
                 }
             }
         }
