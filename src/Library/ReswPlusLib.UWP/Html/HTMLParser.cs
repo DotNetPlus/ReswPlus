@@ -1,33 +1,46 @@
 using System.Collections.Generic;
 using System.Xml.Linq;
+using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml.Documents;
+using Windows.UI.Xaml.Markup;
+using Windows.UI.Xaml.Media;
 
 namespace ReswPlusLib.Html
 {
     public static class HTMLParser
     {
-        private static IEnumerable<Inline> Parse(IEnumerable<XNode> nodes, FontWeight fontWeight, FontStyle fontStyle, TextDecorations textDecoration)
+        private static IEnumerable<Inline> Parse(IEnumerable<XNode> nodes, FontFamily fontFamily, Brush fontColor, FontWeight fontWeight, FontStyle fontStyle, TextDecorations textDecoration)
         {
             foreach (var current in nodes)
             {
                 switch (current)
                 {
                     case XText xText:
-                        yield return new Run() { Text = xText.Value, FontWeight = fontWeight, FontStyle = fontStyle, TextDecorations = textDecoration };
+                        var run = new Run() { Text = xText.Value, FontWeight = fontWeight, FontStyle = fontStyle, TextDecorations = textDecoration };
+                        if (fontFamily != null)
+                        {
+                            run.FontFamily = fontFamily;
+                        }
+                        if(fontColor != null)
+                        {
+                            run.Foreground = fontColor;
+                        }
+
+                        yield return run;
                         break;
                     case XElement xElement:
                         {
                             switch (xElement.Name.LocalName.ToLower())
                             {
                                 case "b":
-                                    foreach (var item in Parse(xElement.Nodes(), FontWeights.Bold, fontStyle, textDecoration))
+                                    foreach (var item in Parse(xElement.Nodes(), fontFamily, fontColor, FontWeights.Bold, fontStyle, textDecoration))
                                     {
                                         yield return item;
                                     }
                                     break;
                                 case "em":
-                                    foreach (var item in Parse(xElement.Nodes(), FontWeights.SemiBold, fontStyle, textDecoration))
+                                    foreach (var item in Parse(xElement.Nodes(), fontFamily, fontColor, FontWeights.SemiBold, fontStyle, textDecoration))
                                     {
                                         yield return item;
                                     }
@@ -35,14 +48,14 @@ namespace ReswPlusLib.Html
                                 case "i":
                                 case "cite":
                                 case "dfn":
-                                    foreach (var item in Parse(xElement.Nodes(), fontWeight, FontStyle.Italic, textDecoration))
+                                    foreach (var item in Parse(xElement.Nodes(), fontFamily, fontColor, fontWeight, FontStyle.Italic, textDecoration))
                                     {
                                         yield return item;
 
                                     }
                                     break;
                                 case "u":
-                                    foreach (var item in Parse(xElement.Nodes(), fontWeight, fontStyle, TextDecorations.Underline))
+                                    foreach (var item in Parse(xElement.Nodes(), fontFamily, fontColor, fontWeight, fontStyle, TextDecorations.Underline))
                                     {
                                         yield return item;
                                     }
@@ -50,9 +63,40 @@ namespace ReswPlusLib.Html
                                 case "s":
                                 case "strike":
                                 case "del":
-                                    foreach (var item in Parse(xElement.Nodes(), fontWeight, fontStyle, TextDecorations.Strikethrough))
+                                    foreach (var item in Parse(xElement.Nodes(), fontFamily, fontColor, fontWeight, fontStyle, TextDecorations.Strikethrough))
                                     {
                                         yield return item;
+                                    }
+                                    break;
+                                case "font":
+                                    {
+                                        Brush newFontColor = null;
+                                        FontFamily newFontFamily = null;
+
+                                        var colorStr = xElement.Attribute("color")?.Value;
+                                        if (!string.IsNullOrEmpty(colorStr))
+                                        {
+                                            try
+                                            {
+                                                var color = XamlBindingHelper.ConvertValue(typeof(Windows.UI.Color), colorStr) as Color?;
+                                                if (color.HasValue)
+                                                {
+                                                    newFontColor = new SolidColorBrush() { Color = color.Value };
+                                                }
+                                            }
+                                            catch { }
+                                        }
+
+                                        var faceStr = xElement.Attribute("face")?.Value;
+                                        if (!string.IsNullOrEmpty(faceStr))
+                                        {
+                                            newFontFamily = new FontFamily(faceStr);
+                                        }
+
+                                        foreach (var item in Parse(xElement.Nodes(), newFontFamily ?? fontFamily, newFontColor ?? fontColor, fontWeight, fontStyle, textDecoration))
+                                        {
+                                            yield return item;
+                                        }
                                     }
                                     break;
                             }
@@ -80,7 +124,7 @@ namespace ReswPlusLib.Html
                 }
                 else
                 {
-                    foreach (var item in Parse(((XElement)xDocument.FirstNode).Nodes(), FontWeights.Normal, FontStyle.Normal, TextDecorations.None))
+                    foreach (var item in Parse(((XElement)xDocument.FirstNode).Nodes(), null, null, FontWeights.Normal, FontStyle.Normal, TextDecorations.None))
                     {
                         yield return item;
                     }
