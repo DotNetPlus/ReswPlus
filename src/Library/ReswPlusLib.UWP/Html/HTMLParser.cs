@@ -99,6 +99,14 @@ namespace ReswPlusLib.Html
                                         }
                                     }
                                     break;
+                                case "tt":
+                                    {
+                                        foreach (var item in Parse(xElement.Nodes(), new FontFamily("Consolas"), fontColor, fontWeight, fontStyle, textDecoration))
+                                        {
+                                            yield return item;
+                                        }
+                                    }
+                                    break;
                             }
                         }
                         break;
