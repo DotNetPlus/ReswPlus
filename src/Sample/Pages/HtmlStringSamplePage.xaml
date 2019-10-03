@@ -95,6 +95,7 @@
                     <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="{x:Bind strings:Resources.SendDocumentToUser(DocumentNameTextBox.Text, UsernameTextBox.Text), Mode=OneWay}" />
                     <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="{x:Bind strings:Resources.HelloUsername(UsernameTextBox.Text)}" />
                     <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="Normal, &lt;em&gt;Semi-Bold&lt;/em&gt;, &lt;b&gt;Bold&lt;/b&gt;" />
+                    <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="Default Font &lt;Font color=&quot;#007000&quot; face=&quot;Arial&quot;&gt;Arial Font&lt;/Font&gt; &lt;Font face=&quot;Consolas&quot;&gt;Consolas Font&lt;/Font&gt;" />
                 </StackPanel>
             </StackPanel>
         </StackPanel>
