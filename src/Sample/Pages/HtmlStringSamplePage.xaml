@@ -99,6 +99,8 @@
                     <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="Test monospace: &lt;tt&gt;Hello world!&lt;/tt&gt;" />
                     <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="Superscript: &lt;sup&gt;2534i&lt;/sup&gt;, Subscript: &lt;sub&gt;2567.5&lt;/sub&gt;" />
                     <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="Test line-break&lt;br /&gt;This is a new line" />
+                    <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="Test lien: &lt;a href=&quot;http://www.bing.com&quot;&gt;bing.com&lt;/a&gt;" />
+                    <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="Test lien with formatting: &lt;a href=&quot;http://www.bing.com&quot;&gt;click &lt;i&gt;here&lt;/i&gt;&lt;/a&gt;" />
                 </StackPanel>
             </StackPanel>
         </StackPanel>

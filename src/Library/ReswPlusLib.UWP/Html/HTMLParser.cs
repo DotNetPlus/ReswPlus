@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
 using Windows.UI;
@@ -127,6 +128,24 @@ namespace ReswPlusLib.Html
                                 case "br":
                                     {
                                         yield return new LineBreak();
+                                    }
+                                    break;
+                                case "a":
+                                    {
+                                        var href = xElement.Attribute("href").Value;
+                                        if (!string.IsNullOrEmpty(href))
+                                        {
+                                            var hyperlink = new Hyperlink()
+                                            {
+                                                NavigateUri = new Uri(href)
+                                            };
+
+                                            foreach (var item in Parse(xElement.Nodes(), fontFamily, fontColor, fontWeight, fontStyle, textDecoration, FontVariants.Subscript))
+                                            {
+                                                hyperlink.Inlines.Add(item);
+                                            }
+                                            yield return hyperlink;
+                                        }
                                     }
                                     break;
                             }
