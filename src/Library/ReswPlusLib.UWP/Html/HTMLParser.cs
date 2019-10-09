@@ -132,7 +132,7 @@ namespace ReswPlusLib.Html
                                     break;
                                 case "a":
                                     {
-                                        var href = xElement.Attribute("href").Value;
+                                        var href = xElement.Attribute("href")?.Value;
                                         if (!string.IsNullOrEmpty(href))
                                         {
                                             var hyperlink = new Hyperlink()
@@ -140,12 +140,27 @@ namespace ReswPlusLib.Html
                                                 NavigateUri = new Uri(href)
                                             };
 
-                                            foreach (var item in Parse(xElement.Nodes(), fontFamily, fontColor, fontWeight, fontStyle, textDecoration, FontVariants.Subscript))
+                                            foreach (var item in Parse(xElement.Nodes(), fontFamily, fontColor, fontWeight, fontStyle, textDecoration, fontVariants))
                                             {
                                                 hyperlink.Inlines.Add(item);
                                             }
                                             yield return hyperlink;
                                         }
+                                        else
+                                        {
+                                            //ignore the hyperlink
+                                            foreach (var item in Parse(xElement.Nodes(), fontFamily, fontColor, fontWeight, fontStyle, textDecoration, fontVariants))
+                                            {
+                                                yield return item;
+                                            }
+                                        }
+                                    }
+                                    break;
+                                default:
+                                    //ignore the element
+                                    foreach (var item in Parse(xElement.Nodes(), fontFamily, fontColor, fontWeight, fontStyle, textDecoration, fontVariants))
+                                    {
+                                        yield return item;
                                     }
                                     break;
                             }
