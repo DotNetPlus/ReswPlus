@@ -141,9 +141,9 @@ namespace ReswPlusLib.Html
                                         {
                                             var hyperlink = new Hyperlink()
                                             {
-                                                NavigateUri = new Uri(href)
+                                                NavigateUri = new Uri(href),
+                                                UnderlineStyle = UnderlineStyle.None
                                             };
-
                                             foreach (var item in Parse(xElement.Nodes(), fontFamily, fontColor, fontWeight, fontStyle, textDecoration, fontVariants))
                                             {
                                                 hyperlink.Inlines.Add(item);
