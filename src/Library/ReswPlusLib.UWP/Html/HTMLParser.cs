@@ -40,17 +40,13 @@ namespace ReswPlusLib.Html
                             switch (xElement.Name.LocalName.ToLower())
                             {
                                 case "b":
+                                case "strong":
                                     foreach (var item in Parse(xElement.Nodes(), fontFamily, fontColor, FontWeights.Bold, fontStyle, textDecoration, fontVariants))
                                     {
                                         yield return item;
                                     }
                                     break;
                                 case "em":
-                                    foreach (var item in Parse(xElement.Nodes(), fontFamily, fontColor, FontWeights.SemiBold, fontStyle, textDecoration, fontVariants))
-                                    {
-                                        yield return item;
-                                    }
-                                    break;
                                 case "i":
                                 case "cite":
                                 case "dfn":
