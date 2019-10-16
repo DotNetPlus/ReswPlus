@@ -28,7 +28,7 @@ namespace ReswPlusLib.Html
                         {
                             run.FontFamily = fontFamily;
                         }
-                        if(fontColor != null)
+                        if (fontColor != null)
                         {
                             run.Foreground = fontColor;
                         }
@@ -41,11 +41,66 @@ namespace ReswPlusLib.Html
                             {
                                 case "b":
                                 case "strong":
-                                    foreach (var item in Parse(xElement.Nodes(), fontFamily, fontColor, FontWeights.Bold, fontStyle, textDecoration, fontVariants))
                                     {
-                                        yield return item;
+                                        FontWeight newFontWeight = FontWeights.Bold;
+                                        var weight = xElement.Attribute("weight")?.Value;
+                                        if (!string.IsNullOrEmpty(weight))
+                                        {
+                                            switch (weight.ToLower())
+                                            {
+                                                case "950":
+                                                case "extrablack":
+                                                    newFontWeight = FontWeights.ExtraBlack;
+                                                    break;
+                                                case "900":
+                                                case "black":
+                                                    newFontWeight = FontWeights.Black;
+                                                    break;
+                                                case "800":
+                                                case "extrabold":
+                                                    newFontWeight = FontWeights.ExtraBold;
+                                                    break;
+                                                case "700":
+                                                case "bold":
+                                                    newFontWeight = FontWeights.Bold;
+                                                    break;
+                                                case "600":
+                                                case "semibold":
+                                                    newFontWeight = FontWeights.SemiBold;
+                                                    break;
+                                                case "500":
+                                                case "medium":
+                                                    newFontWeight = FontWeights.Medium;
+                                                    break;
+                                                case "400":
+                                                case "normal":
+                                                    newFontWeight = FontWeights.Normal;
+                                                    break;
+                                                case "350":
+                                                case "semilight":
+                                                    newFontWeight = FontWeights.SemiLight;
+                                                    break;
+                                                case "300":
+                                                case "light":
+                                                    newFontWeight = FontWeights.Light;
+                                                    break;
+                                                case "200":
+                                                case "extralight":
+                                                    newFontWeight = FontWeights.ExtraLight;
+                                                    break;
+                                                case "100":
+                                                case "thin":
+                                                    newFontWeight = FontWeights.Thin;
+                                                    break;
+
+                                            }
+                                        }
+                                        foreach (var item in Parse(xElement.Nodes(), fontFamily, fontColor, newFontWeight, fontStyle, textDecoration, fontVariants))
+                                        {
+                                            yield return item;
+                                        }
+                                        break;
                                     }
-                                    break;
                                 case "em":
                                 case "i":
                                 case "cite":
