@@ -26,7 +26,7 @@ namespace ReswPlus.Core.CodeGenerators
 
         public IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename, StronglyTypedClass info, ResourceInfo.ResourceFileInfo resourceFileInfo)
         {
-            var builder = new CodeStringBuilder(resourceFileInfo.ParentProject.GetIndentString());
+            var builder = new CodeStringBuilder(resourceFileInfo.Project.GetIndentString());
             GenerateHeaders(builder, info.IsAdvanced);
             AddNewLine(builder);
             OpenNamespace(builder, info.Namespaces);

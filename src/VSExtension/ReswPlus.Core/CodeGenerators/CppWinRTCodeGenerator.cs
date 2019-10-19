@@ -538,7 +538,7 @@ namespace ReswPlus.Core.CodeGenerators
             {
                 yield return file;
             }
-            var builderIdl = new CodeStringBuilder(resourceFileInfo.ParentProject.GetIndentString());
+            var builderIdl = new CodeStringBuilder(resourceFileInfo.Project.GetIndentString());
             // Generate .idl file
             yield return GenerateIdlFile(builderIdl, baseFilename, info);
         }

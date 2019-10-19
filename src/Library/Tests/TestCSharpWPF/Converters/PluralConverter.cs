@@ -20,7 +20,7 @@ namespace TestCSharpWPF.Converters
             }
 
             var number = System.Convert.ToDouble(value);
-            var pluralFormat = TestCSharpWPF.Resources.Resources.ResourceManager.GetPlural(key, number);
+            var pluralFormat = Resources.Resources.ResourceManager.GetPlural(key, number);
 
             return string.Format(culture, pluralFormat, number);
         }

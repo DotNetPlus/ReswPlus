@@ -34,7 +34,7 @@ namespace ReswPlus.ResourceInfo
             return null;
         }
 
-        public string GetLanguageId()
+        private string GetVSLanguageId()
         {
             switch (Language)
             {
@@ -54,10 +54,9 @@ namespace ReswPlus.ResourceInfo
             ThreadHelper.ThrowIfNotOnUIThread();
             try
             {
-                var dte = ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) as DTE;
-                if (dte != null)
+                if (ServiceProvider.GlobalProvider.GetService(typeof(SDTE)) is DTE dte)
                 {
-                    var textEditorSetting = dte.Properties["TextEditor", GetLanguageId()];
+                    var textEditorSetting = dte.Properties["TextEditor", GetVSLanguageId()];
                     if ((bool)textEditorSetting.Item("InsertTabs").Value)
                     {
                         return "\t";
@@ -77,7 +76,7 @@ namespace ReswPlus.ResourceInfo
             catch
             {
             }
-            return "    ";
+            return "    "; // 4 spaces
         }
 
     }

@@ -52,18 +52,18 @@ namespace ReswPlus.Core.ClassGenerator
         public static ReswClassGenerator CreateGenerator(ResourceFileInfo resourceFileInfo, IErrorLogger logger)
         {
             ICodeGenerator codeGenerator = null;
-            switch (resourceFileInfo.ParentProject.Language)
+            switch (resourceFileInfo.Project.Language)
             {
-                case ResourceInfo.Language.CSHARP:
+                case Language.CSHARP:
                     codeGenerator = new CSharpCodeGenerator();
                     break;
-                case ResourceInfo.Language.VB:
+                case Language.VB:
                     codeGenerator = new VBCodeGenerator();
                     break;
-                case ResourceInfo.Language.CPPCX:
+                case Language.CPPCX:
                     codeGenerator = new CppCXCodeGenerator();
                     break;
-                case ResourceInfo.Language.CPPWINRT:
+                case Language.CPPWINRT:
                     codeGenerator = new CppWinRTCodeGenerator();
                     break;
             }
@@ -81,7 +81,7 @@ namespace ReswPlus.Core.ClassGenerator
             var className = Path.GetFileNameWithoutExtension(_resourceFileInfo.Path);
             var reswInfo = ReswParser.Parse(content);
 
-            var projectNameIfLibrary = _resourceFileInfo.ParentProject.IsLibrary ? _resourceFileInfo.ParentProject.Name : null;
+            var projectNameIfLibrary = _resourceFileInfo.Project.IsLibrary ? _resourceFileInfo.Project.Name : null;
 
             //If the resource file is in a library, the resource id in the .pri file
             //will be <library name>/FilenameWithoutExtension

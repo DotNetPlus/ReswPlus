@@ -19,7 +19,7 @@ namespace TestCSharpDOTNETCORE.Pages
         public void OnGet()
         {
             {
-                var resourceManager = TestCSharpDOTNETCORE.Resources.SharedResources.ResourceManager;
+                var resourceManager = Resources.SharedResources.ResourceManager;
                 ResourceManagerStrings = new List<string>();
                 for (var i = 0; i < 5; ++i)
                 {

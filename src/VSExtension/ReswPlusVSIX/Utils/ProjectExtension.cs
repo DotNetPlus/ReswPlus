@@ -37,7 +37,7 @@ namespace ReswPlus.Utils
                 for (var i = 1; i <= toolFiles.Count; ++i)
                 {
                     var value = toolFiles.Item(i).Path as string;
-                    if (value != null && value.EndsWith("Microsoft.Windows.CppWinRT.targets", System.StringComparison.InvariantCultureIgnoreCase))
+                    if (value != null && value.EndsWith("Microsoft.Windows.CppWinRT.targets", StringComparison.InvariantCultureIgnoreCase))
                     {
                         return true;
                     }

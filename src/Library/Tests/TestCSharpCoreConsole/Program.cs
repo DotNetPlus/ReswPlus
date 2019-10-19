@@ -10,7 +10,7 @@ namespace TestCSharpCoreConsole
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            var resourceManager = TestCSharpCoreConsole.Resources.Resources.ResourceManager;
+            var resourceManager = Resources.Resources.ResourceManager;
             Console.WriteLine("---------------------------------");
             Console.WriteLine(string.Format(resourceManager.GetPlural("RunDistance", 0), 0));
             Console.WriteLine(string.Format(resourceManager.GetPlural("RunDistance", 1), 1));

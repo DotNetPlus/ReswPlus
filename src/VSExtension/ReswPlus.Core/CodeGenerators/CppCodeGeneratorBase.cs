@@ -108,11 +108,11 @@ namespace ReswPlus.Core.CodeGenerators
             var cppFileName = baseFilename + ".cpp";
             var baseNamespace = namespacesToUse == null || !namespacesToUse.Any() ? "" : namespacesToUse.Aggregate((a, b) => a + "::" + b);
 
-            var indentStr = resourceInfo.ParentProject.GetIndentString();
+            var indentStr = resourceInfo.Project.GetIndentString();
             var builderHeader = new CodeStringBuilder(indentStr);
             var builderCpp = new CodeStringBuilder(indentStr);
 
-            var precompiledHeader = resourceInfo.ParentProject.GetPrecompiledHeader();
+            var precompiledHeader = resourceInfo.Project.GetPrecompiledHeader();
             var localNamespace = baseNamespace == "" ? "" : $"{LocalNamespaceName}::";
             var namespaceResourceClass = $"{localNamespace}{info.ClassName}::";
             var namespaceMarkupExtensionClass = $"{localNamespace}{markupClassName}::";

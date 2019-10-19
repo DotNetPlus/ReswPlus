@@ -57,6 +57,7 @@ namespace ReswPlus
 
         public static ProjectItem GetCurrentProjectItem()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             object selectedObject = null;
 
             var monitorSelection = (IVsMonitorSelection)Package.GetGlobalService(typeof(SVsShellMonitorSelection));

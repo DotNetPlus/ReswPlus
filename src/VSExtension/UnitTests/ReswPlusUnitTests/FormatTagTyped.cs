@@ -83,8 +83,8 @@ namespace ReswPlusUnitTests
                 Assert.NotNull(res);
                 Assert.True(res.Parameters.Count == 1);
                 Assert.IsType<FunctionFormatTagParameter>(res.Parameters[0]);
-                Assert.Equal(((FunctionFormatTagParameter)res.Parameters[0]).Name, "param");
-                Assert.Equal(((FunctionFormatTagParameter)res.Parameters[0]).Name, "param");
+                Assert.Equal("param", ((FunctionFormatTagParameter)res.Parameters[0]).Name);
+                Assert.Equal("param", ((FunctionFormatTagParameter)res.Parameters[0]).Name);
                 Assert.False(((FunctionFormatTagParameter)res.Parameters[0]).IsVariantId);
                 Assert.Null(res.PluralizationParameter);
                 Assert.Null(res.VariantParameter);

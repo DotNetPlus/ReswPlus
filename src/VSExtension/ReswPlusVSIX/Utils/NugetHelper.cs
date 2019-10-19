@@ -43,7 +43,7 @@ namespace ReswPlus.Utils
                     return true;
                 }
 
-                if (currentlyInstalledPackage == null || (Version.TryParse(currentlyInstalledPackage.VersionString, out Version nugetLibVersion) && nugetLibVersion < ReswPlus.Core.Constants.ReswPlusLibMinVersion))
+                if (currentlyInstalledPackage == null || (Version.TryParse(currentlyInstalledPackage.VersionString, out Version nugetLibVersion) && nugetLibVersion < Core.Constants.ReswPlusLibMinVersion))
                 {
                     var installer = componentModel.GetService<IVsPackageInstaller>();
                     installer.InstallPackage(null, project, package, (System.Version)null, false);

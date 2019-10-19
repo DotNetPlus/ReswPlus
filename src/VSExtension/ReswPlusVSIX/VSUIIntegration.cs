@@ -18,6 +18,7 @@ namespace ReswPlus
 
         public VSUIIntegration()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             _provider = ServiceProvider.GlobalProvider;
             _errorListProvider = new ErrorListProvider(_provider);
         }
@@ -68,19 +69,14 @@ namespace ReswPlus
             var customGuid = new Guid("CD10903C-5DF9-4DD1-A027-FFFC7F88426F");
             string customTitle = "ReswPlus";
             outputWindow.CreatePane(ref customGuid, customTitle, 1, 1);
-
             outputWindow.GetPane(ref customGuid, out IVsOutputWindowPane pane);
-            if (pane != null)
-            {
-                pane.OutputString(message + "\n");
-            }
+            pane?.OutputString(message + "\n");
         }
 
         public void SetStatusBar(string message)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            var statusBar = _provider.GetService(typeof(SVsStatusbar)) as IVsStatusbar;
-            if (statusBar == null)
+            if (!(_provider.GetService(typeof(SVsStatusbar)) is IVsStatusbar statusBar))
             {
                 return;
             }
@@ -88,7 +84,7 @@ namespace ReswPlus
             statusBar.IsFrozen(out int frozen);
             if (frozen == 0)
             {
-                object icon = (short)Microsoft.VisualStudio.Shell.Interop.Constants.SBAI_Build;
+                object icon = (short)Constants.SBAI_Build;
                 statusBar.Animation(1, ref icon);
                 statusBar.SetText(message);
             }
@@ -107,7 +103,7 @@ namespace ReswPlus
             if (frozen == 0)
             {
                 statusBar.Clear();
-                object icon = (short)Microsoft.VisualStudio.Shell.Interop.Constants.SBAI_Build;
+                object icon = (short)Constants.SBAI_Build;
                 statusBar.Animation(0, icon);
             }
         }
