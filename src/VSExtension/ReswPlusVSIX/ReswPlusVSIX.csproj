@@ -57,6 +57,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ContextMenu.cs" />
+    <Compile Include="Converters\AndroidXMLConverter.cs" />
     <Compile Include="ResourceInfo\ProjectInfo.cs" />
     <Compile Include="ResourceInfo\ResourceFileInfoBuilder.cs" />
     <Compile Include="Utils\NugetHelper.cs" />
@@ -80,7 +81,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\ReswPlusGenerateIco.bmp" />
+    <Content Include="Assets\ReswPlusGenerateIco.png" />
     <Content Include="Resources\ContextMenuPackage.ico" />
     <Content Include="Resources\menuIcon.bmp" />
     <VSCTCompile Include="ReswPlusPackage.vsct">
@@ -215,6 +216,7 @@
     </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="VSLangProj, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\..\packages\VSLangProj.7.0.3301\lib\net10\VSLangProj.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>

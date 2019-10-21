@@ -24,6 +24,7 @@ namespace ReswPlus
         /// </summary>
         public const int GenerateCommandId = 0x0200;
         public const int GeneratePluralizationCommandId = 0x0201;
+        public const int ExportAndroidCommandId = 0x0202;
 
         /// <summary>
         /// Command menu variant (command set GUID).
@@ -52,6 +53,10 @@ namespace ReswPlus
 
             menuCommandID = new CommandID(CommandSet, GeneratePluralizationCommandId);
             menuItem = new OleMenuCommand(GeneratePluralizationExecute, menuCommandID);
+            commandService.AddCommand(menuItem);
+
+            menuCommandID = new CommandID(CommandSet, ExportAndroidCommandId);
+            menuItem = new OleMenuCommand(ExportAndroidCommandExecute, menuCommandID);
             commandService.AddCommand(menuItem);
         }
 
@@ -111,7 +116,12 @@ namespace ReswPlus
             Instance = new ContextMenu(package, commandService);
         }
 
-        private void GeneratePluralizationExecute(object sener, EventArgs e)
+        private void ExportAndroidCommandExecute(object sender, EventArgs e)
+        {
+
+        }
+
+        private void GeneratePluralizationExecute(object sender, EventArgs e)
         {
             GenerateResourceFile(true);
         }
