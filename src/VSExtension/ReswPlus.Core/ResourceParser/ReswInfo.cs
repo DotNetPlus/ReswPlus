@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace ReswPlus.Core.ResourceParser
 {
-    class ReswInfo
+    public class ReswInfo
     {
         public List<ReswItem> Items { get; set; }
     }

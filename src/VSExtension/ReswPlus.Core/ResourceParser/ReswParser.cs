@@ -3,7 +3,7 @@ using System.Xml;
 
 namespace ReswPlus.Core.ResourceParser
 {
-    class ReswParser
+    public class ReswParser
     {
         public static ReswInfo Parse(string content)
         {

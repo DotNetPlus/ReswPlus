@@ -2,13 +2,16 @@ using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using ReswPlus.Converters;
 using ReswPlus.Core.ClassGenerator;
+using ReswPlus.Core.ResourceParser;
 using ReswPlus.ResourceInfo;
 using ReswPlus.Utils;
 using System;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using Language = ReswPlus.Core.ResourceInfo.Language;
 using Task = System.Threading.Tasks.Task;
 
@@ -118,7 +121,40 @@ namespace ReswPlus
 
         private void ExportAndroidCommandExecute(object sender, EventArgs e)
         {
-
+            ThreadHelper.ThrowIfNotOnUIThread();
+            try
+            {
+                var projectItem = GetCurrentProjectItem();
+                if (projectItem.Name.EndsWith(".resw"))
+                {
+                    var filepath = projectItem.Properties.Item("FullPath").Value as string;
+                    if (filepath != null)
+                    {
+                        var reswContent = File.ReadAllText(filepath);
+                        var androidFile = AndroidXMLConverter.ReswToAndroidXML(ReswParser.Parse(reswContent), true);
+                        using (var saveFileDialog = new SaveFileDialog()
+                        {
+                            FileName = Path.GetFileNameWithoutExtension(projectItem.Name) + ".xml"
+                        })
+                        {
+                            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                            {
+                                androidFile.Save(saveFileDialog.FileName);
+                            }
+                        }
+                        return;
+                    }
+                }
+            }
+            catch
+            { }
+            VsShellUtilities.ShowMessageBox(
+                 package,
+                 "Can't convert this resw file",
+                 "ReswPlus",
+                 OLEMSGICON.OLEMSGICON_INFO,
+                 OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                 OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
         }
 
         private void GeneratePluralizationExecute(object sender, EventArgs e)
@@ -173,7 +209,7 @@ namespace ReswPlus
                     }
 
                     var resourceFileInfo = ResourceFileInfoBuilder.Create(projectItem);
-                    if(resourceFileInfo == null)
+                    if (resourceFileInfo == null)
                     {
                         return VSConstants.E_FAIL;
                     }
