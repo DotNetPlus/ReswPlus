@@ -2,7 +2,7 @@ using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using ReswPlus.Converters;
+using ReswPlus.Core.Converters;
 using ReswPlus.Core.ClassGenerator;
 using ReswPlus.Core.ResourceParser;
 using ReswPlus.ResourceInfo;
@@ -69,11 +69,10 @@ namespace ReswPlus
             object selectedObject = null;
 
             var monitorSelection = (IVsMonitorSelection)Package.GetGlobalService(typeof(SVsShellMonitorSelection));
-
             monitorSelection.GetCurrentSelection(out var hierarchyPointer,
                 out var projectItemId,
-                out var multiItemSelect,
-                out var selectionContainerPointer);
+                out _,
+                out _);
 
             var selectedHierarchy = Marshal.GetTypedObjectForIUnknown(
                 hierarchyPointer,
@@ -125,25 +124,22 @@ namespace ReswPlus
             try
             {
                 var projectItem = GetCurrentProjectItem();
-                if (projectItem.Name.EndsWith(".resw"))
+                if (projectItem.Name.EndsWith(".resw") &&
+                    projectItem.Properties.Item("FullPath").Value is string filepath)
                 {
-                    var filepath = projectItem.Properties.Item("FullPath").Value as string;
-                    if (filepath != null)
+                    var reswContent = File.ReadAllText(filepath);
+                    var androidFile = AndroidXMLConverter.ReswToAndroidXML(ReswParser.Parse(reswContent), true);
+                    using (var saveFileDialog = new SaveFileDialog()
                     {
-                        var reswContent = File.ReadAllText(filepath);
-                        var androidFile = AndroidXMLConverter.ReswToAndroidXML(ReswParser.Parse(reswContent), true);
-                        using (var saveFileDialog = new SaveFileDialog()
+                        FileName = Path.GetFileNameWithoutExtension(projectItem.Name) + ".xml"
+                    })
+                    {
+                        if (saveFileDialog.ShowDialog() == DialogResult.OK)
                         {
-                            FileName = Path.GetFileNameWithoutExtension(projectItem.Name) + ".xml"
-                        })
-                        {
-                            if (saveFileDialog.ShowDialog() == DialogResult.OK)
-                            {
-                                androidFile.Save(saveFileDialog.FileName);
-                            }
+                            androidFile.Save(saveFileDialog.FileName);
                         }
-                        return;
                     }
+                    return;
                 }
             }
             catch
