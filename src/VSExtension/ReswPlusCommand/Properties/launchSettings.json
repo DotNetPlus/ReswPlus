@@ -1,8 +1,7 @@
 {
   "profiles": {
     "ReswPlusCommand": {
-      "commandName": "Project",
-      "commandLineArgs": "xml-to-resw -i C:\\Users\\ruhuynva\\Downloads\\santa-tracker-android-master\\santa-tracker-android-master\\santa-tracker\\src\\main\\res\\values-fr\\strings.xml c:\\Users\\ruhuynva\\Documents\\android\\tes.resw"
+      "commandName": "Project"
     }
   }
 }

@@ -38,13 +38,18 @@
     </references>
   </metadata>
   <files>
-    <file src="..\..\..\LICENSE" target="license\LICENSE" />
-    <file src="..\ReswPlusLib.UWP\bin\Release\ReswPlusLib.winmd" target="lib\native\ReswPlusLib.winmd" />
-    <file src="..\ReswPlusLib.UWP\bin\Release\ReswPlusLib.pri" target="lib\native\ReswPlusLib.pri" />
+    <file src="..\..\LICENSE" target="license\LICENSE" />
+    <file src="..\Library\ReswPlusLib.UWP\bin\Release\ReswPlusLib.winmd" target="lib\native\ReswPlusLib.winmd" />
+    <file src="..\Library\ReswPlusLib.UWP\bin\Release\ReswPlusLib.pri" target="lib\native\ReswPlusLib.pri" />
     <file src="ReswPlusLib-native.targets" target="build\native\ReswPlusLib.targets" />
-    <file src="..\ReswPlusLib.DotNetCore\bin\Release\netcoreapp2.0\ReswPlusLib.dll" target="lib\netcoreapp2.0\ReswPlusLib.dll" />
-    <file src="..\ReswPlusLib.DotNetStandard\bin\Release\netstandard1.5\ReswPlusLib.dll" target="lib\netstandard1.5\ReswPlusLib.dll" />
-    <file src="..\ReswPlusLib.UWP\bin\Release\ReswPlusLib.winmd" target="lib\uap10.0\ReswPlusLib.winmd" />
-    <file src="..\ReswPlusLib.UWP\bin\Release\ReswPlusLib.pri" target="lib\uap10.0\ReswPlusLib.pri" />
+    <file src="..\Library\ReswPlusLib.DotNetCore\bin\Release\netcoreapp2.0\ReswPlusLib.dll" target="lib\netcoreapp2.0\ReswPlusLib.dll" />
+    <file src="..\Library\ReswPlusLib.DotNetStandard\bin\Release\netstandard1.5\ReswPlusLib.dll" target="lib\netstandard1.5\ReswPlusLib.dll" />
+    <file src="..\Library\ReswPlusLib.UWP\bin\Release\ReswPlusLib.winmd" target="lib\uap10.0\ReswPlusLib.winmd" />
+    <file src="..\Library\ReswPlusLib.UWP\bin\Release\ReswPlusLib.pri" target="lib\uap10.0\ReswPlusLib.pri" />
+    <file src="..\C:\Users\ruhuynva\source\repos\ReswPlus\src\VSExtension\ReswPlusCommand\bin\Release\netcoreapp3.1\ReswPlusCommand.exe" target="tools\ReswPlusCommand\ReswPlusCommand.exe" />
+    <file src="..\C:\Users\ruhuynva\source\repos\ReswPlus\src\VSExtension\ReswPlusCommand\bin\Release\netcoreapp3.1\ReswPlusCommand.runtimeconfig.json" target="tools\ReswPlusCommand\ReswPlusCommand.runtimeconfig.json" />
+    <file src="..\C:\Users\ruhuynva\source\repos\ReswPlus\src\VSExtension\ReswPlusCommand\bin\Release\netcoreapp3.1\ReswPlusCommand.dll" target="tools\ReswPlusCommand\ReswPlusCommand.dll" />
+    <file src="..\C:\Users\ruhuynva\source\repos\ReswPlus\src\VSExtension\ReswPlusCommand\bin\Release\netcoreapp3.1\ReswPlus.Core.dll" target="tools\ReswPlusCommand\ReswPlus.Core.dll" />
+    <file src="..\C:\Users\ruhuynva\source\repos\ReswPlus\src\VSExtension\ReswPlusCommand\bin\Release\netcoreapp3.1\CommandLine.dll" target="tools\ReswPlusCommand\CommandLine.dll" />
 </files>
 </package>
