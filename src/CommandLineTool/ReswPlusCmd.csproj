@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <StartupObject>ReswPlusCommand.Program</StartupObject>
-    <AssemblyName>ReswPlusCommand</AssemblyName>
+    <AssemblyName>ReswPlusCmd</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ReswPlus.Core\ReswPlus.Core.csproj" />
+    <ProjectReference Include="..\VSExtension\ReswPlus.Core\ReswPlus.Core.csproj" />
   </ItemGroup>
 
 </Project>
