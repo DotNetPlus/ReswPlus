@@ -78,3 +78,13 @@ _ReswPlus can support many variants/versions of the same string and allow you to
 _String formatting in C++ is quite different and more complicated than in C#/VB.Net. ReswPlus provides a way to use the same string templates as you use in .Net (via `String.Format`) but in your C++ project, making your resource files shareable with .Net libraries and simplifying your code._
 
 🗨 [Use .Net String Formatting](https://github.com/reswplus/ReswPlus/wiki/Features:-.Net-String-Formatting-for-Cpp)
+
+## Tools
+In addition to features to enrich resw files, ReswPlus also provides some interesting tools to improve your productivity or make it easier to use/support resw files in your workflow and localization process.
+
+### Convert from/to Android XML files
+This is very unfortunate, but not all localization tools and localization companies support recovery files. This is even more of an issue when you want to support Pluralization, as resw does not support it by default. To resolve this issue, ReswPlus now includes a converter to and from Android XML files, a format that supports string pluralization and supported by all tools available on the market.
+
+Simply right click on the resw associated to the default language of your app and select `ReswPlus > Export to Android XML format`. To convert the Android files once localized, you can use the command-line tool provided with the nuget package (packages/ReswPlusLib.xxxx/Tools/ReswPlusCmd\ReswPlusCmd.exe with the following arguments `xml-to-resw -i <folder path> <output path>`.
+
+If you don't want to use Visual Studio to convert your resw files to Android XML files, you can use the same command-line tool with the following arguments `resw-to-xml -i <resw file path> <output file path>`
