@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="ReswPlus.08b03f0c-a947-485c-a7a5-e351c75fad1a" Version="1.0.1" Language="en-US" Publisher="rudyhuyn" />
+        <Identity Id="ReswPlus.08b03f0c-a947-485c-a7a5-e351c75fad1a" Version="2.0.0" Language="en-US" Publisher="rudyhuyn" />
         <DisplayName>ReswPlus -  Advanced Code Generator for .Resw</DisplayName>
         <Description xml:space="preserve">Advanced Resw File Code Generator for UWP apps.
 
@@ -10,9 +10,9 @@ ReswPlus is a Visual Studio extension enriching your existing .resw files with m
 - Generates methods to format your strings with named and strongly typed parameters.
 - Adds pluralization support (support plural rules for 196 languages!).
 - In addition to pluralization, also supports empty states when the number of items is zero.Advanced </Description>
-        <MoreInfo>https://github.com/reswplus/ReswPlus</MoreInfo>
+        <MoreInfo>https://github.com/dotnetplus/ReswPlus</MoreInfo>
         <License>Assets\License.txt</License>
-        <GettingStartedGuide>https://github.com/reswplus/ReswPlus/blob/master/README.md</GettingStartedGuide>
+        <GettingStartedGuide>https://github.com/dotnetplus/ReswPlus/blob/master/README.md</GettingStartedGuide>
         <Icon>Assets\ReswPlusPackage.ico</Icon>
         <PreviewImage>Assets\Logo.png</PreviewImage>
         <Tags>resw resx strongly typed localization</Tags>
