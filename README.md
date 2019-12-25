@@ -1,10 +1,11 @@
 <img src="https://user-images.githubusercontent.com/1226538/56482508-6fbd2d00-6479-11e9-8fc0-b20d5f3171ad.png" height="80" />
-
 # ReswPlus - Advanced File Code Generator for Resw files.
 ![Type](https://img.shields.io/badge/type-Visual%20Studio%20Extension-blueviolet)
 ![Compatibility](https://img.shields.io/badge/compatibility-UWP%2C%20.Net%20Core%2C%20.Net%20Standard%2C%20ASP.Net%20Core-blue)
 ![LanguageSupported](https://img.shields.io/badge/languages-C%23%2C%20VB.Net%2C%20C%2B%2B%2FCX%2C%20C%2B%2B%2FWinRT-brightgreen)
 ![GitHub](https://img.shields.io/github/license/dotnetplus/reswplus.svg)
+
+_**v2.0 out! With HTML tags to format text (bold, italic, hyperlink, etc...) and Android XML files converter**_
 
 ReswPlus is a Visual Studio extension enriching your existing .resw files with many highly valuable features:
 - Access to strings via strongly typed static properties.
@@ -64,7 +65,7 @@ _To simplify your ViewModels and Views, ReswPlus can directly manage the formatt
 ⚙️ [Use Literal Strings](https://github.com/reswplus/ReswPlus/wiki/Features:-Literal-Strings-in-String-Formatting)<br>
 ⚙️ [Use Macros](https://github.com/reswplus/ReswPlus/wiki/Features:-Macros-in-String-Formatting)
 
-### Emphasis using HTML Formatting
+### Font style support using HTML tags
 _Unlike Android localization files, resw files don't support emphasis (bold, italic, underlined...). To address this lack, ReswPlus improves resw files and add support of emphasis using HTML tags (similar to Android)._ 
 
 🗨 [How to use HTML formatting](https://github.com/reswplus/ReswPlus/wiki/Features:-HTML-Formatting)
