@@ -64,7 +64,7 @@ _To simplify your ViewModels and Views, ReswPlus can directly manage the formatt
 ⚙️ [Use Literal Strings](https://github.com/reswplus/ReswPlus/wiki/Features:-Literal-Strings-in-String-Formatting)<br>
 ⚙️ [Use Macros](https://github.com/reswplus/ReswPlus/wiki/Features:-Macros-in-String-Formatting)
 
-### HTML formatting
+### Emphasis using HTML Formatting
 _Unlike Android localization files, resw files don't support emphasis (bold, italic, underlined...). To address this lack, ReswPlus improves resw files and add support of emphasis using HTML tags (similar to Android)._ 
 
 🗨 [How to use HTML formatting](https://github.com/reswplus/ReswPlus/wiki/Features:-HTML-Formatting)
