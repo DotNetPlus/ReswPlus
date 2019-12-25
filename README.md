@@ -12,6 +12,7 @@ ReswPlus is a Visual Studio extension enriching your existing .resw files with m
     - Support typed and named parameters, literal strings, string references and Macros
 - Pluralization support (for 196 languages!).
     - Support empty states when the number of items is zero.
+- Add HTML formatting to your strings 
 - Variants support 
 - Generate a Markup extension to access to your strings with compile-time verification.
 
@@ -30,6 +31,7 @@ Supported:
 | Generate String Formatting methods              |      | ✅               |     |            |
 | Support Plural forms                            |      | ✅               |      | ✅           |
 | Support 'None' state                            |      | ✅               |      |             |
+| Support HTML formatting                         |      | ✅               |     |  ✅ (indirectly)         |
 | Auto-generate methods for string formatting                |      | ✅               |      |             |
 | Support literal strings in string formatter                |      | ✅               |      |             |
 | Support Macros in string formatter                |      | ✅               |      |             |
@@ -61,6 +63,11 @@ _To simplify your ViewModels and Views, ReswPlus can directly manage the formatt
 ⚙️ [Use String References](https://github.com/reswplus/ReswPlus/wiki/Features:-String-References-in-String-Formatting)<br>
 ⚙️ [Use Literal Strings](https://github.com/reswplus/ReswPlus/wiki/Features:-Literal-Strings-in-String-Formatting)<br>
 ⚙️ [Use Macros](https://github.com/reswplus/ReswPlus/wiki/Features:-Macros-in-String-Formatting)
+
+### HTML formatting
+_Unlike Android localization files, resw files don't support emphasis (bold, italic, underlined...). To address this lack, ReswPlus improves resw files and add support of emphasis using HTML tags (similar to Android)._ 
+
+🗨 [How to use HTML formatting](https://github.com/reswplus/ReswPlus/wiki/Features:-HTML-Formatting)
 
 ### Variants
 _ReswPlus can support many variants/versions of the same string and allow you to display the one you want based on criteria (variants to support genders, different messages depend on some criteria...)_
