@@ -14,7 +14,7 @@ ReswPlus is a Visual Studio extension enriching your existing .resw files with m
     - Support typed and named parameters, literal strings, string references and Macros
 - Pluralization support (for 196 languages!).
     - Support empty states when the number of items is zero.
-- Add HTML formatting to your strings 
+- Add HTML markups to your strings (bold, italic, hyperlinks, etc...) 
 - Variants support 
 - Generate a Markup extension to access to your strings with compile-time verification.
 
