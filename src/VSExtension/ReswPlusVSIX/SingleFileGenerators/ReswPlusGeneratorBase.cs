@@ -8,14 +8,15 @@ using Microsoft.VisualStudio.Designer.Interfaces;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using ReswPlus.Core.ClassGenerator;
+using ReswPlus.Utils;
 using System;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using IServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
-using ReswPlus.Utils;
 
 namespace ReswPlus.SingleFileGenerators
 {
@@ -54,7 +55,7 @@ namespace ReswPlus.SingleFileGenerators
                 {
                     return VSConstants.E_FAIL;
                 }
-                VSUIIntegration.Instance?.SetStatusBar($"Generating class for {projectItem.Document.Name}...");
+                VSUIIntegration.Instance?.SetStatusBar($"Generating class for {Path.GetFileName(resourceFileInfo.Path)}...");
 
                 var baseFilename = "resources.generated." + GetCodeProvider().FileExtension; //won't be used.
                 var generationResult = reswCodeGenerator.GenerateCode(baseFilename, inputFileContents, defaultNamespace, _isAdvanced);
@@ -95,7 +96,10 @@ namespace ReswPlus.SingleFileGenerators
 
         public void SetSite(object pUnkSite)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             Site = pUnkSite;
+            _serviceProvider?.Dispose();
+            _serviceProvider = null;
         }
         public object Site { get; private set; }
         #endregion
