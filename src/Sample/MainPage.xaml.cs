@@ -1,6 +1,6 @@
 // Copyright (c) Rudy Huyn. All rights reserved.
 // Licensed under the MIT License.
-// Source: https://github.com/rudyhuyn/ReswPlus
+// Source: https://github.com/DotNetPlus/ReswPlus
 
 using ReswPlusSample.Pages;
 using Windows.UI.Xaml.Controls;

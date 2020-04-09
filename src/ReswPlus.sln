@@ -56,6 +56,8 @@ EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Library\ReswPlusLib.Shared\ReswPlusLib.Shared.projitems*{1cee422a-f0fc-4d54-b606-5f942c8f6159}*SharedItemsImports = 13
+		Library\ReswPlusLib.Shared\ReswPlusLib.Shared.projitems*{7f0f9c15-a38a-4106-b1e3-119f576bf2b0}*SharedItemsImports = 5
+		Library\ReswPlusLib.Shared\ReswPlusLib.Shared.projitems*{b75a8578-4836-4459-a160-324297733d4f}*SharedItemsImports = 5
 		Library\ReswPlusLib.Shared\ReswPlusLib.Shared.projitems*{d14cd365-de80-4f9f-8019-5ee08ce6d8b0}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

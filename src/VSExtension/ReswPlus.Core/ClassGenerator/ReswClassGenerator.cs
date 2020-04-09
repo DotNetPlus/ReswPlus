@@ -1,6 +1,6 @@
 // Copyright (c) Rudy Huyn. All rights reserved.
 // Licensed under the MIT License.
-// Source: https://github.com/rudyhuyn/ReswPlus
+// Source: https://github.com/DotNetPlus/ReswPlus
 
 using ReswPlus.Core.Interfaces;
 using ReswPlus.Core.ClassGenerator.Models;
@@ -138,7 +138,7 @@ namespace ReswPlus.Core.ClassGenerator
                         }
                         if (item.Items.Any(i => i.Comment != null && i.Comment.Contains(Deprecated_TagStrongType)))
                         {
-                            _logger?.LogError($"{Deprecated_TagStrongType} is no more supported, use {TagFormat} instead. See https://github.com/rudyhuyn/ReswPlus/blob/master/README.md");
+                            _logger?.LogError($"{Deprecated_TagStrongType} is no more supported, use {TagFormat} instead. See https://github.com/DotNetPlus/ReswPlus/blob/master/README.md");
                         }
                         var commentToUse =
                             item.Items.FirstOrDefault(i => i.Comment != null && _regexStringFormat.IsMatch(i.Comment));

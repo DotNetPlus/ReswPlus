@@ -41,7 +41,7 @@ namespace ReswPlus.Core.CodeGenerators
         protected override void HeaderFileGenerateHeaders(CodeStringBuilder builderHeader, string className, IEnumerable<string> namespacesOverride, bool supportPluralization)
         {
             //Header
-            builderHeader.AppendLine("// File generated automatically by ReswPlus. https://github.com/rudyhuyn/ReswPlus");
+            builderHeader.AppendLine("// File generated automatically by ReswPlus. https://github.com/DotNetPlus/ReswPlus");
             if (supportPluralization)
             {
                 builderHeader.AppendLine("// The NuGet package ReswPlusLib is necessary to support Pluralization.");
@@ -63,7 +63,7 @@ namespace ReswPlus.Core.CodeGenerators
         protected override void CppFileGenerateHeaders(CodeStringBuilder builderHeader, string precompiledHeader, string headerFilePath, string localNamespace, string className, IEnumerable<string> namespaces, bool supportPluralization)
         {
             //Header
-            builderHeader.AppendLine("// File generated automatically by ReswPlus. https://github.com/rudyhuyn/ReswPlus");
+            builderHeader.AppendLine("// File generated automatically by ReswPlus. https://github.com/DotNetPlus/ReswPlus");
             if (supportPluralization)
             {
                 builderHeader.AppendLine("// The NuGet package ReswPlusLib is necessary to support Pluralization.");
