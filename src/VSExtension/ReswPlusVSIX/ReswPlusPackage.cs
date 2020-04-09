@@ -26,7 +26,7 @@ namespace ReswPlus
 
     public sealed class ReswPlusPackage : AsyncPackage
     {
-        public const string ReswPlusExtensionVersion = "2.0.1";
+        public const string ReswPlusExtensionVersion = "2.0.0";
         public static Version ReswPlusLibMinVersion = new Version(2, 0, 0);
 
         /// <summary>
