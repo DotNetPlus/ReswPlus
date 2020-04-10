@@ -29,8 +29,7 @@ namespace ReswPlus.Core.ResourceParser
                                select gr;
             foreach (var variantedItem in variantedItems)
             {
-                if (variantedItem.Select(i => i.isPlural).Distinct().Count() != 1 ||
-                    variantedItem.Select(i => i.isVariant).Distinct().Count() != 1)
+                if (variantedItem.Count(i => i.isPlural || i.isVariant) == 0)
                 {
                     // Ignore if items don't have the same form
                     continue;
