@@ -19,7 +19,6 @@ ReswPlus is a Visual Studio extension enriching your existing .resw files with m
 - Generate a Markup extension to access to your strings with compile-time verification.
 
 Supported: 
-- Visual Studio 2017 and 2019 (all versions).
 - C#, VB.Net, C++/CX and C++/WinRT.
 
 ![reswplus](https://user-images.githubusercontent.com/1226538/56525314-a76eb800-64ff-11e9-9e39-1bb4cd2dd012.gif)
@@ -43,7 +42,7 @@ Supported:
 | Support String variants (including genders)                        |      | ✅               |     |             |
 
 ## 📦 Guide
-⚡ [How to install ReswPlus](https://github.com/reswplus/ReswPlus/wiki/How-to-install-ReswPlus) - Learn how to install ReswPlus for Visual Studio 2017 and 2019<br>
+⚡ [How to install ReswPlus](https://github.com/reswplus/ReswPlus/wiki/How-to-install-ReswPlus) - Learn how to install ReswPlus<br>
 ⚡ [Use ReswPlus in your project](https://github.com/reswplus/ReswPlus/wiki/Use-ReswPlus-in-my-project) - Learn how to use ReswPlus in your projects
 
 ## 🔧 Features

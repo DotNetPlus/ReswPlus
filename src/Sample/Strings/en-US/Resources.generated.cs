@@ -1,4 +1,4 @@
-// File generated automatically by ReswPlus. https://github.com/rudyhuyn/ReswPlus
+// File generated automatically by ReswPlus. https://github.com/DotNetPlus/ReswPlus
 // The NuGet package ReswPlusLib is necessary to support Pluralization.
 using System;
 using Windows.ApplicationModel.Resources;
@@ -6,7 +6,7 @@ using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Data;
 
 namespace ReswPlusSample.Strings{
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Huyn.ReswPlus", "1.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("DotNetPlus.ReswPlus", "2.1.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -342,7 +342,7 @@ namespace ReswPlusSample.Strings{
         #endregion
     }
 
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Huyn.ReswPlus", "1.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("DotNetPlus.ReswPlus", "2.1.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [MarkupExtensionReturnType(ReturnType = typeof(string))]

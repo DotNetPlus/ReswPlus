@@ -41,7 +41,7 @@ namespace ReswPlus.Core.CodeGenerators
 
         protected override void GenerateHeaders(CodeStringBuilder builder, bool supportPluralization)
         {
-            builder.AppendLine("// File generated automatically by ReswPlus. https://github.com/rudyhuyn/ReswPlus");
+            builder.AppendLine("// File generated automatically by ReswPlus. https://github.com/DotNetPlus/ReswPlus");
             if (supportPluralization)
             {
                 builder.AppendLine("// The NuGet package ReswPlusLib is necessary to support Pluralization.");
@@ -73,7 +73,7 @@ namespace ReswPlus.Core.CodeGenerators
         protected override void OpenStronglyTypedClass(CodeStringBuilder builder, string resourceFilename, string className)
         {
 
-            builder.AppendLine($"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"{Constants.ReswPlusExtensionVersion}\")]");
+            builder.AppendLine($"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"{Constants.ReswPlusName}\", \"{Constants.ReswPlusExtensionVersion}\")]");
             builder.AppendLine("[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]");
             builder.AppendLine("[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]");
             builder.AppendLine($"public class {className} {{");
@@ -216,7 +216,7 @@ namespace ReswPlus.Core.CodeGenerators
 
         protected override void CreateMarkupExtension(CodeStringBuilder builder, string resourceFileName, string className, IEnumerable<string> keys)
         {
-            builder.AppendLine($"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Huyn.ReswPlus\", \"{Constants.ReswPlusExtensionVersion}\")]");
+            builder.AppendLine($"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"{Constants.ReswPlusName}\", \"{Constants.ReswPlusExtensionVersion}\")]");
             builder.AppendLine("[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]");
             builder.AppendLine("[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]");
             builder.AppendLine("[MarkupExtensionReturnType(ReturnType = typeof(string))]");

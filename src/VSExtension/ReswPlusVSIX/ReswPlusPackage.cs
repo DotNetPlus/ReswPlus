@@ -1,6 +1,6 @@
 // Copyright (c) Rudy Huyn. All rights reserved.
 // Licensed under the MIT License.
-// Source: https://github.com/rudyhuyn/ReswPlus
+// Source: https://github.com/DotNetPlus/ReswPlus
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -26,9 +26,6 @@ namespace ReswPlus
 
     public sealed class ReswPlusPackage : AsyncPackage
     {
-        public const string ReswPlusExtensionVersion = "2.0.0";
-        public static Version ReswPlusLibMinVersion = new Version(2, 0, 0);
-
         /// <summary>
         /// ReswPlusPackage GUID string.
         /// </summary>
