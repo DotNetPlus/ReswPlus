@@ -1,7 +1,7 @@
-﻿/* ReswPlusLib
- * Author Rudy Huyn
- * License MIT / http://bit.ly/mit-license
- */
+// Copyright (c) Rudy Huyn. All rights reserved.
+// Licensed under the MIT License.
+// Source: https://github.com/DotNetPlus/ReswPlus
+
 using ReswPlusLib.Utils;
 using ReswPlusLib.Interfaces;
 

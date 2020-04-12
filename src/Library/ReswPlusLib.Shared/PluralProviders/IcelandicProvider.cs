@@ -1,11 +1,9 @@
-﻿using ReswPlusLib;
+// Copyright (c) Rudy Huyn. All rights reserved.
+// Licensed under the MIT License.
+// Source: https://github.com/DotNetPlus/ReswPlus
+
 using ReswPlusLib.Interfaces;
 using ReswPlusLib.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReswPlusLib.Providers
 {

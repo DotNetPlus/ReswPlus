@@ -1,3 +1,7 @@
+// Copyright (c) Rudy Huyn. All rights reserved.
+// Licensed under the MIT License.
+// Source: https://github.com/DotNetPlus/ReswPlus
+
 using ReswPlusLib.Interfaces;
 using ReswPlusLib.Utils;
 using System.Globalization;
