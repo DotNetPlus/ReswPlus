@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 namespace ReswPlus.SingleFileGenerators
 {
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    [InstalledProductRegistration(nameof(ReswPlusGenerator), "Advanced File Code Generator for Resw files", "1.0")]
+    [InstalledProductRegistration(nameof(ReswPlusGenerator), "Advanced File Code Generator for Resw files", ReswPlus.Core.Constants.ReswPlusExtensionVersion)]
     [ComVisible(true)]
     [Guid("5A25BA4F-0BC7-44FB-B8D2-90C17CBD6CC7")]
     [Utils.CodeGeneratorRegistration(
