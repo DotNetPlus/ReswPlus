@@ -9,7 +9,7 @@ namespace ReswPlus.Core
     public sealed class Constants
     {
         public const string ReswPlusName = "DotNetPlus.ReswPlus";
-        public const string ReswPlusExtensionVersion = "2.1.0";
+        public const string ReswPlusExtensionVersion = "2.1.1";
         public static Version ReswPlusLibMinVersion = new Version(1, 0, 0);
     }
 }
