@@ -7,7 +7,7 @@ using ReswPlusLib.Utils;
 
 namespace ReswPlusLib.Providers
 {
-    internal class FilipinoProvider: IPluralProvider
+    internal class FilipinoProvider : IPluralProvider
     {
         public PluralTypeEnum ComputePlural(double n)
         {

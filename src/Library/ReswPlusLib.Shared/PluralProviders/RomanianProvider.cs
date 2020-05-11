@@ -7,11 +7,11 @@ using ReswPlusLib.Interfaces;
 
 namespace ReswPlusLib.Providers
 {
-    internal class RomanianProvider: IPluralProvider
+    internal class RomanianProvider : IPluralProvider
     {
         public PluralTypeEnum ComputePlural(double n)
         {
-            if (n.GetNumberOfDigitsAfterDecimal()>0 || n == 0 || (n != 1 && (n % 100).IsBetween(1, 19)))
+            if (n.GetNumberOfDigitsAfterDecimal() > 0 || n == 0 || (n != 1 && (n % 100).IsBetween(1, 19)))
             {
                 return PluralTypeEnum.FEW;
             }

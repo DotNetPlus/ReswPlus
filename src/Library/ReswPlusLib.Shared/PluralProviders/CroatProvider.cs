@@ -7,7 +7,7 @@ using ReswPlusLib.Interfaces;
 
 namespace ReswPlusLib.Providers
 {
-    internal class CroatProvider: IPluralProvider
+    internal class CroatProvider : IPluralProvider
     {
         public PluralTypeEnum ComputePlural(double n)
         {

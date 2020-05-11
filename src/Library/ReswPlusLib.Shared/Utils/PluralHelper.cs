@@ -43,7 +43,7 @@ namespace ReswPlusLib.Utils
                 case "kab":  // Kabyle
                     return new ZeroToTwoExcludedProvider();
 
-                    /////////////////////////////////////////////////////////////////////////////////////////
+                /////////////////////////////////////////////////////////////////////////////////////////
                 case "af":  // Afrikaans			
                 case "sq":  // Albanian			
                 case "ast": // Asturian			
@@ -145,7 +145,7 @@ namespace ReswPlusLib.Utils
                 case "yi":  // Yiddish			
                 case "ji":  // ji
                     return new OnlyOneProvider();
-                    ////////////////////////////////////////////////////////////////////////////////////
+                ////////////////////////////////////////////////////////////////////////////////////
                 case "si": // Sinhala
                     return new SinhalaProvider();
                 case "lv": // Latvian 

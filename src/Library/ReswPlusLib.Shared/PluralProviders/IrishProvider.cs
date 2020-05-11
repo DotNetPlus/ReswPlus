@@ -7,7 +7,7 @@ using ReswPlusLib.Interfaces;
 
 namespace ReswPlusLib.Providers
 {
-    internal class IrishProvider: IPluralProvider
+    internal class IrishProvider : IPluralProvider
     {
         public PluralTypeEnum ComputePlural(double n)
         {

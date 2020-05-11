@@ -7,7 +7,7 @@ using ReswPlusLib.Interfaces;
 
 namespace ReswPlusLib.Providers
 {
-    internal class ManxProvider: IPluralProvider
+    internal class ManxProvider : IPluralProvider
     {
         public PluralTypeEnum ComputePlural(double n)
         {

@@ -8,7 +8,7 @@ using ReswPlusLib.Interfaces;
 
 namespace ReswPlusLib.Providers
 {
-    internal class ArabicProvider: IPluralProvider
+    internal class ArabicProvider : IPluralProvider
     {
         public PluralTypeEnum ComputePlural(double n)
         {

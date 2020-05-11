@@ -6,7 +6,7 @@ using ReswPlusLib.Interfaces;
 
 namespace ReswPlusLib.Providers
 {
-    internal class OneOrTwoProvider: IPluralProvider
+    internal class OneOrTwoProvider : IPluralProvider
     {
         public PluralTypeEnum ComputePlural(double n)
         {
@@ -14,7 +14,7 @@ namespace ReswPlusLib.Providers
             {
                 return PluralTypeEnum.ONE;
             }
-            else if (n==2)
+            else if (n == 2)
             {
                 return PluralTypeEnum.TWO;
             }

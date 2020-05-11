@@ -7,7 +7,7 @@ using ReswPlusLib.Utils;
 
 namespace ReswPlusLib.Providers
 {
-    internal class CentralAtlasTamazightProvider: IPluralProvider
+    internal class CentralAtlasTamazightProvider : IPluralProvider
     {
         public PluralTypeEnum ComputePlural(double n)
         {

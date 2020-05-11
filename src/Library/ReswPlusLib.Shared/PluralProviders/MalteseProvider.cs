@@ -7,7 +7,7 @@ using ReswPlusLib.Interfaces;
 
 namespace ReswPlusLib.Providers
 {
-    internal class MalteseProvider: IPluralProvider
+    internal class MalteseProvider : IPluralProvider
     {
         public PluralTypeEnum ComputePlural(double n)
         {
@@ -28,7 +28,7 @@ namespace ReswPlusLib.Providers
                     return PluralTypeEnum.MANY;
                 }
             }
-         
+
             return PluralTypeEnum.OTHER;
 
         }

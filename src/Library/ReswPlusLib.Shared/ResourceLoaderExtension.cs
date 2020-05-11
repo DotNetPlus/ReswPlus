@@ -54,7 +54,7 @@ namespace ReswPlusLib
 
         private static string GetPluralInternal<T>(Func<string, string> getString, string key, double number, bool supportNoneState = false)
         {
-            if(supportNoneState && number == 0)
+            if (supportNoneState && number == 0)
             {
                 return getString(key + "_None");
             }

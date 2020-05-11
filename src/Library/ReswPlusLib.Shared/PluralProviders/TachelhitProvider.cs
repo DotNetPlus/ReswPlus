@@ -7,7 +7,7 @@ using ReswPlusLib.Interfaces;
 
 namespace ReswPlusLib.Providers
 {
-    internal class TachelhitProvider: IPluralProvider
+    internal class TachelhitProvider : IPluralProvider
     {
         public PluralTypeEnum ComputePlural(double n)
         {
