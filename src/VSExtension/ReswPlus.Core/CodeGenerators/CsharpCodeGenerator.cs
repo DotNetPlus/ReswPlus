@@ -76,7 +76,7 @@ namespace ReswPlus.Core.CodeGenerators
             builder.AppendLine($"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"{Constants.ReswPlusName}\", \"{Constants.ReswPlusExtensionVersion}\")]");
             builder.AppendLine("[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]");
             builder.AppendLine("[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]");
-            builder.AppendLine($"public class {className} {{");
+            builder.AppendLine($"public static class {className} {{");
             builder.AddLevel();
             builder.AppendLine("private static ResourceLoader _resourceLoader;");
             builder.AppendLine($"static {className}()");

@@ -131,7 +131,7 @@ namespace ReswPlus.Utils
         {
             try
             {
-                return Convert.ToInt32(project.Properties.Item("OutputTypeEx").Value) == 2;
+                return Convert.ToInt32(project.Properties.Item("OutputType").Value) == 2;
             }
             catch
             {

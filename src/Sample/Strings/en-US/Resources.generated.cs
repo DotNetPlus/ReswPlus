@@ -6,10 +6,10 @@ using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Data;
 
 namespace ReswPlusSample.Strings{
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("DotNetPlus.ReswPlus", "2.1.1")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("DotNetPlus.ReswPlus", "2.1.2")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class Resources {
+    public static class Resources {
         private static ResourceLoader _resourceLoader;
         static Resources()
         {
@@ -342,7 +342,7 @@ namespace ReswPlusSample.Strings{
         #endregion
     }
 
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("DotNetPlus.ReswPlus", "2.1.1")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("DotNetPlus.ReswPlus", "2.1.2")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [MarkupExtensionReturnType(ReturnType = typeof(string))]
