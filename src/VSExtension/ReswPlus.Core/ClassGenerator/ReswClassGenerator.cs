@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using ReswPlus.Core.ResourceInfo;
+using System.Globalization;
 
 namespace ReswPlus.Core.ClassGenerator
 {
@@ -226,15 +227,15 @@ namespace ReswPlus.Core.ClassGenerator
             }
 
             // remove bcp47 tag from the namespace
-            var regexNamespace =
-                new Regex("\\.Strings\\.[a-z]{2}(?:[-_](?:Latn|Cyrl|Hant|Hans))?(?:[-_](?:\\d{3}|[A-Z]{2,3}))?$");
-            var match = regexNamespace.Match(defaultNamespace);
-            if (match.Success)
+            var splittedNamespace = defaultNamespace.Split('.');
+            var lastNamespace = splittedNamespace.Last().Replace('_', '-');
+            var culture = CultureInfo.GetCultures(CultureTypes.AllCultures).FirstOrDefault(c => string.Compare(c.Name, lastNamespace, true) == 0);
+            if (culture != null)
             {
-                return defaultNamespace.Substring(0, match.Index + 8).Split('.');
+                return splittedNamespace.Take(splittedNamespace.Length - 1).ToArray();
             }
 
-            return defaultNamespace.Split('.');
+            return splittedNamespace;
         }
 
         public static (string format, bool isDotNetFormatting) ParseTag(string comment)
