@@ -112,9 +112,6 @@
     <PackageReference Include="Microsoft.VisualStudio.OLE.Interop">
       <Version>7.10.6071</Version>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.SDK.Analyzers">
-      <Version>15.8.36</Version>
-    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.SDK.EmbedInteropTypes">
       <Version>15.0.27</Version>
     </PackageReference>
@@ -163,12 +160,6 @@
     <PackageReference Include="Microsoft.VisualStudio.Validation">
       <Version>15.3.58</Version>
     </PackageReference>
-    <PackageReference Include="Microsoft.VSSDK.BuildTools">
-      <Version>15.8.3252</Version>
-    </PackageReference>
-    <PackageReference Include="NuGet.VisualStudio">
-      <Version>4.8.2</Version>
-    </PackageReference>
     <PackageReference Include="stdole">
       <Version>7.0.3303</Version>
     </PackageReference>
@@ -197,9 +188,6 @@
     <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="16.5.2047" />
     <PackageReference Include="NuGet.VisualStudio">
       <Version>5.5.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
