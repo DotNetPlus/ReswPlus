@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+    <Metadata>
+        <Identity Id="ReswPlus.22b03f0c-a947-485c-a7a5-e351c75fad1b" Version="2.2.0" Language="en-US" Publisher="Rudy Huyn" />
+        <DisplayName>ReswPlus for VS2022 - Code Generator for .Resw</DisplayName>
+        <Description xml:space="preserve">Advanced Resw File Code Generator for UWP apps.
+
+ReswPlus is a Visual Studio extension enriching your existing .resw files with many high valuable features:
+- Access to strings via strongly typed static properties.
+- Generates methods to format your strings with named and strongly typed parameters.
+- Adds pluralization support (support plural rules for 196 languages!).
+- In addition to pluralization, also supports empty states when the number of items is zero.Advanced </Description>
+        <MoreInfo>https://github.com/dotnetplus/ReswPlus</MoreInfo>
+        <License>Assets\License.txt</License>
+        <GettingStartedGuide>https://github.com/dotnetplus/ReswPlus/blob/master/README.md</GettingStartedGuide>
+        <Icon>Assets\ReswPlusPackage.ico</Icon>
+        <PreviewImage>Assets\Logo.png</PreviewImage>
+        <Tags>resw resx strongly typed localization</Tags>
+    </Metadata>
+    <Installation>
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">
+            <ProductArchitecture>amd64</ProductArchitecture>
+        </InstallationTarget>
+        <InstallationTarget Version="[17.0,18.0)" Id="Microsoft.VisualStudio.Pro">
+            <ProductArchitecture>amd64</ProductArchitecture>
+        </InstallationTarget>
+        <InstallationTarget Version="[17.0,18.0)" Id="Microsoft.VisualStudio.Enterprise">
+            <ProductArchitecture>amd64</ProductArchitecture>
+        </InstallationTarget>
+    </Installation>
+    <Dependencies>
+        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
+    </Dependencies>
+    <Prerequisites>
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,18.0)" DisplayName="Visual Studio core editor" />
+    </Prerequisites>
+    <Assets>
+        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+    </Assets>
+</PackageManifest>
