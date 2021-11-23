@@ -6,7 +6,7 @@
 ![LanguageSupported](https://img.shields.io/badge/languages-C%23%2C%20VB.Net%2C%20C%2B%2B%2FCX%2C%20C%2B%2B%2FWinRT-brightgreen)
 ![GitHub](https://img.shields.io/github/license/dotnetplus/reswplus.svg)
 
-_**v2.0 out! With HTML tags to format text (bold, italic, hyperlink, etc...) and Android XML files converter**_
+_**Now available for Visual Studio 2022**_
 
 ReswPlus is a Visual Studio extension enriching your existing .resw files with many highly valuable features:
 - Access to strings via strongly typed static properties.
