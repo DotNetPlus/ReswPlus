@@ -273,7 +273,9 @@ namespace ReswPlus.Core.CodeGenerators
                     builderCpp.AppendLine($"size_t needed = _swprintf_p(nullptr, 0, {localizationStr}.c_str(), {formatParameters});");
                     builderCpp.AppendLine($"wchar_t *buffer = new wchar_t[needed + 1];");
                     builderCpp.AppendLine($"_swprintf_p(buffer, needed + 1, {localizationStr}.c_str(), {formatParameters});");
-                    builderCpp.AppendLine($"return hstring(buffer);");
+                    builderCpp.AppendLine($"hstring const string{ buffer };");
+                    builderCpp.AppendLine($"delete[] buffer;");
+                    builderCpp.AppendLine($"return string;");
                 }
             }
             else
