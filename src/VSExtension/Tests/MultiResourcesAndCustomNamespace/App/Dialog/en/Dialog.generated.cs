@@ -27,7 +27,7 @@ namespace MultiResources.Strings {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [MarkupExtensionReturnType(ReturnType = typeof(string))]
-    public class DialogExtension: MarkupExtension
+    public partial class DialogExtension: MarkupExtension
     {
         public enum KeyEnum
         {
