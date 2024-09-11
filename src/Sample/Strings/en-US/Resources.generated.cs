@@ -346,7 +346,7 @@ namespace ReswPlusSample.Strings{
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [MarkupExtensionReturnType(ReturnType = typeof(string))]
-    public class ResourcesExtension: MarkupExtension
+    public partial class ResourcesExtension: MarkupExtension
     {
         public enum KeyEnum
         {

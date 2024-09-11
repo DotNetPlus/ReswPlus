@@ -220,7 +220,7 @@ namespace ReswPlus.Core.CodeGenerators
             builder.AppendLine("[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]");
             builder.AppendLine("[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]");
             builder.AppendLine("[MarkupExtensionReturnType(ReturnType = typeof(string))]");
-            builder.AppendLine($"public class {className}: MarkupExtension");
+            builder.AppendLine($"public partial class {className}: MarkupExtension");
             builder.AppendLine("{");
             builder.AddLevel();
             builder.AppendLine("public enum KeyEnum");
