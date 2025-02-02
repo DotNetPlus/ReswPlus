@@ -32,7 +32,13 @@ jobs:
 
       - name: Determine Build Configuration
         id: config
-        run: echo "BUILD_CONFIG=${{ github.event_name == 'pull_request' && 'Debug' || 'Release' }}" >> $GITHUB_ENV
+        shell: pwsh
+        run: |
+          if ("${{ github.event_name }}" -eq "pull_request") {
+            echo "BUILD_CONFIG=Debug" | Out-File -FilePath $env:GITHUB_ENV -Append
+          } else {
+            echo "BUILD_CONFIG=Release" | Out-File -FilePath $env:GITHUB_ENV -Append
+          }
 
       - name: Restore Dependencies
         run: nuget restore ReswPlus.sln
