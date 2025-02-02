@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>1a6ff0bd-991a-417e-a79d-98ebb4208816</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>ReswPlus.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IErrorLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ResourceParser\FormatTag.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ResourceParser\ParameterType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ResourceParser\ReswFilters.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ResourceParser\ReswInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ResourceParser\ReswItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ResourceParser\ReswParser.cs" />
+  </ItemGroup>
+</Project>

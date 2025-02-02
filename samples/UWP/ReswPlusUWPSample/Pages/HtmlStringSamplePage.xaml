@@ -1,0 +1,107 @@
+<Page
+    x:Class="ReswPlusSample.Pages.HtmlStringSamplePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reswplus="using:ReswPlusLib"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    mc:Ignorable="d">
+    <ScrollViewer>
+        <StackPanel Margin="24">
+            <TextBlock Style="{StaticResource SectionDescriptionTextBlockStyle}" Text="Unlike Android localization files, resw files don't support emphasis (bold, italic, underlined...). To address this lack, ReswPlus improves resw files and add support of emphasis using HTML tags (similar to Android)." />
+
+            <StackPanel Style="{StaticResource PartStyle}">
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Named strongly typed + String Format" />
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Resource:" />
+                <StackPanel Style="{StaticResource SubPanelStyle}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock FontWeight="Bold" Text="Key" />
+                        <TextBlock
+                            Grid.Column="2"
+                            FontWeight="Bold"
+                            Text="Value" />
+                        <TextBlock
+                            Grid.Column="4"
+                            FontWeight="Bold"
+                            Text="Comment" />
+                        <TextBlock Grid.Row="1" Text="PleaseInstallNetFramework" />
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="2"
+                            Text="Please &lt;b&gt;Install &lt;i&gt;.Net Framework 4.6&lt;/i&gt;&lt;/b&gt; first." />
+
+                        <TextBlock Grid.Row="2" Text="UseDesktopBridge" />
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="2"
+                            Text="Use &lt;strike&gt;Centennial&lt;/strike&gt; Desktop Bridge to convert your app" />
+
+                        <TextBlock Grid.Row="3" Text="SendDocumentToUser" />
+                        <TextBlock
+                            Grid.Row="3"
+                            Grid.Column="2"
+                            Text="Send &lt;i&gt;{0}&lt;/i&gt; to &lt;b&gt;{1}&lt;/b&gt;." />
+                        <TextBlock
+                            Grid.Row="3"
+                            Grid.Column="4"
+                            Text="#Format[String filename, String username]" />
+
+                        <TextBlock Grid.Row="4" Text="HelloUsername" />
+                        <TextBlock
+                            Grid.Row="4"
+                            Grid.Column="2"
+                            Text="Hello &lt;b&gt;{0}&lt;/b&gt;, have a good {1}?" />
+                        <TextBlock
+                            Grid.Row="4"
+                            Grid.Column="4"
+                            Text="#Format[String username]" />
+
+                    </Grid>
+                </StackPanel>
+
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML:" />
+                <StackPanel Style="{StaticResource SubPanelStyle}">
+                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;{x:Bind strings:Resources.PleaseInstallNetFramework}&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;{x:Bind strings:Resources.UseDesktopBridge}&quot; /&gt;&#10;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;{x:Bind strings:Resources.SendDocumentToUser(DocumentNameTextBox.Text, UsernameTextBox.Text), Mode=OneWay}&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;{x:Bind strings:Resources.HelloUsername(UsernameTextBox.Text)}&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;Normal, &amp;lt;em&amp;gt;Semi-Bold&amp;lt;/em&amp;gt;, &amp;lt;b&amp;gt;Bold&amp;lt;/b&amp;gt;&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;Default Font &amp;lt;Font color=&amp;quot;#007000&amp;quot; face=&amp;quot;Arial&amp;quot;&amp;gt;Arial Font&amp;lt;/Font&amp;gt; &amp;lt;Font face=&amp;quot;Consolas&amp;quot;&amp;gt;Consolas Font&amp;lt;/Font&amp;gt;&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;Test monospace: &amp;lt;tt&amp;gt;Hello world!&amp;lt;/tt&amp;gt;&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;Superscript: &amp;lt;sup&amp;gt;2534i&amp;lt;/sup&amp;gt;, Subscript: &amp;lt;sub&amp;gt;2567.5&amp;lt;/sub&amp;gt;&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;Test line-break&amp;lt;br /&amp;gt;This is a new line&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;Test lien: &amp;lt;a href=&amp;quot;http://www.bing.com&amp;quot;&amp;gt;bing.com&amp;lt;/a&amp;gt;&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;Test lien with formatting: &amp;lt;a href=&amp;quot;http://www.bing.com&amp;quot;&amp;gt;click &amp;lt;i&amp;gt;here&amp;lt;/i&amp;gt;&amp;lt;/a&amp;gt;&quot; /&gt;" />
+                </StackPanel>
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Results:" />
+
+                <StackPanel Style="{StaticResource SubPanelStyle}">
+                    <TextBox
+                        x:Name="UsernameTextBox"
+                        Header="username"
+                        Text="John" />
+                    <TextBox
+                        x:Name="DocumentNameTextBox"
+                        Header="document name"
+                        Text="document.xml" />
+                    <TextBlock Margin="0,12,0,0" reswplus:TextBlock.HtmlText="{x:Bind strings:Resources.PleaseInstallNetFramework}" />
+                    <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="{x:Bind strings:Resources.UseDesktopBridge}" />
+                    <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="{x:Bind strings:Resources.SendDocumentToUser(DocumentNameTextBox.Text, UsernameTextBox.Text), Mode=OneWay}" />
+                    <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="{x:Bind strings:Resources.HelloUsername(UsernameTextBox.Text)}" />
+                    <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="Normal, &lt;em&gt;Semi-Bold&lt;/em&gt;, &lt;b&gt;Bold&lt;/b&gt;" />
+                    <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="Default Font &lt;Font color=&quot;#007000&quot; face=&quot;Arial&quot;&gt;Arial Font&lt;/Font&gt; &lt;Font face=&quot;Consolas&quot;&gt;Consolas Font&lt;/Font&gt;" />
+                    <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="Test monospace: &lt;tt&gt;Hello world!&lt;/tt&gt;" />
+                    <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="Superscript: &lt;sup&gt;2534i&lt;/sup&gt;, Subscript: &lt;sub&gt;2567.5&lt;/sub&gt;" />
+                    <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="Test line-break&lt;br /&gt;This is a new line" />
+                    <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="Test lien: &lt;a href=&quot;http://www.bing.com&quot;&gt;bing.com&lt;/a&gt;" />
+                    <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="Test lien with formatting: &lt;a href=&quot;http://www.bing.com&quot;&gt;click &lt;i&gt;here&lt;/i&gt;&lt;/a&gt;" />
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

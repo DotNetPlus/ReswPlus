@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ReswPlusWinAppSDKSample (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "ReswPlusWinAppSDKSample (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

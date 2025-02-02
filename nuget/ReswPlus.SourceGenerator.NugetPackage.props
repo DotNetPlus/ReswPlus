@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <FileVersion>0.3.0.0</FileVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Title>ReswPlus</Title>
+    <PackageId>ReswPlus</PackageId>
+    <Version>$(FileVersion)</Version>
+    <Authors>Rudy Huyn</Authors>
+    <Description>ReswPlus - Advanced File Code Generator for Resw files</Description>
+    <PackageProjectUrl>https://github.com/reswplus/ReswPlus/</PackageProjectUrl>
+    <PackageIcon>Icon.png</PackageIcon>
+    <PackageCopyright>Copyright 2025</PackageCopyright>
+    <PackageTags>dotnet localization resx resw plural pluralization</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <NoWarn>NU5128</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Include the built DLL as an analyzer -->
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs"/>
+    <!-- Package metadata -->
+    <None Include="$(MSBuildThisFileDirectory)Icon.png" Pack="true" PackagePath=""/>
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath=""/>
+    <!-- Include target files for MSBuild -->
+    <None Include="$(MSBuildThisFileDirectory)ReswPlus.targets" PackagePath="buildTransitive/" Pack="true"/>
+    <None Include="$(MSBuildThisFileDirectory)ReswPlus.targets" PackagePath="build/" Pack="true"/>
+  </ItemGroup>
+</Project>
