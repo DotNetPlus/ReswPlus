@@ -1,0 +1,95 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\..\nuget\ReswPlus.targets" />
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows10.0.22000.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>ReswPlusWinAppSDKSample</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Platforms>x86;x64;ARM64</Platforms>
+    <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetFrameworkVersion('$(TargetFramework)')) &gt;= 8">win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetFrameworkVersion('$(TargetFramework)')) &lt; 8">win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+    <PublishProfile>win-$(Platform).pubxml</PublishProfile>
+    <UseWinUI>true</UseWinUI>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <PackageIcon>Icon.png</PackageIcon>
+    <PackageCertificateThumbprint>D1C162AC5FB617F237A6E3B015863C777293065E</PackageCertificateThumbprint>
+    <PackageCertificateKeyFile>ReswPlusWinAppSDKSample_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\SplashScreen.scale-200.png" />
+    <Content Include="Assets\Square150x150Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250109001-experimental2" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
+    <Manifest Include="$(ApplicationManifest)" />
+  </ItemGroup>
+
+  <!--
+    Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
+    Tools extension to be activated for this project even if the Windows App SDK Nuget
+    package has not yet been restored.
+  -->
+  <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\ReswPlus.SourceGenerator\ReswPlus.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" Private="false" />
+    <ProjectReference Include="..\ReswPlusWinAppSDKSampleExternalLibrary\ReswPlusWinAppSDKSampleExternalLibrary.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Assets\Icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="MainControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Pages\AdvancedPluralizationSamplePage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Pages\BasicPluralizationSamplePage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Pages\LiteralStringFormatSamplePage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Pages\MacroSamplePage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Pages\NamedStringFormatSamplePage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Pages\ReferenceStringFormatSamplePage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Pages\StringFormatSamplePage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Pages\StronglyTypedSamplePage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Pages\VariantsSamplePage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
+  <!--
+    Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
+    Explorer "Package and Publish" context menu entry to be enabled for this project even if
+    the Windows App SDK Nuget package has not yet been restored.
+  -->
+  <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+  </PropertyGroup>
+</Project>

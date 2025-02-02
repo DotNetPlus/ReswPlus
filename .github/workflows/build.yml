@@ -1,0 +1,60 @@
+name: Build, Test, and (Optionally) Publish ReswPlus
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:  # Allows manual trigger via GitHub Actions UI
+  push:
+    tags:
+      - 'v*'  # Runs when a tag like v1.0.0 is pushed
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1
+
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v2
+
+      - name: Determine Build Configuration
+        id: config
+        run: |
+          if [ "${{ github.event_name }}" == "push" ]; then
+            echo "BUILD_CONFIG=Debug" >> $GITHUB_ENV
+          else
+            echo "BUILD_CONFIG=Release" >> $GITHUB_ENV
+          fi
+
+      - name: Restore Dependencies
+        run: nuget restore ReswPlus.sln
+
+      - name: Build Solution
+        run: msbuild ReswPlus.sln /p:Configuration=${{ env.BUILD_CONFIG }} /p:Platform="Any CPU"
+
+      - name: Run Unit Tests
+        run: dotnet test tests/ReswPlusUnitTests/ReswPlusUnitTests.csproj --configuration ${{ env.BUILD_CONFIG }} --no-build --verbosity normal
+
+      - name: Pack NuGet Package (Only for Release)
+        if: github.event_name != 'push'
+        run: dotnet pack ReswPlus.sln --configuration Release --no-build --output nupkg
+
+      - name: Push to NuGet (Only for Tags or Manual Trigger)
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v')
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: dotnet nuget push nupkg/*.nupkg --api-key $NUGET_API_KEY --source https://api.nuget.org/v3/index.json --skip-duplicate

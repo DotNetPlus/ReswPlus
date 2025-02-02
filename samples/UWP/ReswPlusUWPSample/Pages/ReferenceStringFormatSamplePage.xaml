@@ -1,0 +1,140 @@
+<Page
+    x:Class="ReswPlusUWPSample.Pages.ReferenceStringFormatSamplePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:strings="using:ReswPlusUWPSample.Strings"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    mc:Ignorable="d">
+    <ScrollViewer>
+        <StackPanel Margin="24">
+            <TextBlock Style="{StaticResource SectionDescriptionTextBlockStyle}" Text="When using String Formatting, you can replace one or many parameters by a reference to another string in your resw. This powerful feature will simplify your localizations and save you from having to translate the same string several times." />
+
+            <StackPanel Style="{StaticResource PartStyle}">
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Reference other string when using String Formatting" />
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Resource:" />
+                <StackPanel Style="{StaticResource SubPanelStyle}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock FontWeight="Bold" Text="Key" />
+                        <TextBlock
+                            Grid.Column="2"
+                            FontWeight="Bold"
+                            Text="Value" />
+                        <TextBlock
+                            Grid.Column="4"
+                            FontWeight="Bold"
+                            Text="Comment" />
+                        <TextBlock Grid.Row="1" Text="AndroidApplicationName" />
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="2"
+                            Text="Contoso for Android" />
+
+                        <TextBlock Grid.Row="2" Text="DownloadAndroidApp" />
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="2"
+                            Text="Click here to download {0}!" />
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="4"
+                            Text="#Format[AndroidApplicationName()]" />
+
+                        <TextBlock Grid.Row="3" Text="LearnMoreAboutAndroidApp" />
+                        <TextBlock
+                            Grid.Row="3"
+                            Grid.Column="2"
+                            Text="To learn more about '{0}', visit our website." />
+                        <TextBlock
+                            Grid.Row="3"
+                            Grid.Column="4"
+                            Text="#Format[AndroidApplicationName()]" />
+                    </Grid>
+                </StackPanel>
+
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML:" />
+                <StackPanel Style="{StaticResource SubPanelStyle}">
+                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&lt;Button Content=&quot;{x:Bind strings:Resources.DownloadAndroidApp}&quot; /&gt;&#x0a;&lt;TextBlock Text=&quot;{x:Bind strings:Resources.LearnMoreAboutAndroidApp}&quot; /&gt;" />
+                </StackPanel>
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Results:" />
+
+                <StackPanel Style="{StaticResource SubPanelStyle}">
+                    <Button Content="{x:Bind strings:Resources.DownloadAndroidApp}" />
+                    <TextBlock Text="{x:Bind strings:Resources.LearnMoreAboutAndroidApp}" />
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Style="{StaticResource PartStyle}">
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Mix parameters and string references" />
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Resource:" />
+                <StackPanel Style="{StaticResource SubPanelStyle}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock FontWeight="Bold" Text="Key" />
+                        <TextBlock
+                            Grid.Column="2"
+                            FontWeight="Bold"
+                            Text="Value" />
+                        <TextBlock
+                            Grid.Column="4"
+                            FontWeight="Bold"
+                            Text="Comment" />
+                        <TextBlock Grid.Row="1" Text="AndroidApplicationName" />
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="2"
+                            Text="Contoso for Android" />
+
+                        <TextBlock Grid.Row="2" Text="WelcomeDownloadApp" />
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="2"
+                            Text="Hi {0}! Do you want to download {1}?" />
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="4"
+                            Text="#Format[String username, AndroidApplicationName()]" />
+                    </Grid>
+                </StackPanel>
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML:" />
+                <StackPanel Style="{StaticResource SubPanelStyle}">
+                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&lt;TextBox x:Name=&quot;UsernameTextbox&quot; Header=&quot;Username&quot; Text=&quot;Roger&quot; /&gt;&#x0a;&lt;TextBlock Text=&quot;{x:Bind strings:Resources.WelcomeDownloadApp(UsernameTextbox.Text), Mode=OneWay}&quot; /&gt;" />
+                </StackPanel>
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Results:" />
+
+                <StackPanel Style="{StaticResource SubPanelStyle}">
+                    <TextBox
+                        x:Name="UsernameTextbox"
+                        Header="Username"
+                        Text="Roger" />
+                    <TextBlock Text="{x:Bind strings:Resources.WelcomeDownloadApp(UsernameTextbox.Text), Mode=OneWay}" />
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

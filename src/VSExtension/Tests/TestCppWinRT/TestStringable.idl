@@ -1,8 +1,0 @@
-namespace TestCppWinRT
-{
-    [default_interface]
-    runtimeclass TestStringable : Windows.Foundation.IStringable
-    {
-        TestStringable();
-    }
-}

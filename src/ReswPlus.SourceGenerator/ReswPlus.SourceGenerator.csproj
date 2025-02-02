@@ -1,0 +1,78 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="..\..\nuget\ReswPlus.SourceGenerator.NugetPackage.props" Condition="'$(Configuration)' == 'Release'" />
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <LangVersion>12.0</LangVersion>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+        <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <DebugType>full</DebugType>
+        <DebugSymbols>true</DebugSymbols>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <None Remove="Templates\ResourceStringProviders\MicrosoftResourceStringProvider.txt" />
+      <None Remove="Templates\ResourceStringProviders\WindowsResourceStringProvider.txt" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Templates\ResourceStringProviders\WindowsResourceStringProvider.txt" />
+      <EmbeddedResource Include="Templates\ResourceStringProviders\MicrosoftResourceStringProvider.txt" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Templates\Macros\Macros.txt" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Templates\Plurals\ResourceLoaderExtension.txt" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Templates\Utils\DoubleExt.txt" />
+      <EmbeddedResource Include="Templates\Utils\IntExt.txt" />
+      <EmbeddedResource Include="Templates\Plurals\IPluralProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\PluralTypeEnum.txt" />
+      <EmbeddedResource Include="Templates\Plurals\ArabicProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\BreizhProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\CentralAtlasTamazightProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\CroatProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\CzechProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\DanishProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\FilipinoProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\HebrewProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\IcelandicProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\IntOneOrZeroProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\IrishProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\LatvianProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\LithuanianProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\MacedonianProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\MalteseProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\ManxProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\OneOrTwoProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\OneOrZeroProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\OneOrZeroToOneExcludedProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\OnlyOneProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\OtherProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\PolishProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\RomanianProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\ScottishGaelicProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\SinhalaProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\SlavicProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\SlovenianProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\TachelhitProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\WelshProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\ZeroToOneProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\ZeroToTwoExcludedProvider.txt" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.12.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+    </ItemGroup>
+    <Import Project="..\ReswPlus.Shared\ReswPlus.Shared.projitems" Label="Shared" />
+</Project>

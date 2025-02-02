@@ -1,0 +1,258 @@
+<Page
+    x:Class="ReswPlusWinAppSDKSample.Pages.VariantsSamplePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:strings="using:ReswPlusWinAppSDKSample.Strings"
+    xmlns:system="using:System"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    mc:Ignorable="d">
+    <ScrollViewer>
+        <StackPanel Margin="24">
+            <TextBlock Style="{StaticResource SectionDescriptionTextBlockStyle}" Text="ReswPlus supports variants of strings. A same resource identifier can return different strings depend of the variant id you selected. Variants can be used to represent genders, groups, categories..." />
+
+            <StackPanel Style="{StaticResource PartStyle}">
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Use variants for genders" />
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Resource:" />
+                <StackPanel Style="{StaticResource SubPanelStyle}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock FontWeight="Bold" Text="Key" />
+                        <TextBlock
+                            Grid.Column="2"
+                            FontWeight="Bold"
+                            Text="Value" />
+                        <TextBlock Grid.Row="1" Text="DriverArrived_Variant1" />
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="2"
+                            Text="Your driver is here, she is waiting outside. Do you want to message her?" />
+                        <TextBlock Grid.Row="2" Text="DriverArrived_Variant2" />
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="2"
+                            Text="Your driver is here, he is waiting outside. Do you want to message him?" />
+                        <TextBlock Grid.Row="3" Text="DriverArrived_Variant3" />
+                        <TextBlock
+                            Grid.Row="3"
+                            Grid.Column="2"
+                            Text="Your driver is here, they are waiting outside. Do you want to message them?" />
+                        <TextBlock Grid.Row="4" Text="DriverArrived_Variant4" />
+                        <TextBlock
+                            Grid.Row="4"
+                            Grid.Column="2"
+                            Text="Your driver is here, ze is waiting outside. Do you want to message hir?" />
+                    </Grid>
+                </StackPanel>
+
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML:" />
+                <StackPanel Style="{StaticResource SubPanelStyle}">
+                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&lt;ComboBox x:Name=&quot;PronounsComboBox&quot;&#x0a; Header=&quot;Select a personal pronoun&quot;&gt;&#x0a;   &lt;ComboBoxItem&gt;She/Her/Hers&lt;/ComboBoxItem&gt;&#x0a;   &lt;ComboBoxItem&gt;He/His/Him&lt;/ComboBoxItem&gt;&#x0a;   ...&#x0a;&lt;/ComboBox&gt;&#x0a;&lt;TextBlock Text=&quot;{x:Bind strings:Resources.DriverArrived(PronounsComboBox.SelectedIndex), Mode=OneWay}&quot; /&gt;" />
+                </StackPanel>
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Results:" />
+
+                <StackPanel Style="{StaticResource SubPanelStyle}">
+
+                    <ComboBox
+                        x:Name="PronounsComboBox"
+                        Header="Select a personal pronoun"
+                        SelectedIndex="1">
+                        <ComboBoxItem>---------</ComboBoxItem>
+                        <ComboBoxItem>She/Her/Hers</ComboBoxItem>
+                        <ComboBoxItem>He/His/Him</ComboBoxItem>
+                        <ComboBoxItem>They/Their/Theirs</ComboBoxItem>
+                        <ComboBoxItem>Ze/Hir/Hirs</ComboBoxItem>
+                    </ComboBox>
+                    <TextBlock
+                        Margin="0,12,0,0"
+                        FontWeight="Bold"
+                        Text="{x:Bind strings:Resources.DriverArrived(PronounsComboBox.SelectedIndex), Mode=OneWay}"
+                        TextWrapping="WrapWholeWords" />
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Style="{StaticResource PartStyle}">
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Display variations of messages using enum" />
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Resource:" />
+                <StackPanel Style="{StaticResource SubPanelStyle}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock FontWeight="Bold" Text="Key" />
+                        <TextBlock
+                            Grid.Column="2"
+                            FontWeight="Bold"
+                            Text="Value" />
+                        <TextBlock Grid.Row="1" Text="Greeting_Variant1" />
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="2"
+                            Text="Good morning, enjoy your day!" />
+                        <TextBlock Grid.Row="2" Text="Greeting_Variant2" />
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="2"
+                            Text="Good afternoon, have a good time!" />
+                        <TextBlock Grid.Row="3" Text="Greeting_Variant3" />
+                        <TextBlock
+                            Grid.Row="3"
+                            Grid.Column="2"
+                            Text="Good evening, hope your day was fine!" />
+                        <TextBlock Grid.Row="4" Text="Greeting_Variant4" />
+                        <TextBlock
+                            Grid.Row="4"
+                            Grid.Column="2"
+                            Text="Good night, sleep well, see you tomorrow!" />
+                    </Grid>
+                </StackPanel>
+
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML:" />
+                <StackPanel Style="{StaticResource SubPanelStyle}">
+                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&lt;RadioButton GroupName=&quot;PartDayRadioButton&quot; Content=&quot;Morning&quot; IsChecked=&quot;True&quot; Checked=&quot;PartDayMorning_Checked&quot;/&gt;&#x0a;&lt;RadioButton GroupName=&quot;PartDayRadioButton&quot; Content=&quot;Afternoon&quot; Checked=&quot;PartDayAfternoon_Checked&quot; /&gt;&#x0a;&lt;RadioButton GroupName=&quot;PartDayRadioButton&quot; Content=&quot;Evening&quot; Checked=&quot;PartDayEvening_Checked&quot; /&gt;&#x0a;&lt;RadioButton GroupName=&quot;PartDayRadioButton&quot; Content=&quot;Night&quot; Checked=&quot;PartDayNight_Checked&quot; /&gt;&#x0a;&lt;TextBlock FontWeight=&quot;Bold&quot; Text=&quot;{x:Bind strings:Resources.Greeting(DayPart), Mode=OneWay}&quot; /&gt;" />
+                </StackPanel>
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Results:" />
+
+                <StackPanel Style="{StaticResource SubPanelStyle}">
+
+                    <RadioButton
+                        Checked="PartDayMorning_Checked"
+                        Content="Morning"
+                        GroupName="PartDayRadioButton"
+                        IsChecked="True" />
+                    <RadioButton
+                        Checked="PartDayAfternoon_Checked"
+                        Content="Afternoon"
+                        GroupName="PartDayRadioButton" />
+                    <RadioButton
+                        Checked="PartDayEvening_Checked"
+                        Content="Evening"
+                        GroupName="PartDayRadioButton" />
+                    <RadioButton
+                        Checked="PartDayNight_Checked"
+                        Content="Night"
+                        GroupName="PartDayRadioButton" />
+
+                    <TextBlock
+                        Margin="0,12,0,0"
+                        FontWeight="Bold"
+                        Text="{x:Bind strings:Resources.Greeting(DayPart), Mode=OneWay}"
+                        TextWrapping="WrapWholeWords" />
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Style="{StaticResource PartStyle}">
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Variants + Pluralization + Formatting" />
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Resource:" />
+                <StackPanel Style="{StaticResource SubPanelStyle}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock FontWeight="Bold" Text="Key" />
+                        <TextBlock
+                            Grid.Column="2"
+                            FontWeight="Bold"
+                            Text="Value" />
+                        <TextBlock
+                            Grid.Column="4"
+                            FontWeight="Bold"
+                            Text="Comment" />
+                        <TextBlock Grid.Row="1" Text="AnimalTreat_Variant1_One" />
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="2"
+                            Text="Reward your pup, give {0} biscuit to {1} the dog" />
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="4"
+                            Text="#Format[Plural Double treatNumber, Variant petType, String petName]" />
+                        <TextBlock Grid.Row="2" Text="AnimalTreat_Variant1_Other" />
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="2"
+                            Text="Reward your pup, give {0} biscuits to {1} the dog" />
+                        <TextBlock Grid.Row="3" Text="AnimalTreat_Variant2_One" />
+                        <TextBlock
+                            Grid.Row="3"
+                            Grid.Column="2"
+                            Text="Reward your kitty, give {0} treat to your cat {1}" />
+                        <TextBlock Grid.Row="4" Text="AnimalTreat_Variant2_Other" />
+                        <TextBlock
+                            Grid.Row="4"
+                            Grid.Column="2"
+                            Text="Reward your kitty, give {0} treats to your cat {1}" />
+                    </Grid>
+                </StackPanel>
+
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML:" />
+                <StackPanel Style="{StaticResource SubPanelStyle}">
+                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&lt;RadioButton GroupName=&quot;PetTypeRadioButton&quot; Content=&quot;Dog&quot; IsChecked=&quot;True&quot; Checked=&quot;PetTypeDog_Checked&quot;/&gt;&#x0a;&lt;RadioButton GroupName=&quot;PetTypeRadioButton&quot; Content=&quot;Cat&quot; Checked=&quot;PetTypeCat_Checked&quot; /&gt;&#x0a;&lt;TextBox x:Name=&quot;PetNameTextBox&quot; Header=&quot;Pet name&quot; Text=&quot;Simba&quot; /&gt;&#x0a;&lt;Slider x:Name=&quot;PetNumberTreatsSlider&quot; Header=&quot;Number of treats&quot; Minimum=&quot;1&quot; Value=&quot;4&quot; Maximum=&quot;10&quot; /&gt;&#x0a;&lt;TextBlock FontWeight=&quot;Bold&quot; Text=&quot;{x:Bind strings:Resources.AnimalTreat(PetNumberTreatsSlider.Value, PetType, PetNameTextBox.Text), Mode=OneWay}&quot;/&gt;" />
+                </StackPanel>
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Results:" />
+
+                <StackPanel Style="{StaticResource SubPanelStyle}">
+
+                    <RadioButton
+                        Checked="PetTypeDog_Checked"
+                        Content="🐶"
+                        GroupName="PetTypeRadioButton"
+                        IsChecked="True" />
+                    <RadioButton
+                        Checked="PetTypeCat_Checked"
+                        Content="🐱"
+                        GroupName="PetTypeRadioButton" />
+
+                    <TextBox
+                        x:Name="PetNameTextBox"
+                        Header="Pet name"
+                        Text="Simba" />
+                    <Slider
+                        x:Name="PetNumberTreatsSlider"
+                        Header="Number of treats"
+                        Maximum="10"
+                        Minimum="1"
+                        Value="4" />
+                    <TextBlock
+                        Margin="0,12,0,0"
+                        FontWeight="Bold"
+                        Text="{x:Bind strings:Resources.AnimalTreat(PetNumberTreatsSlider.Value, PetType, PetNameTextBox.Text), Mode=OneWay}"
+                        TextWrapping="WrapWholeWords" />
+                </StackPanel>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>
