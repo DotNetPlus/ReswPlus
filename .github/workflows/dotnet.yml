@@ -5,7 +5,7 @@ on:
     branches:
       - main
     tags:
-      - 'v*'  # Runs when a tag like v1.0.0 is pushed
+      - 'v*'  # Runs only when a tag like v1.0.0 is pushed
   pull_request:
     branches:
       - main
@@ -32,13 +32,7 @@ jobs:
 
       - name: Determine Build Configuration
         id: config
-        shell: pwsh
-        run: |
-          if ("${{ github.event_name }}" -eq "pull_request") {
-            echo "BUILD_CONFIG=Debug" | Out-File -FilePath $env:GITHUB_ENV -Append
-          } else {
-            echo "BUILD_CONFIG=Release" | Out-File -FilePath $env:GITHUB_ENV -Append
-          }
+        run: echo "BUILD_CONFIG=${{ github.event_name == 'pull_request' && 'Debug' || 'Release' }}" >> $GITHUB_ENV
 
       - name: Restore Dependencies
         run: nuget restore ReswPlus.sln
@@ -49,12 +43,12 @@ jobs:
       - name: Run Unit Tests
         run: dotnet test tests/ReswPlusUnitTests/ReswPlusUnitTests.csproj --configuration ${{ env.BUILD_CONFIG }} --no-build --verbosity normal
 
-      - name: Pack NuGet Package (Only for Release)
-        if: github.event_name != 'push'
+      - name: Pack NuGet Package (Only for Release and explicit request)
+        if: startsWith(github.ref, 'refs/tags/v')
         run: dotnet pack ReswPlus.sln --configuration Release --no-build --output nupkg
 
       - name: Push to NuGet (Only for Tags or Manual Trigger)
-        if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v')
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: dotnet nuget push nupkg/*.nupkg --api-key $NUGET_API_KEY --source https://api.nuget.org/v3/index.json --skip-duplicate
