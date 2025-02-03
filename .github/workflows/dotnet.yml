@@ -20,12 +20,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.0.x'
+        uses: actions/setup-dotnet@v4
 
       - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1
+        uses: microsoft/setup-msbuild@v2
 
       - name: Setup NuGet
         uses: nuget/setup-nuget@v2
@@ -40,11 +38,14 @@ jobs:
             echo "BUILD_CONFIG=Release" | Out-File -FilePath $env:GITHUB_ENV -Append
           }
 
-      - name: Restore Dependencies
+      - name: Restore Nuget
         run: nuget restore ReswPlus.sln
 
+      - name: DotNet Restore
+        run: dotnet restore ReswPlus.sln
+        
       - name: Build Solution
-        run: msbuild ReswPlus.sln /p:Configuration=${{ env.BUILD_CONFIG }} /p:Platform="Any CPU" /p:RuntimeIdentifierOverride=win-x64
+        run: msbuild ReswPlus.sln /p:Configuration=${{ env.BUILD_CONFIG }} /p:Platform=x64 /p:PublishReadyToRun=false
 
       - name: Run Unit Tests
         run: dotnet test tests/ReswPlusUnitTests/ReswPlusUnitTests.csproj --configuration ${{ env.BUILD_CONFIG }} --no-build --verbosity normal
