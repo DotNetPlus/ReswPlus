@@ -38,11 +38,11 @@ jobs:
             echo "BUILD_CONFIG=Release" | Out-File -FilePath $env:GITHUB_ENV -Append
           }
 
-      - name: Restore Dependencies
-        run: nuget restore ReswPlus.sln
-
+      - name: Restore Dependencies with Runtime Identifier
+        run: dotnet restore ReswPlus.sln /p:PublishReadyToRun=true
+        
       - name: Build Solution
-        run: msbuild ReswPlus.sln /p:Configuration=${{ env.BUILD_CONFIG }} /p:Platform="Any CPU" /p:RuntimeIdentifierOverride=win-x64
+        run: msbuild ReswPlus.sln /p:Configuration=${{ env.BUILD_CONFIG }} /p:Platform="Any CPU"
 
       - name: Run Unit Tests
         run: dotnet test tests/ReswPlusUnitTests/ReswPlusUnitTests.csproj --configuration ${{ env.BUILD_CONFIG }} --no-build --verbosity normal

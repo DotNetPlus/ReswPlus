@@ -24,9 +24,6 @@
     <AppxBundlePlatforms>x86|x64|arm64</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(RuntimeIdentifierOverride)' != ''">
-    <RuntimeIdentifier>$(RuntimeIdentifierOverride)</RuntimeIdentifier>
-  </PropertyGroup>
   <ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />
     <Content Include="Assets\Square150x150Logo.scale-200.png" />
