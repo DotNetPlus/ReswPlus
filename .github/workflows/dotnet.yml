@@ -42,10 +42,10 @@ jobs:
         run: nuget restore ReswPlus.sln
 
       - name: DotNet Restore
-        run: dotnet restore ReswPlus.sln --runtime win-x86 --runtime win-x64
+        run: dotnet restore ReswPlus.sln
         
       - name: Build Solution
-        run: msbuild ReswPlus.sln /p:Configuration=${{ env.BUILD_CONFIG }} /p:Platform=x64 /p:RuntimeIdentifier=win-x64
+        run: msbuild ReswPlus.sln /p:Configuration=${{ env.BUILD_CONFIG }} /p:Platform=x64 /p:RuntimeIdentifier=win-x64 /p:PublishReadyToRun=false
 
       - name: Run Unit Tests
         run: dotnet test tests/ReswPlusUnitTests/ReswPlusUnitTests.csproj --configuration ${{ env.BUILD_CONFIG }} --no-build --verbosity normal
