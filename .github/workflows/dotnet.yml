@@ -38,8 +38,8 @@ jobs:
             echo "BUILD_CONFIG=Release" | Out-File -FilePath $env:GITHUB_ENV -Append
           }
 
-      - name: Restore Dependencies with Runtime Identifier
-        run: dotnet restore ReswPlus.sln /p:PublishReadyToRun=true
+      - name: Restore Dependencies
+        run: dotnet restore ReswPlus.sln
         
       - name: Build Solution
         run: msbuild ReswPlus.sln /p:Configuration=${{ env.BUILD_CONFIG }} /p:Platform="Any CPU"
