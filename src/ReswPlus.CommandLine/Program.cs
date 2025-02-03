@@ -29,7 +29,7 @@ internal class Program
     {
         if (Directory.Exists(parameters.Input))
         {
-            var success = AndroidXMLConverter.AndroidXMLDirectoryToResw(parameters.Input, parameters.OutputPath);
+            var success = AndroidXMLConverter.AndroidXMLDirectoryToResw(parameters.Input, parameters.OutputPath!);
             if (success)
             {
                 Console.WriteLine($"Directory created: {parameters.OutputPath}");
@@ -43,7 +43,7 @@ internal class Program
         }
         else if (File.Exists(parameters.Input))
         {
-            var success = AndroidXMLConverter.AndroidXMLFileToResw(parameters.Input, parameters.OutputPath);
+            var success = AndroidXMLConverter.AndroidXMLFileToResw(parameters.Input, parameters.OutputPath!);
             if (success)
             {
                 Console.WriteLine($"File created: {parameters.OutputPath}");
@@ -83,7 +83,7 @@ internal class Program
             Console.WriteLine($"Error during the conversion of the file: {parameters.Input}");
             return -1;
         }
-        androidXML.Save(parameters.OutputFilePath);
+        androidXML.Save(parameters.OutputFilePath!);
         return 0;
     }
     #endregion

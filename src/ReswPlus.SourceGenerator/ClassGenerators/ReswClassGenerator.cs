@@ -27,7 +27,7 @@ public sealed class ReswClassGenerator
 
     private readonly ResourceFileInfo _resourceFileInfo;
     private readonly ICodeGenerator _codeGenerator;
-    private readonly IErrorLogger _logger;
+    private readonly IErrorLogger? _logger;
 
     static ReswClassGenerator()
     {
@@ -36,7 +36,7 @@ public sealed class ReswClassGenerator
             $@"(?<tag>{TagFormat}|{TagFormatDotNet})\[(?<formats>(?:""(?:""|[^""])*""|[^\\""])+)\]");
     }
 
-    private ReswClassGenerator(ResourceFileInfo resourceInfo, ICodeGenerator generator, IErrorLogger logger)
+    private ReswClassGenerator(ResourceFileInfo resourceInfo, ICodeGenerator generator, IErrorLogger? logger)
     {
         _resourceFileInfo = resourceInfo;
         _codeGenerator = generator;
@@ -49,9 +49,9 @@ public sealed class ReswClassGenerator
     /// <param name="resourceFileInfo">The resource file information.</param>
     /// <param name="logger">The error logger.</param>
     /// <returns>A new instance of <see cref="ReswClassGenerator"/> or null if the language is not supported.</returns>
-    internal static ReswClassGenerator CreateGenerator(ResourceFileInfo resourceFileInfo, IErrorLogger logger)
+    internal static ReswClassGenerator? CreateGenerator(ResourceFileInfo resourceFileInfo, IErrorLogger? logger)
     {
-        ICodeGenerator codeGenerator = resourceFileInfo.Project.Language switch
+        var codeGenerator = resourceFileInfo.Project.Language switch
         {
             Language.CSharp => new CSharpCodeGenerator(),
             _ => null
@@ -81,14 +81,13 @@ public sealed class ReswClassGenerator
             ? className
             : $"{projectNameIfLibrary}/{className}";
 
-        var result = new StronglyTypedClass
-        {
-            IsAdvanced = isAdvanced,
-            ClassName = className,
-            Namespaces = namespacesToUse,
-            ResoureFile = resourceLoaderName,
-            AppType = appType
-        };
+        var result = new StronglyTypedClass(
+            isAdvanced,
+            namespacesToUse,
+            resourceLoaderName,
+            className,
+            appType
+        );
 
         // Only use items with valid keys and that do not contain the ignore tag.
         var stringItems = reswInfo.Items
@@ -111,8 +110,8 @@ public sealed class ReswClassGenerator
                     var summary = $"Get the pluralized version of the string similar to: {singleLineValue}";
 
                     Localization localization = item.SupportVariants
-                        ? new PluralVariantLocalization { Key = itemKey, Summary = summary, SupportNoneState = hasNoneForm }
-                        : new PluralLocalization { Key = itemKey, Summary = summary, SupportNoneState = hasNoneForm };
+                        ? new PluralVariantLocalization(itemKey, summary) { SupportNoneState = hasNoneForm }
+                        : new PluralLocalization(itemKey, summary) { SupportNoneState = hasNoneForm };
 
                     if (item.Items.Any(i => i.Comment?.Contains(Deprecated_TagStrongType) == true))
                     {
@@ -130,7 +129,7 @@ public sealed class ReswClassGenerator
                     var summary = $"Get the variant version of the string similar to: {singleLineValue}";
                     var commentToUse = item.Items.FirstOrDefault(i => !string.IsNullOrEmpty(i.Comment) && _regexStringFormat.IsMatch(i.Comment))?.Comment;
 
-                    var localization = new VariantLocalization { Key = itemKey, Summary = summary };
+                    var localization = new VariantLocalization(itemKey, summary);
                     ManageFormattedFunction(localization, commentToUse, basicItems, resourceFileName);
                     result.Items.Add(localization);
                 }
@@ -146,7 +145,7 @@ public sealed class ReswClassGenerator
             {
                 var singleLineValue = _regexRemoveSpace.Replace(item.Value, " ").Trim();
                 var summary = $"Looks up a localized string similar to: {singleLineValue}";
-                var localization = new RegularLocalization { Key = item.Key, Summary = summary };
+                var localization = new RegularLocalization(item.Key, summary);
 
                 if (isAdvanced)
                 {
@@ -188,16 +187,16 @@ public sealed class ReswClassGenerator
     /// <param name="isAdvanced">Indicates whether advanced features are enabled.</param>
     /// <param name="appType">The type of the application.</param>
     /// <returns>A <see cref="GenerationResult"/> containing the generated files.</returns>
-    internal GenerationResult GenerateCode(string baseFilename, string content, string defaultNamespace, bool isAdvanced, AppType appType)
+    internal GenerationResult? GenerateCode(string baseFilename, string content, string defaultNamespace, bool isAdvanced, AppType appType)
     {
         var stronglyTypedClassInfo = Parse(content, defaultNamespace, isAdvanced, appType);
-        if (stronglyTypedClassInfo == null)
+        if (stronglyTypedClassInfo is null)
         {
             return null;
         }
 
         var filesGenerated = _codeGenerator.GetGeneratedFiles(baseFilename, stronglyTypedClassInfo, _resourceFileInfo);
-        var result = new GenerationResult { Files = filesGenerated };
+        var result = new GenerationResult(filesGenerated);
 
         if (filesGenerated?.Any() == true)
         {
@@ -232,7 +231,7 @@ public sealed class ReswClassGenerator
     /// </summary>
     /// <param name="comment">The comment containing the format tag.</param>
     /// <returns>A tuple containing the format string and a boolean indicating if it is .NET formatting.</returns>
-    public static (string format, bool isDotNetFormatting) ParseTag(string comment)
+    public static (string? format, bool isDotNetFormatting) ParseTag(string? comment)
     {
         if (!string.IsNullOrWhiteSpace(comment))
         {
@@ -254,9 +253,9 @@ public sealed class ReswClassGenerator
     /// <param name="basicLocalizedItems">The basic localized items.</param>
     /// <param name="resourceName">The name of the resource.</param>
     /// <returns>True if the function was managed successfully; otherwise, false.</returns>
-    private bool ManageFormattedFunction(Localization localization, string comment, IEnumerable<ReswItem> basicLocalizedItems, string resourceName)
+    private bool ManageFormattedFunction(Localization localization, string? comment, IEnumerable<ReswItem> basicLocalizedItems, string resourceName)
     {
-        FunctionFormatTagParametersInfo tagTypedInfo = null;
+        FunctionFormatTagParametersInfo? tagTypedInfo = null;
         var (format, isDotNetFormatting) = ParseTag(comment);
         if (format != null)
         {
@@ -272,14 +271,8 @@ public sealed class ReswClassGenerator
         if (localization is IVariantLocalization variantLocalization)
         {
             // If a variant parameter was not provided via the format tag, add a default.
-            var variantParameter = tagTypedInfo?.VariantParameter ?? new FunctionFormatTagParameter
-            {
-                Type = ParameterType.Long,
-                Name = "variantId",
-                IsVariantId = true
-            };
-
-            if (tagTypedInfo?.VariantParameter == null)
+            var variantParameter = tagTypedInfo?.VariantParameter ?? new FunctionFormatTagParameter(ParameterType.Long, "variantId", null, true);
+            if (tagTypedInfo?.VariantParameter is null)
             {
                 localization.ExtraParameters.Add(variantParameter);
             }
@@ -289,13 +282,13 @@ public sealed class ReswClassGenerator
         if (localization is PluralLocalization pluralLocalization)
         {
             // If pluralization parameter was not provided via the format tag, add a default.
-            var pluralizationParameter = tagTypedInfo?.PluralizationParameter ?? new FunctionFormatTagParameter
-            {
-                Type = ParameterType.Double,
-                Name = "pluralizationReferenceNumber"
-            };
+            var pluralizationParameter = tagTypedInfo?.PluralizationParameter ?? new FunctionFormatTagParameter(
+                ParameterType.Double,
+                "pluralizationReferenceNumber",
+                null,
+                false);
 
-            if (tagTypedInfo?.PluralizationParameter == null)
+            if (tagTypedInfo?.PluralizationParameter is null)
             {
                 pluralLocalization.ExtraParameters.Add(pluralizationParameter);
             }

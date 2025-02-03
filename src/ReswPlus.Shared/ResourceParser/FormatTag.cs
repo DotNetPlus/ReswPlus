@@ -11,31 +11,54 @@ public interface IFormatTagParameter
 }
 public sealed class StringRefFormatTagParameter : IFormatTagParameter
 {
-    public string Id { get; set; }
+    public string Id { get; }
+
+    public StringRefFormatTagParameter(string id)
+    {
+        Id = id;
+    }
 }
 public sealed class LiteralStringFormatTagParameter : IFormatTagParameter
 {
-    public string Value { get; set; }
+    public string Value { get; }
+
+    public LiteralStringFormatTagParameter(string value)
+    {
+        Value = value;
+    }
 }
 
 public sealed class MacroFormatTagParameter : IFormatTagParameter
 {
-    public string Id { get; set; }
+    public string Id { get; }
+
+    public MacroFormatTagParameter(string id)
+    {
+        Id = id;
+    }
 }
 
 public sealed class FunctionFormatTagParameter : IFormatTagParameter
 {
-    public ParameterType Type { get; set; }
-    public string Name { get; set; }
-    public ParameterType? TypeToCast { get; set; }
-    public bool IsVariantId { get; set; }
+    public ParameterType Type { get; }
+    public string Name { get; }
+    public ParameterType? TypeToCast { get; }
+    public bool IsVariantId { get; }
+
+    public FunctionFormatTagParameter(ParameterType type, string name, ParameterType? typeToCast, bool isVariantId)
+    {
+        Type = type;
+        Name = name;
+        TypeToCast = typeToCast;
+        IsVariantId = isVariantId;
+    }
 }
 
 public sealed class FunctionFormatTagParametersInfo
 {
-    public List<IFormatTagParameter> Parameters { get; set; } = [];
-    public FunctionFormatTagParameter PluralizationParameter { get; set; }
-    public FunctionFormatTagParameter VariantParameter { get; set; }
+    public List<IFormatTagParameter> Parameters { get; set; } = new();
+    public FunctionFormatTagParameter? PluralizationParameter { get; set; }
+    public FunctionFormatTagParameter? VariantParameter { get; set; }
 }
 
 public sealed class FormatTagParameterTypeInfo(ParameterType type, bool canBeQuantifier)
@@ -95,7 +118,7 @@ public sealed class FormatTag
 
     private static readonly Regex RegexNamedParameters = new("^(?:(?:\"(?<literalString>(?:\\\\.|[^\\\"])*)\")|(?:(?<localizationRef>\\w+)\\(\\))|(?:(?<quantifier>Plural\\s+)?(?<type>\\w+)\\s*(?<name>\\w+)?))$");
 
-    public static FunctionFormatTagParametersInfo ParseParameters(string key, IEnumerable<string> types, IEnumerable<ReswItem> basicLocalizedItems, string resourceFilename, IErrorLogger logger)
+    public static FunctionFormatTagParametersInfo? ParseParameters(string key, IEnumerable<string> types, IEnumerable<ReswItem> basicLocalizedItems, string resourceFilename, IErrorLogger? logger)
     {
         var result = new FunctionFormatTagParametersInfo();
         var paramIndex = 1;
@@ -109,11 +132,7 @@ public sealed class FormatTag
             }
             if (matchNamedParameters.Groups["literalString"].Success)
             {
-                var param = new LiteralStringFormatTagParameter()
-                {
-                    Value = matchNamedParameters.Groups["literalString"].Value
-                };
-
+                var param = new LiteralStringFormatTagParameter(matchNamedParameters.Groups["literalString"].Value);
                 result.Parameters.Add(param);
             }
             else
@@ -128,10 +147,7 @@ public sealed class FormatTag
                         logger?.LogError($"ReswPlus: Incorrect tag for the key '{key}': '{localizationRef}' doesn't exist in the resw file.", resourceFilename);
                         return null;
                     }
-                    var param = new StringRefFormatTagParameter()
-                    {
-                        Id = localizationRef
-                    };
+                    var param = new StringRefFormatTagParameter(localizationRef);
 
                     result.Parameters.Add(param);
                 }
@@ -156,7 +172,7 @@ public sealed class FormatTag
                     }
                     else if (!isQuantifier && MacrosAvailable.TryGetValue(paramTypeId, out var macroID) && string.IsNullOrEmpty(paramName))
                     {
-                        result.Parameters.Add(new MacroFormatTagParameter() { Id = macroID });
+                        result.Parameters.Add(new MacroFormatTagParameter(macroID));
                         continue;
                     }
 
@@ -171,8 +187,8 @@ public sealed class FormatTag
                         paramName = paramTypeId == "Variant" ? "variantId" : isQuantifier ? "pluralCount" : "param" + paramType.type + paramIndex;
                     }
 
-                    var functionParam = new FunctionFormatTagParameter { Type = paramType.type.Value, Name = paramName, TypeToCast = paramType.typeToCast, IsVariantId = paramType.isVariantId };
-                    if (isQuantifier && result.PluralizationParameter == null)
+                    var functionParam = new FunctionFormatTagParameter(paramType.type.Value, paramName, paramType.typeToCast, paramType.isVariantId);
+                    if (isQuantifier && result.PluralizationParameter is null)
                     {
                         result.PluralizationParameter = functionParam;
                     }

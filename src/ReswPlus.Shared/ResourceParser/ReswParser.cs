@@ -6,23 +6,20 @@ public sealed class ReswParser
 {
     public static ReswInfo Parse(string content)
     {
-        var res = new ReswInfo
-        {
-            Items = []
-        };
+        var res = new ReswInfo();
 
         var xml = new XmlDocument();
         xml.LoadXml(content);
 
         var nodes = xml.DocumentElement?.SelectNodes("//data");
-        if (nodes == null)
+        if (nodes is null)
         {
             return res;
         }
 
         foreach (XmlElement element in nodes)
         {
-            string comment = null;
+            string? comment = null;
             var elementKey = element.Attributes.GetNamedItem("name");
             string key;
             if (elementKey != null)

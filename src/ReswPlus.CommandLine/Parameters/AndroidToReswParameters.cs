@@ -6,8 +6,8 @@ namespace ReswPlusCmd.Parameters;
 public class AndroidToReswParameters
 {
     [Value(0, HelpText = "Output Directory Path", MetaName = "output")]
-    public string OutputPath { get; set; }
+    public string? OutputPath { get; set; }
 
     [Option('i', "input", HelpText = "A single XML File or a path of a directory containing xml files", Required = true)]
-    public string Input { get; set; }
+    public string? Input { get; set; }
 }

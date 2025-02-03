@@ -23,17 +23,22 @@ public class AndroidXMLConverter
     {
         var sourceAndroidXML = XDocument.Load(sourcePath);
         var xmlRoot = sourceAndroidXML.Root;
-        string currentComment = null;
+        if (xmlRoot is null)
+        {
+            yield break;
+        }
+
+        string? currentComment = null;
         foreach (var xNode in xmlRoot.Nodes())
         {
             switch (xNode)
             {
-                case XComment commentNode:
+                case XComment commentNode when commentNode is { }:
                     {
                         currentComment = RemoveAntislash(commentNode.Value.Trim());
                     }
                     break;
-                case XElement elementNode:
+                case XElement elementNode when elementNode is { }:
                     {
                         switch (elementNode.Name.LocalName.ToLower())
                         {
@@ -49,13 +54,16 @@ public class AndroidXMLConverter
                                 }
                             case "plurals":
                                 {
-                                    var name = elementNode.Attribute("name").Value;
-                                    foreach (var subItem in elementNode.Elements("item"))
+                                    var name = elementNode.Attribute("name")?.Value;
+                                    if (name is not null)
                                     {
-                                        var quantity = subItem.Attribute("quantity")?.Value;
-                                        if (quantity != null)
+                                        foreach (var subItem in elementNode.Elements("item"))
                                         {
-                                            yield return new ReswItem($"{name}_{UpperCaseFirstLetter(quantity)}", RemoveAntislash(subItem.Value), currentComment);
+                                            var quantity = subItem.Attribute("quantity")?.Value;
+                                            if (quantity != null)
+                                            {
+                                                yield return new ReswItem($"{name}_{UpperCaseFirstLetter(quantity)}", RemoveAntislash(subItem.Value), currentComment);
+                                            }
                                         }
                                     }
                                     break;
@@ -77,6 +85,11 @@ public class AndroidXMLConverter
     {
         var reswFileXml = XDocument.Parse(_reswTemplate);
         var templateRoot = reswFileXml.Root;
+        if (templateRoot is null)
+        {
+            return;
+        }
+
         foreach (var item in keys)
         {
             var dataNode = new XElement("data");
@@ -184,7 +197,7 @@ public class AndroidXMLConverter
             var indexDash = directoryName.IndexOf('-');
             var languageId = directoryName.Substring(indexDash + 1);
             var generatedFilePath = $"{destinationPath}\\{AndroidToReswLanguageId(languageId)}\\Resources.resw";
-            _ = Directory.CreateDirectory(Path.GetDirectoryName(generatedFilePath));
+            _ = Directory.CreateDirectory(Path.GetDirectoryName(generatedFilePath)!);
             if (!AndroidXMLFileToResw(xmlFilePath, generatedFilePath))
             {
                 return false;

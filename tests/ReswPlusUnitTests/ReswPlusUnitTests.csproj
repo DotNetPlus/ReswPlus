@@ -1,8 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
-
+    <TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -16,7 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\ReswPlus.SourceGenerator\ReswPlus.SourceGenerator.csproj" />
+    <ProjectReference Include="..\..\src\ReswPlus.SourceGenerator\ReswPlus.SourceGenerator.csproj">
+      <Project>{44d125b3-6c8a-4f2f-a76f-bffb2ad7e70d}</Project>
+      <Name>ReswPlus.SourceGenerator</Name>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>

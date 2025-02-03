@@ -44,7 +44,7 @@ jobs:
         run: nuget restore ReswPlus.sln
 
       - name: Build Solution
-        run: msbuild ReswPlus.sln /p:Configuration=${{ env.BUILD_CONFIG }} /p:Platform="Any CPU"
+        run: msbuild ReswPlus.sln /p:Configuration=${{ env.BUILD_CONFIG }} /p:Platform="Any CPU" /p:RuntimeIdentifierOverride=win-x64
 
       - name: Run Unit Tests
         run: dotnet test tests/ReswPlusUnitTests/ReswPlusUnitTests.csproj --configuration ${{ env.BUILD_CONFIG }} --no-build --verbosity normal

@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using ReswPlus.SourceGenerator.ClassGenerators;
 using ReswPlus.SourceGenerator.Models;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 #if DEBUG
 using System.Diagnostics;
@@ -23,8 +24,8 @@ public enum AppType
     UWP,
 }
 
-[Generator(LanguageNames.CSharp)]
-public partial class ReswSourceGenerator : ISourceGenerator
+[Generator]
+public partial class ReswSourceGenerator : IIncrementalGenerator
 {
     // Diagnostic descriptors (could be moved to a central location if reused)
     private static readonly DiagnosticDescriptor UnsupportedLanguageDiagnostic =
@@ -72,12 +73,7 @@ public partial class ReswSourceGenerator : ISourceGenerator
             DiagnosticSeverity.Error,
             isEnabledByDefault: true);
 
-    public void Initialize(GeneratorInitializationContext context)
-    {
-        // No initialization needed for now.
-    }
-
-    public void Execute(GeneratorExecutionContext context)
+    public void Initialize(IncrementalGeneratorInitializationContext context)
     {
 #if DEBUG
         if (!Debugger.IsAttached)
@@ -87,165 +83,211 @@ public partial class ReswSourceGenerator : ISourceGenerator
         }
 #endif
 
-        // Only support C#
-        if (context.Compilation is not CSharpCompilation)
+        // Create a provider for global analyzer config options.
+        var globalOptionsProvider = context.AnalyzerConfigOptionsProvider.Select((options, cancellationToken) => new
         {
-            context.ReportDiagnostic(Diagnostic.Create(UnsupportedLanguageDiagnostic, null));
-            return;
-        }
+            ProjectDir = GetOption(options.GlobalOptions, "build_property.projectdir"),
+            MSBuildProjectFullPath = GetOption(options.GlobalOptions, "build_property.MSBuildProjectFullPath"),
+            OutputType = GetOption(options.GlobalOptions, "build_property.OutputType"),
+            ProjectTypeGuids = GetOption(options.GlobalOptions, "build_property.projecttypeguids"),
+            DefaultLanguage = GetOption(options.GlobalOptions, "build_property.DefaultLanguage"),
+            RootNamespace = GetOption(options.GlobalOptions, "build_property.RootNamespace")
+        });
 
-        // Retrieve project root path.
-        if (!TryGetGlobalOption(context, "build_property.projectdir", out var projectRootPath)
-            && TryGetGlobalOption(context, "build_property.MSBuildProjectFullPath", out var projectFileFullPath))
+        // Provider for additional files with .resw extension.
+        var reswFilesProvider = context.AdditionalTextsProvider
+            .Where(file => Path.GetExtension(file.Path).Equals(".resw", StringComparison.OrdinalIgnoreCase))
+            .Collect();
+
+        // Combine the Compilation, the global options, and the additional files.
+        var combinedProvider = context.CompilationProvider
+            .Combine(globalOptionsProvider)
+            .Combine(reswFilesProvider);
+
+        context.RegisterSourceOutput(combinedProvider, (spc, source) =>
         {
-            projectRootPath = Path.GetDirectoryName(projectFileFullPath);
-        }
+            // Unpack the combined tuple.
+            var ((compilation, options), additionalFiles) = source;
 
-        if (string.IsNullOrEmpty(projectRootPath))
-        {
-            context.ReportDiagnostic(Diagnostic.Create(MissingRootPathDiagnostic, null));
-            return;
-        }
-
-        // Determine if the project is a library.
-        bool isLibrary = false;
-        if (TryGetGlobalOption(context, "build_property.OutputType", out var outputType))
-        {
-            isLibrary = outputType.Equals("library", StringComparison.OrdinalIgnoreCase)
-                     || outputType.Equals("module", StringComparison.OrdinalIgnoreCase);
-        }
-        else if (TryGetGlobalOption(context, "build_property.projecttypeguids", out var projectTypeGuidsValue))
-        {
-            isLibrary = projectTypeGuidsValue.Equals("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", StringComparison.OrdinalIgnoreCase)
-                     || projectTypeGuidsValue.Equals("{BC8A1FFA-BEE3-4634-8014-F334798102B3}", StringComparison.OrdinalIgnoreCase);
-        }
-        else
-        {
-            // If unable to determine, assume it is an application.
-            context.ReportDiagnostic(Diagnostic.Create(UnknownProjectTypeDiagnostic, Location.None));
-        }
-
-        // Determine AppType based on referenced assemblies.
-        var appType = RetrieveAppType(context);
-        var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
-
-        switch (appType)
-        {
-            case AppType.WindowsAppSDK:
-                AddSourceFromResource(context, $"{assemblyName}.Templates.ResourceStringProviders.MicrosoftResourceStringProvider.txt", "ResourceStringProvider.cs");
-                break;
-            case AppType.UWP:
-                AddSourceFromResource(context, $"{assemblyName}.Templates.ResourceStringProviders.WindowsResourceStringProvider.txt", "ResourceStringProvider.cs");
-                break;
-            default:
-                context.ReportDiagnostic(Diagnostic.Create(UnrecognizedAppTypeDiagnostic, null));
-                return;
-        }
-
-        // Retrieve the default language (optional)
-        TryGetGlobalOption(context, "build_property.DefaultLanguage", out var projectDefaultLanguage);
-
-        // Retrieve the project's root namespace.
-        if (!TryGetGlobalOption(context, "build_property.RootNamespace", out var projectRootNamespace))
-        {
-            context.ReportDiagnostic(Diagnostic.Create(UnknownNamespaceDiagnostic, null));
-            return;
-        }
-
-        // Retrieve all .resw files from AdditionalFiles.
-        var allResourceFiles = context.AdditionalFiles
-            .Where(f => Path.GetExtension(f.Path).Equals(".resw", StringComparison.OrdinalIgnoreCase))
-            .Distinct()
-            .ToArray();
-
-        // Group files and retrieve the default resource file per group.
-        var defaultLanguageResourceFiles = (from file in allResourceFiles
-                                            group file by
-                                              Path.Combine(
-                                                  Path.GetDirectoryName(Path.GetDirectoryName(file.Path)),
-                                                  Path.GetFileName(file.Path))
-                                            into fileGroup
-                                            select RetrieveDefaultResourceFile(
-                                                fileGroup.Select(f => f.Path),
-                                                projectDefaultLanguage))
-                                           .ToArray();
-
-        // Gather all distinct languages.
-        var allLanguages = allResourceFiles
-            .Select(f => Path.GetFileName(Path.GetDirectoryName(f.Path)).Split('-')[0].ToLower())
-            .Distinct()
-            .ToArray();
-
-        // Process each default resource file.
-        foreach (var file in defaultLanguageResourceFiles)
-        {
-            // Determine namespace for the generated class.
-            var namespaceForReswFile = projectRootNamespace;
-            var reswParentDirectory = Path.GetDirectoryName(file);
-            if (reswParentDirectory != null && reswParentDirectory.StartsWith(projectRootPath, StringComparison.OrdinalIgnoreCase))
+            if (compilation is null || options is null)
             {
-                var additionalNamespace = reswParentDirectory.Substring(projectRootPath.Length)
-                    .Trim(Path.DirectorySeparatorChar)
-                    .Replace(Path.DirectorySeparatorChar, '.');
-                if (!string.IsNullOrEmpty(additionalNamespace))
+                return;
+            }
+
+            // Only support C#
+            if (compilation is not CSharpCompilation)
+            {
+                spc.ReportDiagnostic(Diagnostic.Create(UnsupportedLanguageDiagnostic, Location.None));
+                return;
+            }
+
+            // Retrieve project root path.
+            var projectRootPath = options.ProjectDir;
+            if (projectRootPath is not { Length: > 0 } && options.MSBuildProjectFullPath is { Length: > 0 })
+            {
+                projectRootPath = Path.GetDirectoryName(options.MSBuildProjectFullPath);
+            }
+
+            if (string.IsNullOrEmpty(projectRootPath))
+            {
+                spc.ReportDiagnostic(Diagnostic.Create(MissingRootPathDiagnostic, Location.None));
+                return;
+            }
+
+            // Determine if the project is a library.
+            bool isLibrary = false;
+            if (options.OutputType is { Length: > 0 })
+            {
+                isLibrary = options.OutputType.Equals("library", StringComparison.OrdinalIgnoreCase)
+                         || options.OutputType.Equals("module", StringComparison.OrdinalIgnoreCase);
+            }
+            else if (options.ProjectTypeGuids is { Length: > 0 })
+            {
+                isLibrary = options.ProjectTypeGuids.Equals("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", StringComparison.OrdinalIgnoreCase)
+                         || options.ProjectTypeGuids.Equals("{BC8A1FFA-BEE3-4634-8014-F334798102B3}", StringComparison.OrdinalIgnoreCase);
+            }
+            else
+            {
+                spc.ReportDiagnostic(Diagnostic.Create(UnknownProjectTypeDiagnostic, Location.None));
+            }
+
+            // Determine AppType based on referenced assemblies.
+            var appType = RetrieveAppType(compilation);
+            var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
+
+            switch (appType)
+            {
+                case AppType.WindowsAppSDK:
+                    AddSourceFromResource(spc, $"{assemblyName}.Templates.ResourceStringProviders.MicrosoftResourceStringProvider.txt", "ResourceStringProvider.cs");
+                    break;
+                case AppType.UWP:
+                    AddSourceFromResource(spc, $"{assemblyName}.Templates.ResourceStringProviders.WindowsResourceStringProvider.txt", "ResourceStringProvider.cs");
+                    break;
+                default:
+                    spc.ReportDiagnostic(Diagnostic.Create(UnrecognizedAppTypeDiagnostic, Location.None));
+                    return;
+            }
+
+            // Retrieve the default language (optional)
+            var projectDefaultLanguage = options.DefaultLanguage;
+
+            // Retrieve the project's root namespace.
+            if (string.IsNullOrEmpty(options.RootNamespace))
+            {
+                spc.ReportDiagnostic(Diagnostic.Create(UnknownNamespaceDiagnostic, Location.None));
+                return;
+            }
+            var projectRootNamespace = options.RootNamespace!;
+
+            // Process all .resw additional files.
+            var allResourceFiles = additionalFiles.Distinct().ToArray();
+
+            // Group files and retrieve the default resource file per group.
+            var defaultLanguageResourceFiles = (from file in allResourceFiles
+                                                group file by
+                                                  Path.Combine(
+                                                      Path.GetDirectoryName(Path.GetDirectoryName(file.Path)),
+                                                      Path.GetFileName(file.Path))
+                                                into fileGroup
+                                                let defaultFile = RetrieveDefaultResourceFile(
+                                                    fileGroup.Select(f => f.Path),
+                                                    projectDefaultLanguage)
+                                                where defaultFile != null
+                                                select defaultFile).ToArray();
+
+            // Gather all distinct languages.
+            var allLanguages = allResourceFiles
+                .Select(f => Path.GetFileName(Path.GetDirectoryName(f.Path)).Split('-')[0].ToLower())
+                .Distinct()
+                .ToArray();
+
+            // Process each default resource file.
+            foreach (var filePath in defaultLanguageResourceFiles)
+            {
+                // Determine namespace for the generated class.
+                var namespaceForReswFile = projectRootNamespace;
+                var reswParentDirectory = Path.GetDirectoryName(filePath);
+                if (reswParentDirectory != null && reswParentDirectory.StartsWith(projectRootPath, StringComparison.OrdinalIgnoreCase))
                 {
-                    namespaceForReswFile += "." + additionalNamespace;
+                    var additionalNamespace = reswParentDirectory.Substring(projectRootPath!.Length)
+                        .Trim(Path.DirectorySeparatorChar)
+                        .Replace(Path.DirectorySeparatorChar, '.');
+                    if (!string.IsNullOrEmpty(additionalNamespace))
+                    {
+                        namespaceForReswFile += "." + additionalNamespace;
+                    }
+                }
+
+                // Get the additional file matching this path.
+                var additionalText = allResourceFiles.FirstOrDefault(f => f.Path == filePath);
+                if (additionalText is null)
+                {
+                    continue;
+                }
+
+                // Generate code for the resource file.
+                var resourceFileInfo = new ResourceFileInfo(filePath, new Project(compilation.AssemblyName!, isLibrary));
+                var codeGenerator = ReswClassGenerator.CreateGenerator(resourceFileInfo, null);
+                if (codeGenerator is null)
+                {
+                    continue;
+                }
+
+                var baseFilename = Path.GetFileName(filePath).Split('.')[0];
+                var text = additionalText.GetText(spc.CancellationToken)?.ToString() ?? "";
+                var generatedData = codeGenerator.GenerateCode(
+                    baseFilename: baseFilename,
+                    content: text,
+                    defaultNamespace: namespaceForReswFile,
+                    isAdvanced: true,
+                    appType: appType);
+
+                if (generatedData is null)
+                {
+                    continue;
+                }
+
+                // Add each generated file as a new source.
+                foreach (var generatedFile in generatedData.Files)
+                {
+                    spc.AddSource($"{Path.GetFileName(filePath)}.cs", SourceText.From(generatedFile.Content, Encoding.UTF8));
+                }
+
+                // If macros were used, include the Macros source file.
+                if (generatedData.ContainsMacro)
+                {
+                    AddSourceFromResource(spc, "ReswPlus.SourceGenerator.Templates.Macros.Macros.txt", "Macros.cs");
+                }
+
+                // If plural forms are detected, add plural-related support sources.
+                if (generatedData.ContainsPlural)
+                {
+                    AddSourceFromResource(spc, $"{assemblyName}.Templates.Plurals.IPluralProvider.txt", "IPluralProvider.cs");
+                    AddSourceFromResource(spc, $"{assemblyName}.Templates.Plurals.PluralTypeEnum.txt", "PluralTypeEnum.cs");
+                    AddSourceFromResource(spc, $"{assemblyName}.Templates.Utils.IntExt.txt", "IntExt.cs");
+                    AddSourceFromResource(spc, $"{assemblyName}.Templates.Utils.DoubleExt.txt", "DoubleExt.cs");
+                    AddLanguageSupport(spc, allLanguages);
                 }
             }
+        });
+    }
 
-            // Get the additional file text.
-            var additionalText = context.AdditionalFiles.FirstOrDefault(f => f.Path == file);
-            if (additionalText is null)
-            {
-                continue;
-            }
-
-            // Generate code for the resource file.
-            var resourceFileInfo = new ResourceFileInfo(file, new Project(context.Compilation.AssemblyName, isLibrary));
-            var codeGenerator = ReswClassGenerator.CreateGenerator(resourceFileInfo, null);
-            var baseFilename = Path.GetFileName(file).Split('.')[0];
-            var generatedData = codeGenerator.GenerateCode(
-                baseFilename: baseFilename,
-                content: additionalText.GetText(context.CancellationToken).ToString(),
-                defaultNamespace: namespaceForReswFile,
-                isAdvanced: true,
-                appType: appType);
-
-            // Add each generated file as a new source.
-            foreach (var generatedFile in generatedData.Files)
-            {
-                context.AddSource($"{Path.GetFileName(file)}.cs", SourceText.From(generatedFile.Content, Encoding.UTF8));
-            }
-
-            // If macros were used, include the Macros source file.
-            if (generatedData.ContainsMacro)
-            {
-                AddSourceFromResource(context, "ReswPlus.SourceGenerator.Templates.Macros.Macros.txt", "Macros.cs");
-            }
-
-            // If plural forms are detected, add plural-related support sources.
-            if (generatedData.ContainsPlural)
-            {
-                AddSourceFromResource(context, $"{assemblyName}.Templates.Plurals.IPluralProvider.txt", "IPluralProvider.cs");
-                AddSourceFromResource(context, $"{assemblyName}.Templates.Plurals.PluralTypeEnum.txt", "PluralTypeEnum.cs");
-                AddSourceFromResource(context, $"{assemblyName}.Templates.Utils.IntExt.txt", "IntExt.cs");
-                AddSourceFromResource(context, $"{assemblyName}.Templates.Utils.DoubleExt.txt", "DoubleExt.cs");
-                AddLanguageSupport(context, allLanguages);
-            }
-        }
+    /// <summary>
+    /// Helper method to retrieve an option value.
+    /// </summary>
+    private static string? GetOption(AnalyzerConfigOptions globalOptions, string key)
+    {
+        return globalOptions.TryGetValue(key, out var value) ? value : null;
     }
 
     /// <summary>
     /// Retrieve the default resource file from the given list that matches one of the preferred languages.
     /// </summary>
-    /// <param name="reswFiles">Collection of resource file paths.</param>
-    /// <param name="defaultLanguage">The default language of the project.</param>
-    /// <returns>The path to the selected default resource file, or null if none.</returns>
-    private string RetrieveDefaultResourceFile(IEnumerable<string> reswFiles, string defaultLanguage)
+    private static string? RetrieveDefaultResourceFile(IEnumerable<string> reswFiles, string? defaultLanguage)
     {
         // Build a list of candidate languages.
         var candidateLanguages = new List<string>();
-        if (!string.IsNullOrEmpty(defaultLanguage))
+        if (defaultLanguage is { Length: > 0 })
         {
             candidateLanguages.Add(defaultLanguage);
         }
@@ -282,12 +324,12 @@ public partial class ReswSourceGenerator : ISourceGenerator
     /// <summary>
     /// Determines the application type (WindowsAppSDK, UWP, or Unknown) by inspecting the compilation's external references.
     /// </summary>
-    private AppType RetrieveAppType(GeneratorExecutionContext context)
+    private static AppType RetrieveAppType(Compilation compilation)
     {
-        return context.Compilation.ExternalReferences.Any(r =>
+        return compilation.ExternalReferences.Any(r =>
             r.Display?.IndexOf("Microsoft.WindowsAppSdk", StringComparison.OrdinalIgnoreCase) >= 0)
             ? AppType.WindowsAppSDK
-            : context.Compilation.ExternalReferences.Any(r =>
+            : compilation.ExternalReferences.Any(r =>
             r.Display?.IndexOf("Windows.Foundation.UniversalApiContract", StringComparison.OrdinalIgnoreCase) >= 0)
             ? AppType.UWP
             : AppType.Unknown;
@@ -296,7 +338,7 @@ public partial class ReswSourceGenerator : ISourceGenerator
     /// <summary>
     /// Adds language support sources for pluralization based on the provided languages.
     /// </summary>
-    private static void AddLanguageSupport(GeneratorExecutionContext context, string[] languagesSupported)
+    private static void AddLanguageSupport(SourceProductionContext spc, string[] languagesSupported)
     {
         var pluralSelectorCode = "default:\n  return new _ReswPlus_AutoGenerated.Plurals.OtherProvider();\n";
         var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
@@ -304,7 +346,7 @@ public partial class ReswSourceGenerator : ISourceGenerator
         foreach (var pluralFile in PluralFormsRetriever.RetrievePluralFormsForLanguages(languagesSupported))
         {
             var resourceName = $"{assemblyName}.Templates.Plurals.{pluralFile.Id}Provider.txt";
-            AddSourceFromResource(context, resourceName, $"{pluralFile.Id}Provider.cs");
+            AddSourceFromResource(spc, resourceName, $"{pluralFile.Id}Provider.cs");
 
             // Add each language handled by this provider.
             foreach (var lng in pluralFile.Languages)
@@ -315,28 +357,28 @@ public partial class ReswSourceGenerator : ISourceGenerator
         }
 
         // Add the fallback provider.
-        AddSourceFromResource(context, $"{assemblyName}.Templates.Plurals.OtherProvider.txt", "OtherProvider.cs");
+        AddSourceFromResource(spc, $"{assemblyName}.Templates.Plurals.OtherProvider.txt", "OtherProvider.cs");
 
         // Build and add the ResourceLoaderExtension with the plural selector injected.
         var resourceLoaderResourceName = $"{assemblyName}.Templates.Plurals.ResourceLoaderExtension.txt";
         var resourceLoaderTemplate = ReadAllText(Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceLoaderResourceName));
         var resourceLoaderCode = resourceLoaderTemplate.Replace("{{PluralProviderSelector}}", pluralSelectorCode);
-        context.AddSource("ResourceLoaderExtension.cs", SourceText.From(resourceLoaderCode, Encoding.UTF8));
+        spc.AddSource("ResourceLoaderExtension.cs", SourceText.From(resourceLoaderCode, Encoding.UTF8));
     }
 
     /// <summary>
     /// Reads a resource stream and adds its content as a source file.
     /// </summary>
-    private static void AddSourceFromResource(GeneratorExecutionContext context, string resourcePath, string itemName)
+    private static void AddSourceFromResource(SourceProductionContext spc, string resourcePath, string itemName)
     {
         using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourcePath);
         if (stream is null)
         {
-            // You might want to report a diagnostic or throw if the resource is missing.
+            // Optionally, report a diagnostic or throw if the resource is missing.
             return;
         }
         var sourceText = ReadAllText(stream);
-        context.AddSource(itemName, SourceText.From(sourceText, Encoding.UTF8));
+        spc.AddSource(itemName, SourceText.From(sourceText, Encoding.UTF8));
     }
 
     /// <summary>
@@ -347,13 +389,5 @@ public partial class ReswSourceGenerator : ISourceGenerator
         _ = stream.Seek(0, SeekOrigin.Begin);
         using var reader = new StreamReader(stream);
         return reader.ReadToEnd();
-    }
-
-    /// <summary>
-    /// Attempts to retrieve a global analyzer config option.
-    /// </summary>
-    private static bool TryGetGlobalOption(GeneratorExecutionContext context, string key, out string value)
-    {
-        return context.AnalyzerConfigOptions.GlobalOptions.TryGetValue(key, out value);
     }
 }
