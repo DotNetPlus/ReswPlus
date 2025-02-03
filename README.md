@@ -6,8 +6,6 @@
 ![LanguageSupported](https://img.shields.io/badge/languages-C%23%2C%20VB.Net%2C%20C%2B%2B%2FCX%2C%20C%2B%2B%2FWinRT-brightgreen)
 ![GitHub](https://img.shields.io/github/license/dotnetplus/reswplus.svg)
 
-_**Now available for Visual Studio 2022**_
-
 ReswPlus is a Visual Studio extension enriching your existing .resw files with many highly valuable features:
 - Access to strings via strongly typed static properties.
 - Automatically generate methods to format your strings
@@ -43,7 +41,7 @@ Supported:
 
 ## 📦 Guide
 ⚡ [How to install ReswPlus](https://github.com/DotNetPlus/ReswPlus/wiki/How-to-install-the-legacy-Visual-Studio-extension) - Learn how to install ReswPlus<br>
-⚡ [Use ReswPlus in your project](https://github.com/reswplus/ReswPlus/wiki/Use-ReswPlus-in-my-project) - Learn how to use ReswPlus in your projects
+⚡ [Use ReswPlus in your project](https://github.com/DotNetPlus/ReswPlus/wiki/%5BLegacy-Visual-Studio-extension%5D-Use-ReswPlus-in-my-project) - Learn how to use ReswPlus in your projects
 
 ## 🔧 Features
 ### Strongly Typed class generator
