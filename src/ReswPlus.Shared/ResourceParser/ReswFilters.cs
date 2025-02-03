@@ -6,10 +6,18 @@ namespace ReswPlus.Core.ResourceParser;
 
 public sealed class VariantedReswItems
 {
-    public List<ReswItem> Items { get; set; }
-    public string Key { get; set; }
-    public bool SupportPlural { get; set; }
-    public bool SupportVariants { get; set; }
+    public List<ReswItem> Items { get; }
+    public string Key { get; }
+    public bool SupportPlural { get; }
+    public bool SupportVariants { get; }
+
+    public VariantedReswItems(List<ReswItem> items, string key, bool supportPlural, bool supportVariants)
+    {
+        Items = items;
+        Key = key;
+        SupportPlural = supportPlural;
+        SupportVariants = supportVariants;
+    }
 }
 
 public static class ReswFilters
@@ -41,13 +49,12 @@ public static class ReswFilters
                 continue;
             }
 
-            yield return new VariantedReswItems()
-            {
-                Key = variantedItem.Key,
-                Items = variantedItem.Select(i => i.item).ToList(),
-                SupportPlural = variantedItem.First().isPlural,
-                SupportVariants = variantedItem.First().isVariant,
-            };
+            yield return new VariantedReswItems(
+                variantedItem.Select(i => i.item).ToList(),
+                variantedItem.Key,
+                variantedItem.First().isPlural,
+                variantedItem.First().isVariant
+            );
         }
     }
 }

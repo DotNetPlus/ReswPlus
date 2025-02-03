@@ -5,6 +5,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <StartupObject>ReswPlusCmd.Program</StartupObject>
     <AssemblyName>ReswPlusCmd</AssemblyName>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

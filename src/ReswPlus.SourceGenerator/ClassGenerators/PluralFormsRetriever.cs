@@ -9,18 +9,25 @@ internal sealed class PluralFormsRetriever
 {
     internal record PluralForm
     {
-        public string[] Languages { get; set; }
+        public PluralForm(string id, string[] languages)
+        {
+            Id = id;
+            Languages = languages;
+        }
+
         public string Id { get; set; }
+        public string[] Languages { get; set; }
     }
 
     /// <summary>
     /// A static collection of predefined plural forms and their associated languages.
     /// </summary>
-    private static readonly PluralForm[] PluralForms =
-    [
-        new PluralForm {
-            Languages =
-            [
+    private static readonly PluralForm[] PluralForms = new PluralForm[]
+    {
+        new PluralForm(
+            "IntOneOrZero",
+            new[]
+            {
                 "ak", // Akan
                 "bh", // Bihari
                 "guw", // Gun
@@ -29,13 +36,13 @@ internal sealed class PluralFormsRetriever
                 "nso", // Northern Sotho
                 "pa", // Punjabi
                 "ti", // Tigrinya
-                "wa" // Walloon
-            ],
-            Id = "IntOneOrZero"
-        },
-        new PluralForm {
-            Languages =
-            [
+                "wa"  // Walloon
+            }
+        ),
+        new PluralForm(
+            "ZeroToOne",
+            new[]
+            {
                 "am", // Amharic
                 "bn", // Bengali
                 "ff", // Fulah
@@ -45,21 +52,21 @@ internal sealed class PluralFormsRetriever
                 "mr", // Marathi
                 "fa", // Persian
                 "zu"  // Zulu
-            ],
-            Id = "ZeroToOne"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "ZeroToTwoExcluded",
+            new[]
+            {
                 "hy", // Armenian
                 "fr", // French
                 "kab" // Kabyle
-            ],
-            Id = "ZeroToTwoExcluded"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "OnlyOne",
+            new[]
+            {
                 "af", // Afrikaans
                 "sq", // Albanian
                 "ast", // Asturian
@@ -159,138 +166,138 @@ internal sealed class PluralFormsRetriever
                 "xh", // Xhosa
                 "yi", // Yiddish
                 "ji"  // Jiddish
-            ],
-            Id = "OnlyOne"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "Sinhala",
+            new[]
+            {
                 "si" // Sinhala
-            ],
-            Id = "Sinhala"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "Latvian",
+            new[]
+            {
                 "lv", // Latvian
                 "prg" // Prussian
-            ],
-            Id = "Latvian"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "Irish",
+            new[]
+            {
                 "ga" // Irish
-            ],
-            Id = "Irish"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "Romanian",
+            new[]
+            {
                 "ro", // Romanian
                 "mo"  // Moldavian
-            ],
-            Id = "Romanian"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "Lithuanian",
+            new[]
+            {
                 "lt" // Lithuanian
-            ],
-            Id = "Lithuanian"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "Slavic",
+            new[]
+            {
                 "ru", // Russian
                 "uk", // Ukrainian
                 "be"  // Belarusian
-            ],
-            Id = "Slavic"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "Czech",
+            new[]
+            {
                 "cs", // Czech
                 "sk"  // Slovak
-            ],
-            Id = "Czech"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "Polish",
+            new[]
+            {
                 "pl" // Polish
-            ],
-            Id = "Polish"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "Slovenian",
+            new[]
+            {
                 "sl" // Slovenian
-            ],
-            Id = "Slovenian"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "Arabic",
+            new[]
+            {
                 "ar" // Arabic
-            ],
-            Id = "Arabic"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "Hebrew",
+            new[]
+            {
                 "he", // Hebrew
                 "iw"  // (old code for Hebrew)
-            ],
-            Id = "Hebrew"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "Filipino",
+            new[]
+            {
                 "fil", // Filipino
                 "tl"   // Tagalog
-            ],
-            Id = "Filipino"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "Macedonian",
+            new[]
+            {
                 "mk" // Macedonian
-            ],
-            Id = "Macedonian"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "Breizh",
+            new[]
+            {
                 "br" // Breton
-            ],
-            Id = "Breizh"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "CentralAtlasTamazight",
+            new[]
+            {
                 "tzm" // Central Atlas Tamazight
-            ],
-            Id = "CentralAtlasTamazight"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "OneOrZero",
+            new[]
+            {
                 "ksh" // Colognian
-            ],
-            Id = "OneOrZero"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "OneOrZeroToOneExcluded",
+            new[]
+            {
                 "lag" // Langi
-            ],
-            Id = "OneOrZeroToOneExcluded"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "OneOrTwo",
+            new[]
+            {
                 "kw",   // Cornish
                 "smn",  // Inari Sami
                 "iu",   // Inuktitut
@@ -300,69 +307,68 @@ internal sealed class PluralFormsRetriever
                 "smi",  // Other Sami languages
                 "sms",  // Skolt Sami
                 "sma"   // Southern Sami
-            ],
-            Id = "OneOrTwo"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "Croat",
+            new[]
+            {
                 "bs", // Bosnian
                 "hr", // Croatian
                 "sr", // Serbian
                 "sh"  // Serbo-Croatian
-            ],
-            Id = "Croat"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "Tachelhit",
+            new[]
+            {
                 "shi" // Tachelhit
-            ],
-            Id = "Tachelhit"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "Icelandic",
+            new[]
+            {
                 "is" // Icelandic
-            ],
-            Id = "Icelandic"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "Manx",
+            new[]
+            {
                 "gv" // Manx
-            ],
-            Id = "Manx"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "ScottishGaelic",
+            new[]
+            {
                 "gd" // Scottish Gaelic
-            ],
-            Id = "ScottishGaelic"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "Maltese",
+            new[]
+            {
                 "mt" // Maltese
-            ],
-            Id = "Maltese"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "Welsh",
+            new[]
+            {
                 "cy" // Welsh
-            ],
-            Id = "Welsh"
-        },
-        new PluralForm {
-            Languages =
-            [
+            }
+        ),
+        new PluralForm(
+            "Danish",
+            new[]
+            {
                 "da" // Danish
-            ],
-            Id = "Danish"
-        }
-    ];
+            }
+        )
+    };
 
     // Prebuild a dictionary that maps each language code to its plural form.
     private static readonly Dictionary<string, PluralForm> LanguageToPluralForm = BuildLanguageToPluralForm();

@@ -22,4 +22,9 @@ internal sealed class GenerationResult
     /// Gets or sets a value indicating whether the result contains macros.
     /// </summary>
     public bool ContainsMacro { get; set; }
+
+    public GenerationResult(IEnumerable<GeneratedFile> files)
+    {
+        Files = files;
+    }
 }

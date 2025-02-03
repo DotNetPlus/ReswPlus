@@ -9,25 +9,31 @@ namespace ReswPlus.SourceGenerator.ClassGenerators.Models;
 /// </summary>
 internal abstract class Localization
 {
+    protected Localization(string key, string summary)
+    {
+        Key = key;
+        Summary = summary;
+    }
+
     /// <summary>
     /// Gets or sets the key for the localization.
     /// </summary>
-    public string Key { get; set; }
+    public string Key { get; }
 
     /// <summary>
     /// Gets or sets the list of format tag parameters.
     /// </summary>
-    public List<IFormatTagParameter> Parameters { get; set; } = [];
+    public List<IFormatTagParameter> Parameters { get; set; } = new();
 
     /// <summary>
     /// Gets the list of extra function format tag parameters.
     /// </summary>
-    public List<FunctionFormatTagParameter> ExtraParameters { get; } = [];
+    public List<FunctionFormatTagParameter> ExtraParameters { get; } = new();
 
     /// <summary>
     /// Gets or sets the summary for the localization.
     /// </summary>
-    public string Summary { get; set; }
+    public string Summary { get; }
 
     /// <summary>
     /// Gets or sets a value indicating whether .NET formatting is used.
@@ -44,13 +50,21 @@ internal abstract class Localization
 /// Represents a regular localization.
 /// </summary>
 internal sealed class RegularLocalization : Localization
-{ }
+{
+    public RegularLocalization(string key, string summary) : base(key, summary)
+    {
+    }
+}
 
 /// <summary>
 /// Represents a plural localization.
 /// </summary>
 internal class PluralLocalization : Localization
 {
+    public PluralLocalization(string key, string summary) : base(key, summary)
+    {
+    }
+
     /// <summary>
     /// Gets or sets a value indicating whether the none state is supported.
     /// </summary>
@@ -59,7 +73,7 @@ internal class PluralLocalization : Localization
     /// <summary>
     /// Gets or sets the parameter to use for pluralization.
     /// </summary>
-    public FunctionFormatTagParameter ParameterToUseForPluralization { get; set; }
+    public FunctionFormatTagParameter? ParameterToUseForPluralization { get; set; }
 }
 
 /// <summary>
@@ -70,7 +84,7 @@ internal interface IVariantLocalization
     /// <summary>
     /// Gets or sets the parameter to use for variant.
     /// </summary>
-    FunctionFormatTagParameter ParameterToUseForVariant { get; set; }
+    FunctionFormatTagParameter? ParameterToUseForVariant { get; set; }
 }
 
 /// <summary>
@@ -78,10 +92,14 @@ internal interface IVariantLocalization
 /// </summary>
 internal sealed class PluralVariantLocalization : PluralLocalization, IVariantLocalization
 {
+    public PluralVariantLocalization(string key, string summary) : base(key, summary)
+    {
+    }
+
     /// <summary>
     /// Gets or sets the parameter to use for variant.
     /// </summary>
-    public FunctionFormatTagParameter ParameterToUseForVariant { get; set; }
+    public FunctionFormatTagParameter? ParameterToUseForVariant { get; set; }
 }
 
 /// <summary>
@@ -89,8 +107,12 @@ internal sealed class PluralVariantLocalization : PluralLocalization, IVariantLo
 /// </summary>
 internal sealed class VariantLocalization : Localization, IVariantLocalization
 {
+    public VariantLocalization(string key, string summary) : base(key, summary)
+    {
+    }
+
     /// <summary>
     /// Gets or sets the parameter to use for variant.
     /// </summary>
-    public FunctionFormatTagParameter ParameterToUseForVariant { get; set; }
+    public FunctionFormatTagParameter? ParameterToUseForVariant { get; set; }
 }

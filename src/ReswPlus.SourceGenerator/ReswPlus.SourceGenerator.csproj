@@ -2,36 +2,20 @@
     <Import Project="..\..\nuget\ReswPlus.SourceGenerator.NugetPackage.props" Condition="'$(Configuration)' == 'Release'" />
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
-        <LangVersion>12.0</LangVersion>
+        <Nullable>enable</Nullable>
+		<LangVersion>12.0</LangVersion>
+		<IsRoslynComponent>true</IsRoslynComponent>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <IncludeBuildOutput>false</IncludeBuildOutput>
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+        <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
     </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-        <DebugType>full</DebugType>
-        <DebugSymbols>true</DebugSymbols>
-    </PropertyGroup>
-
-    <ItemGroup>
-      <None Remove="Templates\ResourceStringProviders\MicrosoftResourceStringProvider.txt" />
-      <None Remove="Templates\ResourceStringProviders\WindowsResourceStringProvider.txt" />
-    </ItemGroup>
-
     <ItemGroup>
       <EmbeddedResource Include="Templates\ResourceStringProviders\WindowsResourceStringProvider.txt" />
       <EmbeddedResource Include="Templates\ResourceStringProviders\MicrosoftResourceStringProvider.txt" />
-    </ItemGroup>
-
-    <ItemGroup>
       <EmbeddedResource Include="Templates\Macros\Macros.txt" />
-    </ItemGroup>
-
-    <ItemGroup>
       <EmbeddedResource Include="Templates\Plurals\ResourceLoaderExtension.txt" />
-    </ItemGroup>
-
-    <ItemGroup>
       <EmbeddedResource Include="Templates\Utils\DoubleExt.txt" />
       <EmbeddedResource Include="Templates\Utils\IntExt.txt" />
       <EmbeddedResource Include="Templates\Plurals\IPluralProvider.txt" />
@@ -69,10 +53,7 @@
       <EmbeddedResource Include="Templates\Plurals\ZeroToTwoExcludedProvider.txt" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.12.0" />
-    </ItemGroup>
-    <ItemGroup>
-        <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+      <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.12.0" PrivateAssets="all" />
     </ItemGroup>
     <Import Project="..\ReswPlus.Shared\ReswPlus.Shared.projitems" Label="Shared" />
 </Project>

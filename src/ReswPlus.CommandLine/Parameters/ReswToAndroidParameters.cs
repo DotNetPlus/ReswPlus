@@ -6,10 +6,10 @@ namespace ReswPlusCmd.Parameters;
 public class ReswToAndroidParameters
 {
     [Value(0, HelpText = "Output File Path", MetaName = "output")]
-    public string OutputFilePath { get; set; }
+    public string? OutputFilePath { get; set; }
 
     [Option('i', "input", HelpText = "Resw input file", Required = true)]
-    public string Input { get; set; }
+    public string? Input { get; set; }
 
     [Option('p', "pluralization", Default = true, HelpText = "boolean indicating if the resw file supports pluralization", Required = false)]
     public bool SupportPluralization { get; set; }

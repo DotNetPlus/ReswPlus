@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <FileVersion>0.3.0.1</FileVersion>
+    <FileVersion>0.3.1.1</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Title>ReswPlus</Title>
+    <Title>ReswPlus - Source Generator</Title>
     <PackageId>ReswPlus</PackageId>
     <Version>$(FileVersion)</Version>
     <Authors>Rudy Huyn</Authors>
-    <Description>ReswPlus - Advanced File Code Generator for Resw files</Description>
+    <Description>ReswPlus - Source Generator for Resw files</Description>
     <PackageProjectUrl>https://github.com/reswplus/ReswPlus/</PackageProjectUrl>
     <PackageIcon>Icon.png</PackageIcon>
     <PackageCopyright>Copyright 2025</PackageCopyright>

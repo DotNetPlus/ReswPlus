@@ -4,11 +4,21 @@ namespace ReswPlus.SourceGenerator.ClassGenerators.Models;
 
 internal sealed class StronglyTypedClass
 {
-    public bool IsAdvanced { get; set; }
-    public string[] Namespaces { get; set; }
-    public string ResoureFile { get; set; }
-    public string ClassName { get; set; }
-    public AppType AppType { get; set; }
+    public StronglyTypedClass(bool isAdvanced, string[] namespaces, string resoureFile, string className, AppType appType)
+    {
+        IsAdvanced = isAdvanced;
+        Namespaces = namespaces;
+        ResoureFile = resoureFile;
+        ClassName = className;
+        AppType = appType;
+        Items = new();
+    }
 
-    public List<Localization> Items { get; set; } = [];
+    public bool IsAdvanced { get; }
+    public string[] Namespaces { get; }
+    public string ResoureFile { get; }
+    public string ClassName { get; }
+    public AppType AppType { get; }
+
+    public List<Localization> Items { get; }
 }

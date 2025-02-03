@@ -50,7 +50,10 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\ReswPlus.SourceGenerator\ReswPlus.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" Private="false" />
+    <ProjectReference Include="..\..\..\src\ReswPlus.SourceGenerator\ReswPlus.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" Private="false">
+      <Project>{44d125b3-6c8a-4f2f-a76f-bffb2ad7e70d}</Project>
+      <Name>ReswPlus.SourceGenerator</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ReswPlusWinAppSDKSampleExternalLibrary\ReswPlusWinAppSDKSampleExternalLibrary.csproj" />
   </ItemGroup>
   <ItemGroup>

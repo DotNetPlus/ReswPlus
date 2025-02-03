@@ -18,7 +18,7 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
     /// <param name="info">The strongly-typed class information used for generating code.</param>
     /// <param name="resourceFileInfo">The resource file information used to generate the C# files.</param>
     /// <returns>A collection of generated files.</returns>
-    public IEnumerable<GeneratedFile> GetGeneratedFiles(string baseFilename, StronglyTypedClass info, ResourceFileInfo resourceFileInfo)
+    public IEnumerable<GeneratedFile> GetGeneratedFiles(string? baseFilename, StronglyTypedClass info, ResourceFileInfo resourceFileInfo)
     {
         var builder = new CodeStringBuilder(resourceFileInfo.Project.GetIndentString());
         GenerateHeaders(builder, info.IsAdvanced, info.AppType);
@@ -78,9 +78,9 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
     /// <param name="builder">The code string builder containing the generated C# code.</param>
     /// <param name="baseFilename">The base filename for the generated file.</param>
     /// <returns>An enumerable containing the generated file.</returns>
-    private IEnumerable<GeneratedFile> GetGeneratedFiles(CodeStringBuilder builder, string baseFilename)
+    private IEnumerable<GeneratedFile> GetGeneratedFiles(CodeStringBuilder builder, string? baseFilename)
     {
-        yield return new GeneratedFile { Filename = baseFilename + ".cs", Content = builder.GetString() };
+        yield return new GeneratedFile(baseFilename + ".cs", builder.GetString());
     }
 
     /// <summary>
@@ -142,7 +142,7 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
     /// <param name="builder">The code string builder to append the class block to.</param>
     /// <param name="resourceFileName">The resource file name associated with the strongly-typed class.</param>
     /// <param name="className">The name of the strongly-typed class.</param>
-    private void OpenStronglyTypedClass(CodeStringBuilder builder, string resourceFileName, string className)
+    private void OpenStronglyTypedClass(CodeStringBuilder builder, string? resourceFileName, string className)
     {
         var assembly = typeof(CSharpCodeGenerator).Assembly;
         builder.AppendLine($"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"{assembly.GetName().Name}\", \"{assembly.GetName().Version}\")]")
@@ -176,7 +176,7 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
     /// </summary>
     /// <param name="builder">The code string builder to append the region block to.</param>
     /// <param name="name">The name of the region.</param>
-    private void OpenRegion(CodeStringBuilder builder, string name) =>
+    private void OpenRegion(CodeStringBuilder builder, string? name) =>
         builder.AppendLine($"#region {name}");
 
     /// <summary>
@@ -184,7 +184,7 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
     /// </summary>
     /// <param name="builder">The code string builder to append the closing region block to.</param>
     /// <param name="name">The name of the region.</param>
-    private void CloseRegion(CodeStringBuilder builder, string name) =>
+    private void CloseRegion(CodeStringBuilder builder, string? name) =>
         builder.AppendLine("#endregion");
 
     /// <summary>
@@ -204,11 +204,11 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
         string key,
         bool isProperty,
         IEnumerable<IFormatTagParameter> parameters,
-        string summary = null,
-        IEnumerable<FunctionFormatTagParameter> extraParameters = null,
-        FunctionFormatTagParameter parameterForPluralization = null,
+        string? summary = null,
+        IEnumerable<FunctionFormatTagParameter>? extraParameters = null,
+        FunctionFormatTagParameter? parameterForPluralization = null,
         bool supportNoneState = false,
-        FunctionFormatTagParameter parameterForVariant = null)
+        FunctionFormatTagParameter? parameterForVariant = null)
     {
         // Documentation header.
         builder.AppendLine("/// <summary>")
@@ -225,7 +225,7 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
         else
         {
             // Combine parameters: start with extra parameters (if any) and then add regular parameters.
-            var functionParameters = parameters?.OfType<FunctionFormatTagParameter>().ToList() ?? new List<FunctionFormatTagParameter>();
+            var functionParameters = parameters?.OfType<FunctionFormatTagParameter>().ToList() ?? new();
             if (extraParameters?.Any() == true)
             {
                 functionParameters.InsertRange(0, extraParameters);
@@ -316,7 +316,7 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
     /// <param name="resourceFileName">The name of the resource file associated with the class.</param>
     /// <param name="className">The name of the markup extension class.</param>
     /// <param name="keys">The collection of keys for the strongly-typed resource class.</param>
-    private void CreateMarkupExtension(CodeStringBuilder builder, string resourceFileName, string className, IEnumerable<string> keys)
+    private void CreateMarkupExtension(CodeStringBuilder builder, string? resourceFileName, string? className, IEnumerable<string> keys)
     {
         var assembly = typeof(CSharpCodeGenerator).Assembly;
         builder.AppendLine($"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"{assembly.GetName().Name}\", \"{assembly.GetName().Version}\")]")
