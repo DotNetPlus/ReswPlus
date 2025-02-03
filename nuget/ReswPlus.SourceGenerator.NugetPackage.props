@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <FileVersion>0.3.1.2</FileVersion>
+    <FileVersion>0.3.1.5</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Title>ReswPlus - Source Generator</Title>
     <PackageId>ReswPlus</PackageId>
@@ -9,11 +9,11 @@
     <Authors>Rudy Huyn</Authors>
     <Description>ReswPlus - Source Generator for Resw files</Description>
     <PackageProjectUrl>https://github.com/reswplus/ReswPlus/</PackageProjectUrl>
-    <PackageIcon>$(MSBuildThisFileDirectory)Icon.png</PackageIcon>
+    <PackageIcon>Icon.png</PackageIcon>
     <PackageCopyright>Copyright 2025</PackageCopyright>
     <PackageTags>dotnet localization resx resw plural pluralization</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageReadmeFile>$(MSBuildThisFileDirectory)README.md</PackageReadmeFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <NoWarn>NU5128</NoWarn>
   </PropertyGroup>
   <ItemGroup>

@@ -52,10 +52,8 @@ jobs:
 
       - name: Pack NuGet Package (Only for Release and explicit request)
         if: startsWith(github.ref, 'refs/tags/v')
-        run: dotnet pack ReswPlus.sln --configuration Release --no-build --output nupkg
+        run: dotnet pack src/ReswPlus.SourceGenerator/ReswPlus.SourceGenerator.csproj --configuration Release --no-build --output nupkg
 
-      - name: Push to NuGet (Only for Tags or Manual Trigger)
+      - name: Push NuGet package
         if: startsWith(github.ref, 'refs/tags/v')
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        run: dotnet nuget push nupkg/*.nupkg --api-key $NUGET_API_KEY --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: dotnet nuget push "nupkg/*.nupkg" --api-key "${{ secrets.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
