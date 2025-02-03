@@ -42,7 +42,7 @@ Supported:
 | Support String variants (including genders)                        |      | ✅               |     |             |
 
 ## 📦 Guide
-⚡ [How to install ReswPlus](https://github.com/reswplus/ReswPlus/wiki/How-to-install-ReswPlus) - Learn how to install ReswPlus<br>
+⚡ [How to install ReswPlus](https://github.com/DotNetPlus/ReswPlus/wiki/How-to-install-the-legacy-Visual-Studio-extension) - Learn how to install ReswPlus<br>
 ⚡ [Use ReswPlus in your project](https://github.com/reswplus/ReswPlus/wiki/Use-ReswPlus-in-my-project) - Learn how to use ReswPlus in your projects
 
 ## 🔧 Features
