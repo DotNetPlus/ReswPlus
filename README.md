@@ -3,27 +3,23 @@
 # ReswPlus - Advanced File Code Generator for Resw files.
 ![Type](https://img.shields.io/badge/type-Visual%20Studio%20Extension-blueviolet)
 ![Compatibility](https://img.shields.io/badge/compatibility-UWP%2C%20.Net%20Core%2C%20.Net%20Standard%2C%20ASP.Net%20Core-blue)
-![LanguageSupported](https://img.shields.io/badge/languages-C%23%2C%20VB.Net%2C%20C%2B%2B%2FCX%2C%20C%2B%2B%2FWinRT-brightgreen)
+![LanguageSupported](https://img.shields.io/badge/languages-C%23-brightgreen)
 ![GitHub](https://img.shields.io/github/license/dotnetplus/reswplus.svg)
 
-_**Now available for Visual Studio 2022**_
+_**Now available as a source generator**_
 
-ReswPlus is a Visual Studio extension enriching your existing .resw files with many highly valuable features:
-- Access to strings via strongly typed static properties.
-- Automatically generate methods to format your strings
-    - Support typed and named parameters, literal strings, string references and Macros
-- Pluralization support (for 196 languages!).
-    - Support empty states when the number of items is zero.
-- Add HTML markups to your strings (bold, italic, hyperlinks, etc...) 
-- Variants support 
-- Generate a Markup extension to access to your strings with compile-time verification.
+**ReswPlus** is a C# Source Generator for Visual Studio that enhances your existing `.resw` files with a wide range of powerful features:
+
+- **Strongly typed static properties** for accessing strings.
+- **Automatic generation of string formatting methods**, supporting:
+  - Typed and named parameters, literal strings, string references, and macros.
+- **Pluralization support** for *196 languages*, including handling empty states when the item count is zero.
+- **Variant support** for managing multiple string versions.
+- **Generation of a markup extension** for accessing strings with **compile-time verification**.
+
 
 Supported: 
-- C#, VB.Net, C++/CX and C++/WinRT.
-
-![reswplus](https://user-images.githubusercontent.com/1226538/56525314-a76eb800-64ff-11e9-9e39-1bb4cd2dd012.gif)
-
-
+- C#
 
 |                                                 | Resw | Resw with ReswPlus | Resx | Android XML (for reference) |
 |-------------------------------------------------|------|-----------------|------|-------------|
@@ -32,7 +28,6 @@ Supported:
 | Generate String Formatting methods              |      | ✅               |     |            |
 | Support Plural forms                            |      | ✅               |      | ✅           |
 | Support 'None' state                            |      | ✅               |      |             |
-| Support HTML formatting                         |      | ✅               |     |  ✅ (indirectly)         |
 | Auto-generate methods for string formatting                |      | ✅               |      |             |
 | Support literal strings in string formatter                |      | ✅               |      |             |
 | Support Macros in string formatter                |      | ✅               |      |             |
@@ -75,11 +70,6 @@ _ReswPlus can support many variants/versions of the same string and allow you to
 
 🗨 [How to use variants](https://github.com/reswplus/ReswPlus/wiki/Features:-Variants)
 
-### .Net String formatting for C++ projects
-_String formatting in C++ is quite different and more complicated than in C#/VB.Net. ReswPlus provides a way to use the same string templates as you use in .Net (via `String.Format`) but in your C++ project, making your resource files shareable with .Net libraries and simplifying your code._
-
-🗨 [Use .Net String Formatting](https://github.com/reswplus/ReswPlus/wiki/Features:-.Net-String-Formatting-for-Cpp)
-
 ## Tools
 In addition to features to enrich resw files, ReswPlus also provides some interesting tools to improve your productivity or make it easier to use/support resw files in your workflow and localization process.
 
@@ -89,3 +79,9 @@ This is very unfortunate, but not all localization tools and localization compan
 Simply right click on the resw associated to the default language of your app and select `ReswPlus > Export to Android XML format`. To convert the Android files once localized, you can use the command-line tool provided with the nuget package (packages/ReswPlusLib.xxxx/Tools/ReswPlusCmd\ReswPlusCmd.exe with the following arguments `xml-to-resw -i <folder path> <output path>`.
 
 If you don't want to use Visual Studio to convert your resw files to Android XML files, you can use the same command-line tool with the following arguments `resw-to-xml -i <resw file path> <output file path>`
+
+## Other programming languages
+
+The current Source Generator supports only C#. If your project uses VB.NET, C++/CX, or C++/WinRT, you can use our legacy Visual Studio extension, available [here](https://github.com/DotNetPlus/ReswPlus/tree/legacy/visual-studio-extension)
+
+![reswplus](https://user-images.githubusercontent.com/1226538/56525314-a76eb800-64ff-11e9-9e39-1bb4cd2dd012.gif)
