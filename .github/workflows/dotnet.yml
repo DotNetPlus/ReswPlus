@@ -38,7 +38,10 @@ jobs:
             echo "BUILD_CONFIG=Release" | Out-File -FilePath $env:GITHUB_ENV -Append
           }
 
-      - name: Restore Dependencies
+      - name: Restore Nuget
+        run: nuget restore ReswPlus.sln
+
+      - name: DotNet Restore
         run: dotnet restore ReswPlus.sln
         
       - name: Build Solution
