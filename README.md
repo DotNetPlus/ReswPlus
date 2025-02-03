@@ -1,80 +1,78 @@
 <img src="https://user-images.githubusercontent.com/1226538/56482508-6fbd2d00-6479-11e9-8fc0-b20d5f3171ad.png" height="80" />
 
-# ReswPlus - Advanced File Code Generator for Resw files.
+# ReswPlus - Advanced Code Generator for `.resw` Files
 ![Type](https://img.shields.io/badge/type-Visual%20Studio%20Extension-blueviolet)
 ![Compatibility](https://img.shields.io/badge/compatibility-UWP%2C%20.Net%20Core%2C%20.Net%20Standard%2C%20ASP.Net%20Core-blue)
-![LanguageSupported](https://img.shields.io/badge/languages-C%23-brightgreen)
+![Language Supported](https://img.shields.io/badge/languages-C%23-brightgreen)
 ![GitHub](https://img.shields.io/github/license/dotnetplus/reswplus.svg)
 
-_**Now available as a source generator**_
+_**Now available as a Source Generator!**_
 
-**ReswPlus** is a C# Source Generator for Visual Studio that enhances your existing `.resw` files with a wide range of powerful features:
+**ReswPlus** is a C# Source Generator for Visual Studio that enhances `.resw` files with a powerful set of features:
 
-- **Strongly typed static properties** for accessing strings.
+- **Strongly typed static properties** for safer and more efficient string access.
 - **Automatic generation of string formatting methods**, supporting:
   - Typed and named parameters, literal strings, string references, and macros.
 - **Pluralization support** for *196 languages*, including handling empty states when the item count is zero.
-- **Variant support** for managing multiple string versions.
+- **Variant support** for managing multiple versions of a string.
 - **Generation of a markup extension** for accessing strings with **compile-time verification**.
 
+## ✅ Feature Comparison
 
-Supported: 
-- C#
+| Feature                                       | Resw | Resw + ReswPlus | Resx | Android XML (for reference) |
+|-----------------------------------------------|------|-----------------|------|-------------|
+| Modify UI properties via resource files (x:uid) | ✅  | ✅             |      |             |
+| Generate strongly typed accessors             |      | ✅             | ✅  | ✅           |
+| Generate string formatting methods            |      | ✅             |      |             |
+| Support pluralization                         |      | ✅             |      | ✅           |
+| Support empty states                          |      | ✅             |      |             |
+| Auto-generate string formatting methods       |      | ✅             |      |             |
+| Support literal strings in formatters         |      | ✅             |      |             |
+| Support macros in formatters                  |      | ✅             |      |             |
+| Support string references in formatters       |      | ✅             |      |             |
+| Strongly typed string formatting              |      | ✅             |      |             |
+| Support resources in libraries                |      | ✅             | ✅  |             |
+| Support string variants (e.g., gender-based)  |      | ✅             |      |             |
 
-|                                                 | Resw | Resw with ReswPlus | Resx | Android XML (for reference) |
-|-------------------------------------------------|------|-----------------|------|-------------|
-| Modify UI properties via resource files (x:uid) | ✅    | ✅               |      |             |
-| Generate strongly typed accessors               |      | ✅               | ✅    | ✅           |
-| Generate String Formatting methods              |      | ✅               |     |            |
-| Support Plural forms                            |      | ✅               |      | ✅           |
-| Support 'None' state                            |      | ✅               |      |             |
-| Auto-generate methods for string formatting                |      | ✅               |      |             |
-| Support literal strings in string formatter                |      | ✅               |      |             |
-| Support Macros in string formatter                |      | ✅               |      |             |
-| Support String references in string formatter                |      | ✅               |      |             |
-| Strongly typed string formatting                |      | ✅               |      |             |
-| Support Resources in libraries                  |      | ✅               | ✅    |             |
-| Support String variants (including genders)                        |      | ✅               |     |             |
+## 📦 Getting Started
 
-## 📦 Guide
-⚡ [How to install ReswPlus](https://github.com/reswplus/ReswPlus/wiki/How-to-install-ReswPlus) - Learn how to install ReswPlus<br>
-⚡ [Use ReswPlus in your project](https://github.com/reswplus/ReswPlus/wiki/Use-ReswPlus-in-my-project) - Learn how to use ReswPlus in your projects
+⚡ [How to Install ReswPlus](https://github.com/reswplus/ReswPlus/wiki/How-to-install-ReswPlus) – Step-by-step installation guide.
 
 ## 🔧 Features
-### Strongly Typed class generator
-_ReswPlus can generate a class exposing all strings from your .resw files as strongly typed static properties, providing a compile-time-safe way to access those strings XAML-side or code-side._
 
-🗨 [How to generate a strongly typed class](https://github.com/reswplus/ReswPlus/wiki/Features:-Strongly-typed-properties)
-### Pluralization
-_ReswPlus can add support of pluralization and plural forms to your localization strings. Plural forms of 196 languages are currently supported by ReswPlus._
+### Strongly Typed Class Generator
+ReswPlus generates a class that exposes all strings from your `.resw` files as **strongly typed static properties**, ensuring **compile-time safety** in both XAML and C#.
 
-🗨 [How to add pluralization](https://github.com/reswplus/ReswPlus/wiki/Features:-Pluralization-support)<br>
-⚙️ [Support Empty States](https://github.com/reswplus/ReswPlus/wiki/Features:-Pluralization---Empty-states)<br>
-⚙️ [Languages supported](https://github.com/reswplus/ReswPlus/wiki/Languages-supported-for-pluralization)
+🗨 [How to Generate a Strongly Typed Class](https://github.com/reswplus/ReswPlus/wiki/Features:-Strongly-typed-properties)
+
+### Pluralization Support
+Easily add **pluralization** support for *196 languages*, including correct handling of **empty states** when the count is zero.
+
+🗨 [How to Add Pluralization](https://github.com/reswplus/ReswPlus/wiki/Features:-Pluralization-support)  
+⚙️ [Handling Empty States](https://github.com/reswplus/ReswPlus/wiki/Features:-Pluralization---Empty-states)  
+⚙️ [Supported Languages](https://github.com/reswplus/ReswPlus/wiki/Languages-supported-for-pluralization)
+
 ### String Formatting
-_To simplify your ViewModels and Views, ReswPlus can directly manage the formatting of your localization and generate strongly typed methods to format your strings._
+ReswPlus simplifies ViewModels and Views by handling string formatting directly and generating **strongly typed methods**.
 
-🗨 [How to use String Formatting](https://github.com/reswplus/ReswPlus/wiki/Features:-String-Formatting)<br>
-⚙️ [Named parameters](https://github.com/reswplus/ReswPlus/wiki/Features:-Named-parameters-for-String-Formatting)<br>
-⚙️ [Use String References](https://github.com/reswplus/ReswPlus/wiki/Features:-String-References-in-String-Formatting)<br>
-⚙️ [Use Literal Strings](https://github.com/reswplus/ReswPlus/wiki/Features:-Literal-Strings-in-String-Formatting)<br>
-⚙️ [Use Macros](https://github.com/reswplus/ReswPlus/wiki/Features:-Macros-in-String-Formatting)
+🗨 [How to Use String Formatting](https://github.com/reswplus/ReswPlus/wiki/Features:-String-Formatting)  
+⚙️ [Named Parameters](https://github.com/reswplus/ReswPlus/wiki/Features:-Named-parameters-for-String-Formatting)  
+⚙️ [Using String References](https://github.com/reswplus/ReswPlus/wiki/Features:-String-References-in-String-Formatting)  
+⚙️ [Using Literal Strings](https://github.com/reswplus/ReswPlus/wiki/Features:-Literal-Strings-in-String-Formatting)  
+⚙️ [Using Macros](https://github.com/reswplus/ReswPlus/wiki/Features:-Macros-in-String-Formatting)
 
-### Font style support using HTML tags
-_Unlike Android localization files, resw files don't support emphasis (bold, italic, underlined...). To address this lack, ReswPlus improves resw files and add support of emphasis using HTML tags (similar to Android)._ 
+### String Variants
+ReswPlus allows multiple variants of a string based on different criteria, such as **gender-based messages** or other conditions.
 
-🗨 [How to use HTML formatting](https://github.com/reswplus/ReswPlus/wiki/Features:-HTML-Formatting)
-
-### Variants
-_ReswPlus can support many variants/versions of the same string and allow you to display the one you want based on criteria (variants to support genders, different messages depend on some criteria...)_
-
-🗨 [How to use variants](https://github.com/reswplus/ReswPlus/wiki/Features:-Variants)
+🗨 [How to Use Variants](https://github.com/reswplus/ReswPlus/wiki/Features:-Variants)
 
 ## Tools
 In addition to features to enrich resw files, ReswPlus also provides some interesting tools to improve your productivity or make it easier to use/support resw files in your workflow and localization process.
 
 ### Convert from/to Android XML files
-This is very unfortunate, but not all localization tools and localization companies support recovery files. This is even more of an issue when you want to support Pluralization, as resw does not support it by default. To resolve this issue, ReswPlus now includes a converter to and from Android XML files, a format that supports string pluralization and supported by all tools available on the market.
+Unfortunately, not all localization tools and companies support `.resw` files. This becomes even more problematic when dealing with pluralization, as `.resw` does not support it by default.  
+
+To address this, **ReswPlus** includes a converter for **seamless conversion between `.resw` and Android XML**, a format that supports string pluralization and is widely compatible with existing localization tools.
 
 Simply right click on the resw associated to the default language of your app and select `ReswPlus > Export to Android XML format`. To convert the Android files once localized, you can use the command-line tool provided with the nuget package (packages/ReswPlusLib.xxxx/Tools/ReswPlusCmd\ReswPlusCmd.exe with the following arguments `xml-to-resw -i <folder path> <output path>`.
 
