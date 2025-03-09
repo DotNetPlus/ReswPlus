@@ -120,7 +120,7 @@ public sealed class ReswClassGenerator
 
                     // Use the first comment that contains a valid format tag
                     var commentToUse = item.Items.FirstOrDefault(i => !string.IsNullOrEmpty(i.Comment) && _regexStringFormat.IsMatch(i.Comment))?.Comment;
-                    ManageFormattedFunction(localization, commentToUse, basicItems, resourceFileName);
+                    _ = ManageFormattedFunction(localization, commentToUse, basicItems, resourceFileName);
                     result.Items.Add(localization);
                 }
                 else if (item.SupportVariants)
@@ -130,7 +130,7 @@ public sealed class ReswClassGenerator
                     var commentToUse = item.Items.FirstOrDefault(i => !string.IsNullOrEmpty(i.Comment) && _regexStringFormat.IsMatch(i.Comment))?.Comment;
 
                     var localization = new VariantLocalization(itemKey, summary);
-                    ManageFormattedFunction(localization, commentToUse, basicItems, resourceFileName);
+                    _ = ManageFormattedFunction(localization, commentToUse, basicItems, resourceFileName);
                     result.Items.Add(localization);
                 }
             }
@@ -149,7 +149,7 @@ public sealed class ReswClassGenerator
 
                 if (isAdvanced)
                 {
-                    ManageFormattedFunction(localization, item.Comment, stringItems, resourceFileName);
+                    _ = ManageFormattedFunction(localization, item.Comment, stringItems, resourceFileName);
                 }
                 result.Items.Add(localization);
             }
@@ -165,17 +165,10 @@ public sealed class ReswClassGenerator
     /// <returns>True if the property name is valid; otherwise, false.</returns>
     private static bool IsValidPropertyName(string propertyName)
     {
-        if (string.IsNullOrWhiteSpace(propertyName))
-        {
-            return false;
-        }
-
-        if (!char.IsLetter(propertyName[0]) && propertyName[0] != '_')
-        {
-            return false;
-        }
-
-        return propertyName.Skip(1).All(c => char.IsLetterOrDigit(c) || c == '_');
+        return
+            !string.IsNullOrWhiteSpace(propertyName) &&
+            (char.IsLetter(propertyName[0]) || propertyName[0] == '_') &&
+            propertyName.Skip(1).All(c => char.IsLetterOrDigit(c) || c == '_');
     }
 
     /// <summary>

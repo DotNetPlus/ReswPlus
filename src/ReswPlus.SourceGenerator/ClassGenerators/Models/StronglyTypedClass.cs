@@ -11,7 +11,7 @@ internal sealed class StronglyTypedClass
         ResoureFile = resoureFile;
         ClassName = className;
         AppType = appType;
-        Items = new();
+        Items = [];
     }
 
     public bool IsAdvanced { get; }

@@ -23,12 +23,12 @@ internal abstract class Localization
     /// <summary>
     /// Gets or sets the list of format tag parameters.
     /// </summary>
-    public List<IFormatTagParameter> Parameters { get; set; } = new();
+    public List<IFormatTagParameter> Parameters { get; set; } = [];
 
     /// <summary>
     /// Gets the list of extra function format tag parameters.
     /// </summary>
-    public List<FunctionFormatTagParameter> ExtraParameters { get; } = new();
+    public List<FunctionFormatTagParameter> ExtraParameters { get; } = [];
 
     /// <summary>
     /// Gets or sets the summary for the localization.

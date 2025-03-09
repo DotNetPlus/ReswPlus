@@ -19,22 +19,4 @@ internal sealed class Project(string name, bool isLibrary) : IProject
     /// Gets the language of the project, which is always C#.
     /// </summary>
     public Language Language => Language.CSharp;
-
-    /// <summary>
-    /// Gets the indent string used in the project.
-    /// </summary>
-    /// <returns>A string containing two spaces.</returns>
-    public string GetIndentString()
-    {
-        return "  ";
-    }
-
-    /// <summary>
-    /// Gets the precompiled header for the project.
-    /// </summary>
-    /// <returns>An empty string.</returns>
-    public string GetPrecompiledHeader()
-    {
-        return "";
-    }
 }
