@@ -19,16 +19,4 @@ internal interface IProject
     /// Gets the programming language of the project.
     /// </summary>
     Language Language { get; }
-
-    /// <summary>
-    /// Gets the precompiled header for the project.
-    /// </summary>
-    /// <returns>A string representing the precompiled header.</returns>
-    string GetPrecompiledHeader();
-
-    /// <summary>
-    /// Gets the indent string used in the project.
-    /// </summary>
-    /// <returns>A string representing the indent.</returns>
-    string GetIndentString();
 }

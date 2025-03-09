@@ -8,6 +8,6 @@ public sealed class ReswInfo
 
     public ReswInfo()
     {
-        Items = new();
+        Items = [];
     }
 }

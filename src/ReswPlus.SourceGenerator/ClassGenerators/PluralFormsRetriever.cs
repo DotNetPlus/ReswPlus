@@ -22,12 +22,11 @@ internal sealed class PluralFormsRetriever
     /// <summary>
     /// A static collection of predefined plural forms and their associated languages.
     /// </summary>
-    private static readonly PluralForm[] PluralForms = new PluralForm[]
-    {
+    private static readonly PluralForm[] PluralForms =
+    [
         new PluralForm(
             "IntOneOrZero",
-            new[]
-            {
+            [
                 "ak", // Akan
                 "bh", // Bihari
                 "guw", // Gun
@@ -37,12 +36,11 @@ internal sealed class PluralFormsRetriever
                 "pa", // Punjabi
                 "ti", // Tigrinya
                 "wa"  // Walloon
-            }
+            ]
         ),
         new PluralForm(
             "ZeroToOne",
-            new[]
-            {
+            [
                 "am", // Amharic
                 "bn", // Bengali
                 "ff", // Fulah
@@ -52,21 +50,19 @@ internal sealed class PluralFormsRetriever
                 "mr", // Marathi
                 "fa", // Persian
                 "zu"  // Zulu
-            }
+            ]
         ),
         new PluralForm(
             "ZeroToTwoExcluded",
-            new[]
-            {
+            [
                 "hy", // Armenian
                 "fr", // French
                 "kab" // Kabyle
-            }
+            ]
         ),
         new PluralForm(
             "OnlyOne",
-            new[]
-            {
+            [
                 "af", // Afrikaans
                 "sq", // Albanian
                 "ast", // Asturian
@@ -166,138 +162,120 @@ internal sealed class PluralFormsRetriever
                 "xh", // Xhosa
                 "yi", // Yiddish
                 "ji"  // Jiddish
-            }
+            ]
         ),
         new PluralForm(
             "Sinhala",
-            new[]
-            {
+            [
                 "si" // Sinhala
-            }
+            ]
         ),
         new PluralForm(
             "Latvian",
-            new[]
-            {
+            [
                 "lv", // Latvian
                 "prg" // Prussian
-            }
+            ]
         ),
         new PluralForm(
             "Irish",
-            new[]
-            {
+            [
                 "ga" // Irish
-            }
+            ]
         ),
         new PluralForm(
             "Romanian",
-            new[]
-            {
+            [
                 "ro", // Romanian
                 "mo"  // Moldavian
-            }
+            ]
         ),
         new PluralForm(
             "Lithuanian",
-            new[]
-            {
+            [
                 "lt" // Lithuanian
-            }
+            ]
         ),
         new PluralForm(
             "Slavic",
-            new[]
-            {
+            [
                 "ru", // Russian
                 "uk", // Ukrainian
                 "be"  // Belarusian
-            }
+            ]
         ),
         new PluralForm(
             "Czech",
-            new[]
-            {
+            [
                 "cs", // Czech
                 "sk"  // Slovak
-            }
+            ]
         ),
         new PluralForm(
             "Polish",
-            new[]
-            {
+            [
                 "pl" // Polish
-            }
+            ]
         ),
         new PluralForm(
             "Slovenian",
-            new[]
-            {
+            [
                 "sl" // Slovenian
-            }
+            ]
         ),
         new PluralForm(
             "Arabic",
-            new[]
-            {
+            [
                 "ar" // Arabic
-            }
+            ]
         ),
         new PluralForm(
             "Hebrew",
-            new[]
-            {
+            [
                 "he", // Hebrew
                 "iw"  // (old code for Hebrew)
-            }
+            ]
         ),
         new PluralForm(
             "Filipino",
-            new[]
-            {
+            [
                 "fil", // Filipino
                 "tl"   // Tagalog
-            }
+            ]
         ),
         new PluralForm(
             "Macedonian",
-            new[]
-            {
+            [
                 "mk" // Macedonian
-            }
+            ]
         ),
         new PluralForm(
             "Breizh",
-            new[]
-            {
+            [
                 "br" // Breton
-            }
+            ]
         ),
         new PluralForm(
             "CentralAtlasTamazight",
-            new[]
-            {
+            [
                 "tzm" // Central Atlas Tamazight
-            }
+            ]
         ),
         new PluralForm(
             "OneOrZero",
-            new[]
-            {
+            [
                 "ksh" // Colognian
-            }
+            ]
         ),
         new PluralForm(
             "OneOrZeroToOneExcluded",
-            new[]
-            {
+            [
                 "lag" // Langi
-            }
+            ]
         ),
         new PluralForm(
             "OneOrTwo",
-            new[]
-            {
+            [
                 "kw",   // Cornish
                 "smn",  // Inari Sami
                 "iu",   // Inuktitut
@@ -307,68 +285,60 @@ internal sealed class PluralFormsRetriever
                 "smi",  // Other Sami languages
                 "sms",  // Skolt Sami
                 "sma"   // Southern Sami
-            }
+            ]
         ),
         new PluralForm(
             "Croat",
-            new[]
-            {
+            [
                 "bs", // Bosnian
                 "hr", // Croatian
                 "sr", // Serbian
                 "sh"  // Serbo-Croatian
-            }
+            ]
         ),
         new PluralForm(
             "Tachelhit",
-            new[]
-            {
+            [
                 "shi" // Tachelhit
-            }
+            ]
         ),
         new PluralForm(
             "Icelandic",
-            new[]
-            {
+            [
                 "is" // Icelandic
-            }
+            ]
         ),
         new PluralForm(
             "Manx",
-            new[]
-            {
+            [
                 "gv" // Manx
-            }
+            ]
         ),
         new PluralForm(
             "ScottishGaelic",
-            new[]
-            {
+            [
                 "gd" // Scottish Gaelic
-            }
+            ]
         ),
         new PluralForm(
             "Maltese",
-            new[]
-            {
+            [
                 "mt" // Maltese
-            }
+            ]
         ),
         new PluralForm(
             "Welsh",
-            new[]
-            {
+            [
                 "cy" // Welsh
-            }
+            ]
         ),
         new PluralForm(
             "Danish",
-            new[]
-            {
+            [
                 "da" // Danish
-            }
+            ]
         )
-    };
+    ];
 
     // Prebuild a dictionary that maps each language code to its plural form.
     private static readonly Dictionary<string, PluralForm> LanguageToPluralForm = BuildLanguageToPluralForm();

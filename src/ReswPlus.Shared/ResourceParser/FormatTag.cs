@@ -56,7 +56,7 @@ public sealed class FunctionFormatTagParameter : IFormatTagParameter
 
 public sealed class FunctionFormatTagParametersInfo
 {
-    public List<IFormatTagParameter> Parameters { get; set; } = new();
+    public List<IFormatTagParameter> Parameters { get; set; } = [];
     public FunctionFormatTagParameter? PluralizationParameter { get; set; }
     public FunctionFormatTagParameter? VariantParameter { get; set; }
 }
