@@ -121,11 +121,11 @@
     <value>Contoso for Android</value>
   </data>
   <data name="AnimalTreat_Variant1_One" xml:space="preserve">
-    <value>Récompensez votre chiot, donnez {0} biscuit à {1} !</value>
+    <value>Récompensez votre chiot, donnez {0} biscuit à {2} !</value>
     <comment>#Format[Plural Double treatNumber, Variant petType, String petName]</comment>
   </data>
   <data name="AnimalTreat_Variant1_Other" xml:space="preserve">
-    <value>Récompensez votre chiot, donnez {0} biscuits à {1} !</value>
+    <value>Récompensez votre chiot, donnez {0} biscuits à {2} !</value>
   </data>
   <data name="AnimalTreat_Variant2_One" xml:space="preserve">
     <value>Récompensez votre chaton, donnez {0} biscuit à votre chat {2} !</value>

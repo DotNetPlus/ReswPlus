@@ -66,6 +66,23 @@ ReswPlus allows multiple variants of a string based on different criteria, such 
 
 🗨 [How to Use Variants](https://github.com/reswplus/ReswPlus/wiki/Features:-Variants)
 
+### Resource Diagnostics
+ReswPlus checks the content of your `.resw` files while it generates the code, and reports the inconsistencies that would otherwise only show up at runtime, in a language your team may not read.
+
+| Rule | Description |
+| --- | --- |
+| `RESWP0006` | A translated value doesn't use the same placeholders as the default language, which throws a `FormatException` at runtime. |
+| `RESWP0007` | A value uses a placeholder that has no matching parameter in its `#Format` tag. |
+| `RESWP0008` | A pluralized resource is missing the plural forms its language requires, which silently produces grammatically wrong text. |
+| `RESWP0009` | Two resources of the same file are generated as the same member. |
+| `RESWP0010` | A value that is used as a composite format string is malformed. |
+
+These are reported as **warnings**, so that updating the package never breaks a build that already has an inconsistency. Escalate the ones you want to be fatal from your `.editorconfig`:
+
+```ini
+dotnet_diagnostic.RESWP0006.severity = error
+```
+
 ## Tools
 In addition to features to enrich resw files, ReswPlus also provides some interesting tools to improve your productivity or make it easier to use/support resw files in your workflow and localization process.
 

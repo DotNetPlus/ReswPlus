@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -7,6 +8,7 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
+using ReswPlus.SourceGenerator.Analysis;
 using ReswPlus.SourceGenerator.ClassGenerators;
 using ReswPlus.SourceGenerator.CodeGenerators;
 using ReswPlus.SourceGenerator.Models;
@@ -28,52 +30,6 @@ public enum AppType
 [Generator]
 public partial class ReswSourceGenerator : IIncrementalGenerator
 {
-    // Diagnostic descriptors (could be moved to a central location if reused)
-    private static readonly DiagnosticDescriptor UnsupportedLanguageDiagnostic =
-        new(
-            "RESWP0001",
-            "Language not supported",
-            "ReswPlus source generator only supports C#",
-            "Compatibility",
-            DiagnosticSeverity.Error,
-            isEnabledByDefault: true);
-
-    private static readonly DiagnosticDescriptor UnknownNamespaceDiagnostic =
-        new(
-            "RESWP0002",
-            "Unknown namespace",
-            "ReswPlus cannot determine the namespace",
-            "Compatibility",
-            DiagnosticSeverity.Error,
-            isEnabledByDefault: true);
-
-    private static readonly DiagnosticDescriptor MissingRootPathDiagnostic =
-        new(
-            "RESWP0003",
-            "Root path missing",
-            "Can't retrieve the root path of the project",
-            "Compatibility",
-            DiagnosticSeverity.Error,
-            isEnabledByDefault: true);
-
-    private static readonly DiagnosticDescriptor UnknownProjectTypeDiagnostic =
-        new(
-            "RESWP0004",
-            "Unknown Project Type",
-            "ReswPlus cannot determine the project type, defaulting to application",
-            "Compatibility",
-            DiagnosticSeverity.Info,
-            isEnabledByDefault: true);
-
-    private static readonly DiagnosticDescriptor UnrecognizedAppTypeDiagnostic =
-        new(
-            "RESWP0005",
-            "Project type not recognized",
-            "ReswPlus only supports UWP and WinAppSDK applications/libraries",
-            "Compatibility",
-            DiagnosticSeverity.Error,
-            isEnabledByDefault: true);
-
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
 #if DEBUG
@@ -100,6 +56,16 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
             .Where(file => Path.GetExtension(file.Path).Equals(".resw", StringComparison.OrdinalIgnoreCase))
             .Collect();
 
+        // The resource diagnostics only depend on the .resw files and on the default language of the project, so
+        // they are registered separately: combining them with the compilation would re-run the whole analysis on
+        // every keystroke, for every language of the project.
+        var defaultLanguageProvider = context.AnalyzerConfigOptionsProvider
+            .Select((options, cancellationToken) => GetOption(options.GlobalOptions, "build_property.DefaultLanguage"));
+
+        context.RegisterSourceOutput(
+            reswFilesProvider.Combine(defaultLanguageProvider),
+            static (spc, source) => ReportResourceDiagnostics(spc, source.Left, source.Right));
+
         // Combine the Compilation, the global options, and the additional files.
         var combinedProvider = context.CompilationProvider
             .Combine(globalOptionsProvider)
@@ -118,7 +84,7 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
             // Only support C#
             if (compilation is not CSharpCompilation)
             {
-                spc.ReportDiagnostic(Diagnostic.Create(UnsupportedLanguageDiagnostic, Location.None));
+                spc.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnsupportedLanguage, Location.None));
                 return;
             }
 
@@ -131,7 +97,7 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
 
             if (string.IsNullOrEmpty(projectRootPath))
             {
-                spc.ReportDiagnostic(Diagnostic.Create(MissingRootPathDiagnostic, Location.None));
+                spc.ReportDiagnostic(Diagnostic.Create(Diagnostics.MissingRootPath, Location.None));
                 return;
             }
 
@@ -149,7 +115,7 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
             }
             else
             {
-                spc.ReportDiagnostic(Diagnostic.Create(UnknownProjectTypeDiagnostic, Location.None));
+                spc.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnknownProjectType, Location.None));
             }
 
             // Determine AppType based on referenced assemblies.
@@ -165,7 +131,7 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
                     AddSourceFromResource(spc, $"{assemblyName}.Templates.ResourceStringProviders.WindowsResourceStringProvider.txt", "ResourceStringProvider");
                     break;
                 default:
-                    spc.ReportDiagnostic(Diagnostic.Create(UnrecognizedAppTypeDiagnostic, Location.None));
+                    spc.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnrecognizedAppType, Location.None));
                     return;
             }
 
@@ -175,7 +141,7 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
             // Retrieve the project's root namespace.
             if (string.IsNullOrEmpty(options.RootNamespace))
             {
-                spc.ReportDiagnostic(Diagnostic.Create(UnknownNamespaceDiagnostic, Location.None));
+                spc.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnknownNamespace, Location.None));
                 return;
             }
             var projectRootNamespace = options.RootNamespace!;
@@ -184,14 +150,9 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
             var allResourceFiles = additionalFiles.Distinct().ToArray();
 
             // Group files and retrieve the default resource file per group.
-            var defaultLanguageResourceFiles = (from file in allResourceFiles
-                                                group file by
-                                                  Path.Combine(
-                                                      Path.GetDirectoryName(Path.GetDirectoryName(file.Path)),
-                                                      Path.GetFileName(file.Path))
-                                                into fileGroup
-                                                let defaultFile = RetrieveDefaultResourceFile(
-                                                    fileGroup.Select(f => f.Path),
+            var defaultLanguageResourceFiles = (from fileGroup in ReswFileGrouping.GroupByResource(allResourceFiles.Select(file => file.Path))
+                                                let defaultFile = ReswFileGrouping.RetrieveDefaultResourceFile(
+                                                    fileGroup,
                                                     projectDefaultLanguage)
                                                 where defaultFile != null
                                                 select defaultFile).ToArray();
@@ -274,52 +235,32 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
     }
 
     /// <summary>
+    /// Reports the diagnostics about the content of the <c>.resw</c> files of the project.
+    /// </summary>
+    /// <param name="spc">The context to report the diagnostics to.</param>
+    /// <param name="reswFiles">The <c>.resw</c> files of the project.</param>
+    /// <param name="defaultLanguage">The default language of the project, if it declares one.</param>
+    private static void ReportResourceDiagnostics(SourceProductionContext spc, ImmutableArray<AdditionalText> reswFiles, string? defaultLanguage)
+    {
+        var documents = new List<(string Path, SourceText Text)>();
+
+        foreach (var file in reswFiles.Distinct())
+        {
+            if (file.GetText(spc.CancellationToken) is { } text)
+            {
+                documents.Add((file.Path, text));
+            }
+        }
+
+        ReswResourceAnalyzer.Analyze(documents, defaultLanguage, spc.ReportDiagnostic, spc.CancellationToken);
+    }
+
+    /// <summary>
     /// Helper method to retrieve an option value.
     /// </summary>
     private static string? GetOption(AnalyzerConfigOptions globalOptions, string key)
     {
         return globalOptions.TryGetValue(key, out var value) ? value : null;
-    }
-
-    /// <summary>
-    /// Retrieve the default resource file from the given list that matches one of the preferred languages.
-    /// </summary>
-    private static string? RetrieveDefaultResourceFile(IEnumerable<string> reswFiles, string? defaultLanguage)
-    {
-        // Build a list of candidate languages.
-        var candidateLanguages = new List<string>();
-        if (defaultLanguage is { Length: > 0 })
-        {
-            candidateLanguages.Add(defaultLanguage);
-        }
-
-        // Ensure "en-us" and "en" are included if not already the default.
-        if (!"en-us".Equals(defaultLanguage, StringComparison.OrdinalIgnoreCase))
-        {
-            candidateLanguages.Add("en-us");
-        }
-
-        if (!"en".Equals(defaultLanguage, StringComparison.OrdinalIgnoreCase))
-        {
-            candidateLanguages.Add("en");
-        }
-
-        // Iterate candidates and files to find a match.
-        foreach (var language in candidateLanguages)
-        {
-            foreach (var reswFile in reswFiles)
-            {
-                // Get the immediate parent folder name (e.g. "en-us").
-                var parentFolderName = Path.GetFileName(Path.GetDirectoryName(reswFile));
-                if (parentFolderName.Equals(language, StringComparison.OrdinalIgnoreCase))
-                {
-                    return reswFile;
-                }
-            }
-        }
-
-        // Fallback to the first available resource file.
-        return reswFiles.FirstOrDefault();
     }
 
     /// <summary>

@@ -1,6 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 using ReswPlus.SourceGenerator;
+using ReswPlus.SourceGenerator.Analysis;
 using ReswPlus.SourceGenerator.ClassGenerators;
 using ReswPlus.SourceGenerator.CodeGenerators;
 using ReswPlus.SourceGenerator.Models;
@@ -77,5 +81,34 @@ internal static class ReswTestHelpers
     private static string Escape(string text)
     {
         return text.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
+    }
+
+    /// <summary>
+    /// Runs the resource analysis over a set of in-memory <c>.resw</c> files.
+    /// </summary>
+    /// <param name="defaultLanguage">The default language declared by the project.</param>
+    /// <param name="files">The files of the project, as language folder name and content pairs.</param>
+    /// <returns>The diagnostics reported for those files.</returns>
+    public static IReadOnlyList<Diagnostic> Analyze(string? defaultLanguage, params (string Language, string Content)[] files)
+    {
+        var documents = files
+            .Select(file => ($@"C:\Project\Strings\{file.Language}\Resources.resw", SourceText.From(file.Content)))
+            .ToArray();
+
+        var diagnostics = new List<Diagnostic>();
+
+        ReswResourceAnalyzer.Analyze(documents, defaultLanguage, diagnostics.Add, CancellationToken.None);
+
+        return diagnostics;
+    }
+
+    /// <summary>
+    /// Returns the identifiers of the given diagnostics, in the order they were reported.
+    /// </summary>
+    /// <param name="diagnostics">The diagnostics to describe.</param>
+    /// <returns>The identifiers of the diagnostics.</returns>
+    public static string[] GetIds(this IEnumerable<Diagnostic> diagnostics)
+    {
+        return diagnostics.Select(diagnostic => diagnostic.Id).ToArray();
     }
 }

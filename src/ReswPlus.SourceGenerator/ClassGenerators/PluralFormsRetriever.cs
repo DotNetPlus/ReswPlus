@@ -7,15 +7,32 @@ namespace ReswPlus.SourceGenerator.ClassGenerators;
 /// </summary>
 internal sealed class PluralFormsRetriever
 {
+    /// <summary>
+    /// A plural form supported by a set of languages.
+    /// </summary>
     internal record PluralForm
     {
-        public PluralForm(string id, string[] languages)
+        public PluralForm(string id, PluralCategory[] categories, string[] languages)
         {
             Id = id;
+            Categories = categories;
             Languages = languages;
         }
 
+        /// <summary>
+        /// Gets the identifier of the provider implementing this plural form.
+        /// </summary>
         public string Id { get; set; }
+
+        /// <summary>
+        /// Gets the plural categories the provider of this form can return, and which a resource declined in a
+        /// language using this form therefore has to define.
+        /// </summary>
+        public PluralCategory[] Categories { get; set; }
+
+        /// <summary>
+        /// Gets the languages using this plural form.
+        /// </summary>
         public string[] Languages { get; set; }
     }
 
@@ -26,6 +43,7 @@ internal sealed class PluralFormsRetriever
     [
         new PluralForm(
             "IntOneOrZero",
+            [PluralCategory.One, PluralCategory.Other],
             [
                 "ak", // Akan
                 "bh", // Bihari
@@ -40,6 +58,7 @@ internal sealed class PluralFormsRetriever
         ),
         new PluralForm(
             "ZeroToOne",
+            [PluralCategory.One, PluralCategory.Other],
             [
                 "am", // Amharic
                 "bn", // Bengali
@@ -54,6 +73,7 @@ internal sealed class PluralFormsRetriever
         ),
         new PluralForm(
             "ZeroToTwoExcluded",
+            [PluralCategory.One, PluralCategory.Other],
             [
                 "hy", // Armenian
                 "fr", // French
@@ -62,6 +82,7 @@ internal sealed class PluralFormsRetriever
         ),
         new PluralForm(
             "OnlyOne",
+            [PluralCategory.One, PluralCategory.Other],
             [
                 "af", // Afrikaans
                 "sq", // Albanian
@@ -166,12 +187,14 @@ internal sealed class PluralFormsRetriever
         ),
         new PluralForm(
             "Sinhala",
+            [PluralCategory.One, PluralCategory.Other],
             [
                 "si" // Sinhala
             ]
         ),
         new PluralForm(
             "Latvian",
+            [PluralCategory.Zero, PluralCategory.One, PluralCategory.Other],
             [
                 "lv", // Latvian
                 "prg" // Prussian
@@ -179,12 +202,14 @@ internal sealed class PluralFormsRetriever
         ),
         new PluralForm(
             "Irish",
+            [PluralCategory.One, PluralCategory.Two, PluralCategory.Few, PluralCategory.Many, PluralCategory.Other],
             [
                 "ga" // Irish
             ]
         ),
         new PluralForm(
             "Romanian",
+            [PluralCategory.One, PluralCategory.Few, PluralCategory.Other],
             [
                 "ro", // Romanian
                 "mo"  // Moldavian
@@ -192,12 +217,14 @@ internal sealed class PluralFormsRetriever
         ),
         new PluralForm(
             "Lithuanian",
+            [PluralCategory.One, PluralCategory.Few, PluralCategory.Many, PluralCategory.Other],
             [
                 "lt" // Lithuanian
             ]
         ),
         new PluralForm(
             "Slavic",
+            [PluralCategory.One, PluralCategory.Few, PluralCategory.Many, PluralCategory.Other],
             [
                 "ru", // Russian
                 "uk", // Ukrainian
@@ -206,6 +233,7 @@ internal sealed class PluralFormsRetriever
         ),
         new PluralForm(
             "Czech",
+            [PluralCategory.One, PluralCategory.Few, PluralCategory.Many, PluralCategory.Other],
             [
                 "cs", // Czech
                 "sk"  // Slovak
@@ -213,24 +241,28 @@ internal sealed class PluralFormsRetriever
         ),
         new PluralForm(
             "Polish",
+            [PluralCategory.One, PluralCategory.Few, PluralCategory.Many, PluralCategory.Other],
             [
                 "pl" // Polish
             ]
         ),
         new PluralForm(
             "Slovenian",
+            [PluralCategory.One, PluralCategory.Two, PluralCategory.Few, PluralCategory.Other],
             [
                 "sl" // Slovenian
             ]
         ),
         new PluralForm(
             "Arabic",
+            [PluralCategory.Zero, PluralCategory.One, PluralCategory.Two, PluralCategory.Few, PluralCategory.Many, PluralCategory.Other],
             [
                 "ar" // Arabic
             ]
         ),
         new PluralForm(
             "Hebrew",
+            [PluralCategory.One, PluralCategory.Two, PluralCategory.Many, PluralCategory.Other],
             [
                 "he", // Hebrew
                 "iw"  // (old code for Hebrew)
@@ -238,6 +270,7 @@ internal sealed class PluralFormsRetriever
         ),
         new PluralForm(
             "Filipino",
+            [PluralCategory.One, PluralCategory.Other],
             [
                 "fil", // Filipino
                 "tl"   // Tagalog
@@ -245,36 +278,42 @@ internal sealed class PluralFormsRetriever
         ),
         new PluralForm(
             "Macedonian",
+            [PluralCategory.One, PluralCategory.Other],
             [
                 "mk" // Macedonian
             ]
         ),
         new PluralForm(
             "Breizh",
+            [PluralCategory.One, PluralCategory.Two, PluralCategory.Few, PluralCategory.Many, PluralCategory.Other],
             [
                 "br" // Breton
             ]
         ),
         new PluralForm(
             "CentralAtlasTamazight",
+            [PluralCategory.One, PluralCategory.Other],
             [
                 "tzm" // Central Atlas Tamazight
             ]
         ),
         new PluralForm(
             "OneOrZero",
+            [PluralCategory.Zero, PluralCategory.One, PluralCategory.Other],
             [
                 "ksh" // Colognian
             ]
         ),
         new PluralForm(
             "OneOrZeroToOneExcluded",
+            [PluralCategory.Zero, PluralCategory.One, PluralCategory.Other],
             [
                 "lag" // Langi
             ]
         ),
         new PluralForm(
             "OneOrTwo",
+            [PluralCategory.One, PluralCategory.Two, PluralCategory.Other],
             [
                 "kw",   // Cornish
                 "smn",  // Inari Sami
@@ -289,6 +328,7 @@ internal sealed class PluralFormsRetriever
         ),
         new PluralForm(
             "Croat",
+            [PluralCategory.One, PluralCategory.Few, PluralCategory.Other],
             [
                 "bs", // Bosnian
                 "hr", // Croatian
@@ -298,42 +338,49 @@ internal sealed class PluralFormsRetriever
         ),
         new PluralForm(
             "Tachelhit",
+            [PluralCategory.One, PluralCategory.Few, PluralCategory.Other],
             [
                 "shi" // Tachelhit
             ]
         ),
         new PluralForm(
             "Icelandic",
+            [PluralCategory.One, PluralCategory.Other],
             [
                 "is" // Icelandic
             ]
         ),
         new PluralForm(
             "Manx",
+            [PluralCategory.One, PluralCategory.Two, PluralCategory.Few, PluralCategory.Many, PluralCategory.Other],
             [
                 "gv" // Manx
             ]
         ),
         new PluralForm(
             "ScottishGaelic",
+            [PluralCategory.One, PluralCategory.Two, PluralCategory.Few, PluralCategory.Other],
             [
                 "gd" // Scottish Gaelic
             ]
         ),
         new PluralForm(
             "Maltese",
+            [PluralCategory.One, PluralCategory.Few, PluralCategory.Many, PluralCategory.Other],
             [
                 "mt" // Maltese
             ]
         ),
         new PluralForm(
             "Welsh",
+            [PluralCategory.Zero, PluralCategory.One, PluralCategory.Two, PluralCategory.Few, PluralCategory.Many, PluralCategory.Other],
             [
                 "cy" // Welsh
             ]
         ),
         new PluralForm(
             "Danish",
+            [PluralCategory.One, PluralCategory.Other],
             [
                 "da" // Danish
             ]
@@ -377,5 +424,18 @@ internal sealed class PluralFormsRetriever
             }
         }
         return result.Values;
+    }
+
+    /// <summary>
+    /// Retrieves the plural categories a resource has to define to be correctly declined in a language.
+    /// </summary>
+    /// <param name="language">The primary language subtag to retrieve the categories for.</param>
+    /// <returns>
+    /// The plural categories required by <paramref name="language"/>, or <see langword="null"/> if the language
+    /// has no dedicated plural provider, in which case no plural form can be assumed to be required.
+    /// </returns>
+    public static PluralCategory[]? RetrievePluralCategoriesForLanguage(string language)
+    {
+        return LanguageToPluralForm.TryGetValue(language, out var pluralForm) ? pluralForm.Categories : null;
     }
 }
