@@ -1,7 +1,11 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 using ReswPlus.SourceGenerator;
 using ReswPlus.SourceGenerator.Analysis;
@@ -78,11 +82,6 @@ internal static class ReswTestHelpers
         return result!.Files.Single();
     }
 
-    private static string Escape(string text)
-    {
-        return text.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
-    }
-
     /// <summary>
     /// Runs the resource analysis over a set of in-memory <c>.resw</c> files.
     /// </summary>
@@ -92,23 +91,60 @@ internal static class ReswTestHelpers
     public static IReadOnlyList<Diagnostic> Analyze(string? defaultLanguage, params (string Language, string Content)[] files)
     {
         var documents = files
-            .Select(file => ($@"C:\Project\Strings\{file.Language}\Resources.resw", SourceText.From(file.Content)))
+            .Select(file => (GetPath(file.Language), SourceText.From(file.Content)))
             .ToArray();
 
         var diagnostics = new List<Diagnostic>();
 
-        ReswResourceAnalyzer.Analyze(documents, defaultLanguage, diagnostics.Add, CancellationToken.None);
+        ReswResourceRules.Analyze(documents, defaultLanguage, diagnostics.Add, CancellationToken.None);
 
         return diagnostics;
     }
 
     /// <summary>
-    /// Returns the identifiers of the given diagnostics, in the order they were reported.
+    /// Runs the <see cref="ReswResourceAnalyzer"/> over a set of in-memory <c>.resw</c> files, exercising the
+    /// same path the compiler takes.
     /// </summary>
-    /// <param name="diagnostics">The diagnostics to describe.</param>
-    /// <returns>The identifiers of the diagnostics.</returns>
-    public static string[] GetIds(this IEnumerable<Diagnostic> diagnostics)
+    /// <param name="files">The files of the project, as language folder name and content pairs.</param>
+    /// <returns>The diagnostics reported for those files.</returns>
+    public static async Task<ImmutableArray<Diagnostic>> RunAnalyzerAsync(params (string Language, string Content)[] files)
     {
-        return diagnostics.Select(diagnostic => diagnostic.Id).ToArray();
+        var additionalFiles = files
+            .Select(file => (AdditionalText)new InMemoryAdditionalText(GetPath(file.Language), file.Content))
+            .ToImmutableArray();
+
+        var compilation = CSharpCompilation.Create("TestProject");
+
+        return await compilation
+            .WithAnalyzers([new ReswResourceAnalyzer()], new AnalyzerOptions(additionalFiles))
+            .GetAnalyzerDiagnosticsAsync(CancellationToken.None);
+    }
+
+    private static string GetPath(string language)
+    {
+        return $@"C:\Project\Strings\{language}\Resources.resw";
+    }
+
+    private static string Escape(string text)
+    {
+        return text.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
+    }
+
+    private sealed class InMemoryAdditionalText : AdditionalText
+    {
+        private readonly SourceText _text;
+
+        public InMemoryAdditionalText(string path, string content)
+        {
+            Path = path;
+            _text = SourceText.From(content);
+        }
+
+        public override string Path { get; }
+
+        public override SourceText GetText(CancellationToken cancellationToken = default)
+        {
+            return _text;
+        }
     }
 }

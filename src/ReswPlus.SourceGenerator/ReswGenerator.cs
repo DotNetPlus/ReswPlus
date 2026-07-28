@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -56,33 +55,28 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
             .Where(file => Path.GetExtension(file.Path).Equals(".resw", StringComparison.OrdinalIgnoreCase))
             .Collect();
 
-        // The resource diagnostics only depend on the .resw files and on the default language of the project, so
-        // they are registered separately: combining them with the compilation would re-run the whole analysis on
-        // every keystroke, for every language of the project.
-        var defaultLanguageProvider = context.AnalyzerConfigOptionsProvider
-            .Select((options, cancellationToken) => GetOption(options.GlobalOptions, "build_property.DefaultLanguage"));
+        // Only the parts of the compilation the generation actually depends on are captured, so that an unrelated
+        // edit in the project doesn't invalidate the whole pipeline: a Compilation is a new object every time.
+        var compilationInfoProvider = context.CompilationProvider.Select(static (compilation, cancellationToken) =>
+            new CompilationInfo(compilation is CSharpCompilation, RetrieveAppType(compilation), compilation.AssemblyName));
 
-        context.RegisterSourceOutput(
-            reswFilesProvider.Combine(defaultLanguageProvider),
-            static (spc, source) => ReportResourceDiagnostics(spc, source.Left, source.Right));
-
-        // Combine the Compilation, the global options, and the additional files.
-        var combinedProvider = context.CompilationProvider
+        // Combine the compilation information, the global options, and the additional files.
+        var combinedProvider = compilationInfoProvider
             .Combine(globalOptionsProvider)
             .Combine(reswFilesProvider);
 
-        context.RegisterSourceOutput(combinedProvider, (spc, source) =>
+        context.RegisterSourceOutput(combinedProvider, static (spc, source) =>
         {
             // Unpack the combined tuple.
-            var ((compilation, options), additionalFiles) = source;
+            var ((compilationInfo, options), additionalFiles) = source;
 
-            if (compilation is null || options is null)
+            if (options is null)
             {
                 return;
             }
 
             // Only support C#
-            if (compilation is not CSharpCompilation)
+            if (!compilationInfo.IsCSharp)
             {
                 spc.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnsupportedLanguage, Location.None));
                 return;
@@ -119,7 +113,7 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
             }
 
             // Determine AppType based on referenced assemblies.
-            var appType = RetrieveAppType(compilation);
+            var appType = compilationInfo.AppType;
             var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
 
             switch (appType)
@@ -188,7 +182,7 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
                 }
 
                 // Generate code for the resource file.
-                var resourceFileInfo = new ResourceFileInfo(filePath, new Project(compilation.AssemblyName!, isLibrary));
+                var resourceFileInfo = new ResourceFileInfo(filePath, new Project(compilationInfo.AssemblyName!, isLibrary));
                 var codeGenerator = ReswClassGenerator.CreateGenerator(resourceFileInfo, null);
                 if (codeGenerator is null)
                 {
@@ -232,27 +226,6 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
                 }
             }
         });
-    }
-
-    /// <summary>
-    /// Reports the diagnostics about the content of the <c>.resw</c> files of the project.
-    /// </summary>
-    /// <param name="spc">The context to report the diagnostics to.</param>
-    /// <param name="reswFiles">The <c>.resw</c> files of the project.</param>
-    /// <param name="defaultLanguage">The default language of the project, if it declares one.</param>
-    private static void ReportResourceDiagnostics(SourceProductionContext spc, ImmutableArray<AdditionalText> reswFiles, string? defaultLanguage)
-    {
-        var documents = new List<(string Path, SourceText Text)>();
-
-        foreach (var file in reswFiles.Distinct())
-        {
-            if (file.GetText(spc.CancellationToken) is { } text)
-            {
-                documents.Add((file.Path, text));
-            }
-        }
-
-        ReswResourceAnalyzer.Analyze(documents, defaultLanguage, spc.ReportDiagnostic, spc.CancellationToken);
     }
 
     /// <summary>

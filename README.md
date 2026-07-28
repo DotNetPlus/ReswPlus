@@ -74,7 +74,7 @@ ReswPlus checks the content of your `.resw` files while it generates the code, a
 | `RESWP0006` | A translated value doesn't use the same placeholders as the default language, which throws a `FormatException` at runtime. |
 | `RESWP0007` | A value uses a placeholder that has no matching parameter in its `#Format` tag. |
 | `RESWP0008` | A pluralized resource is missing the plural forms its language requires, which silently produces grammatically wrong text. |
-| `RESWP0009` | Two resources of the same file are generated as the same member. |
+| `RESWP0009` | Two resources of the same file conflict with each other, because their names only differ by case or because a plain resource collides with a pluralized one. |
 | `RESWP0010` | A value that is used as a composite format string is malformed. |
 
 These are reported as **warnings**, so that updating the package never breaks a build that already has an inconsistency. Escalate the ones you want to be fatal from your `.editorconfig`:

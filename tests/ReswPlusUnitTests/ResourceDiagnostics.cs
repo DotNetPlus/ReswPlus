@@ -1,4 +1,6 @@
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 using Xunit;
 
 namespace ReswPlusUnitTests;
@@ -293,6 +295,21 @@ public class ResourceDiagnostics
             ("en-US", ReswTestHelpers.CreateResw(("Welcome", "Welcome!", "#ReswPlusIgnore"), ("welcome", "Welcome?", null))));
 
         Assert.Empty(diagnostics);
+    }
+
+    [Fact]
+    public async Task TheAnalyzerIsRegisteredAndReportsThroughTheCompiler()
+    {
+        // The rules are exercised directly by the other tests, this one covers the wiring: without the right
+        // registration the analyzer would silently report nothing when the compiler runs it.
+        var diagnostics = await ReswTestHelpers.RunAnalyzerAsync(
+            ("en-US", ReswTestHelpers.CreateResw(("Greeting", "Hello {0}, you are {1}", "#Format[String name, Int age]"))),
+            ("fr", ReswTestHelpers.CreateResw(("Greeting", "Bonjour {0}", null))));
+
+        var diagnostic = Assert.Single(diagnostics);
+
+        Assert.Equal("RESWP0006", diagnostic.Id);
+        Assert.Equal(DiagnosticSeverity.Warning, diagnostic.Severity);
     }
 
     [Fact]

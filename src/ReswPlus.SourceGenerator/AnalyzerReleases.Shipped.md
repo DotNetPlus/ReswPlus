@@ -12,5 +12,5 @@ RESWP0005 | Compatibility    | Error    | ReswPlus only supports UWP and WinAppS
 RESWP0006 | Resources    | Warning    | A translated value doesn't use the same placeholders as the default language.
 RESWP0007 | Resources    | Warning    | A value uses a placeholder that has no matching parameter in its #Format tag.
 RESWP0008 | Resources    | Warning    | A pluralized resource is missing plural forms its language requires.
-RESWP0009 | Resources    | Warning    | Two resources of the same file are generated as the same member.
+RESWP0009 | Resources    | Warning    | Two resources of the same file conflict with each other.
 RESWP0010 | Resources    | Warning    | A value that is used as a composite format string is malformed.
