@@ -24,7 +24,6 @@ namespace ReswPlus.SourceGenerator.CodeGenerators;
 /// <code language="csharp">
 /// // &lt;auto-generated/&gt;
 /// // File generated automatically by ReswPlus. https://github.com/DotNetPlus/ReswPlus
-/// #nullable enable
 ///
 /// using System;
 /// using Windows.UI.Xaml.Markup;
@@ -900,7 +899,7 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
                     )
                     .WithLeadingTrivia(CreateDocumentation("Gets or sets the key of the resource to look up.")),
                 // Create the Converter property.
-                PropertyDeclaration(NullableType(ParseTypeName("IValueConverter")), "Converter")
+                PropertyDeclaration(ParseTypeName("IValueConverter"), "Converter")
                     .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
                     .WithAccessorList(
                         AccessorList(
@@ -915,7 +914,7 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
                     )
                     .WithLeadingTrivia(CreateDocumentation("Gets or sets the converter to apply to the localized string, if any.")),
                 // Create the ConverterParameter property.
-                PropertyDeclaration(NullableType(PredefinedType(Token(SyntaxKind.ObjectKeyword))), "ConverterParameter")
+                PropertyDeclaration(PredefinedType(Token(SyntaxKind.ObjectKeyword)), "ConverterParameter")
                     .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
                     .WithAccessorList(
                         AccessorList(
