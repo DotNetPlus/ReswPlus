@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ReswPlus.SourceGenerator;
 using ReswPlus.SourceGenerator.ClassGenerators;
+using ReswPlus.SourceGenerator.CodeGenerators;
 using ReswPlus.SourceGenerator.Models;
 using Xunit;
 
@@ -45,6 +46,17 @@ internal static class ReswTestHelpers
     /// <returns>The generated C# code.</returns>
     public static string GenerateCode(string reswContent, AppType appType = AppType.WindowsAppSDK)
     {
+        return GenerateFile(reswContent, appType).Content;
+    }
+
+    /// <summary>
+    /// Generates the file for a <c>.resw</c> file.
+    /// </summary>
+    /// <param name="reswContent">The content of the <c>.resw</c> file.</param>
+    /// <param name="appType">The type of the consuming application.</param>
+    /// <returns>The generated file.</returns>
+    public static GeneratedFile GenerateFile(string reswContent, AppType appType = AppType.WindowsAppSDK)
+    {
         var resourceFileInfo = new ResourceFileInfo(@"C:\Project\Strings\en-US\Resources.resw", new Project("TestProject", isLibrary: false));
         var generator = ReswClassGenerator.CreateGenerator(resourceFileInfo, logger: null);
 
@@ -59,7 +71,7 @@ internal static class ReswTestHelpers
 
         Assert.NotNull(result);
 
-        return result!.Files.Single().Content;
+        return result!.Files.Single();
     }
 
     private static string Escape(string text)

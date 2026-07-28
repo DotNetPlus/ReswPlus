@@ -37,6 +37,15 @@ public class GeneratedCodeHygiene
     }
 
     [Fact]
+    public void GeneratedFileUsesTheGeneratedCodeExtension()
+    {
+        var file = ReswTestHelpers.GenerateFile(ReswTestHelpers.CreateResw(("Welcome", "Welcome!", null)));
+
+        // Tooling also recognizes generated code by its file name, not just by the header.
+        Assert.EndsWith(".g.cs", file.Filename);
+    }
+
+    [Fact]
     public void GeneratedFileDeclaresAnExplicitNullableContext()
     {
         var code = GenerateSample();

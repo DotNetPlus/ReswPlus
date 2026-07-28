@@ -159,10 +159,10 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
             switch (appType)
             {
                 case AppType.WindowsAppSDK:
-                    AddSourceFromResource(spc, $"{assemblyName}.Templates.ResourceStringProviders.MicrosoftResourceStringProvider.txt", "ResourceStringProvider.cs");
+                    AddSourceFromResource(spc, $"{assemblyName}.Templates.ResourceStringProviders.MicrosoftResourceStringProvider.txt", "ResourceStringProvider");
                     break;
                 case AppType.UWP:
-                    AddSourceFromResource(spc, $"{assemblyName}.Templates.ResourceStringProviders.WindowsResourceStringProvider.txt", "ResourceStringProvider.cs");
+                    AddSourceFromResource(spc, $"{assemblyName}.Templates.ResourceStringProviders.WindowsResourceStringProvider.txt", "ResourceStringProvider");
                     break;
                 default:
                     spc.ReportDiagnostic(Diagnostic.Create(UnrecognizedAppTypeDiagnostic, Location.None));
@@ -251,22 +251,22 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
                 // Add each generated file as a new source.
                 foreach (var generatedFile in generatedData.Files)
                 {
-                    spc.AddSource($"{Path.GetFileName(filePath)}.cs", SourceText.From(generatedFile.Content, Encoding.UTF8));
+                    spc.AddSource($"{Path.GetFileName(filePath)}{GeneratedCode.FileExtension}", SourceText.From(generatedFile.Content, Encoding.UTF8));
                 }
 
                 // If macros were used, include the Macros source file.
                 if (generatedData.ContainsMacro)
                 {
-                    AddSourceFromResource(spc, "ReswPlus.SourceGenerator.Templates.Macros.Macros.txt", "Macros.cs");
+                    AddSourceFromResource(spc, "ReswPlus.SourceGenerator.Templates.Macros.Macros.txt", "Macros");
                 }
 
                 // If plural forms are detected, add plural-related support sources.
                 if (generatedData.ContainsPlural)
                 {
-                    AddSourceFromResource(spc, $"{assemblyName}.Templates.Plurals.IPluralProvider.txt", "IPluralProvider.cs");
-                    AddSourceFromResource(spc, $"{assemblyName}.Templates.Plurals.PluralTypeEnum.txt", "PluralTypeEnum.cs");
-                    AddSourceFromResource(spc, $"{assemblyName}.Templates.Utils.IntExt.txt", "IntExt.cs");
-                    AddSourceFromResource(spc, $"{assemblyName}.Templates.Utils.DoubleExt.txt", "DoubleExt.cs");
+                    AddSourceFromResource(spc, $"{assemblyName}.Templates.Plurals.IPluralProvider.txt", "IPluralProvider");
+                    AddSourceFromResource(spc, $"{assemblyName}.Templates.Plurals.PluralTypeEnum.txt", "PluralTypeEnum");
+                    AddSourceFromResource(spc, $"{assemblyName}.Templates.Utils.IntExt.txt", "IntExt");
+                    AddSourceFromResource(spc, $"{assemblyName}.Templates.Utils.DoubleExt.txt", "DoubleExt");
                     AddLanguageSupport(spc, allLanguages);
                 }
             }
@@ -347,7 +347,7 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
         foreach (var pluralFile in PluralFormsRetriever.RetrievePluralFormsForLanguages(languagesSupported))
         {
             var resourceName = $"{assemblyName}.Templates.Plurals.{pluralFile.Id}Provider.txt";
-            AddSourceFromResource(spc, resourceName, $"{pluralFile.Id}Provider.cs");
+            AddSourceFromResource(spc, resourceName, $"{pluralFile.Id}Provider");
 
             // Add each language handled by this provider.
             foreach (var lng in pluralFile.Languages)
@@ -358,19 +358,22 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
         }
 
         // Add the fallback provider.
-        AddSourceFromResource(spc, $"{assemblyName}.Templates.Plurals.OtherProvider.txt", "OtherProvider.cs");
+        AddSourceFromResource(spc, $"{assemblyName}.Templates.Plurals.OtherProvider.txt", "OtherProvider");
 
         // Build and add the ResourceLoaderExtension with the plural selector injected.
         var resourceLoaderResourceName = $"{assemblyName}.Templates.Plurals.ResourceLoaderExtension.txt";
         var resourceLoaderTemplate = ReadAllText(Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceLoaderResourceName));
         var resourceLoaderCode = resourceLoaderTemplate.Replace("{{PluralProviderSelector}}", pluralSelectorCode);
-        spc.AddSource("ResourceLoaderExtension.cs", SourceText.From(GeneratedCode.AddFileHeader(resourceLoaderCode), Encoding.UTF8));
+        spc.AddSource($"ResourceLoaderExtension{GeneratedCode.FileExtension}", SourceText.From(GeneratedCode.AddFileHeader(resourceLoaderCode), Encoding.UTF8));
     }
 
     /// <summary>
     /// Reads a resource stream and adds its content as a source file.
     /// </summary>
-    private static void AddSourceFromResource(SourceProductionContext spc, string resourcePath, string itemName)
+    /// <param name="spc">The context to add the source to.</param>
+    /// <param name="resourcePath">The path of the embedded resource holding the template.</param>
+    /// <param name="typeName">The name of the type declared by the template, used as the hint name.</param>
+    private static void AddSourceFromResource(SourceProductionContext spc, string resourcePath, string typeName)
     {
         using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourcePath);
         if (stream is null)
@@ -379,7 +382,7 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
             return;
         }
         var sourceText = ReadAllText(stream);
-        spc.AddSource(itemName, SourceText.From(GeneratedCode.AddFileHeader(sourceText), Encoding.UTF8));
+        spc.AddSource($"{typeName}{GeneratedCode.FileExtension}", SourceText.From(GeneratedCode.AddFileHeader(sourceText), Encoding.UTF8));
     }
 
     /// <summary>

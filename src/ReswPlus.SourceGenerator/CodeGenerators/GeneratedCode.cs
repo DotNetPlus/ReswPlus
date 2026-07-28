@@ -29,6 +29,16 @@ internal static class GeneratedCode
         "\r\n";
 
     /// <summary>
+    /// The extension used for the hint name of every emitted file.
+    /// </summary>
+    /// <remarks>
+    /// On top of the <c>&lt;auto-generated/&gt;</c> marker in <see cref="FileHeader"/>, tooling also recognizes
+    /// generated code by its file name. Roslyn's own generated code detection, StyleCop and most code coverage
+    /// tools all treat a file whose name ends with <c>.g.cs</c> as generated.
+    /// </remarks>
+    public const string FileExtension = ".g.cs";
+
+    /// <summary>
     /// Prepends <see cref="FileHeader"/> to the given source code.
     /// </summary>
     /// <param name="sourceCode">The source code to prepend the header to.</param>

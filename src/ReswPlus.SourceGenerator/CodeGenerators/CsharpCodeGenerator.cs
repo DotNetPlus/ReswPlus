@@ -145,7 +145,7 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
 
         // Normalize the whitespace (formatting) and return the generated source code.
         var code = GeneratedCode.AddFileHeader(compilationUnit.NormalizeWhitespace().ToFullString());
-        yield return new GeneratedFile(baseFilename + ".cs", code);
+        yield return new GeneratedFile(baseFilename + GeneratedCode.FileExtension, code);
     }
 
     /// <summary>
