@@ -47,6 +47,7 @@ public class FormatTagPlurals
         {
             var basicLocalizedItems = new ReswItem[0];
             var res = FormatTag.ParseParameters("test", new[] { "Plural " + type.Key }, basicLocalizedItems, "test", null);
+            Assert.NotNull(res);
             Assert.True(res.Parameters.Count == 1);
             _ = Assert.IsType<FunctionFormatTagParameter>(res.Parameters[0]);
             var functionParam = (FunctionFormatTagParameter)res.Parameters[0];

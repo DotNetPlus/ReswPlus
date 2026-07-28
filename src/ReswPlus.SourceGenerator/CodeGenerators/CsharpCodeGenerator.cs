@@ -22,7 +22,10 @@ namespace ReswPlus.SourceGenerator.CodeGenerators;
 /// <example>
 /// The generated code may look similar to the following:
 /// <code language="csharp">
+/// // &lt;auto-generated/&gt;
 /// // File generated automatically by ReswPlus. https://github.com/DotNetPlus/ReswPlus
+/// #nullable enable
+///
 /// using System;
 /// using Windows.UI.Xaml.Markup;
 /// using Windows.UI.Xaml.Data;
@@ -57,6 +60,11 @@ namespace ReswPlus.SourceGenerator.CodeGenerators;
 internal sealed class CSharpCodeGenerator : ICodeGenerator
 {
     /// <summary>
+    /// The text used for the <c>&lt;returns&gt;</c> element of the generated lookup members.
+    /// </summary>
+    private const string LocalizedStringReturns = "The localized string for the current UI culture.";
+
+    /// <summary>
     /// Generates a collection of files containing the source code.
     /// </summary>
     /// <param name="baseFilename">The base filename for the generated file.</param>
@@ -65,15 +73,8 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
     /// <returns>A collection of generated files.</returns>
     public IEnumerable<GeneratedFile> GetGeneratedFiles(string? baseFilename, StronglyTypedClass info, ResourceFileInfo resourceFileInfo)
     {
-        // Create a header comment that will be placed at the top of the generated file.
-        var headerTrivia = TriviaList(
-            Comment("// File generated automatically by ReswPlus. https://github.com/DotNetPlus/ReswPlus"),
-            CarriageReturnLineFeed
-        );
-
         // Build the compilation unit (the root node of a C# file) and add required using directives.
         var compilationUnit = CompilationUnit()
-            .WithLeadingTrivia(headerTrivia)
             .WithUsings(List(GetUsings(info.AppType)));
 
         // Create the strongly-typed static class declaration (the class that will provide resource lookup).
@@ -115,10 +116,10 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
                             )
                         )
                 );
-                // Attach the region directives as leading and trailing trivia.
+                // Attach the region directives, keeping the documentation comment already attached to the member.
                 membersForItem[i] = membersForItem[i]
-                    .WithLeadingTrivia(SyntaxFactory.TriviaList(regionDirectiveTrivia))
-                    .WithTrailingTrivia(SyntaxFactory.TriviaList(endRegionDirectiveTrivia));
+                    .WithLeadingTrivia(membersForItem[i].GetLeadingTrivia().Insert(0, regionDirectiveTrivia))
+                    .WithTrailingTrivia(membersForItem[i].GetTrailingTrivia().Add(endRegionDirectiveTrivia));
             }
             formatMembers.AddRange(membersForItem);
         }
@@ -143,8 +144,96 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
         }
 
         // Normalize the whitespace (formatting) and return the generated source code.
-        var code = compilationUnit.NormalizeWhitespace().ToFullString();
+        var code = GeneratedCode.AddFileHeader(compilationUnit.NormalizeWhitespace().ToFullString());
         yield return new GeneratedFile(baseFilename + ".cs", code);
+    }
+
+    /// <summary>
+    /// Creates the leading trivia holding the XML documentation comment of a generated member.
+    /// </summary>
+    /// <param name="summary">The content of the <c>&lt;summary&gt;</c> element.</param>
+    /// <param name="returns">The content of the <c>&lt;returns&gt;</c> element, if any.</param>
+    /// <param name="parameters">The <c>&lt;param&gt;</c> elements to add, as name/description pairs.</param>
+    /// <returns>The trivia to use as the leading trivia of the documented member.</returns>
+    /// <remarks>
+    /// Every parameter needs its own <c>&lt;param&gt;</c> element, otherwise the compiler reports CS1573 for
+    /// projects that set <c>GenerateDocumentationFile</c>. Likewise, members with no documentation at all are
+    /// reported as CS1591, which is why every visible generated member is documented.
+    /// </remarks>
+    private static SyntaxTriviaList CreateDocumentation(string summary, string? returns = null, params (string Name, string Description)[] parameters)
+    {
+        var lines = new List<SyntaxTrivia>();
+
+        AddLine($"<summary>{EscapeXml(summary)}</summary>");
+
+        foreach (var (name, description) in parameters)
+        {
+            AddLine($"<param name=\"{EscapeXml(name)}\">{EscapeXml(description)}</param>");
+        }
+
+        if (returns is not null)
+        {
+            AddLine($"<returns>{EscapeXml(returns)}</returns>");
+        }
+
+        return TriviaList(lines);
+
+        void AddLine(string content)
+        {
+            lines.Add(Comment($"/// {content}"));
+            lines.Add(ElasticCarriageReturnLineFeed);
+        }
+    }
+
+    /// <summary>
+    /// Escapes the characters that are not allowed in the content of an XML element.
+    /// </summary>
+    /// <param name="text">The text to escape.</param>
+    /// <returns>The escaped text.</returns>
+    /// <remarks>
+    /// Resource values are copied into the documentation of the generated members, and they routinely contain
+    /// markup. Leaving them unescaped would produce malformed documentation, reported as CS1570.
+    /// </remarks>
+    private static string EscapeXml(string text)
+    {
+        return text
+            .Replace("&", "&amp;")
+            .Replace("<", "&lt;")
+            .Replace(">", "&gt;");
+    }
+
+    /// <summary>
+    /// Creates the leading trivia holding the XML documentation comment of a generated lookup method.
+    /// </summary>
+    /// <param name="summary">The content of the <c>&lt;summary&gt;</c> element.</param>
+    /// <param name="item">The localization item the method is generated for.</param>
+    /// <param name="parameters">The parameters of the generated method, in declaration order.</param>
+    /// <param name="returns">The content of the <c>&lt;returns&gt;</c> element.</param>
+    /// <returns>The trivia to use as the leading trivia of the documented method.</returns>
+    private static SyntaxTriviaList CreateDocumentation(string summary, Localization item, IEnumerable<FunctionFormatTagParameter> parameters, string returns)
+    {
+        return CreateDocumentation(summary, returns, parameters.Select(p => (p.Name, DescribeParameter(item, p))).ToArray());
+    }
+
+    /// <summary>
+    /// Returns the documentation text describing the role of a parameter of a generated lookup method.
+    /// </summary>
+    /// <param name="item">The localization item the method is generated for.</param>
+    /// <param name="parameter">The parameter to describe.</param>
+    /// <returns>The description to use for the <c>&lt;param&gt;</c> element of the parameter.</returns>
+    private static string DescribeParameter(Localization item, FunctionFormatTagParameter parameter)
+    {
+        if (parameter.IsVariantId)
+        {
+            return "The identifier of the variant of the string to look up.";
+        }
+
+        if (item is PluralLocalization plural && ReferenceEquals(plural.ParameterToUseForPluralization, parameter))
+        {
+            return "The quantity used to select the plural form of the string.";
+        }
+
+        return $"The value to substitute for the '{parameter.Name}' placeholder.";
     }
 
     /// <summary>
@@ -238,6 +327,10 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
                 Token(SyntaxKind.PublicKeyword),
                 Token(SyntaxKind.StaticKeyword)
             ))
+            .WithLeadingTrivia(CreateDocumentation(
+                "Looks up the localized string with the given resource key.",
+                LocalizedStringReturns,
+                ("key", "The key of the resource to look up.")))
             .WithParameterList(
                 ParameterList(
                     SingletonSeparatedList(
@@ -268,6 +361,7 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
         // Build and return the complete class declaration.
         var classDecl = ClassDeclaration(info.ClassName)
             .WithAttributeLists(attributes)
+            .WithLeadingTrivia(CreateDocumentation($"Provides strongly-typed access to the strings of the '{info.ResoureFile}' resource file."))
             .WithModifiers(TokenList(
                 Token(SyntaxKind.PublicKeyword),
                 Token(SyntaxKind.StaticKeyword)
@@ -287,29 +381,6 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
 
         // Create XML documentation for the member using the summary from the localization item.
         var summaryText = item.Summary ?? string.Empty;
-        var xmlComment = TriviaList(
-            Trivia(
-                DocumentationCommentTrivia(SyntaxKind.SingleLineDocumentationCommentTrivia,
-                    List(new XmlNodeSyntax[]
-                    {
-                        // Leading "/// " text.
-                        XmlText().WithTextTokens(
-                            TokenList(XmlTextLiteral("/// "))
-                        ),
-                        // The summary element.
-                        XmlElement(
-                            XmlElementStartTag(XmlName("summary")),
-                            XmlElementEndTag(XmlName("summary"))
-                        ).WithContent(
-                            List(new XmlNodeSyntax[]
-                            {
-                                XmlText().WithTextTokens(TokenList(XmlTextLiteral(summaryText)))
-                            })
-                        )
-                    })
-                )
-            )
-        );
 
         if (item.IsProperty)
         {
@@ -319,7 +390,7 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
                     Token(SyntaxKind.PublicKeyword),
                     Token(SyntaxKind.StaticKeyword)
                 ))
-                .WithLeadingTrivia(xmlComment)
+                .WithLeadingTrivia(CreateDocumentation(summaryText))
                 .WithAccessorList(
                     AccessorList(
                         SingletonList(
@@ -375,7 +446,7 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
                         Token(SyntaxKind.StaticKeyword)
                     ))
                     .WithParameterList(ParameterList(overloadParameters))
-                    .WithLeadingTrivia(xmlComment)
+                    .WithLeadingTrivia(CreateDocumentation(summaryText, item, functionParameters, LocalizedStringReturns))
                     .WithBody(
                         Block(
                             // try { return {Key}(...); } catch { return string.Empty; }
@@ -424,7 +495,7 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
                         Token(SyntaxKind.StaticKeyword)
                     ))
                     .WithParameterList(ParameterList(stdParameters))
-                    .WithLeadingTrivia(xmlComment)
+                    .WithLeadingTrivia(CreateDocumentation(summaryText, item, functionParameters, LocalizedStringReturns))
                     .WithBody(Block(GenerateFormatMethodBody(item)));
                 members.Add(stdMethod);
             }
@@ -443,7 +514,7 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
                         Token(SyntaxKind.StaticKeyword)
                     ))
                     .WithParameterList(ParameterList(parametersList))
-                    .WithLeadingTrivia(xmlComment)
+                    .WithLeadingTrivia(CreateDocumentation(summaryText, item, functionParameters, LocalizedStringReturns))
                     .WithBody(Block(GenerateFormatMethodBody(item)));
                 members.Add(methodDecl);
             }
@@ -660,15 +731,19 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
         {
             // The default _Undefined member with value 0.
             EnumMemberDeclaration(Identifier("_Undefined"))
+            .WithLeadingTrivia(CreateDocumentation("No resource key is selected, the markup extension resolves to an empty string."))
             .WithEqualsValue(EqualsValueClause(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(0))))
         };
         foreach (var key in keys)
         {
-            enumMembers.Add(EnumMemberDeclaration(Identifier(key)));
+            enumMembers.Add(
+                EnumMemberDeclaration(Identifier(key))
+                .WithLeadingTrivia(CreateDocumentation($"Identifies the '{key}' resource.")));
         }
         var keyEnum = EnumDeclaration("KeyEnum")
             .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
-            .WithMembers(SeparatedList(enumMembers));
+            .WithMembers(SeparatedList(enumMembers))
+            .WithLeadingTrivia(CreateDocumentation($"Enumerates the resource keys available in the '{resourceFileName}' resource file."));
 
         // Create a private static field for the resource provider.
         var resourceField = FieldDeclaration(
@@ -710,6 +785,9 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
                 Token(SyntaxKind.ProtectedKeyword),
                 Token(SyntaxKind.OverrideKeyword)
             ))
+            .WithLeadingTrivia(CreateDocumentation(
+                "Returns the localized string identified by the Key property, converted with the Converter property if one is set.",
+                "The value to assign to the target of the markup extension."))
             .WithBody(Block(
                 // Declare a local variable 'value' that checks if the key is _Undefined.
                 LocalDeclarationStatement(
@@ -797,6 +875,7 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
                 )
             )
             .WithAttributeLists(attributes)
+            .WithLeadingTrivia(CreateDocumentation($"A XAML markup extension that looks up the strings of the '{resourceFileName}' resource file."))
             .WithModifiers(TokenList(
                 Token(SyntaxKind.PublicKeyword),
                 Token(SyntaxKind.PartialKeyword)
@@ -818,9 +897,10 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
                                     .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
                             ])
                         )
-                    ),
+                    )
+                    .WithLeadingTrivia(CreateDocumentation("Gets or sets the key of the resource to look up.")),
                 // Create the Converter property.
-                PropertyDeclaration(ParseTypeName("IValueConverter"), "Converter")
+                PropertyDeclaration(NullableType(ParseTypeName("IValueConverter")), "Converter")
                     .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
                     .WithAccessorList(
                         AccessorList(
@@ -832,9 +912,10 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
                                     .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
                             ])
                         )
-                    ),
+                    )
+                    .WithLeadingTrivia(CreateDocumentation("Gets or sets the converter to apply to the localized string, if any.")),
                 // Create the ConverterParameter property.
-                PropertyDeclaration(PredefinedType(Token(SyntaxKind.ObjectKeyword)), "ConverterParameter")
+                PropertyDeclaration(NullableType(PredefinedType(Token(SyntaxKind.ObjectKeyword))), "ConverterParameter")
                     .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
                     .WithAccessorList(
                         AccessorList(
@@ -846,7 +927,8 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
                                     .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
                             ])
                         )
-                    ),
+                    )
+                    .WithLeadingTrivia(CreateDocumentation("Gets or sets the parameter to pass to the converter, if any.")),
                 provideValueMethod
             );
 

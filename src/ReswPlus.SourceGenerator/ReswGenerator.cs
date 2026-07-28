@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using ReswPlus.SourceGenerator.ClassGenerators;
+using ReswPlus.SourceGenerator.CodeGenerators;
 using ReswPlus.SourceGenerator.Models;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -363,7 +364,7 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
         var resourceLoaderResourceName = $"{assemblyName}.Templates.Plurals.ResourceLoaderExtension.txt";
         var resourceLoaderTemplate = ReadAllText(Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceLoaderResourceName));
         var resourceLoaderCode = resourceLoaderTemplate.Replace("{{PluralProviderSelector}}", pluralSelectorCode);
-        spc.AddSource("ResourceLoaderExtension.cs", SourceText.From(resourceLoaderCode, Encoding.UTF8));
+        spc.AddSource("ResourceLoaderExtension.cs", SourceText.From(GeneratedCode.AddFileHeader(resourceLoaderCode), Encoding.UTF8));
     }
 
     /// <summary>
@@ -378,7 +379,7 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
             return;
         }
         var sourceText = ReadAllText(stream);
-        spc.AddSource(itemName, SourceText.From(sourceText, Encoding.UTF8));
+        spc.AddSource(itemName, SourceText.From(GeneratedCode.AddFileHeader(sourceText), Encoding.UTF8));
     }
 
     /// <summary>
