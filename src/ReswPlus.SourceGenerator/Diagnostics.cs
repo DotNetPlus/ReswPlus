@@ -77,12 +77,12 @@ internal static class Diagnostics
         isEnabledByDefault: true);
 
     /// <summary>
-    /// RESWP0006: a translated value doesn't use the same placeholders as the default language.
+    /// RESWP0006: a translated value drops placeholders its value in the default language uses.
     /// </summary>
     public static readonly DiagnosticDescriptor PlaceholderMismatch = new(
         "RESWP0006",
-        "Placeholder mismatch between languages",
-        "The value of the resource '{0}' uses {1}, while its value in the default language uses {2}",
+        "Missing placeholder in a translation",
+        "The value of the resource '{0}' doesn't use {1} that its value in the default language uses",
         ResourcesCategory,
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true);

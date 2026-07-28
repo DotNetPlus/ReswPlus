@@ -31,6 +31,17 @@ internal sealed class PluralFormsRetriever
         public PluralCategory[] Categories { get; set; }
 
         /// <summary>
+        /// Gets whether the provider of this form only returns <see cref="PluralCategory.Zero"/> for a quantity
+        /// that is itself zero.
+        /// </summary>
+        /// <remarks>
+        /// A resource that declares a <c>_None</c> form short circuits a zero quantity to it, so for such a form
+        /// the <c>_Zero</c> resource becomes unreachable and is not required. Latvian is the exception: its
+        /// provider also returns <see cref="PluralCategory.Zero"/> for quantities such as 11 or 20.
+        /// </remarks>
+        public bool ZeroIsOnlyForZeroQuantity { get; set; } = true;
+
+        /// <summary>
         /// Gets the languages using this plural form.
         /// </summary>
         public string[] Languages { get; set; }
@@ -199,7 +210,8 @@ internal sealed class PluralFormsRetriever
                 "lv", // Latvian
                 "prg" // Prussian
             ]
-        ),
+        )
+        { ZeroIsOnlyForZeroQuantity = false },
         new PluralForm(
             "Irish",
             [PluralCategory.One, PluralCategory.Two, PluralCategory.Few, PluralCategory.Many, PluralCategory.Other],
@@ -427,15 +439,15 @@ internal sealed class PluralFormsRetriever
     }
 
     /// <summary>
-    /// Retrieves the plural categories a resource has to define to be correctly declined in a language.
+    /// Retrieves the plural form of a language.
     /// </summary>
-    /// <param name="language">The primary language subtag to retrieve the categories for.</param>
+    /// <param name="language">The primary language subtag to retrieve the plural form for.</param>
     /// <returns>
-    /// The plural categories required by <paramref name="language"/>, or <see langword="null"/> if the language
-    /// has no dedicated plural provider, in which case no plural form can be assumed to be required.
+    /// The plural form of <paramref name="language"/>, or <see langword="null"/> if the language has no dedicated
+    /// plural provider, in which case no plural form can be assumed to be required.
     /// </returns>
-    public static PluralCategory[]? RetrievePluralCategoriesForLanguage(string language)
+    public static PluralForm? RetrievePluralFormForLanguage(string language)
     {
-        return LanguageToPluralForm.TryGetValue(language, out var pluralForm) ? pluralForm.Categories : null;
+        return LanguageToPluralForm.TryGetValue(language, out var pluralForm) ? pluralForm : null;
     }
 }

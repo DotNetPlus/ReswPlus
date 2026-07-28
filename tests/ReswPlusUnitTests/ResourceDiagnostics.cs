@@ -76,6 +76,52 @@ public class ResourceDiagnostics
     }
 
     [Fact]
+    public void PlaceholderMismatch_IsNotReportedWhenATranslationAddsAPlaceholder()
+    {
+        // English routinely spells the singular out while other languages still need the number, and
+        // string.Format ignores the arguments a value doesn't reference, so this is valid.
+        var diagnostics = ReswTestHelpers.Analyze(
+            "en-US",
+            ("en-US", ReswTestHelpers.CreateResw(
+                ("FileCount_One", "One file", "#Format[Plural Int count]"),
+                ("FileCount_Other", "{0} files", null))),
+            ("fr", ReswTestHelpers.CreateResw(
+                ("FileCount_One", "{0} fichier", null),
+                ("FileCount_Other", "{0} fichiers", null))));
+
+        Assert.Empty(diagnostics);
+    }
+
+    [Fact]
+    public void PlaceholderMismatch_IsReportedWhenATranslationSubstitutesTheWrongArgument()
+    {
+        var diagnostics = ReswTestHelpers.Analyze(
+            "en-US",
+            ("en-US", ReswTestHelpers.CreateResw(("Treat", "give {0} biscuits to {2}", "#Format[Int count, Variant petType, String petName]"))),
+            ("fr", ReswTestHelpers.CreateResw(("Treat", "donnez {0} biscuits à {1}", null))));
+
+        var diagnostic = Assert.Single(diagnostics);
+
+        Assert.Equal("RESWP0006", diagnostic.Id);
+        Assert.Contains("{2}", diagnostic.GetMessage());
+    }
+
+    [Fact]
+    public void FormattingProblems_AreNotReportedForATagThatTheGeneratorCannotResolve()
+    {
+        // A Reference() pointing at a pluralized resource cannot be resolved, so the generator discards the whole
+        // tag and emits the value unformatted: nothing about it can throw, and its braces are literal.
+        var diagnostics = ReswTestHelpers.Analyze(
+            "en-US",
+            ("en-US", ReswTestHelpers.CreateResw(
+                ("FileCount_One", "{0} file", "#Format[Plural Int count]"),
+                ("FileCount_Other", "{0} files", null),
+                ("Message", "{0} and {1} and {2}", "#Format[FileCount_One(), String other]"))));
+
+        Assert.Empty(diagnostics);
+    }
+
+    [Fact]
     public void UndeclaredFormatParameter_IsReportedWhenAValueUsesMoreParametersThanDeclared()
     {
         var diagnostics = ReswTestHelpers.Analyze(
@@ -193,6 +239,55 @@ public class ResourceDiagnostics
 
         Assert.Equal("RESWP0008", diagnostic.Id);
         Assert.Contains("Treat_Variant2", diagnostic.GetMessage());
+    }
+
+    [Fact]
+    public void MissingPluralForms_AreNotReportedForAResourceThatOnlyExistsInATranslation()
+    {
+        // A resource left behind in a translation after the default language dropped it generates no member, so
+        // its plural forms are never looked up.
+        var diagnostics = ReswTestHelpers.Analyze(
+            "en-US",
+            ("en-US", ReswTestHelpers.CreateResw(("Welcome", "Welcome!", null))),
+            ("pl", ReswTestHelpers.CreateResw(("Orphan_One", "{0} plik", null))));
+
+        Assert.Empty(diagnostics);
+    }
+
+    [Fact]
+    public void MissingPluralForms_DoNotIncludeZeroWhenTheResourceHasAnEmptyState()
+    {
+        // GetPlural short circuits a zero quantity to the _None form, and the Arabic provider only returns the
+        // zero category for a quantity that is itself zero, so _Zero is unreachable here.
+        var diagnostics = ReswTestHelpers.Analyze(
+            "ar",
+            ("ar", ReswTestHelpers.CreateResw(
+                ("FileCount_None", "لا ملفات", "#Format[Plural Int count]"),
+                ("FileCount_One", "{0}", null),
+                ("FileCount_Two", "{0}", null),
+                ("FileCount_Few", "{0}", null),
+                ("FileCount_Many", "{0}", null),
+                ("FileCount_Other", "{0}", null))));
+
+        Assert.Empty(diagnostics);
+    }
+
+    [Fact]
+    public void MissingPluralForms_StillIncludeZeroForALanguageThatUsesItForOtherQuantities()
+    {
+        // The Latvian provider returns the zero category for quantities such as 11 or 20 as well, so the _None
+        // form does not make _Zero unreachable.
+        var diagnostics = ReswTestHelpers.Analyze(
+            "lv",
+            ("lv", ReswTestHelpers.CreateResw(
+                ("FileCount_None", "Nav failu", "#Format[Plural Int count]"),
+                ("FileCount_One", "{0} fails", null),
+                ("FileCount_Other", "{0} faili", null))));
+
+        var diagnostic = Assert.Single(diagnostics);
+
+        Assert.Equal("RESWP0008", diagnostic.Id);
+        Assert.Contains("'_Zero'", diagnostic.GetMessage());
     }
 
     [Fact]

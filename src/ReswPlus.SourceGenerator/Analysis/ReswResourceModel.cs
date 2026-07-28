@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -65,8 +66,10 @@ internal sealed class ReswResourceModel
         Document = document;
         Members = members;
 
-        _membersByName = new Dictionary<string, ReswMember>();
-        _entriesByKey = new Dictionary<string, ReswEntry>();
+        // Resource lookup is case insensitive, so a resource is identified the same way here: it is how the
+        // runtime matches a plural form or a translation back to the resource the generated member reads.
+        _membersByName = new Dictionary<string, ReswMember>(StringComparer.OrdinalIgnoreCase);
+        _entriesByKey = new Dictionary<string, ReswEntry>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var member in members)
         {
@@ -163,11 +166,13 @@ internal sealed class ReswResourceModel
 
         foreach (var item in basicItems)
         {
+            // The generator resolves the references of a plain resource against the same set: ReswClassGenerator
+            // narrows its own list of items down to the ones left after grouping before it parses their tags.
             members.Add(new ReswMember(
                 item.Key,
                 isPlural: false,
                 [entriesByItem[item]],
-                CountFormatParameters(item.Key, item.Comment, stringItems, resourceFileName)));
+                CountFormatParameters(item.Key, item.Comment, basicItems, resourceFileName)));
         }
 
         return new ReswResourceModel(

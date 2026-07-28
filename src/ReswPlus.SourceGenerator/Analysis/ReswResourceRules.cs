@@ -80,7 +80,7 @@ internal static class ReswResourceRules
     private static void AnalyzeDocument(ReswResourceModel model, ReswResourceModel defaultModel, Action<Diagnostic> reportDiagnostic)
     {
         ReportDuplicateMembers(model, reportDiagnostic);
-        ReportMissingPluralForms(model, reportDiagnostic);
+        ReportMissingPluralForms(model, defaultModel, reportDiagnostic);
         ReportFormattingProblems(model, defaultModel, reportDiagnostic);
     }
 
@@ -120,17 +120,19 @@ internal static class ReswResourceRules
     /// A missing form is not a build failure: the lookup simply returns an empty string at runtime, which makes
     /// this the kind of problem that ships unnoticed.
     /// </remarks>
-    private static void ReportMissingPluralForms(ReswResourceModel model, Action<Diagnostic> reportDiagnostic)
+    private static void ReportMissingPluralForms(ReswResourceModel model, ReswResourceModel defaultModel, Action<Diagnostic> reportDiagnostic)
     {
         if (model.Document.Language is not { Length: > 0 } language ||
-            PluralFormsRetriever.RetrievePluralCategoriesForLanguage(language) is not { } requiredCategories)
+            PluralFormsRetriever.RetrievePluralFormForLanguage(language) is not { } pluralForm)
         {
             return;
         }
 
         foreach (var member in model.Members)
         {
-            if (!member.IsPlural)
+            // A resource left behind in a translation after the default language dropped it generates nothing,
+            // so its plural forms are never looked up and its missing ones don't matter.
+            if (!member.IsPlural || !defaultModel.TryGetMember(member.Name, out var defaultMember) || !defaultMember.IsPlural)
             {
                 continue;
             }
@@ -139,7 +141,12 @@ internal static class ReswResourceRules
             // the full set of plural forms of the language.
             foreach (var declension in GetDeclensions(member))
             {
-                var missingCategories = requiredCategories
+                // GetPlural short circuits a zero quantity to the _None form when the resource declares one, so
+                // for a language whose provider only returns Zero for a zero quantity the _Zero form is dead.
+                var hasNoneForm = model.TryGetEntry($"{declension.Prefix}_None", out _);
+
+                var missingCategories = pluralForm.Categories
+                    .Where(category => !(category == PluralCategory.Zero && hasNoneForm && pluralForm.ZeroIsOnlyForZeroQuantity))
                     .Where(category => !model.TryGetEntry($"{declension.Prefix}_{category}", out _))
                     .ToArray();
 
@@ -205,8 +212,18 @@ internal static class ReswResourceRules
                 // the default language has nothing to be compared with.
                 if (isDefaultLanguage ||
                     !defaultModel.TryGetEntry(entry.Key, out var defaultEntry) ||
-                    !CompositeFormatString.TryGetArgumentIndexes(defaultEntry.Value, out var defaultIndexes) ||
-                    indexes.SetEquals(defaultIndexes))
+                    !CompositeFormatString.TryGetArgumentIndexes(defaultEntry.Value, out var defaultIndexes))
+                {
+                    continue;
+                }
+
+                // A translation is free to use more placeholders than the default language: string.Format ignores
+                // the arguments a format string doesn't reference, and the indexes that have no matching argument
+                // at all are already covered above. Only the placeholders a translation drops are a problem, since
+                // they silently remove information from the localized string.
+                var missingPlaceholders = defaultIndexes.Where(index => !indexes.Contains(index)).ToArray();
+
+                if (missingPlaceholders.Length == 0)
                 {
                     continue;
                 }
@@ -215,8 +232,7 @@ internal static class ReswResourceRules
                     Diagnostics.PlaceholderMismatch,
                     entry.Location,
                     entry.Key,
-                    DescribePlaceholders(indexes),
-                    DescribePlaceholders(defaultIndexes)));
+                    DescribePlaceholders(missingPlaceholders)));
             }
         }
     }
@@ -272,10 +288,15 @@ internal static class ReswResourceRules
         return locationsByPrefix.Select(pair => (pair.Key, pair.Value));
     }
 
-    private static string DescribePlaceholders(IEnumerable<int> indexes)
+    /// <summary>
+    /// Describes a set of placeholders the way they appear in the value of a resource.
+    /// </summary>
+    /// <param name="indexes">The argument indexes to describe, which must not be empty.</param>
+    /// <returns>The description of the placeholders, to embed in a diagnostic message.</returns>
+    private static string DescribePlaceholders(IReadOnlyList<int> indexes)
     {
-        var placeholders = indexes.Select(index => $"{{{index.ToString(CultureInfo.InvariantCulture)}}}").ToArray();
+        var placeholders = indexes.Select(index => $"{{{index.ToString(CultureInfo.InvariantCulture)}}}");
 
-        return placeholders.Length == 0 ? "no placeholder" : string.Join(", ", placeholders);
+        return $"the placeholder{(indexes.Count == 1 ? "" : "s")} {string.Join(", ", placeholders)}";
     }
 }
