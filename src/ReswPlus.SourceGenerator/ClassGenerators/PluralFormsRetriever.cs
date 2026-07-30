@@ -31,6 +31,17 @@ internal sealed class PluralFormsRetriever
         public PluralCategory[] Categories { get; set; }
 
         /// <summary>
+        /// Gets the categories of <see cref="Categories"/> that a resource does not have to define.
+        /// </summary>
+        /// <remarks>
+        /// A category belongs here when the provider only returns it for a quantity an app is very unlikely to
+        /// display, so that requiring it would warn about a form almost no resource set has a use for. The
+        /// lookup falls back to the <c>_Other</c> form when it isn't declared, which is the wording the
+        /// resource set already ships for that quantity.
+        /// </remarks>
+        public PluralCategory[] OptionalCategories { get; set; } = [];
+
+        /// <summary>
         /// Gets whether the provider of this form only returns <see cref="PluralCategory.Zero"/> for a quantity
         /// that is itself zero.
         /// </summary>
@@ -87,10 +98,28 @@ internal sealed class PluralFormsRetriever
             [PluralCategory.One, PluralCategory.Other],
             [
                 "hy", // Armenian
-                "fr", // French
                 "kab" // Kabyle
             ]
         ),
+        new PluralForm(
+            "ZeroToTwoExcludedOrMillions",
+            [PluralCategory.One, PluralCategory.Many, PluralCategory.Other],
+            [
+                "fr" // French
+            ]
+        )
+        { OptionalCategories = [PluralCategory.Many] },
+        new PluralForm(
+            "OnlyOneOrMillions",
+            [PluralCategory.One, PluralCategory.Many, PluralCategory.Other],
+            [
+                "ca", // Catalan
+                "it", // Italian
+                "pt", // Portuguese
+                "es"  // Spanish
+            ]
+        )
+        { OptionalCategories = [PluralCategory.Many] },
         new PluralForm(
             "OnlyOne",
             [PluralCategory.One, PluralCategory.Other],
@@ -105,7 +134,6 @@ internal sealed class PluralFormsRetriever
                 "bez", // Bena
                 "brx", // Bodo
                 "bg", // Bulgarian
-                "ca", // Catalan
                 "chr", // Cherokee
                 "cgg", // Chiga
                 "dv", // Divehi
@@ -113,7 +141,6 @@ internal sealed class PluralFormsRetriever
                 "en", // English
                 "eo", // Esperanto
                 "et", // Estonian
-                "pt", // European Portuguese
                 "ee", // Ewe
                 "fo", // Faroese
                 "fi", // Finnish
@@ -126,7 +153,6 @@ internal sealed class PluralFormsRetriever
                 "ha", // Hausa
                 "haw", // Hawaiian
                 "hu", // Hungarian
-                "it", // Italian
                 "kaj", // Jju
                 "kkj", // Kako
                 "kl", // Kalaallisut
@@ -168,7 +194,6 @@ internal sealed class PluralFormsRetriever
                 "ckb", // Sorani Kurdish
                 "nr", // South Ndebele
                 "st", // Southern Sotho
-                "es", // Spanish
                 "sw", // Swahili
                 "ss", // Swati
                 "sv", // Swedish

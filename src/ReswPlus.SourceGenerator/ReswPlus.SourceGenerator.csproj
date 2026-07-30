@@ -42,6 +42,7 @@
       <EmbeddedResource Include="Templates\Plurals\OneOrTwoProvider.txt" />
       <EmbeddedResource Include="Templates\Plurals\OneOrZeroProvider.txt" />
       <EmbeddedResource Include="Templates\Plurals\OneOrZeroToOneExcludedProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\OnlyOneOrMillionsProvider.txt" />
       <EmbeddedResource Include="Templates\Plurals\OnlyOneProvider.txt" />
       <EmbeddedResource Include="Templates\Plurals\OtherProvider.txt" />
       <EmbeddedResource Include="Templates\Plurals\PolishProvider.txt" />
@@ -53,6 +54,7 @@
       <EmbeddedResource Include="Templates\Plurals\TachelhitProvider.txt" />
       <EmbeddedResource Include="Templates\Plurals\WelshProvider.txt" />
       <EmbeddedResource Include="Templates\Plurals\ZeroToOneProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\ZeroToTwoExcludedOrMillionsProvider.txt" />
       <EmbeddedResource Include="Templates\Plurals\ZeroToTwoExcludedProvider.txt" />
     </ItemGroup>
     <ItemGroup>

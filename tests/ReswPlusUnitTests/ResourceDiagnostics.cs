@@ -222,6 +222,49 @@ public class ResourceDiagnostics
         Assert.Empty(diagnostics);
     }
 
+    [Theory]
+    // The Romance languages have a 'many' category, but it only applies to exact multiples of a million.
+    [InlineData("es")]
+    [InlineData("ca")]
+    [InlineData("it")]
+    [InlineData("pt")]
+    [InlineData("fr")]
+    public void MissingPluralForms_AreNotReportedForACategoryAResourceDoesNotHaveToDefine(string language)
+    {
+        // Requiring '_Many' would warn about every resource set of these languages for a quantity almost none
+        // of them display, and the lookup falls back to '_Other', which is the wording they already ship.
+        var diagnostics = ReswTestHelpers.Analyze(
+            "en-US",
+            ("en-US", ReswTestHelpers.CreateResw(
+                ("FileCount_One", "{0} file", "#Format[Plural Int count]"),
+                ("FileCount_Other", "{0} files", null))),
+            (language, ReswTestHelpers.CreateResw(
+                ("FileCount_One", "{0} archivo", null),
+                ("FileCount_Other", "{0} archivos", null))));
+
+        Assert.Empty(diagnostics);
+    }
+
+    [Fact]
+    public void MissingPluralForms_AreStillReportedForACategoryAResourceHasToDefine()
+    {
+        // The exemption above is per category, so a language that genuinely needs '_Many' still gets told.
+        var diagnostics = ReswTestHelpers.Analyze(
+            "en-US",
+            ("en-US", ReswTestHelpers.CreateResw(
+                ("FileCount_One", "{0} file", "#Format[Plural Int count]"),
+                ("FileCount_Other", "{0} files", null))),
+            ("pl", ReswTestHelpers.CreateResw(
+                ("FileCount_One", "{0} plik", null),
+                ("FileCount_Few", "{0} pliki", null),
+                ("FileCount_Other", "{0} pliku", null))));
+
+        var diagnostic = Assert.Single(diagnostics);
+
+        Assert.Equal("RESWP0008", diagnostic.Id);
+        Assert.Contains("'_Many'", diagnostic.GetMessage());
+    }
+
     [Fact]
     public void MissingPluralForms_AreReportedPerVariantOfAPluralizedResource()
     {

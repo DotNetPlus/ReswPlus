@@ -165,6 +165,46 @@ public class PluralProviders
     }
 
     [Theory]
+    // Catalan, Italian, Portuguese and Spanish select 'one' for exactly 1.
+    [InlineData(1, "ONE")]
+    // 'many' is the exact non-zero multiples of a million.
+    [InlineData(1000000, "MANY")]
+    [InlineData(2000000, "MANY")]
+    [InlineData(1000000000, "MANY")]
+    // Everything else is 'other', including zero and the quantities around a million.
+    [InlineData(0, "OTHER")]
+    [InlineData(2, "OTHER")]
+    [InlineData(100, "OTHER")]
+    [InlineData(999999, "OTHER")]
+    [InlineData(1000001, "OTHER")]
+    [InlineData(1000000.5, "OTHER")]
+    [InlineData(0.5, "OTHER")]
+    public void OnlyOneOrMillions(double number, string expected)
+    {
+        Assert.Equal(expected, PluralProviderHost.GetProvider("OnlyOneOrMillions")(number));
+    }
+
+    [Theory]
+    // French selects 'one' for an integer part of 0 or 1.
+    [InlineData(0, "ONE")]
+    [InlineData(1, "ONE")]
+    [InlineData(0.5, "ONE")]
+    [InlineData(1.5, "ONE")]
+    // 'many' is the exact non-zero multiples of a million.
+    [InlineData(1000000, "MANY")]
+    [InlineData(2000000, "MANY")]
+    // Everything else is 'other'.
+    [InlineData(2, "OTHER")]
+    [InlineData(100, "OTHER")]
+    [InlineData(999999, "OTHER")]
+    [InlineData(1000001, "OTHER")]
+    [InlineData(1000000.5, "OTHER")]
+    public void ZeroToTwoExcludedOrMillions(double number, string expected)
+    {
+        Assert.Equal(expected, PluralProviderHost.GetProvider("ZeroToTwoExcludedOrMillions")(number));
+    }
+
+    [Theory]
     // i = 1 and v = 0 is 'one'.
     [InlineData(1, "ONE")]
     // v != 0, or n = 0, or n % 100 in 1..19 is 'few'. 101 is therefore 'few' under current CLDR, which the QA
