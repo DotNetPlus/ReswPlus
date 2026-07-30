@@ -162,13 +162,19 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
                                                 where defaultFile != null
                                                 select defaultFile).ToArray();
 
-            // Gather all distinct languages. The folder of a resource is reduced to its language exactly the
+            // Gather all distinct languages, keeping a resource file for each so that a diagnostic about a
+            // language has somewhere to point. The folder of a resource is reduced to its language exactly the
             // way the generated code reduces the language of the app, so that the two always agree: a
             // culture-sensitive ToLower would turn 'IS-IS' into 'ıs' under Turkish and never match again.
-            var allLanguages = allResourceFiles
-                .Select(f => Path.GetFileName(Path.GetDirectoryName(f.Path)).Split('-', '_')[0].ToLowerInvariant())
-                .Distinct()
-                .ToArray();
+            var resourceFilePerLanguage = new Dictionary<string, string>(StringComparer.Ordinal);
+            foreach (var resourceFile in allResourceFiles)
+            {
+                var language = Path.GetFileName(Path.GetDirectoryName(resourceFile.Path)).Split('-', '_')[0].ToLowerInvariant();
+                if (!resourceFilePerLanguage.ContainsKey(language))
+                {
+                    resourceFilePerLanguage.Add(language, resourceFile.Path);
+                }
+            }
 
             // Process each default resource file.
             foreach (var filePath in defaultLanguageResourceFiles)
@@ -240,7 +246,7 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
                     AddSourceFromResource(spc, emittedSources, $"{assemblyName}.Templates.Plurals.PluralTypeEnum.txt", "PluralTypeEnum");
                     AddSourceFromResource(spc, emittedSources, $"{assemblyName}.Templates.Utils.IntExt.txt", "IntExt");
                     AddSourceFromResource(spc, emittedSources, $"{assemblyName}.Templates.Utils.DoubleExt.txt", "DoubleExt");
-                    AddLanguageSupport(spc, emittedSources, allLanguages, useApplicationLanguages, appType);
+                    AddLanguageSupport(spc, emittedSources, resourceFilePerLanguage, useApplicationLanguages, appType);
                 }
             }
         });
@@ -271,7 +277,8 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
     /// <summary>
     /// Adds language support sources for pluralization based on the provided languages.
     /// </summary>
-    private static void AddLanguageSupport(SourceProductionContext spc, HashSet<string> emittedSources, string[] languagesSupported, bool useApplicationLanguages, AppType appType)
+    /// <param name="resourceFilePerLanguage">A resource file of each language the project holds.</param>
+    private static void AddLanguageSupport(SourceProductionContext spc, HashSet<string> emittedSources, Dictionary<string, string> resourceFilePerLanguage, bool useApplicationLanguages, AppType appType)
     {
         // The whole plural support is shared by every resource file of the project, so it is built once.
         if (!emittedSources.Add($"ResourceLoaderExtension{GeneratedCode.FileExtension}"))
@@ -286,7 +293,7 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
         // that form are mapped to it explicitly, so it is emitted once up front and reused.
         AddSourceFromResource(spc, emittedSources, $"{assemblyName}.Templates.Plurals.OtherProvider.txt", "OtherProvider");
 
-        foreach (var pluralFile in PluralFormsRetriever.RetrievePluralFormsForLanguages(languagesSupported))
+        foreach (var pluralFile in PluralFormsRetriever.RetrievePluralFormsForLanguages(resourceFilePerLanguage.Keys))
         {
             var resourceName = $"{assemblyName}.Templates.Plurals.{pluralFile.Id}Provider.txt";
             AddSourceFromResource(spc, emittedSources, resourceName, $"{pluralFile.Id}Provider");
@@ -300,10 +307,14 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
         }
 
         // Report the languages that have no rules, so that falling back to a single plural form is a visible
-        // choice rather than a silent one.
-        foreach (var language in PluralFormsRetriever.RetrieveLanguagesWithoutPluralForm(languagesSupported))
+        // choice rather than a silent one. Each one is reported against a resource file of that language,
+        // rather than against nothing, so that it has a place to point at and can be configured per file.
+        foreach (var language in PluralFormsRetriever.RetrieveLanguagesWithoutPluralForm(resourceFilePerLanguage.Keys))
         {
-            spc.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnknownPluralLanguage, Location.None, language));
+            spc.ReportDiagnostic(Diagnostic.Create(
+                Diagnostics.UnknownPluralLanguage,
+                CreateFileLocation(resourceFilePerLanguage[language]),
+                language));
         }
 
         // Build and add the ResourceLoaderExtension with the plural selector injected.
@@ -313,6 +324,18 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
             .Replace("{{PluralProviderSelector}}", pluralSelectorCode)
             .Replace("{{PluralLanguageResolver}}", PluralLanguageResolvers.GetResolver(useApplicationLanguages, appType));
         spc.AddSource($"ResourceLoaderExtension{GeneratedCode.FileExtension}", SourceText.From(GeneratedCode.AddFileHeader(resourceLoaderCode), Encoding.UTF8));
+    }
+
+    /// <summary>
+    /// Creates a location pointing at the start of a file, so that a diagnostic about it has somewhere to go.
+    /// </summary>
+    /// <param name="path">The path of the file.</param>
+    /// <returns>A location at the start of the file.</returns>
+    private static Location CreateFileLocation(string path)
+    {
+        var start = new LinePosition(0, 0);
+
+        return Location.Create(path, new TextSpan(0, 0), new LinePositionSpan(start, start));
     }
 
     /// <summary>
