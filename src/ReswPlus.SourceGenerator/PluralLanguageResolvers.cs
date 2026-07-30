@@ -36,7 +36,7 @@ internal static class PluralLanguageResolvers
                             var applicationLanguages = global::Windows.Globalization.ApplicationLanguages.Languages;
                             if (applicationLanguages != null && applicationLanguages.Count != 0)
                             {
-                                var applicationLanguage = ReadTwoLetterLanguage(applicationLanguages[0]);
+                                var applicationLanguage = ReadLanguage(applicationLanguages[0]);
                                 if (applicationLanguage != null)
                                 {
                                     return applicationLanguage;
@@ -61,7 +61,7 @@ internal static class PluralLanguageResolvers
     private const string WindowsAppSDKApplicationLanguages = """
                         try
                         {
-                            var languageOverride = ReadTwoLetterLanguage(
+                            var languageOverride = ReadLanguage(
                                 global::Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
                             if (languageOverride != null)
                             {
@@ -71,7 +71,7 @@ internal static class PluralLanguageResolvers
                             var applicationLanguages = global::Windows.Globalization.ApplicationLanguages.Languages;
                             if (applicationLanguages != null && applicationLanguages.Count != 0)
                             {
-                                var applicationLanguage = ReadTwoLetterLanguage(applicationLanguages[0]);
+                                var applicationLanguage = ReadLanguage(applicationLanguages[0]);
                                 if (applicationLanguage != null)
                                 {
                                     return applicationLanguage;

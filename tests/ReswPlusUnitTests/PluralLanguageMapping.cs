@@ -15,6 +15,7 @@ public class PluralLanguageMapping
     [InlineData("zh")]
     [InlineData("ja")]
     [InlineData("ko")]
+    [InlineData("vi")]
     [InlineData("id")]
     [InlineData("ms")]
     [InlineData("th")]
@@ -53,9 +54,10 @@ public class PluralLanguageMapping
     [InlineData("es", "OnlyOneOrMillions")]
     [InlineData("ca", "OnlyOneOrMillions")]
     [InlineData("it", "OnlyOneOrMillions")]
-    // Portuguese shares its 'one' rule with French rather than with the other Romance languages: CLDR gives
-    // it 'i = 0..1', so 0 and 1.5 are 'one' there and 'other' in Catalan, Italian and Spanish.
-    [InlineData("pt", "ZeroToTwoExcludedOrMillions")]
+    // Portuguese keeps this rule even though CLDR gives 'pt' the one of French, because a resource folder
+    // and the language of the app are both reduced to their primary subtag, so 'pt-PT' and 'pt-BR' cannot be
+    // told apart. This is the rule of 'pt-PT'.
+    [InlineData("pt", "OnlyOneOrMillions")]
     [InlineData("fr", "ZeroToTwoExcludedOrMillions")]
     // The languages that share their rules with them keep the providers that don't.
     [InlineData("en", "OnlyOne")]
@@ -67,8 +69,6 @@ public class PluralLanguageMapping
     [InlineData("mr", "OnlyOne")]
     // Samburu is 'saq'. It was listed as 'sag', which is not a language code, so its rules never applied.
     [InlineData("saq", "OnlyOne")]
-    // Vietnamese has had two plural forms since CLDR 34, so it is not one of the single-form languages.
-    [InlineData("vi", "ZeroToOne")]
     public void LanguagesUseTheExpectedProvider(string language, string expectedProviderId)
     {
         var pluralForm = Assert.Single(PluralFormsRetriever.RetrievePluralFormsForLanguages([language]));

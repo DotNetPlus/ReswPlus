@@ -60,7 +60,7 @@ By default the plural rules are picked with the .NET UI culture, which comes fro
 </PropertyGroup>
 ```
 
-This is opt-in so that existing apps keep the behavior they were built against. Apps that let users pick a language in-app, through `ApplicationLanguages.PrimaryLanguageOverride`, should turn it on. A WinAppSDK project reads the override directly, so it also works when the app runs unpackaged, and needs Windows App SDK 1.2 or later.
+This is opt-in so that existing apps keep the behavior they were built against. Apps that let users pick a language in-app, through `ApplicationLanguages.PrimaryLanguageOverride`, should turn it on. A WinAppSDK project reads the override directly, so it also works when the app runs unpackaged, and needs Windows App SDK 1.6 or later.
 
 ### String Formatting
 ReswPlus simplifies ViewModels and Views by handling string formatting directly and generating **strongly typed methods**.

@@ -179,4 +179,23 @@ public class PluralLanguageSource
             Assert.Equal("few", host.GetPlural(Forms, "FileCount", 2));
         });
     }
+
+    [Theory]
+    // A tag is reduced to its primary subtag, which is what the generated selector keys languages by.
+    [InlineData("pl")]
+    [InlineData("pl-PL")]
+    [InlineData("PL-pl")]
+    // A valid tag that CultureInfo rejects still has a readable language.
+    [InlineData("pl-rozaj-biske-1994")]
+    public void TheLanguageIsReadFromTheTagItself(string languageTag)
+    {
+        var host = ResourceLoaderExtensionHost.Create(EnglishAndPolish, useApplicationLanguages: true);
+
+        host.SetApplicationLanguages(languageTag);
+
+        ResourceLoaderExtensionHost.WithUICulture("en-US", () =>
+        {
+            Assert.Equal("few", host.GetPlural(Forms, "FileCount", 2));
+        });
+    }
 }

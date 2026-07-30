@@ -88,7 +88,6 @@ internal sealed class PluralFormsRetriever
                 "hi", // Hindi
                 "kn", // Kannada
                 "fa", // Persian
-                "vi", // Vietnamese
                 "zu"  // Zulu
             ]
         ),
@@ -105,8 +104,7 @@ internal sealed class PluralFormsRetriever
             "ZeroToTwoExcludedOrMillions",
             [PluralCategory.One, PluralCategory.Many, PluralCategory.Other],
             [
-                "fr", // French
-                "pt"  // Portuguese
+                "fr" // French
             ]
         )
         { OptionalCategories = [PluralCategory.Many] },
@@ -116,6 +114,11 @@ internal sealed class PluralFormsRetriever
             [
                 "ca", // Catalan
                 "it", // Italian
+                // Portuguese is left here even though CLDR gives 'pt' the rule of French, because the folder
+                // of a resource and the language of the app are both reduced to their primary subtag: moving
+                // it would put 'pt-PT', whose rule is this one, on the rule of 'pt-BR'. Telling them apart
+                // needs the plural rules to be keyed by the whole tag.
+                "pt", // Portuguese
                 "es"  // Spanish
             ]
         )
@@ -438,9 +441,11 @@ internal sealed class PluralFormsRetriever
                 "id", // Indonesian
                 "ig", // Igbo
                 "ii", // Sichuan Yi
+                "in", // Indonesian, deprecated code
                 "ja", // Japanese
                 "jbo", // Lojban
                 "jv", // Javanese
+                "jw", // Javanese, deprecated code
                 "kde", // Makonde
                 "kea", // Kabuverdianu
                 "km", // Khmer
@@ -458,6 +463,7 @@ internal sealed class PluralFormsRetriever
                 "th", // Thai
                 "to", // Tongan
                 "tpi", // Tok Pisin
+                "vi", // Vietnamese
                 "wo", // Wolof
                 "yo", // Yoruba
                 "yue", // Cantonese

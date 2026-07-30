@@ -75,6 +75,10 @@ public class PluralProviders
     // A quantity small enough that .NET writes it in scientific notation still has its decimals read.
     [InlineData(0.000004, "OTHER")]
     [InlineData(0.000005, "ONE")]
+    [InlineData(4e-22, "OTHER")]
+    [InlineData(5e-22, "ONE")]
+    // The decimals are read from the shortest representation that round-trips, not from a rounded one.
+    [InlineData(0.12345678901234568, "ONE")]
     public void Filipino(double number, string expected)
     {
         Assert.Equal(expected, PluralProviderHost.GetProvider("Filipino")(number));
@@ -154,7 +158,10 @@ public class PluralProviders
     [InlineData(2.5, "MANY")]
     // Quantities .NET writes in scientific notation still report their decimals correctly.
     [InlineData(0.000001, "MANY")]
+    [InlineData(1e-22, "MANY")]
     [InlineData(1.2e20, "OTHER")]
+    // A value just below a whole number keeps its decimals rather than being rounded up to it.
+    [InlineData(0.9999999999999999, "MANY")]
     public void Czech(double number, string expected)
     {
         Assert.Equal(expected, PluralProviderHost.GetProvider("Czech")(number));
@@ -249,5 +256,24 @@ public class PluralProviders
     public void Romanian(double number, string expected)
     {
         Assert.Equal(expected, PluralProviderHost.GetProvider("Romanian")(number));
+    }
+
+    [Theory]
+    // Every provider reads its integer part by truncating, so a quantity past the 32-bit range selects the
+    // same form as the equivalent small one instead of overflowing into another.
+    [InlineData("Icelandic", 21, "ONE")]
+    [InlineData("Icelandic", 2147483651d, "ONE")]
+    [InlineData("Croat", 21, "ONE")]
+    [InlineData("Croat", 2147483651d, "ONE")]
+    [InlineData("Croat", 2147483652d, "FEW")]
+    [InlineData("Hebrew", 10, "MANY")]
+    [InlineData("Hebrew", 2147483650d, "MANY")]
+    [InlineData("Manx", 2147483651d, "ONE")]
+    [InlineData("Maltese", 2147483602d, "FEW")]
+    [InlineData("ScottishGaelic", 2147483651d, "OTHER")]
+    [InlineData("Welsh", 2147483651d, "OTHER")]
+    public void TheIntegerPartIsReadPastTheThirtyTwoBitRange(string providerId, double number, string expected)
+    {
+        Assert.Equal(expected, PluralProviderHost.GetProvider(providerId)(number));
     }
 }
