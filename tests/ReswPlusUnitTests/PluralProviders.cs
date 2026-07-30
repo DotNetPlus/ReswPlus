@@ -79,6 +79,11 @@ public class PluralProviders
     [InlineData(5e-22, "ONE")]
     // The decimals are read from the shortest representation that round-trips, not from a rounded one.
     [InlineData(0.12345678901234568, "ONE")]
+    // The same quantity has to select the same form whichever runtime reads it, so the representation is
+    // searched for rather than being asked of a format whose result differs between them.
+    [InlineData(664496.3397013473, "ONE")]
+    [InlineData(5e-324, "ONE")]
+    [InlineData(1e-300, "ONE")]
     public void Filipino(double number, string expected)
     {
         Assert.Equal(expected, PluralProviderHost.GetProvider("Filipino")(number));

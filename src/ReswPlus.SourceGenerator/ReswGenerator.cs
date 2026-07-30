@@ -162,9 +162,11 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
                                                 where defaultFile != null
                                                 select defaultFile).ToArray();
 
-            // Gather all distinct languages.
+            // Gather all distinct languages. The folder of a resource is reduced to its language exactly the
+            // way the generated code reduces the language of the app, so that the two always agree: a
+            // culture-sensitive ToLower would turn 'IS-IS' into 'ıs' under Turkish and never match again.
             var allLanguages = allResourceFiles
-                .Select(f => Path.GetFileName(Path.GetDirectoryName(f.Path)).Split('-')[0].ToLower())
+                .Select(f => Path.GetFileName(Path.GetDirectoryName(f.Path)).Split('-', '_')[0].ToLowerInvariant())
                 .Distinct()
                 .ToArray();
 
