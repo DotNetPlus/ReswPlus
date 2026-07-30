@@ -47,7 +47,8 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
             OutputType = GetOption(options.GlobalOptions, "build_property.OutputType"),
             ProjectTypeGuids = GetOption(options.GlobalOptions, "build_property.projecttypeguids"),
             DefaultLanguage = GetOption(options.GlobalOptions, "build_property.DefaultLanguage"),
-            RootNamespace = GetOption(options.GlobalOptions, "build_property.RootNamespace")
+            RootNamespace = GetOption(options.GlobalOptions, "build_property.RootNamespace"),
+            UseApplicationLanguages = GetOption(options.GlobalOptions, "build_property.ReswPlusUseApplicationLanguages")
         });
 
         // Provider for additional files with .resw extension.
@@ -120,6 +121,11 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
             // Adding the same hint name twice throws, which used to make the generator produce nothing at all
             // for a project holding more than one .resw that uses macros or plurals.
             var emittedSources = new HashSet<string>(StringComparer.Ordinal);
+
+            // Opt in to reading the plural language from the app runtime language list, the same list the
+            // resources themselves are resolved against.
+            var useApplicationLanguages =
+                bool.TryParse(options.UseApplicationLanguages, out var parsedUseApplicationLanguages) && parsedUseApplicationLanguages;
 
             switch (appType)
             {
@@ -232,7 +238,7 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
                     AddSourceFromResource(spc, emittedSources, $"{assemblyName}.Templates.Plurals.PluralTypeEnum.txt", "PluralTypeEnum");
                     AddSourceFromResource(spc, emittedSources, $"{assemblyName}.Templates.Utils.IntExt.txt", "IntExt");
                     AddSourceFromResource(spc, emittedSources, $"{assemblyName}.Templates.Utils.DoubleExt.txt", "DoubleExt");
-                    AddLanguageSupport(spc, emittedSources, allLanguages);
+                    AddLanguageSupport(spc, emittedSources, allLanguages, useApplicationLanguages);
                 }
             }
         });
@@ -263,7 +269,7 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
     /// <summary>
     /// Adds language support sources for pluralization based on the provided languages.
     /// </summary>
-    private static void AddLanguageSupport(SourceProductionContext spc, HashSet<string> emittedSources, string[] languagesSupported)
+    private static void AddLanguageSupport(SourceProductionContext spc, HashSet<string> emittedSources, string[] languagesSupported, bool useApplicationLanguages)
     {
         // The whole plural support is shared by every resource file of the project, so it is built once.
         if (!emittedSources.Add($"ResourceLoaderExtension{GeneratedCode.FileExtension}"))
@@ -301,7 +307,9 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
         // Build and add the ResourceLoaderExtension with the plural selector injected.
         var resourceLoaderResourceName = $"{assemblyName}.Templates.Plurals.ResourceLoaderExtension.txt";
         var resourceLoaderTemplate = ReadAllText(Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceLoaderResourceName));
-        var resourceLoaderCode = resourceLoaderTemplate.Replace("{{PluralProviderSelector}}", pluralSelectorCode);
+        var resourceLoaderCode = resourceLoaderTemplate
+            .Replace("{{PluralProviderSelector}}", pluralSelectorCode)
+            .Replace("{{PluralLanguageResolver}}", PluralLanguageResolvers.GetResolver(useApplicationLanguages));
         spc.AddSource($"ResourceLoaderExtension{GeneratedCode.FileExtension}", SourceText.From(GeneratedCode.AddFileHeader(resourceLoaderCode), Encoding.UTF8));
     }
 

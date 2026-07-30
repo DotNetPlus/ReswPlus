@@ -5,8 +5,11 @@
         <CompilerVisibleProperty Include="RootNamespace" />
         <CompilerVisibleProperty Include="DefaultLanguage" />
         <CompilerVisibleProperty Include="OutputType" />
+        <CompilerVisibleProperty Include="ReswPlusUseApplicationLanguages" />
     </ItemGroup>
     <PropertyGroup>
         <AdditionalFileItemNames>$(AdditionalFileItemNames);PRIResource</AdditionalFileItemNames>
+        <!-- Read the plural language from the app runtime language list instead of the .NET UI culture -->
+        <ReswPlusUseApplicationLanguages Condition="'$(ReswPlusUseApplicationLanguages)' == ''">false</ReswPlusUseApplicationLanguages>
     </PropertyGroup>
 </Project>
