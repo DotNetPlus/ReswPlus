@@ -15,7 +15,6 @@ public class PluralLanguageMapping
     [InlineData("zh")]
     [InlineData("ja")]
     [InlineData("ko")]
-    [InlineData("vi")]
     [InlineData("id")]
     [InlineData("ms")]
     [InlineData("th")]
@@ -54,12 +53,22 @@ public class PluralLanguageMapping
     [InlineData("es", "OnlyOneOrMillions")]
     [InlineData("ca", "OnlyOneOrMillions")]
     [InlineData("it", "OnlyOneOrMillions")]
-    [InlineData("pt", "OnlyOneOrMillions")]
+    // Portuguese shares its 'one' rule with French rather than with the other Romance languages: CLDR gives
+    // it 'i = 0..1', so 0 and 1.5 are 'one' there and 'other' in Catalan, Italian and Spanish.
+    [InlineData("pt", "ZeroToTwoExcludedOrMillions")]
     [InlineData("fr", "ZeroToTwoExcludedOrMillions")]
     // The languages that share their rules with them keep the providers that don't.
     [InlineData("en", "OnlyOne")]
     [InlineData("de", "OnlyOne")]
     [InlineData("hy", "ZeroToTwoExcluded")]
+    // Fulah selects 'one' for an integer part of 0 or 1, the same as Armenian, and not for 0 to 1 inclusive.
+    [InlineData("ff", "ZeroToTwoExcluded")]
+    // Marathi selects 'one' for exactly 1, so 0 and 0.5 are 'other' there.
+    [InlineData("mr", "OnlyOne")]
+    // Samburu is 'saq'. It was listed as 'sag', which is not a language code, so its rules never applied.
+    [InlineData("saq", "OnlyOne")]
+    // Vietnamese has had two plural forms since CLDR 34, so it is not one of the single-form languages.
+    [InlineData("vi", "ZeroToOne")]
     public void LanguagesUseTheExpectedProvider(string language, string expectedProviderId)
     {
         var pluralForm = Assert.Single(PluralFormsRetriever.RetrievePluralFormsForLanguages([language]));

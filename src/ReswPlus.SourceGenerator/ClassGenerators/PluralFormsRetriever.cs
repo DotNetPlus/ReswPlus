@@ -84,12 +84,11 @@ internal sealed class PluralFormsRetriever
             [
                 "am", // Amharic
                 "bn", // Bengali
-                "ff", // Fulah
                 "gu", // Gujarati
                 "hi", // Hindi
                 "kn", // Kannada
-                "mr", // Marathi
                 "fa", // Persian
+                "vi", // Vietnamese
                 "zu"  // Zulu
             ]
         ),
@@ -98,6 +97,7 @@ internal sealed class PluralFormsRetriever
             [PluralCategory.One, PluralCategory.Other],
             [
                 "hy", // Armenian
+                "ff", // Fulah
                 "kab" // Kabyle
             ]
         ),
@@ -105,7 +105,8 @@ internal sealed class PluralFormsRetriever
             "ZeroToTwoExcludedOrMillions",
             [PluralCategory.One, PluralCategory.Many, PluralCategory.Other],
             [
-                "fr" // French
+                "fr", // French
+                "pt"  // Portuguese
             ]
         )
         { OptionalCategories = [PluralCategory.Many] },
@@ -115,7 +116,6 @@ internal sealed class PluralFormsRetriever
             [
                 "ca", // Catalan
                 "it", // Italian
-                "pt", // Portuguese
                 "es"  // Spanish
             ]
         )
@@ -166,6 +166,7 @@ internal sealed class PluralFormsRetriever
                 "mas", // Masai
                 "mgo", // Meta'
                 "mn", // Mongolian
+                "mr", // Marathi
                 "nah", // Nahuatl
                 "ne", // Nepali
                 "nnh", // Ngiemboon
@@ -185,7 +186,7 @@ internal sealed class PluralFormsRetriever
                 "rof", // Rombo
                 "rwk", // Rwa
                 "ssy", // Saho
-                "sag", // Samburu
+                "saq", // Samburu
                 "seh", // Sena
                 "ksb", // Shambala
                 "sn", // Shona
@@ -424,23 +425,43 @@ internal sealed class PluralFormsRetriever
         ),
         // Languages with a single plural form. They are mapped explicitly, rather than being left to reach the
         // default branch of the generated selector, so that a language reaching that branch always means
-        // ReswPlus has no rules for it rather than that it genuinely has one form.
+        // ReswPlus has no rules for it rather than that it genuinely has one form. This is the complete set
+        // CLDR assigns to the 'other' category alone.
         new PluralForm(
             "Other",
             [PluralCategory.Other],
             [
-                "zh", // Chinese
+                "bm", // Bambara
+                "bo", // Tibetan
+                "dz", // Dzongkha
+                "hnj", // Hmong Njua
                 "id", // Indonesian
+                "ig", // Igbo
+                "ii", // Sichuan Yi
                 "ja", // Japanese
+                "jbo", // Lojban
+                "jv", // Javanese
+                "kde", // Makonde
+                "kea", // Kabuverdianu
                 "km", // Khmer
                 "ko", // Korean
+                "lkt", // Lakota
                 "lo", // Lao
                 "ms", // Malay
                 "my", // Burmese
+                "nqo", // N'Ko
+                "osa", // Osage
+                "sah", // Yakut
+                "ses", // Koyraboro Senni
+                "sg", // Sango
+                "su", // Sundanese
                 "th", // Thai
-                "bo", // Tibetan
-                "vi", // Vietnamese
-                "yue" // Cantonese
+                "to", // Tongan
+                "tpi", // Tok Pisin
+                "wo", // Wolof
+                "yo", // Yoruba
+                "yue", // Cantonese
+                "zh" // Chinese
             ]
         )
     ];
