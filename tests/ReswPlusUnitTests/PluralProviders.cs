@@ -34,6 +34,9 @@ public class PluralProviders
     [InlineData(0.5, "FEW")]
     [InlineData(1.5, "FEW")]
     [InlineData(5.5, "FEW")]
+    // The integer part is read without a 32-bit cast, which would overflow and pick the wrong form.
+    [InlineData(2147483701d, "ONE")]
+    [InlineData(2147483702d, "TWO")]
     public void Slovenian(double number, string expected)
     {
         Assert.Equal(expected, PluralProviderHost.GetProvider("Slovenian")(number));
@@ -69,6 +72,9 @@ public class PluralProviders
     [InlineData(1.6, "OTHER")]
     [InlineData(1.9, "OTHER")]
     [InlineData(2.16, "OTHER")]
+    // A quantity small enough that .NET writes it in scientific notation still has its decimals read.
+    [InlineData(0.000004, "OTHER")]
+    [InlineData(0.000005, "ONE")]
     public void Filipino(double number, string expected)
     {
         Assert.Equal(expected, PluralProviderHost.GetProvider("Filipino")(number));
@@ -90,10 +96,23 @@ public class PluralProviders
     [InlineData(1, "ONE")]
     [InlineData(21, "ONE")]
     [InlineData(101, "ONE")]
+    // The CLDR ranges only hold integers, so a fractional remainder is not part of 11..19.
+    [InlineData(11.5, "OTHER")]
+    [InlineData(15.5, "OTHER")]
+    // v != 2 and f % 10 = 1 is 'one', and the 11..19 range of the 'zero' rule needs v = 2 to apply to f.
+    [InlineData(0.011, "ONE")]
+    [InlineData(0.1, "ONE")]
+    [InlineData(2.1, "ONE")]
+    // v = 2 and f % 100 in 11..19 is 'zero'.
+    [InlineData(0.11, "ZERO")]
+    [InlineData(1.19, "ZERO")]
+    // v = 2 and f % 10 = 1 and f % 100 != 11 is 'one'.
+    [InlineData(0.21, "ONE")]
     // Everything else is 'other'.
     [InlineData(2, "OTHER")]
     [InlineData(5, "OTHER")]
     [InlineData(22, "OTHER")]
+    [InlineData(0.2, "OTHER")]
     public void Latvian(double number, string expected)
     {
         Assert.Equal(expected, PluralProviderHost.GetProvider("Latvian")(number));
@@ -133,6 +152,9 @@ public class PluralProviders
     [InlineData(0.5, "MANY")]
     [InlineData(1.5, "MANY")]
     [InlineData(2.5, "MANY")]
+    // Quantities .NET writes in scientific notation still report their decimals correctly.
+    [InlineData(0.000001, "MANY")]
+    [InlineData(1.2e20, "OTHER")]
     public void Czech(double number, string expected)
     {
         Assert.Equal(expected, PluralProviderHost.GetProvider("Czech")(number));
@@ -159,6 +181,10 @@ public class PluralProviders
     [InlineData(0.5, "MANY")]
     [InlineData(1.5, "MANY")]
     [InlineData(2.5, "MANY")]
+    [InlineData(0.000001, "MANY")]
+    // The ranges are matched past the 32-bit range too.
+    [InlineData(2147483651d, "ONE")]
+    [InlineData(2147483652d, "FEW")]
     public void Lithuanian(double number, string expected)
     {
         Assert.Equal(expected, PluralProviderHost.GetProvider("Lithuanian")(number));
@@ -215,6 +241,7 @@ public class PluralProviders
     [InlineData(101, "FEW")]
     [InlineData(119, "FEW")]
     [InlineData(1.5, "FEW")]
+    [InlineData(0.000001, "FEW")]
     // Everything else is 'other'.
     [InlineData(20, "OTHER")]
     [InlineData(100, "OTHER")]
