@@ -116,4 +116,32 @@ public class PluralResourceLookup
             Assert.Equal("{0} files", host.GetPlural(values, "FileCount", 0, supportNoneState: true));
         });
     }
+
+    [Theory]
+    // A negative quantity selects the same form as its positive counterpart, because CLDR defines its
+    // operands over the absolute value of the quantity.
+    [InlineData("OnlyOneOrMillions", -1, "ONE")]
+    [InlineData("ZeroToTwoExcludedOrMillions", -1, "ONE")]
+    [InlineData("Polish", -2, "FEW")]
+    [InlineData("Slovenian", -3, "FEW")]
+    [InlineData("Latvian", -10, "ZERO")]
+    public void TheFormIsSelectedOnTheAbsoluteValue(string providerId, double number, string expected)
+    {
+        var host = ResourceLoaderExtensionHost.Create("en", providerId);
+
+        var values = new Dictionary<string, string>
+        {
+            ["Count_One"] = "ONE",
+            ["Count_Two"] = "TWO",
+            ["Count_Few"] = "FEW",
+            ["Count_Many"] = "MANY",
+            ["Count_Zero"] = "ZERO",
+            ["Count_Other"] = "OTHER"
+        };
+
+        ResourceLoaderExtensionHost.WithUICulture("en", () =>
+        {
+            Assert.Equal(expected, host.GetPlural(values, "Count", number));
+        });
+    }
 }

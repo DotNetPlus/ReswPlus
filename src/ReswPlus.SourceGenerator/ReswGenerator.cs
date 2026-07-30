@@ -238,7 +238,7 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
                     AddSourceFromResource(spc, emittedSources, $"{assemblyName}.Templates.Plurals.PluralTypeEnum.txt", "PluralTypeEnum");
                     AddSourceFromResource(spc, emittedSources, $"{assemblyName}.Templates.Utils.IntExt.txt", "IntExt");
                     AddSourceFromResource(spc, emittedSources, $"{assemblyName}.Templates.Utils.DoubleExt.txt", "DoubleExt");
-                    AddLanguageSupport(spc, emittedSources, allLanguages, useApplicationLanguages);
+                    AddLanguageSupport(spc, emittedSources, allLanguages, useApplicationLanguages, appType);
                 }
             }
         });
@@ -269,7 +269,7 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
     /// <summary>
     /// Adds language support sources for pluralization based on the provided languages.
     /// </summary>
-    private static void AddLanguageSupport(SourceProductionContext spc, HashSet<string> emittedSources, string[] languagesSupported, bool useApplicationLanguages)
+    private static void AddLanguageSupport(SourceProductionContext spc, HashSet<string> emittedSources, string[] languagesSupported, bool useApplicationLanguages, AppType appType)
     {
         // The whole plural support is shared by every resource file of the project, so it is built once.
         if (!emittedSources.Add($"ResourceLoaderExtension{GeneratedCode.FileExtension}"))
@@ -309,7 +309,7 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
         var resourceLoaderTemplate = ReadAllText(Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceLoaderResourceName));
         var resourceLoaderCode = resourceLoaderTemplate
             .Replace("{{PluralProviderSelector}}", pluralSelectorCode)
-            .Replace("{{PluralLanguageResolver}}", PluralLanguageResolvers.GetResolver(useApplicationLanguages));
+            .Replace("{{PluralLanguageResolver}}", PluralLanguageResolvers.GetResolver(useApplicationLanguages, appType));
         spc.AddSource($"ResourceLoaderExtension{GeneratedCode.FileExtension}", SourceText.From(GeneratedCode.AddFileHeader(resourceLoaderCode), Encoding.UTF8));
     }
 

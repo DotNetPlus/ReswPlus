@@ -101,11 +101,82 @@ public class PluralLanguageSource
     [Fact]
     public void OnlyTheUICultureIsReadByDefault()
     {
-        var resolver = PluralLanguageResolvers.GetResolver(useApplicationLanguages: false);
+        var resolver = PluralLanguageResolvers.GetResolver(useApplicationLanguages: false, AppType.WindowsAppSDK);
 
         Assert.Contains("CultureInfo.CurrentUICulture.TwoLetterISOLanguageName", resolver);
 
         // Nothing of the app runtime language list should be emitted into a project that didn't opt in.
         Assert.DoesNotContain("ApplicationLanguages", resolver);
+    }
+
+    [Fact]
+    public void OnlyAWindowsAppSDKProjectReadsTheLanguageOverride()
+    {
+        var windowsAppSDK = PluralLanguageResolvers.GetResolver(useApplicationLanguages: true, AppType.WindowsAppSDK);
+        var uwp = PluralLanguageResolvers.GetResolver(useApplicationLanguages: true, AppType.UWP);
+
+        // The override that works outside of an app package only exists in the Windows App SDK, and reading it
+        // from a UWP project wouldn't compile.
+        Assert.Contains("Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride", windowsAppSDK);
+        Assert.DoesNotContain("Microsoft.Windows.Globalization", uwp);
+
+        Assert.Contains("Windows.Globalization.ApplicationLanguages.Languages", uwp);
+    }
+
+    [Fact]
+    public void TheLanguageOverrideOfAnUnpackagedAppIsUsed()
+    {
+        var host = ResourceLoaderExtensionHost.Create(EnglishAndPolish, useApplicationLanguages: true);
+
+        // An unpackaged app has no runtime language list, and the Windows App SDK keeps its override to
+        // itself instead of publishing it there.
+        host.SetApplicationLanguages();
+        host.SetPrimaryLanguageOverride("pl-PL");
+
+        ResourceLoaderExtensionHost.WithUICulture("en-US", () =>
+        {
+            Assert.Equal("few", host.GetPlural(Forms, "FileCount", 2));
+        });
+    }
+
+    [Fact]
+    public void TheLanguageOverrideWinsOverTheApplicationLanguages()
+    {
+        var host = ResourceLoaderExtensionHost.Create(EnglishAndPolish, useApplicationLanguages: true);
+
+        host.SetApplicationLanguages("en-US");
+        host.SetPrimaryLanguageOverride("pl-PL");
+
+        Assert.Equal("few", host.GetPlural(Forms, "FileCount", 2));
+    }
+
+    [Fact]
+    public void TheRulesFollowALanguageChange()
+    {
+        var host = ResourceLoaderExtensionHost.Create(EnglishAndPolish, useApplicationLanguages: true);
+
+        host.SetApplicationLanguages("en-US");
+
+        Assert.Equal("other", host.GetPlural(Forms, "FileCount", 2));
+
+        // An app can change its language while it runs, and the resources follow it, so the rules have to too.
+        host.SetApplicationLanguages("pl-PL");
+
+        Assert.Equal("few", host.GetPlural(Forms, "FileCount", 2));
+    }
+
+    [Theory]
+    [InlineData(AppType.UWP)]
+    [InlineData(AppType.WindowsAppSDK)]
+    public void TheApplicationLanguagesAreReadByEveryKindOfApp(AppType appType)
+    {
+        var host = ResourceLoaderExtensionHost.Create(EnglishAndPolish, useApplicationLanguages: true, appType);
+
+        host.SetApplicationLanguages("pl-PL");
+
+        ResourceLoaderExtensionHost.WithUICulture("en-US", () =>
+        {
+            Assert.Equal("few", host.GetPlural(Forms, "FileCount", 2));
+        });
     }
 }
