@@ -12,6 +12,9 @@
         <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
     </PropertyGroup>
     <ItemGroup>
+      <InternalsVisibleTo Include="ReswPlusUnitTests" />
+    </ItemGroup>
+    <ItemGroup>
       <EmbeddedResource Include="Templates\ResourceStringProviders\WindowsResourceStringProvider.txt" />
       <EmbeddedResource Include="Templates\ResourceStringProviders\MicrosoftResourceStringProvider.txt" />
       <EmbeddedResource Include="Templates\Macros\Macros.txt" />

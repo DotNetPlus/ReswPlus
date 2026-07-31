@@ -17,7 +17,7 @@ namespace ReswPlus.SourceGenerator.ClassGenerators;
 /// </summary>
 public sealed class ReswClassGenerator
 {
-    private const string TagIgnore = "#ReswPlusIgnore";
+    internal const string TagIgnore = "#ReswPlusIgnore";
     private const string Deprecated_TagStrongType = "#ReswPlusTyped";
     private const string TagFormat = "#Format";
     private const string TagFormatDotNet = "#FormatNet";
@@ -163,7 +163,7 @@ public sealed class ReswClassGenerator
     /// </summary>
     /// <param name="propertyName">The property name to validate.</param>
     /// <returns>True if the property name is valid; otherwise, false.</returns>
-    private static bool IsValidPropertyName(string propertyName)
+    internal static bool IsValidPropertyName(string propertyName)
     {
         return
             !string.IsNullOrWhiteSpace(propertyName) &&
