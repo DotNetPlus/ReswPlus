@@ -14,3 +14,4 @@ RESWP0007 | Resources    | Warning    | A value uses a placeholder that has no m
 RESWP0008 | Resources    | Warning    | A pluralized resource is missing plural forms its language requires.
 RESWP0009 | Resources    | Warning    | Two resources of the same file conflict with each other.
 RESWP0010 | Resources    | Warning    | A value that is used as a composite format string is malformed.
+RESWP0011 | Globalization    | Info    | ReswPlus has no plural rules for a language used by the project.

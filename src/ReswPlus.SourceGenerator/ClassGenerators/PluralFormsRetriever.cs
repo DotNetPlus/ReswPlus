@@ -421,11 +421,37 @@ internal sealed class PluralFormsRetriever
             [
                 "da" // Danish
             ]
+        ),
+        // Languages with a single plural form. They are mapped explicitly, rather than being left to reach the
+        // default branch of the generated selector, so that a language reaching that branch always means
+        // ReswPlus has no rules for it rather than that it genuinely has one form.
+        new PluralForm(
+            "Other",
+            [PluralCategory.Other],
+            [
+                "zh", // Chinese
+                "id", // Indonesian
+                "ja", // Japanese
+                "km", // Khmer
+                "ko", // Korean
+                "lo", // Lao
+                "ms", // Malay
+                "my", // Burmese
+                "th", // Thai
+                "bo", // Tibetan
+                "vi", // Vietnamese
+                "yue" // Cantonese
+            ]
         )
     ];
 
     // Prebuild a dictionary that maps each language code to its plural form.
     private static readonly Dictionary<string, PluralForm> LanguageToPluralForm = BuildLanguageToPluralForm();
+
+    /// <summary>
+    /// Gets every plural form known to ReswPlus, so that tests can check them as a set.
+    /// </summary>
+    internal static IEnumerable<PluralForm> PluralFormsForTesting => PluralForms;
 
     private static Dictionary<string, PluralForm> BuildLanguageToPluralForm()
     {
@@ -474,5 +500,26 @@ internal sealed class PluralFormsRetriever
     public static PluralForm? RetrievePluralFormForLanguage(string language)
     {
         return LanguageToPluralForm.TryGetValue(language, out var pluralForm) ? pluralForm : null;
+    }
+
+    /// <summary>
+    /// Retrieves the languages ReswPlus has no plural rules for.
+    /// </summary>
+    /// <param name="languages">A collection of language codes to check.</param>
+    /// <returns>The distinct language codes that aren't mapped to a plural form.</returns>
+    /// <remarks>
+    /// Those languages fall back to the single-form provider, which is silently correct for a language that
+    /// really has one form and silently wrong for one that doesn't, so the caller reports them.
+    /// </remarks>
+    public static IEnumerable<string> RetrieveLanguagesWithoutPluralForm(IEnumerable<string> languages)
+    {
+        var reported = new HashSet<string>();
+        foreach (var lang in languages)
+        {
+            if (!LanguageToPluralForm.ContainsKey(lang) && reported.Add(lang))
+            {
+                yield return lang;
+            }
+        }
     }
 }
