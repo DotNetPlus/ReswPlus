@@ -47,7 +47,8 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
             OutputType = GetOption(options.GlobalOptions, "build_property.OutputType"),
             ProjectTypeGuids = GetOption(options.GlobalOptions, "build_property.projecttypeguids"),
             DefaultLanguage = GetOption(options.GlobalOptions, "build_property.DefaultLanguage"),
-            RootNamespace = GetOption(options.GlobalOptions, "build_property.RootNamespace")
+            RootNamespace = GetOption(options.GlobalOptions, "build_property.RootNamespace"),
+            UseApplicationLanguages = GetOption(options.GlobalOptions, "build_property.ReswPlusUseApplicationLanguages")
         });
 
         // Provider for additional files with .resw extension.
@@ -116,13 +117,23 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
             var appType = compilationInfo.AppType;
             var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
 
+            // The support sources are shared by every resource file of the project, so they are emitted once.
+            // Adding the same hint name twice throws, which used to make the generator produce nothing at all
+            // for a project holding more than one .resw that uses macros or plurals.
+            var emittedSources = new HashSet<string>(StringComparer.Ordinal);
+
+            // Opt in to reading the plural language from the app runtime language list, the same list the
+            // resources themselves are resolved against.
+            var useApplicationLanguages =
+                bool.TryParse(options.UseApplicationLanguages, out var parsedUseApplicationLanguages) && parsedUseApplicationLanguages;
+
             switch (appType)
             {
                 case AppType.WindowsAppSDK:
-                    AddSourceFromResource(spc, $"{assemblyName}.Templates.ResourceStringProviders.MicrosoftResourceStringProvider.txt", "ResourceStringProvider");
+                    AddSourceFromResource(spc, emittedSources, $"{assemblyName}.Templates.ResourceStringProviders.MicrosoftResourceStringProvider.txt", "ResourceStringProvider");
                     break;
                 case AppType.UWP:
-                    AddSourceFromResource(spc, $"{assemblyName}.Templates.ResourceStringProviders.WindowsResourceStringProvider.txt", "ResourceStringProvider");
+                    AddSourceFromResource(spc, emittedSources, $"{assemblyName}.Templates.ResourceStringProviders.WindowsResourceStringProvider.txt", "ResourceStringProvider");
                     break;
                 default:
                     spc.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnrecognizedAppType, Location.None));
@@ -151,11 +162,19 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
                                                 where defaultFile != null
                                                 select defaultFile).ToArray();
 
-            // Gather all distinct languages.
-            var allLanguages = allResourceFiles
-                .Select(f => Path.GetFileName(Path.GetDirectoryName(f.Path)).Split('-')[0].ToLower())
-                .Distinct()
-                .ToArray();
+            // Gather all distinct languages, keeping a resource file for each so that a diagnostic about a
+            // language has somewhere to point. The folder of a resource is reduced to its language exactly the
+            // way the generated code reduces the language of the app, so that the two always agree: a
+            // culture-sensitive ToLower would turn 'IS-IS' into 'ıs' under Turkish and never match again.
+            var resourceFilePerLanguage = new Dictionary<string, string>(StringComparer.Ordinal);
+            foreach (var resourceFile in allResourceFiles)
+            {
+                var language = Path.GetFileName(Path.GetDirectoryName(resourceFile.Path)).Split('-', '_')[0].ToLowerInvariant();
+                if (!resourceFilePerLanguage.ContainsKey(language))
+                {
+                    resourceFilePerLanguage.Add(language, resourceFile.Path);
+                }
+            }
 
             // Process each default resource file.
             foreach (var filePath in defaultLanguageResourceFiles)
@@ -203,26 +222,31 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
                     continue;
                 }
 
-                // Add each generated file as a new source.
+                // Add each generated file as a new source. The hint name is qualified with the namespace of the
+                // resource file, because two .resw files with the same name can live in different folders.
                 foreach (var generatedFile in generatedData.Files)
                 {
-                    spc.AddSource($"{Path.GetFileName(filePath)}{GeneratedCode.FileExtension}", SourceText.From(generatedFile.Content, Encoding.UTF8));
+                    var hintName = $"{namespaceForReswFile}.{Path.GetFileName(filePath)}{GeneratedCode.FileExtension}";
+                    if (emittedSources.Add(hintName))
+                    {
+                        spc.AddSource(hintName, SourceText.From(generatedFile.Content, Encoding.UTF8));
+                    }
                 }
 
                 // If macros were used, include the Macros source file.
                 if (generatedData.ContainsMacro)
                 {
-                    AddSourceFromResource(spc, "ReswPlus.SourceGenerator.Templates.Macros.Macros.txt", "Macros");
+                    AddSourceFromResource(spc, emittedSources, "ReswPlus.SourceGenerator.Templates.Macros.Macros.txt", "Macros");
                 }
 
                 // If plural forms are detected, add plural-related support sources.
                 if (generatedData.ContainsPlural)
                 {
-                    AddSourceFromResource(spc, $"{assemblyName}.Templates.Plurals.IPluralProvider.txt", "IPluralProvider");
-                    AddSourceFromResource(spc, $"{assemblyName}.Templates.Plurals.PluralTypeEnum.txt", "PluralTypeEnum");
-                    AddSourceFromResource(spc, $"{assemblyName}.Templates.Utils.IntExt.txt", "IntExt");
-                    AddSourceFromResource(spc, $"{assemblyName}.Templates.Utils.DoubleExt.txt", "DoubleExt");
-                    AddLanguageSupport(spc, allLanguages);
+                    AddSourceFromResource(spc, emittedSources, $"{assemblyName}.Templates.Plurals.IPluralProvider.txt", "IPluralProvider");
+                    AddSourceFromResource(spc, emittedSources, $"{assemblyName}.Templates.Plurals.PluralTypeEnum.txt", "PluralTypeEnum");
+                    AddSourceFromResource(spc, emittedSources, $"{assemblyName}.Templates.Utils.IntExt.txt", "IntExt");
+                    AddSourceFromResource(spc, emittedSources, $"{assemblyName}.Templates.Utils.DoubleExt.txt", "DoubleExt");
+                    AddLanguageSupport(spc, emittedSources, resourceFilePerLanguage, useApplicationLanguages, appType);
                 }
             }
         });
@@ -253,15 +277,26 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
     /// <summary>
     /// Adds language support sources for pluralization based on the provided languages.
     /// </summary>
-    private static void AddLanguageSupport(SourceProductionContext spc, string[] languagesSupported)
+    /// <param name="resourceFilePerLanguage">A resource file of each language the project holds.</param>
+    private static void AddLanguageSupport(SourceProductionContext spc, HashSet<string> emittedSources, Dictionary<string, string> resourceFilePerLanguage, bool useApplicationLanguages, AppType appType)
     {
+        // The whole plural support is shared by every resource file of the project, so it is built once.
+        if (!emittedSources.Add($"ResourceLoaderExtension{GeneratedCode.FileExtension}"))
+        {
+            return;
+        }
+
         var pluralSelectorCode = "default:\n  return new _ReswPlus_AutoGenerated.Plurals.OtherProvider();\n";
         var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
 
-        foreach (var pluralFile in PluralFormsRetriever.RetrievePluralFormsForLanguages(languagesSupported))
+        // The single-form provider backs the default branch of the selector, and the languages that only have
+        // that form are mapped to it explicitly, so it is emitted once up front and reused.
+        AddSourceFromResource(spc, emittedSources, $"{assemblyName}.Templates.Plurals.OtherProvider.txt", "OtherProvider");
+
+        foreach (var pluralFile in PluralFormsRetriever.RetrievePluralFormsForLanguages(resourceFilePerLanguage.Keys))
         {
             var resourceName = $"{assemblyName}.Templates.Plurals.{pluralFile.Id}Provider.txt";
-            AddSourceFromResource(spc, resourceName, $"{pluralFile.Id}Provider");
+            AddSourceFromResource(spc, emittedSources, resourceName, $"{pluralFile.Id}Provider");
 
             // Add each language handled by this provider.
             foreach (var lng in pluralFile.Languages)
@@ -271,24 +306,53 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
             pluralSelectorCode += $"  return new _ReswPlus_AutoGenerated.Plurals.{pluralFile.Id}Provider();\n";
         }
 
-        // Add the fallback provider.
-        AddSourceFromResource(spc, $"{assemblyName}.Templates.Plurals.OtherProvider.txt", "OtherProvider");
+        // Report the languages that have no rules, so that falling back to a single plural form is a visible
+        // choice rather than a silent one. Each one is reported against a resource file of that language,
+        // rather than against nothing, so that it has a place to point at and can be configured per file.
+        foreach (var language in PluralFormsRetriever.RetrieveLanguagesWithoutPluralForm(resourceFilePerLanguage.Keys))
+        {
+            spc.ReportDiagnostic(Diagnostic.Create(
+                Diagnostics.UnknownPluralLanguage,
+                CreateFileLocation(resourceFilePerLanguage[language]),
+                language));
+        }
 
         // Build and add the ResourceLoaderExtension with the plural selector injected.
         var resourceLoaderResourceName = $"{assemblyName}.Templates.Plurals.ResourceLoaderExtension.txt";
         var resourceLoaderTemplate = ReadAllText(Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceLoaderResourceName));
-        var resourceLoaderCode = resourceLoaderTemplate.Replace("{{PluralProviderSelector}}", pluralSelectorCode);
+        var resourceLoaderCode = resourceLoaderTemplate
+            .Replace("{{PluralProviderSelector}}", pluralSelectorCode)
+            .Replace("{{PluralLanguageResolver}}", PluralLanguageResolvers.GetResolver(useApplicationLanguages, appType));
         spc.AddSource($"ResourceLoaderExtension{GeneratedCode.FileExtension}", SourceText.From(GeneratedCode.AddFileHeader(resourceLoaderCode), Encoding.UTF8));
     }
 
     /// <summary>
-    /// Reads a resource stream and adds its content as a source file.
+    /// Creates a location pointing at the start of a file, so that a diagnostic about it has somewhere to go.
+    /// </summary>
+    /// <param name="path">The path of the file.</param>
+    /// <returns>A location at the start of the file.</returns>
+    private static Location CreateFileLocation(string path)
+    {
+        var start = new LinePosition(0, 0);
+
+        return Location.Create(path, new TextSpan(0, 0), new LinePositionSpan(start, start));
+    }
+
+    /// <summary>
+    /// Reads a resource stream and adds its content as a source file, unless it was already added.
     /// </summary>
     /// <param name="spc">The context to add the source to.</param>
+    /// <param name="emittedSources">The hint names already emitted for the project.</param>
     /// <param name="resourcePath">The path of the embedded resource holding the template.</param>
     /// <param name="typeName">The name of the type declared by the template, used as the hint name.</param>
-    private static void AddSourceFromResource(SourceProductionContext spc, string resourcePath, string typeName)
+    private static void AddSourceFromResource(SourceProductionContext spc, HashSet<string> emittedSources, string resourcePath, string typeName)
     {
+        var hintName = $"{typeName}{GeneratedCode.FileExtension}";
+        if (!emittedSources.Add(hintName))
+        {
+            return;
+        }
+
         using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourcePath);
         if (stream is null)
         {
@@ -296,7 +360,7 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
             return;
         }
         var sourceText = ReadAllText(stream);
-        spc.AddSource($"{typeName}{GeneratedCode.FileExtension}", SourceText.From(GeneratedCode.AddFileHeader(sourceText), Encoding.UTF8));
+        spc.AddSource(hintName, SourceText.From(GeneratedCode.AddFileHeader(sourceText), Encoding.UTF8));
     }
 
     /// <summary>

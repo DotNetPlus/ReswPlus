@@ -22,6 +22,11 @@ internal static class Diagnostics
     private const string ResourcesCategory = "Resources";
 
     /// <summary>
+    /// The category of the diagnostics reporting a limit of the localization support.
+    /// </summary>
+    private const string GlobalizationCategory = "Globalization";
+
+    /// <summary>
     /// RESWP0001: the compilation is not a C# compilation.
     /// </summary>
     public static readonly DiagnosticDescriptor UnsupportedLanguage = new(
@@ -129,5 +134,16 @@ internal static class Diagnostics
         "The value of the resource '{0}' is used as a composite format string, but it is not a valid one",
         ResourcesCategory,
         DiagnosticSeverity.Warning,
+        isEnabledByDefault: true);
+
+    /// <summary>
+    /// RESWP0011: a language used by the project has no plural rules.
+    /// </summary>
+    public static readonly DiagnosticDescriptor UnknownPluralLanguage = new(
+        "RESWP0011",
+        "Unknown plural language",
+        "ReswPlus has no plural rules for the language '{0}', every quantity will use the 'Other' plural form",
+        GlobalizationCategory,
+        DiagnosticSeverity.Info,
         isEnabledByDefault: true);
 }

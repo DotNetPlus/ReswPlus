@@ -31,6 +31,17 @@ internal sealed class PluralFormsRetriever
         public PluralCategory[] Categories { get; set; }
 
         /// <summary>
+        /// Gets the categories of <see cref="Categories"/> that a resource does not have to define.
+        /// </summary>
+        /// <remarks>
+        /// A category belongs here when the provider only returns it for a quantity an app is very unlikely to
+        /// display, so that requiring it would warn about a form almost no resource set has a use for. The
+        /// lookup falls back to the <c>_Other</c> form when it isn't declared, which is the wording the
+        /// resource set already ships for that quantity.
+        /// </remarks>
+        public PluralCategory[] OptionalCategories { get; set; } = [];
+
+        /// <summary>
         /// Gets whether the provider of this form only returns <see cref="PluralCategory.Zero"/> for a quantity
         /// that is itself zero.
         /// </summary>
@@ -73,11 +84,9 @@ internal sealed class PluralFormsRetriever
             [
                 "am", // Amharic
                 "bn", // Bengali
-                "ff", // Fulah
                 "gu", // Gujarati
                 "hi", // Hindi
                 "kn", // Kannada
-                "mr", // Marathi
                 "fa", // Persian
                 "zu"  // Zulu
             ]
@@ -87,10 +96,33 @@ internal sealed class PluralFormsRetriever
             [PluralCategory.One, PluralCategory.Other],
             [
                 "hy", // Armenian
-                "fr", // French
+                "ff", // Fulah
                 "kab" // Kabyle
             ]
         ),
+        new PluralForm(
+            "ZeroToTwoExcludedOrMillions",
+            [PluralCategory.One, PluralCategory.Many, PluralCategory.Other],
+            [
+                "fr" // French
+            ]
+        )
+        { OptionalCategories = [PluralCategory.Many] },
+        new PluralForm(
+            "OnlyOneOrMillions",
+            [PluralCategory.One, PluralCategory.Many, PluralCategory.Other],
+            [
+                "ca", // Catalan
+                "it", // Italian
+                // Portuguese is left here even though CLDR gives 'pt' the rule of French, because the folder
+                // of a resource and the language of the app are both reduced to their primary subtag: moving
+                // it would put 'pt-PT', whose rule is this one, on the rule of 'pt-BR'. Telling them apart
+                // needs the plural rules to be keyed by the whole tag.
+                "pt", // Portuguese
+                "es"  // Spanish
+            ]
+        )
+        { OptionalCategories = [PluralCategory.Many] },
         new PluralForm(
             "OnlyOne",
             [PluralCategory.One, PluralCategory.Other],
@@ -105,7 +137,6 @@ internal sealed class PluralFormsRetriever
                 "bez", // Bena
                 "brx", // Bodo
                 "bg", // Bulgarian
-                "ca", // Catalan
                 "chr", // Cherokee
                 "cgg", // Chiga
                 "dv", // Divehi
@@ -113,7 +144,6 @@ internal sealed class PluralFormsRetriever
                 "en", // English
                 "eo", // Esperanto
                 "et", // Estonian
-                "pt", // European Portuguese
                 "ee", // Ewe
                 "fo", // Faroese
                 "fi", // Finnish
@@ -126,7 +156,6 @@ internal sealed class PluralFormsRetriever
                 "ha", // Hausa
                 "haw", // Hawaiian
                 "hu", // Hungarian
-                "it", // Italian
                 "kaj", // Jju
                 "kkj", // Kako
                 "kl", // Kalaallisut
@@ -140,6 +169,7 @@ internal sealed class PluralFormsRetriever
                 "mas", // Masai
                 "mgo", // Meta'
                 "mn", // Mongolian
+                "mr", // Marathi
                 "nah", // Nahuatl
                 "ne", // Nepali
                 "nnh", // Ngiemboon
@@ -159,7 +189,7 @@ internal sealed class PluralFormsRetriever
                 "rof", // Rombo
                 "rwk", // Rwa
                 "ssy", // Saho
-                "sag", // Samburu
+                "saq", // Samburu
                 "seh", // Sena
                 "ksb", // Shambala
                 "sn", // Shona
@@ -168,7 +198,6 @@ internal sealed class PluralFormsRetriever
                 "ckb", // Sorani Kurdish
                 "nr", // South Ndebele
                 "st", // Southern Sotho
-                "es", // Spanish
                 "sw", // Swahili
                 "ss", // Swati
                 "sv", // Swedish
@@ -396,11 +425,60 @@ internal sealed class PluralFormsRetriever
             [
                 "da" // Danish
             ]
+        ),
+        // Languages with a single plural form. They are mapped explicitly, rather than being left to reach the
+        // default branch of the generated selector, so that a language reaching that branch always means
+        // ReswPlus has no rules for it rather than that it genuinely has one form. This is the complete set
+        // CLDR assigns to the 'other' category alone.
+        new PluralForm(
+            "Other",
+            [PluralCategory.Other],
+            [
+                "bm", // Bambara
+                "bo", // Tibetan
+                "dz", // Dzongkha
+                "hnj", // Hmong Njua
+                "id", // Indonesian
+                "ig", // Igbo
+                "ii", // Sichuan Yi
+                "in", // Indonesian, deprecated code
+                "ja", // Japanese
+                "jbo", // Lojban
+                "jv", // Javanese
+                "jw", // Javanese, deprecated code
+                "kde", // Makonde
+                "kea", // Kabuverdianu
+                "km", // Khmer
+                "ko", // Korean
+                "lkt", // Lakota
+                "lo", // Lao
+                "ms", // Malay
+                "my", // Burmese
+                "nqo", // N'Ko
+                "osa", // Osage
+                "sah", // Yakut
+                "ses", // Koyraboro Senni
+                "sg", // Sango
+                "su", // Sundanese
+                "th", // Thai
+                "to", // Tongan
+                "tpi", // Tok Pisin
+                "vi", // Vietnamese
+                "wo", // Wolof
+                "yo", // Yoruba
+                "yue", // Cantonese
+                "zh" // Chinese
+            ]
         )
     ];
 
     // Prebuild a dictionary that maps each language code to its plural form.
     private static readonly Dictionary<string, PluralForm> LanguageToPluralForm = BuildLanguageToPluralForm();
+
+    /// <summary>
+    /// Gets every plural form known to ReswPlus, so that tests can check them as a set.
+    /// </summary>
+    internal static IEnumerable<PluralForm> PluralFormsForTesting => PluralForms;
 
     private static Dictionary<string, PluralForm> BuildLanguageToPluralForm()
     {
@@ -449,5 +527,26 @@ internal sealed class PluralFormsRetriever
     public static PluralForm? RetrievePluralFormForLanguage(string language)
     {
         return LanguageToPluralForm.TryGetValue(language, out var pluralForm) ? pluralForm : null;
+    }
+
+    /// <summary>
+    /// Retrieves the languages ReswPlus has no plural rules for.
+    /// </summary>
+    /// <param name="languages">A collection of language codes to check.</param>
+    /// <returns>The distinct language codes that aren't mapped to a plural form.</returns>
+    /// <remarks>
+    /// Those languages fall back to the single-form provider, which is silently correct for a language that
+    /// really has one form and silently wrong for one that doesn't, so the caller reports them.
+    /// </remarks>
+    public static IEnumerable<string> RetrieveLanguagesWithoutPluralForm(IEnumerable<string> languages)
+    {
+        var reported = new HashSet<string>();
+        foreach (var lang in languages)
+        {
+            if (!LanguageToPluralForm.ContainsKey(lang) && reported.Add(lang))
+            {
+                yield return lang;
+            }
+        }
     }
 }

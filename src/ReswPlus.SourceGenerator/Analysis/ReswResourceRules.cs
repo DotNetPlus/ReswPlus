@@ -146,6 +146,7 @@ internal static class ReswResourceRules
                 var hasNoneForm = model.TryGetEntry($"{declension.Prefix}_None", out _);
 
                 var missingCategories = pluralForm.Categories
+                    .Where(category => !pluralForm.OptionalCategories.Contains(category))
                     .Where(category => !(category == PluralCategory.Zero && hasNoneForm && pluralForm.ZeroIsOnlyForZeroQuantity))
                     .Where(category => !model.TryGetEntry($"{declension.Prefix}_{category}", out _))
                     .ToArray();
