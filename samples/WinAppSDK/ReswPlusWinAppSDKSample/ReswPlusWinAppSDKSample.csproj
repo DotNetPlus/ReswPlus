@@ -23,9 +23,6 @@
     <AppxBundlePlatforms>x64|arm64</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
-    <!-- CsWinRT's generated ABI code contains known annotation mismatches and obsolete suppressions. -->
-    <TrimmerSingleWarn>false</TrimmerSingleWarn>
-    <NoWarn>$(NoWarn);IL2081;IL2121</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -40,11 +37,6 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.4.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2526" />
     <Manifest Include="$(ApplicationManifest)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- WinUI activates XAML types dynamically and must retain its metadata. -->
-    <TrimmerRootAssembly Include="Microsoft.WinUI" />
   </ItemGroup>
 
   <ItemGroup>
