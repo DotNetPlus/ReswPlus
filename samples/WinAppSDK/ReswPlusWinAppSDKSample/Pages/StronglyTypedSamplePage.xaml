@@ -10,11 +10,12 @@
     mc:Ignorable="d">
     <ScrollViewer>
         <StackPanel Style="{StaticResource PageContentStyle}">
+            <StackPanel Style="{StaticResource PageIntroStyle}">
+                <TextBlock Style="{StaticResource SectionDescriptionTextBlockStyle}" Text="ReswPlus is a C# source generator that turns .resw entries into a compile-time-safe API. It generates static properties and methods for XAML and C#, so misspelled resource keys are caught during the build instead of at runtime." />
+            </StackPanel>
+
             <StackPanel Style="{StaticResource PartStyle}">
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Generate a strongly typed resource API" />
-                <TextBlock Style="{StaticResource SectionDescriptionTextBlockStyle}" Text="ReswPlus is a C# source generator that turns .resw entries into a compile-time-safe API. It generates static properties and methods that you can call from XAML or C#, so misspelled resource keys are caught during the build instead of at runtime." />
-
-
                 <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text=".resw entries:" />
                 <StackPanel Style="{StaticResource SubPanelStyle}">
                     <Grid>

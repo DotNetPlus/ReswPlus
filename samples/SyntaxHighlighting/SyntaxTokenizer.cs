@@ -45,16 +45,20 @@ namespace ReswPlusSamples.SyntaxHighlighting
             "virtual", "void", "volatile", "when", "where", "while", "with", "yield",
         };
 
-        public static IReadOnlyList<SyntaxToken> Tokenize(string sourceCode)
+        public static void Tokenize(string sourceCode, Action<SyntaxToken> addToken)
         {
-            return sourceCode.TrimStart().StartsWith("<", StringComparison.Ordinal)
-                ? TokenizeXml(sourceCode)
-                : TokenizeCSharp(sourceCode);
+            if (sourceCode.TrimStart().StartsWith("<", StringComparison.Ordinal))
+            {
+                TokenizeXml(sourceCode, addToken);
+            }
+            else
+            {
+                TokenizeCSharp(sourceCode, addToken);
+            }
         }
 
-        private static IReadOnlyList<SyntaxToken> TokenizeCSharp(string sourceCode)
+        private static void TokenizeCSharp(string sourceCode, Action<SyntaxToken> addToken)
         {
-            var tokens = new List<SyntaxToken>();
             var index = 0;
 
             while (index < sourceCode.Length)
@@ -63,19 +67,19 @@ namespace ReswPlusSamples.SyntaxHighlighting
                 {
                     var end = sourceCode.IndexOf('\n', index);
                     end = end < 0 ? sourceCode.Length : end;
-                    AddToken(tokens, index, end, SyntaxTokenKind.Comment);
+                    AddToken(addToken, index, end, SyntaxTokenKind.Comment);
                     index = end;
                 }
                 else if (StartsWith(sourceCode, index, "/*"))
                 {
                     var end = sourceCode.IndexOf("*/", index + 2, StringComparison.Ordinal);
                     end = end < 0 ? sourceCode.Length : end + 2;
-                    AddToken(tokens, index, end, SyntaxTokenKind.Comment);
+                    AddToken(addToken, index, end, SyntaxTokenKind.Comment);
                     index = end;
                 }
                 else if (TryReadString(sourceCode, index, out var stringEnd))
                 {
-                    AddToken(tokens, index, stringEnd, SyntaxTokenKind.String);
+                    AddToken(addToken, index, stringEnd, SyntaxTokenKind.String);
                     index = stringEnd;
                 }
                 else if (char.IsDigit(sourceCode[index]))
@@ -86,7 +90,7 @@ namespace ReswPlusSamples.SyntaxHighlighting
                         end++;
                     }
 
-                    AddToken(tokens, index, end, SyntaxTokenKind.Number);
+                    AddToken(addToken, index, end, SyntaxTokenKind.Number);
                     index = end;
                 }
                 else if (IsIdentifierStart(sourceCode[index]))
@@ -99,7 +103,7 @@ namespace ReswPlusSamples.SyntaxHighlighting
 
                     if (CSharpKeywords.Contains(sourceCode.Substring(index, end - index)))
                     {
-                        AddToken(tokens, index, end, SyntaxTokenKind.Keyword);
+                        AddToken(addToken, index, end, SyntaxTokenKind.Keyword);
                     }
 
                     index = end;
@@ -112,7 +116,7 @@ namespace ReswPlusSamples.SyntaxHighlighting
                         end++;
                     }
 
-                    AddToken(tokens, index, end, SyntaxTokenKind.Keyword);
+                    AddToken(addToken, index, end, SyntaxTokenKind.Keyword);
                     index = end;
                 }
                 else
@@ -120,13 +124,10 @@ namespace ReswPlusSamples.SyntaxHighlighting
                     index++;
                 }
             }
-
-            return tokens;
         }
 
-        private static IReadOnlyList<SyntaxToken> TokenizeXml(string sourceCode)
+        private static void TokenizeXml(string sourceCode, Action<SyntaxToken> addToken)
         {
-            var tokens = new List<SyntaxToken>();
             var index = 0;
             var insideTag = false;
             var expectingElementName = false;
@@ -137,7 +138,7 @@ namespace ReswPlusSamples.SyntaxHighlighting
                 {
                     var end = sourceCode.IndexOf("-->", index + 4, StringComparison.Ordinal);
                     end = end < 0 ? sourceCode.Length : end + 3;
-                    AddToken(tokens, index, end, SyntaxTokenKind.Comment);
+                    AddToken(addToken, index, end, SyntaxTokenKind.Comment);
                     index = end;
                 }
                 else if (!insideTag && sourceCode[index] == '<')
@@ -166,7 +167,7 @@ namespace ReswPlusSamples.SyntaxHighlighting
                     }
 
                     end = Math.Min(end + 1, sourceCode.Length);
-                    AddToken(tokens, index, end, SyntaxTokenKind.String);
+                    AddToken(addToken, index, end, SyntaxTokenKind.String);
                     index = end;
                 }
                 else if (insideTag && IsXmlNameStart(sourceCode[index]))
@@ -178,7 +179,7 @@ namespace ReswPlusSamples.SyntaxHighlighting
                     }
 
                     var kind = expectingElementName ? SyntaxTokenKind.XmlName : SyntaxTokenKind.XmlAttribute;
-                    AddToken(tokens, index, end, kind);
+                    AddToken(addToken, index, end, kind);
                     expectingElementName = false;
                     index = end;
                 }
@@ -187,8 +188,6 @@ namespace ReswPlusSamples.SyntaxHighlighting
                     index++;
                 }
             }
-
-            return tokens;
         }
 
         private static bool TryReadString(string sourceCode, int start, out int end)
@@ -257,9 +256,9 @@ namespace ReswPlusSamples.SyntaxHighlighting
                 && string.CompareOrdinal(source, index, value, 0, value.Length) == 0;
         }
 
-        private static void AddToken(List<SyntaxToken> tokens, int start, int end, SyntaxTokenKind kind)
+        private static void AddToken(Action<SyntaxToken> addToken, int start, int end, SyntaxTokenKind kind)
         {
-            tokens.Add(new SyntaxToken(start, end - start, kind));
+            addToken(new SyntaxToken(start, end - start, kind));
         }
 
         private static bool IsIdentifierStart(char value)

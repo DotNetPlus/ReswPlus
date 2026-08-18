@@ -3,7 +3,7 @@ using Microsoft.UI.Xaml.Data;
 
 namespace ReswPlusWinAppSDKSample.Converters;
 
-internal class ToUpperCaseConverter : IValueConverter
+internal sealed partial class ToUpperCaseConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {
