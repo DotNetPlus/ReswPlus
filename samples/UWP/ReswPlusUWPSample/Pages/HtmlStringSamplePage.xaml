@@ -5,15 +5,17 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reswplus="using:ReswPlusLib"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    Background="Transparent"
     mc:Ignorable="d">
     <ScrollViewer>
-        <StackPanel Margin="24">
-            <TextBlock Style="{StaticResource SectionDescriptionTextBlockStyle}" Text="Unlike Android localization files, resw files don't support emphasis (bold, italic, underlined...). To address this lack, ReswPlus improves resw files and add support of emphasis using HTML tags (similar to Android)." />
+        <StackPanel Style="{StaticResource PageContentStyle}">
+            <StackPanel Style="{StaticResource PageIntroStyle}">
+                <TextBlock Style="{StaticResource SectionDescriptionTextBlockStyle}" Text="Standard .resw values do not describe rich text. ReswPlus can interpret a small set of HTML-style tags so localized text can include emphasis, links, line breaks, fonts, superscript, and subscript." />
+            </StackPanel>
 
             <StackPanel Style="{StaticResource PartStyle}">
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Named strongly typed + String Format" />
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Resource:" />
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Render formatted localized text" />
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text=".resw entries:" />
                 <StackPanel Style="{StaticResource SubPanelStyle}">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -74,13 +76,13 @@
                     </Grid>
                 </StackPanel>
 
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML:" />
-                <StackPanel Style="{StaticResource SubPanelStyle}">
-                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;{x:Bind strings:Resources.PleaseInstallNetFramework}&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;{x:Bind strings:Resources.UseDesktopBridge}&quot; /&gt;&#10;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;{x:Bind strings:Resources.SendDocumentToUser(DocumentNameTextBox.Text, UsernameTextBox.Text), Mode=OneWay}&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;{x:Bind strings:Resources.HelloUsername(UsernameTextBox.Text)}&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;Normal, &amp;lt;em&amp;gt;Semi-Bold&amp;lt;/em&amp;gt;, &amp;lt;b&amp;gt;Bold&amp;lt;/b&amp;gt;&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;Default Font &amp;lt;Font color=&amp;quot;#007000&amp;quot; face=&amp;quot;Arial&amp;quot;&amp;gt;Arial Font&amp;lt;/Font&amp;gt; &amp;lt;Font face=&amp;quot;Consolas&amp;quot;&amp;gt;Consolas Font&amp;lt;/Font&amp;gt;&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;Test monospace: &amp;lt;tt&amp;gt;Hello world!&amp;lt;/tt&amp;gt;&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;Superscript: &amp;lt;sup&amp;gt;2534i&amp;lt;/sup&amp;gt;, Subscript: &amp;lt;sub&amp;gt;2567.5&amp;lt;/sub&amp;gt;&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;Test line-break&amp;lt;br /&amp;gt;This is a new line&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;Test lien: &amp;lt;a href=&amp;quot;http://www.bing.com&amp;quot;&amp;gt;bing.com&amp;lt;/a&amp;gt;&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;Test lien with formatting: &amp;lt;a href=&amp;quot;http://www.bing.com&amp;quot;&amp;gt;click &amp;lt;i&amp;gt;here&amp;lt;/i&amp;gt;&amp;lt;/a&amp;gt;&quot; /&gt;" />
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML usage:" />
+                <StackPanel Style="{StaticResource CodePanelStyle}">
+                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;{x:Bind strings:Resources.PleaseInstallNetFramework}&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;{x:Bind strings:Resources.UseDesktopBridge}&quot; /&gt;&#10;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;{x:Bind strings:Resources.SendDocumentToUser(DocumentNameTextBox.Text, UsernameTextBox.Text), Mode=OneWay}&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;{x:Bind strings:Resources.HelloUsername(UsernameTextBox.Text)}&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;Normal, &amp;lt;em&amp;gt;Semi-Bold&amp;lt;/em&amp;gt;, &amp;lt;b&amp;gt;Bold&amp;lt;/b&amp;gt;&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;Default Font &amp;lt;Font color=&amp;quot;#007000&amp;quot; face=&amp;quot;Arial&amp;quot;&amp;gt;Arial Font&amp;lt;/Font&amp;gt; &amp;lt;Font face=&amp;quot;Consolas&amp;quot;&amp;gt;Consolas Font&amp;lt;/Font&amp;gt;&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;Test monospace: &amp;lt;tt&amp;gt;Hello world!&amp;lt;/tt&amp;gt;&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;Superscript: &amp;lt;sup&amp;gt;2534i&amp;lt;/sup&amp;gt;, Subscript: &amp;lt;sub&amp;gt;2567.5&amp;lt;/sub&amp;gt;&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;Test line-break&amp;lt;br /&amp;gt;This is a new line&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;Test link: &amp;lt;a href=&amp;quot;http://www.bing.com&amp;quot;&amp;gt;bing.com&amp;lt;/a&amp;gt;&quot; /&gt;&#10;&lt;TextBlock reswplus:TextBlock.HtmlText=&quot;Test a formatted link: &amp;lt;a href=&amp;quot;http://www.bing.com&amp;quot;&amp;gt;click &amp;lt;i&amp;gt;here&amp;lt;/i&amp;gt;&amp;lt;/a&amp;gt;&quot; /&gt;" />
                 </StackPanel>
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Results:" />
+                <TextBlock Style="{StaticResource ResultLabelTextBlockStyle}" Text="Result:" />
 
-                <StackPanel Style="{StaticResource SubPanelStyle}">
+                <StackPanel Style="{StaticResource ResultPanelStyle}">
                     <TextBox
                         x:Name="UsernameTextBox"
                         Header="username"
@@ -98,8 +100,8 @@
                     <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="Test monospace: &lt;tt&gt;Hello world!&lt;/tt&gt;" />
                     <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="Superscript: &lt;sup&gt;2534i&lt;/sup&gt;, Subscript: &lt;sub&gt;2567.5&lt;/sub&gt;" />
                     <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="Test line-break&lt;br /&gt;This is a new line" />
-                    <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="Test lien: &lt;a href=&quot;http://www.bing.com&quot;&gt;bing.com&lt;/a&gt;" />
-                    <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="Test lien with formatting: &lt;a href=&quot;http://www.bing.com&quot;&gt;click &lt;i&gt;here&lt;/i&gt;&lt;/a&gt;" />
+                    <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="Test link: &lt;a href=&quot;http://www.bing.com&quot;&gt;bing.com&lt;/a&gt;" />
+                    <TextBlock Margin="0,4" reswplus:TextBlock.HtmlText="Test a formatted link: &lt;a href=&quot;http://www.bing.com&quot;&gt;click &lt;i&gt;here&lt;/i&gt;&lt;/a&gt;" />
                 </StackPanel>
             </StackPanel>
         </StackPanel>

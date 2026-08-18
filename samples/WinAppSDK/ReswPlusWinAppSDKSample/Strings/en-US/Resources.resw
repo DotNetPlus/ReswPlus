@@ -134,7 +134,7 @@
     <value>Reward your kitty, give {0} treats to your cat {2}!</value>
   </data>
   <data name="AppVersion" xml:space="preserve">
-    <value>version: {0} v{1}</value>
+    <value>{0} version {1}</value>
     <comment>#Format[APP_NAME, VERSION]</comment>
   </data>
   <data name="CopyrightNotice" xml:space="preserve">
@@ -248,8 +248,8 @@
     <value>Hello World!</value>
   </data>
   <data name="YourAgeAndName" xml:space="preserve">
-    <value>Your are {0}yo and named {1}!</value>
-    <comment>this string is used in the second tab. #Format[Double, String]</comment>
+    <value>You are {0} years old, {1}!</value>
+    <comment>#Format[Double, String]</comment>
   </data>
   <data name="TestUIDLocalization.Text" xml:space="preserve">
     <value>test</value>

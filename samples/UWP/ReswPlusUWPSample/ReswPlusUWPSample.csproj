@@ -127,6 +127,10 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="..\..\SyntaxHighlighting\SyntaxTokenizer.cs">
+      <Link>Controls\SyntaxTokenizer.cs</Link>
+    </Compile>
+    <Compile Include="Controls\SyntaxHighlighter.cs" />
     <Compile Include="Converters\ToUpperCaseConverter.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>

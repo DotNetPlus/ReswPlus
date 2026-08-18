@@ -5,15 +5,17 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:strings="using:ReswPlusWinAppSDKSample.Strings"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    Background="Transparent"
     mc:Ignorable="d">
     <ScrollViewer>
-        <StackPanel Margin="24">
-            <TextBlock Style="{StaticResource SectionDescriptionTextBlockStyle}" Text="When using String Formatting, you can replace one or many parameters by a reference to another string in your resw. This powerful feature will simplify your localizations and save you from having to translate the same string several times." />
+        <StackPanel Style="{StaticResource PageContentStyle}">
+            <StackPanel Style="{StaticResource PageIntroStyle}">
+                <TextBlock Style="{StaticResource SectionDescriptionTextBlockStyle}" Text="Reference another resource from #Format[...] by writing its key followed by (). ReswPlus resolves the referenced string before formatting, which avoids duplicating translatable product names or phrases." />
+            </StackPanel>
 
             <StackPanel Style="{StaticResource PartStyle}">
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Reference other string when using String Formatting" />
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Resource:" />
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Reuse another resource" />
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text=".resw entries:" />
                 <StackPanel Style="{StaticResource SubPanelStyle}">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -66,21 +68,21 @@
                     </Grid>
                 </StackPanel>
 
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML:" />
-                <StackPanel Style="{StaticResource SubPanelStyle}">
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML usage:" />
+                <StackPanel Style="{StaticResource CodePanelStyle}">
                     <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&lt;Button Content=&quot;{x:Bind strings:Resources.DownloadAndroidApp}&quot; /&gt;&#x0a;&lt;TextBlock Text=&quot;{x:Bind strings:Resources.LearnMoreAboutAndroidApp}&quot; /&gt;" />
                 </StackPanel>
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Results:" />
+                <TextBlock Style="{StaticResource ResultLabelTextBlockStyle}" Text="Result:" />
 
-                <StackPanel Style="{StaticResource SubPanelStyle}">
+                <StackPanel Style="{StaticResource ResultPanelStyle}">
                     <Button Content="{x:Bind strings:Resources.DownloadAndroidApp}" />
                     <TextBlock Text="{x:Bind strings:Resources.LearnMoreAboutAndroidApp}" />
                 </StackPanel>
             </StackPanel>
 
             <StackPanel Style="{StaticResource PartStyle}">
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Mix parameters and string references" />
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Resource:" />
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Combine resource references and runtime arguments" />
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text=".resw entries:" />
                 <StackPanel Style="{StaticResource SubPanelStyle}">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -121,13 +123,13 @@
                             Text="#Format[String username, AndroidApplicationName()]" />
                     </Grid>
                 </StackPanel>
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML:" />
-                <StackPanel Style="{StaticResource SubPanelStyle}">
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML usage:" />
+                <StackPanel Style="{StaticResource CodePanelStyle}">
                     <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&lt;TextBox x:Name=&quot;UsernameTextbox&quot; Header=&quot;Username&quot; Text=&quot;Roger&quot; /&gt;&#x0a;&lt;TextBlock Text=&quot;{x:Bind strings:Resources.WelcomeDownloadApp(UsernameTextbox.Text), Mode=OneWay}&quot; /&gt;" />
                 </StackPanel>
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Results:" />
+                <TextBlock Style="{StaticResource ResultLabelTextBlockStyle}" Text="Result:" />
 
-                <StackPanel Style="{StaticResource SubPanelStyle}">
+                <StackPanel Style="{StaticResource ResultPanelStyle}">
                     <TextBox
                         x:Name="UsernameTextbox"
                         Header="Username"

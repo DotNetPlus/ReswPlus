@@ -6,15 +6,17 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:strings="using:ReswPlusWinAppSDKSample.Strings"
     xmlns:system="using:System"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    Background="Transparent"
     mc:Ignorable="d">
     <ScrollViewer>
-        <StackPanel Margin="24">
-            <TextBlock Style="{StaticResource SectionDescriptionTextBlockStyle}" Text="ReswPlus supports variants of strings. A same resource identifier can return different strings depend of the variant id you selected. Variants can be used to represent genders, groups, categories..." />
+        <StackPanel Style="{StaticResource PageContentStyle}">
+            <StackPanel Style="{StaticResource PageIntroStyle}">
+                <TextBlock Style="{StaticResource SectionDescriptionTextBlockStyle}" Text="Variants let one resource key return different text for an application-defined choice, such as a pronoun, time of day, audience, or category. ReswPlus generates a method that selects the matching _VariantN entry." />
+            </StackPanel>
 
             <StackPanel Style="{StaticResource PartStyle}">
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Use variants for genders" />
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Resource:" />
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Select a variant at runtime" />
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text=".resw entries:" />
                 <StackPanel Style="{StaticResource SubPanelStyle}">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -57,13 +59,13 @@
                     </Grid>
                 </StackPanel>
 
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML:" />
-                <StackPanel Style="{StaticResource SubPanelStyle}">
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML usage:" />
+                <StackPanel Style="{StaticResource CodePanelStyle}">
                     <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&lt;ComboBox x:Name=&quot;PronounsComboBox&quot;&#x0a; Header=&quot;Select a personal pronoun&quot;&gt;&#x0a;   &lt;ComboBoxItem&gt;She/Her/Hers&lt;/ComboBoxItem&gt;&#x0a;   &lt;ComboBoxItem&gt;He/His/Him&lt;/ComboBoxItem&gt;&#x0a;   ...&#x0a;&lt;/ComboBox&gt;&#x0a;&lt;TextBlock Text=&quot;{x:Bind strings:Resources.DriverArrived(PronounsComboBox.SelectedIndex), Mode=OneWay}&quot; /&gt;" />
                 </StackPanel>
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Results:" />
+                <TextBlock Style="{StaticResource ResultLabelTextBlockStyle}" Text="Result:" />
 
-                <StackPanel Style="{StaticResource SubPanelStyle}">
+                <StackPanel Style="{StaticResource ResultPanelStyle}">
 
                     <ComboBox
                         x:Name="PronounsComboBox"
@@ -84,8 +86,8 @@
             </StackPanel>
 
             <StackPanel Style="{StaticResource PartStyle}">
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Display variations of messages using enum" />
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Resource:" />
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Use an enum to select a variant" />
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text=".resw entries:" />
                 <StackPanel Style="{StaticResource SubPanelStyle}">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -128,13 +130,13 @@
                     </Grid>
                 </StackPanel>
 
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML:" />
-                <StackPanel Style="{StaticResource SubPanelStyle}">
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML usage:" />
+                <StackPanel Style="{StaticResource CodePanelStyle}">
                     <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&lt;RadioButton GroupName=&quot;PartDayRadioButton&quot; Content=&quot;Morning&quot; IsChecked=&quot;True&quot; Checked=&quot;PartDayMorning_Checked&quot;/&gt;&#x0a;&lt;RadioButton GroupName=&quot;PartDayRadioButton&quot; Content=&quot;Afternoon&quot; Checked=&quot;PartDayAfternoon_Checked&quot; /&gt;&#x0a;&lt;RadioButton GroupName=&quot;PartDayRadioButton&quot; Content=&quot;Evening&quot; Checked=&quot;PartDayEvening_Checked&quot; /&gt;&#x0a;&lt;RadioButton GroupName=&quot;PartDayRadioButton&quot; Content=&quot;Night&quot; Checked=&quot;PartDayNight_Checked&quot; /&gt;&#x0a;&lt;TextBlock FontWeight=&quot;Bold&quot; Text=&quot;{x:Bind strings:Resources.Greeting(DayPart), Mode=OneWay}&quot; /&gt;" />
                 </StackPanel>
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Results:" />
+                <TextBlock Style="{StaticResource ResultLabelTextBlockStyle}" Text="Result:" />
 
-                <StackPanel Style="{StaticResource SubPanelStyle}">
+                <StackPanel Style="{StaticResource ResultPanelStyle}">
 
                     <RadioButton
                         Checked="PartDayMorning_Checked"
@@ -163,8 +165,8 @@
             </StackPanel>
 
             <StackPanel Style="{StaticResource PartStyle}">
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Variants + Pluralization + Formatting" />
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Resource:" />
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Combine variants, pluralization, and formatting" />
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text=".resw entries:" />
                 <StackPanel Style="{StaticResource SubPanelStyle}">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -217,13 +219,13 @@
                     </Grid>
                 </StackPanel>
 
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML:" />
-                <StackPanel Style="{StaticResource SubPanelStyle}">
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML usage:" />
+                <StackPanel Style="{StaticResource CodePanelStyle}">
                     <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&lt;RadioButton GroupName=&quot;PetTypeRadioButton&quot; Content=&quot;Dog&quot; IsChecked=&quot;True&quot; Checked=&quot;PetTypeDog_Checked&quot;/&gt;&#x0a;&lt;RadioButton GroupName=&quot;PetTypeRadioButton&quot; Content=&quot;Cat&quot; Checked=&quot;PetTypeCat_Checked&quot; /&gt;&#x0a;&lt;TextBox x:Name=&quot;PetNameTextBox&quot; Header=&quot;Pet name&quot; Text=&quot;Simba&quot; /&gt;&#x0a;&lt;Slider x:Name=&quot;PetNumberTreatsSlider&quot; Header=&quot;Number of treats&quot; Minimum=&quot;1&quot; Value=&quot;4&quot; Maximum=&quot;10&quot; /&gt;&#x0a;&lt;TextBlock FontWeight=&quot;Bold&quot; Text=&quot;{x:Bind strings:Resources.AnimalTreat(PetNumberTreatsSlider.Value, PetType, PetNameTextBox.Text), Mode=OneWay}&quot;/&gt;" />
                 </StackPanel>
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Results:" />
+                <TextBlock Style="{StaticResource ResultLabelTextBlockStyle}" Text="Result:" />
 
-                <StackPanel Style="{StaticResource SubPanelStyle}">
+                <StackPanel Style="{StaticResource ResultPanelStyle}">
 
                     <RadioButton
                         Checked="PetTypeDog_Checked"
