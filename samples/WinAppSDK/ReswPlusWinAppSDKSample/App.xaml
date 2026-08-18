@@ -64,11 +64,11 @@
                 <Setter Property="TextWrapping" Value="WrapWholeWords" />
             </Style>
 
-            <Style             x:Key="PageIntroStyle" TargetType="StackPanel">
-            <Setter Property="Background" Value="{ThemeResource SampleIntroBackgroundBrush}" />
-            <Setter Property="CornerRadius" Value="4" />
+            <Style x:Key="PageIntroStyle" TargetType="StackPanel">
+                <Setter Property="Background" Value="{ThemeResource SampleIntroBackgroundBrush}" />
+                <Setter Property="CornerRadius" Value="10" />
                 <Setter Property="Margin" Value="0,0,0,16" />
-                <Setter Property="Padding" Value="16,12,16,4" />
+                <Setter Property="Padding" Value="20,16" />
             </Style>
 
             <Style x:Key="TitleTextBlockStyle" TargetType="TextBlock">
