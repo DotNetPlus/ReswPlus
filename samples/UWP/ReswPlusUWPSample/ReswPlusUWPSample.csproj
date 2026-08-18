@@ -24,6 +24,7 @@
     <!-- The temporary certificate of this sample expired, and signing a package is not needed to build it -->
     <AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
     <Use64BitCompiler>true</Use64BitCompiler>
+    <LangVersion>latest</LangVersion>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
@@ -261,7 +262,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.2.14</Version>
+      <Version>6.2.15</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
