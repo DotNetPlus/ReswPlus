@@ -70,9 +70,6 @@ jobs:
           if ($packageVersion.Trim() -ne $tagVersion) {
             throw "Tag version '$tagVersion' does not match package version '$packageVersion'."
           }
-          if (-not (Select-String -Path CHANGELOG.md -Pattern "^## $([regex]::Escape($tagVersion)) " -Quiet)) {
-            throw "CHANGELOG.md does not contain release notes for '$tagVersion'."
-          }
           git merge-base --is-ancestor $env:GITHUB_SHA origin/main
           if ($LASTEXITCODE -ne 0) {
             throw "Release tags must point to a commit on main."

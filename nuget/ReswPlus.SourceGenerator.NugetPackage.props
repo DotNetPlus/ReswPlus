@@ -17,7 +17,7 @@
     <PackageTags>dotnet localization resw source-generator uwp winui plural pluralization</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>Roslyn-based generation, resource diagnostics, and corrected CLDR plural rules. See https://github.com/DotNetPlus/ReswPlus/blob/v$(Version)/CHANGELOG.md.</PackageReleaseNotes>
+    <PackageReleaseNotes>Roslyn-based generation, resource diagnostics, corrected CLDR plural rules, and refreshed UWP and WinUI samples. Requires a compiler host compatible with Roslyn 5.6.</PackageReleaseNotes>
     <NoWarn>$(NoWarn);NU5128</NoWarn>
   </PropertyGroup>
   <ItemGroup>
