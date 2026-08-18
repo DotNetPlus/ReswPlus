@@ -40,6 +40,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- WinUI activates XAML types dynamically and must retain its metadata. -->
+    <TrimmerRootAssembly Include="Microsoft.WinUI" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="..\..\SyntaxHighlighting\SyntaxTokenizer.cs" Link="Controls\SyntaxTokenizer.cs" />
   </ItemGroup>
 
