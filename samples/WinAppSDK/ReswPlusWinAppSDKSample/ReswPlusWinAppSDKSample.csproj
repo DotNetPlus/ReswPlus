@@ -23,6 +23,9 @@
     <AppxBundlePlatforms>x64|arm64</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <!-- CsWinRT's generated ABI code contains known annotation mismatches and obsolete suppressions. -->
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <NoWarn>$(NoWarn);IL2081;IL2121</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
