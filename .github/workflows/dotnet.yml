@@ -90,7 +90,16 @@ jobs:
 
       - name: Push NuGet package
         if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        run: dotnet nuget push "nupkg/*.nupkg" --api-key "$env:NUGET_API_KEY" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+        run: |
+          $packages = @(Get-ChildItem -Path nupkg -Filter *.nupkg)
+          if ($packages.Count -ne 1) {
+            throw "Expected exactly one NuGet package, found $($packages.Count)."
+          }
+          dotnet nuget push $packages[0].FullName --api-key $env:NUGET_API_KEY --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+          if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
+          }
         working-directory: ${{ github.workspace }}
