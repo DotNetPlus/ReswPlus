@@ -68,16 +68,15 @@ public static class SyntaxHighlighter
         }
 
         textBlock.Inlines.Clear();
-        var tokens = SyntaxTokenizer.Tokenize(sourceCode);
         var brushes = CreateBrushes(textBlock.ActualTheme);
         var position = 0;
 
-        foreach (var token in tokens)
+        SyntaxTokenizer.Tokenize(sourceCode, token =>
         {
             AddRun(textBlock, sourceCode, position, token.Start - position, null);
             AddRun(textBlock, sourceCode, token.Start, token.Length, brushes[(int)token.Kind]);
             position = token.Start + token.Length;
-        }
+        });
 
         AddRun(textBlock, sourceCode, position, sourceCode.Length - position, null);
     }
