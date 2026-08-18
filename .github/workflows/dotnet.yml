@@ -92,6 +92,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: build
     runs-on: windows-latest
+    environment: production
     permissions:
       contents: read
       id-token: write
