@@ -127,6 +127,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="..\..\SyntaxHighlighting\SyntaxTokenizer.cs">
+      <Link>Controls\SyntaxTokenizer.cs</Link>
+    </Compile>
     <Compile Include="Controls\SyntaxHighlighter.cs" />
     <Compile Include="Converters\ToUpperCaseConverter.cs" />
     <Compile Include="MainPage.xaml.cs">
@@ -262,9 +265,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ColorCode.UWP">
-      <Version>2.0.15</Version>
-    </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.15</Version>
     </PackageReference>
