@@ -5,14 +5,16 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:strings="using:ReswPlusWinAppSDKSample.Strings"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    Background="Transparent"
     mc:Ignorable="d">
     <ScrollViewer>
-        <StackPanel Margin="24">
-            <TextBlock Style="{StaticResource SectionDescriptionTextBlockStyle}" Text="When using String Formatting, you can replace one or many parameters by one of the Macro provided by ReswPlus to automatically insert Date, time, OS version, Application name... in your strings." />
+        <StackPanel Style="{StaticResource PageContentStyle}">
+            <StackPanel Style="{StaticResource PageIntroStyle}">
+                <TextBlock Style="{StaticResource SectionDescriptionTextBlockStyle}" Text="Macros let a formatted resource insert app or system values, such as the date, time, app version, architecture, or device information, without passing them from every call site." />
+            </StackPanel>
 
             <StackPanel Style="{StaticResource PartStyle}">
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Macros available" />
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Available macros" />
                 <StackPanel Style="{StaticResource SubPanelStyle}">
                     <TextBlock
                         Margin="0,12"
@@ -53,7 +55,7 @@
                         <TextBlock
                             Grid.Column="4"
                             FontWeight="Bold"
-                            Text="Example" />
+                            Text="Use macros in a resource" />
                         <TextBlock Grid.Row="1" Text="DATE" />
                         <TextBlock
                             Grid.Row="1"
@@ -88,7 +90,7 @@
                         <TextBlock
                             Grid.Row="4"
                             Grid.Column="2"
-                            Text="Current time, only hours/minutes" />
+                            Text="Current time (hours and minutes)" />
                         <TextBlock
                             Grid.Row="4"
                             Grid.Column="4"
@@ -98,7 +100,7 @@
                         <TextBlock
                             Grid.Row="5"
                             Grid.Column="2"
-                            Text="Name of the day" />
+                            Text="Day of the week" />
                         <TextBlock
                             Grid.Row="5"
                             Grid.Column="4"
@@ -108,7 +110,7 @@
                         <TextBlock
                             Grid.Row="6"
                             Grid.Column="2"
-                            Text="Name of the day" />
+                            Text="Day of the week" />
                         <TextBlock
                             Grid.Row="6"
                             Grid.Column="4"
@@ -149,7 +151,7 @@
                         <TextBlock
                             Grid.Row="10"
                             Grid.Column="2"
-                            Text="Id of the language" />
+                            Text="Language identifier" />
                         <TextBlock
                             Grid.Row="10"
                             Grid.Column="4"
@@ -170,7 +172,7 @@
                         Margin="0,12"
                         FontSize="16"
                         FontWeight="SemiBold"
-                        Text="Only UWP and .Net Core:" />
+                        Text="UWP and .NET apps:" />
 
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -199,7 +201,7 @@
                         <TextBlock
                             Grid.Column="4"
                             FontWeight="Bold"
-                            Text="Example" />
+                            Text="Use macros in a resource" />
                         <TextBlock Grid.Row="1" Text="VERSION" />
                         <TextBlock
                             Grid.Row="1"
@@ -282,7 +284,7 @@
                         <TextBlock
                             Grid.Column="4"
                             FontWeight="Bold"
-                            Text="Example" />
+                            Text="Use macros in a resource" />
                         <TextBlock Grid.Row="1" Text="ARCHITECTURE" />
                         <TextBlock
                             Grid.Row="1"
@@ -338,8 +340,8 @@
             </StackPanel>
 
             <StackPanel Style="{StaticResource PartStyle}">
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Example" />
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Resource:" />
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Use macros in a resource" />
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text=".resw entries:" />
                 <StackPanel Style="{StaticResource SubPanelStyle}">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -378,7 +380,7 @@
                         <TextBlock
                             Grid.Row="2"
                             Grid.Column="2"
-                            Text="version: {0} v{1}." />
+                            Text="{}{0} version {1}." />
                         <TextBlock
                             Grid.Row="2"
                             Grid.Column="4"
@@ -396,13 +398,13 @@
                     </Grid>
                 </StackPanel>
 
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML:" />
-                <StackPanel Style="{StaticResource SubPanelStyle}">
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML usage:" />
+                <StackPanel Style="{StaticResource CodePanelStyle}">
                     <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&lt;TextBlock Text=&quot;{x:Bind strings:Resources.CopyrightNotice}&quot; /&gt;&#x0a;&lt;TextBlock Text=&quot;{x:Bind strings:Resources.AppVersion}&quot; /&gt;&#x0a;&lt;TextBox x:Name=&quot;UsernameTextBox&quot; Header=&quot;Enter username:&quot; Text=&quot;Rudy&quot; Margin=&quot;0,12,0,0&quot; /&gt;&#x0a;&lt;TextBlock Text=&quot;{x:Bind strings:Resources.WelcomeMessageDay(UsernameTextBox.Text), Mode=OneWay}&quot; /&gt;" />
                 </StackPanel>
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Results:" />
+                <TextBlock Style="{StaticResource ResultLabelTextBlockStyle}" Text="Result:" />
 
-                <StackPanel Style="{StaticResource SubPanelStyle}">
+                <StackPanel Style="{StaticResource ResultPanelStyle}">
                     <TextBlock Text="{x:Bind strings:Resources.CopyrightNotice}" />
                     <TextBlock Text="{x:Bind strings:Resources.AppVersion}" />
 

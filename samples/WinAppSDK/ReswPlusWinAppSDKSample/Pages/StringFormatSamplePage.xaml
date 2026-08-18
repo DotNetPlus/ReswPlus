@@ -5,19 +5,72 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:strings="using:ReswPlusWinAppSDKSample.Strings"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    Background="Transparent"
     mc:Ignorable="d">
     <ScrollViewer>
-        <StackPanel Margin="24">
-            <TextBlock Style="{StaticResource SectionDescriptionTextBlockStyle}" Text="ReswPlus can generate strongly typed methods to format your strings. If you add the hashtag #Format[...] in the comment field, ReswPlus will automatically generate a method YourResourceName(..) with strongly typed parameters." />
-            <TextBlock
-                Margin="0,12,0,0"
-                Style="{StaticResource SectionDescriptionTextBlockStyle}"
-                Text="Types supported for parameters: s (string), d (int), u (uint), o (object), b (byte), l (long), f (double), c (char), ul (ulong), m (decimal)" />
+        <StackPanel Style="{StaticResource PageContentStyle}">
+            <StackPanel Style="{StaticResource PageIntroStyle}">
+                <TextBlock Style="{StaticResource SectionDescriptionTextBlockStyle}" Text="Add #Format[...] to the Comment field of a .resw entry and ReswPlus generates a strongly typed formatting method. The method accepts the declared arguments and formats the localized value without manual ResourceLoader or string.Format code." />
+                <TextBlock
+                    Margin="0,4,0,8"
+                    FontWeight="SemiBold"
+                    Text="Supported parameter types" />
+                <StackPanel Style="{StaticResource SubPanelStyle}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="32" />
+                            <ColumnDefinition Width="220" />
+                            <ColumnDefinition Width="32" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock FontWeight="Bold" Text=".resw declaration" />
+                        <TextBlock Grid.Column="2" FontWeight="Bold" Text="Generated C# type" />
+                        <TextBlock Grid.Column="4" FontWeight="Bold" Text="Also accepted" />
+                        <TextBlock Grid.Row="1" Text="Object" />
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="object" />
+                        <TextBlock Grid.Row="2" Text="Byte" />
+                        <TextBlock Grid.Row="2" Grid.Column="2" Text="byte" />
+                        <TextBlock Grid.Row="3" Text="Int" />
+                        <TextBlock Grid.Row="3" Grid.Column="2" Text="int" />
+                        <TextBlock Grid.Row="3" Grid.Column="4" Text="Int32" />
+                        <TextBlock Grid.Row="4" Text="UInt" />
+                        <TextBlock Grid.Row="4" Grid.Column="2" Text="uint" />
+                        <TextBlock Grid.Row="4" Grid.Column="4" Text="UInt32" />
+                        <TextBlock Grid.Row="5" Text="Long" />
+                        <TextBlock Grid.Row="5" Grid.Column="2" Text="long" />
+                        <TextBlock Grid.Row="5" Grid.Column="4" Text="Int64" />
+                        <TextBlock Grid.Row="6" Text="ULong" />
+                        <TextBlock Grid.Row="6" Grid.Column="2" Text="ulong" />
+                        <TextBlock Grid.Row="6" Grid.Column="4" Text="UInt64" />
+                        <TextBlock Grid.Row="7" Text="String" />
+                        <TextBlock Grid.Row="7" Grid.Column="2" Text="string" />
+                        <TextBlock Grid.Row="8" Text="Double" />
+                        <TextBlock Grid.Row="8" Grid.Column="2" Text="double" />
+                        <TextBlock Grid.Row="9" Text="Char" />
+                        <TextBlock Grid.Row="9" Grid.Column="2" Text="char" />
+                        <TextBlock Grid.Row="10" Text="Decimal" />
+                        <TextBlock Grid.Row="10" Grid.Column="2" Text="decimal" />
+                    </Grid>
+                </StackPanel>
+            </StackPanel>
 
             <StackPanel Style="{StaticResource PartStyle}">
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="String Format with strongly typed parameters" />
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Resource:" />
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Generate a typed formatting method" />
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text=".resw entries:" />
                 <StackPanel Style="{StaticResource SubPanelStyle}">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -51,24 +104,25 @@
                             Text="#Format[String, UInt32]" />
                     </Grid>
                 </StackPanel>
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Code generated by ReswPlus:" />
-                <StackPanel Style="{StaticResource SubPanelStyle}">
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Generated C#:" />
+                <StackPanel Style="{StaticResource CodePanelStyle}">
                     <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="public static string GotMessages(string paramString1, uint paramUint2)&#x0a;{&#x0a; return string.Format(_resourceLoader.GetString(&quot;GotMessages&quot;), paramString1, paramUint2);&#x0a;}" />
                 </StackPanel>
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML:" />
-                <StackPanel Style="{StaticResource SubPanelStyle}">
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML usage:" />
+                <StackPanel Style="{StaticResource CodePanelStyle}">
                     <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&#x3C;TextBlock Text=&#x22;{x:Bind strings:Resources.GotMessages(&#x27;Joe&#x27;, 10)}&#x22; /&#x3E;" />
                 </StackPanel>
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Results:" />
+                <TextBlock Style="{StaticResource ResultLabelTextBlockStyle}" Text="Result:" />
 
-                <StackPanel Style="{StaticResource SubPanelStyle}">
+                <StackPanel Style="{StaticResource ResultPanelStyle}">
                     <TextBlock Text="{x:Bind strings:Resources.GotMessages('Joe', 10)}" />
                 </StackPanel>
             </StackPanel>
 
             <StackPanel Style="{StaticResource PartStyle}">
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Support OneWay bindings" />
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Resource:" />
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Update formatted text with a one-way binding" />
+                <TextBlock Style="{StaticResource SectionDescriptionTextBlockStyle}" Text="Set Mode=OneWay on the x:Bind expression to update the localized result when a bound control value changes." />
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text=".resw entries:" />
                 <StackPanel Style="{StaticResource SubPanelStyle}">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -95,24 +149,24 @@
                         <TextBlock
                             Grid.Row="1"
                             Grid.Column="2"
-                            Text="Your are {0}yo and named {1}!" />
+                            Text="You are {0} years old, {1}!" />
                         <TextBlock
                             Grid.Row="2"
                             Grid.Column="4"
                             Text="#Format[Double, String]" />
                     </Grid>
                 </StackPanel>
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Code generated by ReswPlus:" />
-                <StackPanel Style="{StaticResource SubPanelStyle}">
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Generated C#:" />
+                <StackPanel Style="{StaticResource CodePanelStyle}">
                     <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="public static string YourAgeAndName(double paramDouble1, string paramString2)&#x0a;{&#x0a; return string.Format(_resourceLoader.GetString(&quot;YourAgeAndName&quot;), paramDouble1, paramString2);&#x0a;}" />
                 </StackPanel>
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML:" />
-                <StackPanel Style="{StaticResource SubPanelStyle}">
+                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML usage:" />
+                <StackPanel Style="{StaticResource CodePanelStyle}">
                     <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&#x3C;TextBlock Text=&#x22;{x:Bind strings:Resources.YourAgeAndName(AgeSlider.Value, YourNameTextBox.Text), Mode=OneWay}&#x22; /&#x3E;" />
                 </StackPanel>
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="Results:" />
+                <TextBlock Style="{StaticResource ResultLabelTextBlockStyle}" Text="Result:" />
 
-                <StackPanel Style="{StaticResource SubPanelStyle}">
+                <StackPanel Style="{StaticResource ResultPanelStyle}">
                     <TextBox
                         x:Name="YourNameTextBox"
                         Header="Enter your name"
