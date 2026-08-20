@@ -140,20 +140,60 @@ internal sealed class ReswProject : IEquatable<ReswProject>
     /// </summary>
     /// <param name="resourceFilePath">The path of the resource file.</param>
     /// <returns>The namespace, which follows the folder the resource file sits in.</returns>
+    /// <remarks>
+    /// A resource file that sits outside the project, which is how a project shares its resources with another
+    /// one, takes the root namespace of the project as is. The paths are resolved before being compared,
+    /// because a linked file is handed over the way it is written -- '..\Shared\Strings\en-US\Resources.resw' --
+    /// and comparing that verbatim makes a file outside the project look like it is inside it, with the leading
+    /// '..' ending up in the namespace of the generated class.
+    /// </remarks>
     public string GetNamespace(string resourceFilePath)
     {
-        var directory = Path.GetDirectoryName(resourceFilePath);
+        var directory = GetFullPath(Path.GetDirectoryName(resourceFilePath));
 
-        if (directory is null || !directory.StartsWith(ProjectRootPath, StringComparison.OrdinalIgnoreCase))
+        if (string.IsNullOrEmpty(directory))
         {
             return RootNamespace;
         }
 
-        var relative = directory.Substring(ProjectRootPath.Length)
+        var root = GetFullPath(ProjectRootPath)!.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
+
+        if (!(directory + Path.DirectorySeparatorChar).StartsWith(root, StringComparison.OrdinalIgnoreCase))
+        {
+            return RootNamespace;
+        }
+
+        var relative = directory!.Substring(root.Length - 1)
             .Trim(Path.DirectorySeparatorChar)
             .Replace(Path.DirectorySeparatorChar, '.');
 
         return relative.Length == 0 ? RootNamespace : $"{RootNamespace}.{relative}";
+    }
+
+    /// <summary>
+    /// Resolves a path, leaving it as it is when it cannot be resolved.
+    /// </summary>
+    /// <param name="path">The path to resolve.</param>
+    /// <returns>The resolved path, or <see langword="null"/> when there is no path to resolve.</returns>
+    /// <remarks>
+    /// Resolving a path touches no file, but it does reject the ones that are malformed, and a resource file
+    /// with an unusable path is not worth failing the whole generation over.
+    /// </remarks>
+    private static string? GetFullPath(string? path)
+    {
+        if (string.IsNullOrEmpty(path))
+        {
+            return path;
+        }
+
+        try
+        {
+            return Path.GetFullPath(path);
+        }
+        catch (Exception)
+        {
+            return path;
+        }
     }
 
     /// <inheritdoc/>

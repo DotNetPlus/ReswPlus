@@ -1,11 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\nuget\ReswPlus.targets" />
+  <Import Project="..\ReswPlusUWPSample.Shared\ReswPlusUWPSample.Shared.projitems" Label="Shared" />
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
-    <RootNamespace>ReswPlusNativeAotUwpSample</RootNamespace>
+    <!--
+      The same namespace as the .NET Native sample, because the two build the very same sources: the pages the
+      shared project holds name their types with it.
+    -->
+    <RootNamespace>ReswPlusUWPSample</RootNamespace>
+    <AssemblyName>ReswPlusNativeAotUwpSample</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <LangVersion>latest</LangVersion>
     <Platforms>x86;x64;ARM64</Platforms>
@@ -15,6 +21,11 @@
       'Windows.Foundation.UniversalApiContract' reference for the generator to recognize it by.
     -->
     <UseUwp>true</UseUwp>
+    <!--
+      A UWP app is a packaged app: this is what builds the package manifest and, with it, the 'resources.pri'
+      that the resource loader reads the strings out of at runtime.
+    -->
+    <EnableMsixTooling>true</EnableMsixTooling>
     <AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
@@ -22,18 +33,13 @@
     <AppxBundle>Never</AppxBundle>
   </PropertyGroup>
 
-  <ItemGroup>
-    <!--
-      A UWP project on modern .NET doesn't pick '.resw' files up on its own, so they are declared here. This is
-      also what hands them to ReswPlus: the targets add 'PRIResource' to the files the compiler passes to the
-      generators.
-    -->
-    <PRIResource Include="Strings\**\*.resw" />
-  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <!-- The point of the modern UWP support: the .NET Native toolchain is replaced by Native AOT. -->
+    <PublishAot>true</PublishAot>
+  </PropertyGroup>
 
-  <ItemGroup>
-    <!-- The images are shared with the .NET Native UWP sample rather than copied beside them. -->
-    <Content Include="..\ReswPlusUWPSample\Assets\*.png" Link="Assets\%(Filename)%(Extension)" />
+  <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)' != 'true' and '$(EnableMsixTooling)' == 'true'">
+    <ProjectCapability Include="Msix" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,5 +47,6 @@
       <Project>{44d125b3-6c8a-4f2f-a76f-bffb2ad7e70d}</Project>
       <Name>ReswPlus.SourceGenerator</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ReswPlusNativeAotUwpSampleExternalLibrary\ReswPlusNativeAotUwpSampleExternalLibrary.csproj" />
   </ItemGroup>
 </Project>

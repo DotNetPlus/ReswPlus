@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\..\nuget\ReswPlus.targets" />
+  <Import Project="..\ReswPlusUWPSampleExternalLibrary.Shared\ReswPlusUWPSampleExternalLibrary.Shared.projitems" Label="Shared" />
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <!-- The same namespace as the .NET Native library, because the pages using it are shared by both apps. -->
+    <RootNamespace>ReswPlusUWPSampleExternalLibrary</RootNamespace>
+    <AssemblyName>ReswPlusNativeAotUwpSampleExternalLibrary</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <LangVersion>latest</LangVersion>
+    <Platforms>x86;x64;ARM64</Platforms>
+    <UseUwp>true</UseUwp>
+    <EnableMsixTooling>true</EnableMsixTooling>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\ReswPlus.SourceGenerator\ReswPlus.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" Private="false">
+      <Project>{44d125b3-6c8a-4f2f-a76f-bffb2ad7e70d}</Project>
+      <Name>ReswPlus.SourceGenerator</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

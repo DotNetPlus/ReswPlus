@@ -30,7 +30,7 @@
   <Applications>
     <Application Id="App"
       Executable="$targetnametoken$.exe"
-      EntryPoint="ReswPlusNativeAotUwpSample.App">
+      EntryPoint="ReswPlusUWPSample.App">
       <uap:VisualElements
         DisplayName="ReswPlus Native AOT UWP Sample"
         Square150x150Logo="Assets\Square150x150Logo.png"
