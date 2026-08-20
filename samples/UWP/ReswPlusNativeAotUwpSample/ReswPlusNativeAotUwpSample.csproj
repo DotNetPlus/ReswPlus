@@ -46,6 +46,18 @@
     <PublishAot>true</PublishAot>
 
     <!--
+      An app doesn't export the native 'DllGetActivationFactory' on its own, because that is only turned on
+      for libraries by default. UWP activates through it, so an AOT compiled app that doesn't export it
+      cannot be started and faults inside the XAML framework. This exports it, and forwards activation to
+      the referenced WinRT components, so one binary implements the app and its components. The Store's own
+      UWP app does the same.
+    -->
+    <CsWinRTMergeReferencedActivationFactories>true</CsWinRTMergeReferencedActivationFactories>
+
+    <!-- The native export above is generated as unsafe code. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <!--
       Set this to package on build, which is what turns Native AOT on. In Visual Studio it is the
       'NativeAOT Build' checkbox in the project properties, which writes 'GenerateAppxPackageOnBuild' into
       the .user file. It is taken through a name of our own because setting 'GenerateAppxPackageOnBuild'
@@ -61,6 +73,16 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <TrimmerSingleWarn>false</TrimmerSingleWarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!--
+      The generator that emits the native export above ships in CsWinRT, and the one bundled with the SDK
+      produces code that doesn't compile for this project. Referencing the package directly takes a version
+      whose generator works, and brings with it the target that produces the small stub executable that sits
+      beside the native binary. The Store references it for the same reason.
+    -->
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.1" />
+  </ItemGroup>
 
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)' != 'true' and '$(EnableMsixTooling)' == 'true'">
     <ProjectCapability Include="Msix" />
