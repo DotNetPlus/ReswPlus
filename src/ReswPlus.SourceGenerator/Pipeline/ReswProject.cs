@@ -104,7 +104,13 @@ internal sealed class ReswProject : IEquatable<ReswProject>
             problems.Add(Diagnostics.UnknownProjectType.Id);
         }
 
-        if (compilationInfo.AppType is not (AppType.WindowsAppSDK or AppType.UWP))
+        // A UWP project built for Native AOT carries no 'Windows.Foundation.UniversalApiContract' reference for
+        // the compilation to be recognized by, and says what it is with the 'UseUwp' property instead. Saying so
+        // outright is better evidence than a reference happening to be named a certain way, so the property wins
+        // over what the references suggest.
+        var appType = options.UseUwp ? AppType.UWP : compilationInfo.AppType;
+
+        if (appType is not (AppType.WindowsAppSDK or AppType.UWP))
         {
             return Unsupported([.. problems, Diagnostics.UnrecognizedAppType.Id]);
         }
@@ -116,7 +122,7 @@ internal sealed class ReswProject : IEquatable<ReswProject>
 
         return new ReswProject(
             isSupported: true,
-            compilationInfo.AppType,
+            appType,
             compilationInfo.AssemblyName ?? "",
             projectRootPath!,
             options.RootNamespace!,
