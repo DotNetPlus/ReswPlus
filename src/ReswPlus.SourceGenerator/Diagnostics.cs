@@ -146,4 +146,51 @@ internal static class Diagnostics
         GlobalizationCategory,
         DiagnosticSeverity.Info,
         isEnabledByDefault: true);
+
+    /// <summary>
+    /// RESWP0012: a resource carries the name of a member the generated types declare themselves.
+    /// </summary>
+    /// <remarks>
+    /// The resource is skipped rather than emitted, because a member declared twice, or declared with the name
+    /// of the type holding it, is a compilation error in the project consuming the generated code.
+    /// </remarks>
+    public static readonly DiagnosticDescriptor ReservedResourceName = new(
+        "RESWP0012",
+        "Reserved resource name",
+        "The resource '{0}' is skipped, because the class generated for '{1}' declares a member of that name itself",
+        ResourcesCategory,
+        DiagnosticSeverity.Warning,
+        isEnabledByDefault: true);
+
+    /// <summary>
+    /// RESWP0013: a <c>#Format</c> tag declares two parameters of the same name.
+    /// </summary>
+    /// <remarks>
+    /// The generated member declares each parameter under a name of its own regardless, so the second one is
+    /// renamed rather than dropped, which keeps the arguments in the order the value expects them.
+    /// </remarks>
+    public static readonly DiagnosticDescriptor DuplicateFormatParameter = new(
+        "RESWP0013",
+        "Duplicate format parameter",
+        "The '#Format' tag of the resource '{0}' declares the parameter '{1}' more than once, so the generated method renames all but the first",
+        ResourcesCategory,
+        DiagnosticSeverity.Warning,
+        isEnabledByDefault: true);
+
+    /// <summary>
+    /// RESWP0014: a resource file could not be turned into code.
+    /// </summary>
+    /// <remarks>
+    /// This reports what would otherwise escape the generator as an unhandled exception, which the compiler
+    /// turns into a single CS8785 naming neither the file nor the reason, and which stops every other resource
+    /// file of the project from being generated as well. It stays a warning: the class that could not be
+    /// generated reports errors of its own at each of its use sites, and those are what should be fixed.
+    /// </remarks>
+    public static readonly DiagnosticDescriptor ResourceFileNotProcessed = new(
+        "RESWP0014",
+        "Resource file not processed",
+        "ReswPlus could not generate the code of '{0}': {1}",
+        ResourcesCategory,
+        DiagnosticSeverity.Warning,
+        isEnabledByDefault: true);
 }

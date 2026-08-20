@@ -210,12 +210,32 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
 
                 var baseFilename = Path.GetFileName(filePath).Split('.')[0];
                 var text = additionalText.GetText(spc.CancellationToken)?.ToString() ?? "";
-                var generatedData = codeGenerator.GenerateCode(
-                    baseFilename: baseFilename,
-                    content: text,
-                    defaultNamespace: namespaceForReswFile,
-                    isAdvanced: true,
-                    appType: appType);
+
+                GenerationResult? generatedData;
+
+                // Whatever a resource file holds, and however malformed it is, it must not take the generation
+                // of the rest of the project down with it: an exception escaping here is reported by the
+                // compiler as a single CS8785 that names neither the file nor the reason, and no resource file
+                // of the project is generated at all.
+                try
+                {
+                    generatedData = codeGenerator.GenerateCode(
+                        baseFilename: baseFilename,
+                        content: text,
+                        defaultNamespace: namespaceForReswFile,
+                        isAdvanced: true,
+                        appType: appType);
+                }
+                catch (Exception exception)
+                {
+                    spc.ReportDiagnostic(Diagnostic.Create(
+                        Diagnostics.ResourceFileNotProcessed,
+                        CreateFileLocation(filePath),
+                        Path.GetFileName(filePath),
+                        exception.Message));
+
+                    continue;
+                }
 
                 if (generatedData is null)
                 {

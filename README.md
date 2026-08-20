@@ -86,6 +86,9 @@ ReswPlus checks the content of your `.resw` files while it generates the code, a
 | `RESWP0008` | A pluralized resource is missing the plural forms its language requires, which silently produces grammatically wrong text. |
 | `RESWP0009` | Two resources of the same file conflict with each other, because their names only differ by case or because a plain resource collides with a pluralized one. |
 | `RESWP0010` | A value that is used as a composite format string is malformed. |
+| `RESWP0012` | A resource carries the name of a member the generated class declares itself, so it is skipped. |
+| `RESWP0013` | A `#Format` tag declares the same parameter name twice, so the generated method renames all but the first. |
+| `RESWP0014` | A `.resw` file could not be turned into code, and the rest of the project was generated without it. |
 
 These are reported as **warnings**, so that updating the package never breaks a build that already has an inconsistency. Escalate the ones you want to be fatal from your `.editorconfig`:
 

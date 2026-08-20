@@ -41,7 +41,17 @@ public sealed class MacroFormatTagParameter : IFormatTagParameter
 public sealed class FunctionFormatTagParameter : IFormatTagParameter
 {
     public ParameterType Type { get; }
-    public string Name { get; }
+
+    /// <summary>
+    /// Gets or sets the name the parameter is declared under in the generated member.
+    /// </summary>
+    /// <remarks>
+    /// The name comes from the <c>#Format</c> tag, or is derived from the type of the parameter when the tag
+    /// leaves it out. It is settable because a generated member has to declare each of its parameters under a
+    /// distinct name, which the tag alone does not guarantee.
+    /// </remarks>
+    public string Name { get; set; }
+
     public ParameterType? TypeToCast { get; }
     public bool IsVariantId { get; }
 
