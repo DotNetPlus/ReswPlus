@@ -271,10 +271,12 @@ public class PluralProviders
     [InlineData("Croat", 21, "ONE")]
     [InlineData("Croat", 2147483651d, "ONE")]
     [InlineData("Croat", 2147483652d, "FEW")]
-    [InlineData("Hebrew", 10, "MANY")]
-    [InlineData("Hebrew", 2147483650d, "MANY")]
     [InlineData("Manx", 2147483651d, "ONE")]
-    [InlineData("Maltese", 2147483602d, "FEW")]
+    [InlineData("Maltese", 3, "FEW")]
+    [InlineData("Maltese", 2147483603d, "FEW")]
+    // Maltese declines two items with a dual form, which is an exact quantity rather than a last-digit rule,
+    // so a large quantity ending in 02 is not declined with it.
+    [InlineData("Maltese", 2147483602d, "OTHER")]
     [InlineData("ScottishGaelic", 2147483651d, "OTHER")]
     [InlineData("Welsh", 2147483651d, "OTHER")]
     public void TheIntegerPartIsReadPastTheThirtyTwoBitRange(string providerId, double number, string expected)

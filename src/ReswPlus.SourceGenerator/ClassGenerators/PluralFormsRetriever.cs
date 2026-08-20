@@ -303,7 +303,7 @@ internal sealed class PluralFormsRetriever
         ),
         new PluralForm(
             "Hebrew",
-            [PluralCategory.One, PluralCategory.Two, PluralCategory.Many, PluralCategory.Other],
+            [PluralCategory.One, PluralCategory.Two, PluralCategory.Other],
             [
                 "he", // Hebrew
                 "iw"  // (old code for Hebrew)
@@ -356,7 +356,6 @@ internal sealed class PluralFormsRetriever
             "OneOrTwo",
             [PluralCategory.One, PluralCategory.Two, PluralCategory.Other],
             [
-                "kw",   // Cornish
                 "smn",  // Inari Sami
                 "iu",   // Inuktitut
                 "smj",  // Lule Sami
@@ -407,9 +406,16 @@ internal sealed class PluralFormsRetriever
         ),
         new PluralForm(
             "Maltese",
-            [PluralCategory.One, PluralCategory.Few, PluralCategory.Many, PluralCategory.Other],
+            [PluralCategory.One, PluralCategory.Two, PluralCategory.Few, PluralCategory.Many, PluralCategory.Other],
             [
                 "mt" // Maltese
+            ]
+        ),
+        new PluralForm(
+            "Cornish",
+            [PluralCategory.Zero, PluralCategory.One, PluralCategory.Two, PluralCategory.Few, PluralCategory.Many, PluralCategory.Other],
+            [
+                "kw" // Cornish
             ]
         ),
         new PluralForm(

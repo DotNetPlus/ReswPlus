@@ -26,6 +26,7 @@
       <EmbeddedResource Include="Templates\Plurals\ArabicProvider.txt" />
       <EmbeddedResource Include="Templates\Plurals\BreizhProvider.txt" />
       <EmbeddedResource Include="Templates\Plurals\CentralAtlasTamazightProvider.txt" />
+      <EmbeddedResource Include="Templates\Plurals\CornishProvider.txt" />
       <EmbeddedResource Include="Templates\Plurals\CroatProvider.txt" />
       <EmbeddedResource Include="Templates\Plurals\CzechProvider.txt" />
       <EmbeddedResource Include="Templates\Plurals\DanishProvider.txt" />
