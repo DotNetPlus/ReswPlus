@@ -134,7 +134,6 @@
     <Content Include="$(MSBuildThisFileDirectory)Assets\Square44x44Logo.targetsize-256.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\Square44x44Logo.targetsize-32.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\Square44x44Logo.targetsize-48.png" />
-    <Content Include="$(MSBuildThisFileDirectory)Assets\StoreLogo.backup.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\StoreLogo.scale-100.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\StoreLogo.scale-125.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\StoreLogo.scale-150.png" />

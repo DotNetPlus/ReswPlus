@@ -15,6 +15,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <LangVersion>latest</LangVersion>
     <Platforms>x86;x64;ARM64</Platforms>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
     <!--
       This is what makes the project a UWP project on modern .NET. It is also the only thing that tells
       ReswPlus what kind of app this is: unlike a UWP project built with .NET Native, this one carries no
@@ -34,8 +35,13 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <!-- The point of the modern UWP support: the .NET Native toolchain is replaced by Native AOT. -->
+    <!--
+      Native AOT is what replaces the .NET Native toolchain a UWP app used to be compiled with. It only takes
+      effect when the app is published, and it has to be declared here rather than in the publish profiles so
+      that the restore brings the AOT compiler in with the rest of the assets.
+    -->
     <PublishAot>true</PublishAot>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)' != 'true' and '$(EnableMsixTooling)' == 'true'">
@@ -43,7 +49,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\ReswPlus.SourceGenerator\ReswPlus.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" Private="false">
+    <ProjectReference Include="..\..\..\src\ReswPlus.SourceGenerator\ReswPlus.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" Private="false" SetPlatform="Platform=AnyCPU">
       <Project>{44d125b3-6c8a-4f2f-a76f-bffb2ad7e70d}</Project>
       <Name>ReswPlus.SourceGenerator</Name>
     </ProjectReference>

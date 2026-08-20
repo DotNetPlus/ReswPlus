@@ -1,4 +1,4 @@
-﻿################################################################################
+################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
@@ -25,6 +25,9 @@ bld/
 [Oo]bj/
 [Ll]og/
 Generated Files/
+
+# Generator output emitted beside a project by EmitCompilerGeneratedFiles
+Generated/
 
 # ReSharper is a .NET coding add-in
 _ReSharper*/
