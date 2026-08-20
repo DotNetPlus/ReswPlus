@@ -89,39 +89,10 @@
             </StackPanel>
 
             <StackPanel Style="{StaticResource PartStyle}">
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Use resources where x:Bind is unavailable" />
-                <TextBlock Style="{StaticResource SectionDescriptionTextBlockStyle}" Text="x:Bind is fast and compile-time checked, but it is not supported by every XAML property. ReswPlus also generates a markup extension so you can reference a validated resource key in those locations." />
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML usage:" />
-                <StackPanel Style="{StaticResource CodePanelStyle}">
-                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&#x3C;TextBlock Text=&#x22;{strings:Resources Key=WelcomeTitle}&#x22; /&#x3E;&#x0a;&#x3C;Button Content=&#x22;{strings:Resources Key=WelcomeTitle}&#x22; ToolTipService.ToolTip=&#x22;{strings:Resources Key=ThisIsATooltip}&#x22; /&#x3E;" />
-                </StackPanel>
-                <TextBlock Style="{StaticResource ResultLabelTextBlockStyle}" Text="Result:" />
-
-                <StackPanel Style="{StaticResource ResultPanelStyle}">
-                    <TextBlock Text="{strings:Resources Key=WelcomeTitle}" />
-                    <Button Content="{strings:Resources Key=WelcomeTitle}" ToolTipService.ToolTip="{strings:Resources Key=ThisIsATooltip}" />
-                </StackPanel>
-            </StackPanel>
-
-            <StackPanel Style="{StaticResource PartStyle}">
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Use converters with the markup extension" />
-                <TextBlock Style="{StaticResource SectionDescriptionTextBlockStyle}" Text="The generated markup extension supports both IValueConverter and ConverterParameter." />
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML usage:" />
-                <StackPanel Style="{StaticResource CodePanelStyle}">
-                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&#x3C;TextBlock Text=&#x22;{strings:Resources Key=WelcomeTitle, Converter={StaticResource ToUpperCaseConverter}}&#x22; /&#x3E;" />
-                </StackPanel>
-                <TextBlock Style="{StaticResource ResultLabelTextBlockStyle}" Text="Result:" />
-
-                <StackPanel Style="{StaticResource ResultPanelStyle}">
-                    <TextBlock Text="{strings:Resources Key=WelcomeTitle, Converter={StaticResource ToUpperCaseConverter}}" />
-                </StackPanel>
-            </StackPanel>
-
-            <StackPanel Style="{StaticResource PartStyle}">
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Use resources from another assembly" />
                 <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML usage:" />
                 <StackPanel Style="{StaticResource CodePanelStyle}">
-                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&#x3C;TextBlock Text=&#x22;{strings:Resources Key=WelcomeTitle, Converter={StaticResource ToUpperCaseConverter}}&#x22; /&#x3E;" />
+                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&#x3C;TextBlock Text=&#x22;{x:Bind externalStrings:Resources.ExternalString}&#x22; /&#x3E;" />
                 </StackPanel>
                 <TextBlock Style="{StaticResource ResultLabelTextBlockStyle}" Text="Result:" />
 
