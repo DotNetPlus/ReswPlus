@@ -15,7 +15,7 @@ _**Now available as a Source Generator!**_
   - Typed and named parameters, literal strings, string references, and macros.
 - **Pluralization support** for *196 languages*, including handling empty states when the item count is zero.
 - **Variant support** for managing multiple versions of a string.
-- **Generation of a markup extension** for accessing strings with **compile-time verification**. *(Not usable when the app is compiled with Native AOT — see [Native AOT](#-native-aot).)*
+- **Generation of a markup extension** for accessing strings with **compile-time verification**. *(Deprecated — see [Native AOT](#-native-aot).)*
 
 ## ✅ Feature Comparison
 
@@ -50,17 +50,26 @@ Without it, such a project is reported as `RESWP0005` and no code is generated f
 
 ## ⚡ Native AOT
 
-Everything ReswPlus generates works when the app is compiled with Native AOT, **except the markup extension**:
+Everything ReswPlus generates works when the app is compiled with Native AOT, **except the markup extension**, which is deprecated for that reason:
 
 ```xml
 <!-- Works with Native AOT: resolved while the app is compiled -->
 <TextBlock Text="{x:Bind strings:Resources.WelcomeTitle}" />
 
-<!-- Does NOT work with Native AOT: created by the XAML parser while the page is read -->
+<!-- Deprecated, and does NOT work with Native AOT: created by the XAML parser while the page is read -->
 <TextBlock Text="{strings:Resources Key=WelcomeTitle}" />
 ```
 
-A page that uses the markup extension fails to load, with `Markup extension could not provide value`. Use `x:Bind` instead; it takes a converter the same way, and it is checked while the app is compiled rather than when the page is shown.
+A page that uses the markup extension fails to load, with `Markup extension could not provide value`. It is still generated, so an app that does not use Native AOT keeps building, but it is marked `[Obsolete]` and the build tells you what to write instead.
+
+`x:Bind` replaces it everywhere. It reads the same generated members, takes a converter and a converter parameter the same way, and is checked while the app is compiled rather than when the page is shown:
+
+| Instead of | Write |
+| --- | --- |
+| `{strings:Resources Key=Foo}` | `{x:Bind strings:Resources.Foo}` |
+| `{strings:Resources Key=Foo, Converter={StaticResource C}}` | `{x:Bind strings:Resources.Foo, Converter={StaticResource C}}` |
+
+`x:Bind` is not available in a few places — a `Setter` in a `Style`, for instance. Set those from code-behind using the same generated members.
 
 This is not something a trimming directive can keep: preserving the generated types with `rd.xml` or a trimmer root does not change it.
 

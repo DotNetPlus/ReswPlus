@@ -5,18 +5,30 @@ Windows 10 Fall Creators Update (1709).
 
 ## Can I use the markup extension in an app compiled with Native AOT?
 
-No. A markup extension is created by the XAML parser while it reads a page, and a UWP app compiled with
-Native AOT cannot create it, so a page that uses one fails to load with `Markup extension could not provide
-value`. Preserving the generated types with `rd.xml` or a trimmer root does not change it.
+No, and it is deprecated for that reason. A markup extension is created by the XAML parser while it reads a
+page, and a UWP app compiled with Native AOT cannot create it, so a page that uses one fails to load with
+`Markup extension could not provide value`. Preserving the generated types with `rd.xml` or a trimmer root
+does not change it.
 
-Use `x:Bind` instead, which is resolved while the app is compiled and works either way:
+It is still generated, so an app that does not use Native AOT keeps building, but it is marked `[Obsolete]`
+and the build tells you what to write instead.
 
-```xml
-<TextBlock Text="{x:Bind strings:Resources.WelcomeTitle}" />
+Use `x:Bind`, which reads the same generated members, is resolved while the app is compiled, and works
+whichever way the app is built:
+
+| Instead of | Write |
+| --- | --- |
+| `{strings:Resources Key=Foo}` | `{x:Bind strings:Resources.Foo}` |
+| `{strings:Resources Key=Foo, Converter={StaticResource C}}` | `{x:Bind strings:Resources.Foo, Converter={StaticResource C}}` |
+
+`x:Bind` is not available in a few places — a `Setter` in a `Style`, for instance. Set those from code-behind
+using the same generated members:
+
+```csharp
+myTextBlock.Text = Resources.Foo;
 ```
 
-It takes a converter the same way the markup extension does. Everything else ReswPlus generates works with
-Native AOT.
+Everything else ReswPlus generates works with Native AOT.
 
 ## Does it support VB or C++?
 

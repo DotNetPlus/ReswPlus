@@ -70,6 +70,23 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
     private const string KeyNameMethod = "GetKeyName";
 
     /// <summary>
+    /// The reason the generated markup extension is marked obsolete, and what to use instead.
+    /// </summary>
+    /// <remarks>
+    /// A markup extension is created by the XAML parser while it reads a page, which a UWP app compiled with
+    /// Native AOT cannot do: the page fails to load with "Markup extension could not provide value", and no
+    /// trimming directive keeps it working. The message names the replacement, because it is what a consumer
+    /// sees in the build output.
+    /// </remarks>
+    private const string ObsoleteMarkupExtensionMessage =
+        "The generated markup extension does not work in an app compiled with Native AOT, because a markup " +
+        "extension is created by the XAML parser while it reads the page. Use x:Bind instead, which reads " +
+        "the same generated members and is resolved while the app is compiled: replace " +
+        "\"{strings:Resources Key=Foo}\" with \"{x:Bind strings:Resources.Foo}\", and " +
+        "\"{strings:Resources Key=Foo, Converter={StaticResource C}}\" with " +
+        "\"{x:Bind strings:Resources.Foo, Converter={StaticResource C}}\".";
+
+    /// <summary>
     /// The text used for the <c>&lt;returns&gt;</c> element of the generated lookup members.
     /// </summary>
     private const string LocalizedStringReturns = "The localized string for the current UI culture.";
@@ -813,6 +830,22 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
                         )
                     )
                 )
+            ),
+            AttributeList(
+                SingletonSeparatedList(
+                    Attribute(ParseName("global::System.Obsolete"))
+                    .WithArgumentList(
+                        AttributeArgumentList(
+                            SingletonSeparatedList(
+                                AttributeArgument(
+                                    LiteralExpression(
+                                        SyntaxKind.StringLiteralExpression,
+                                        Literal(ObsoleteMarkupExtensionMessage))
+                                )
+                            )
+                        )
+                    )
+                )
             )
         ]);
 
@@ -963,7 +996,7 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
                 )
             )
             .WithAttributeLists(attributes)
-            .WithLeadingTrivia(CreateDocumentation($"A XAML markup extension that looks up the strings of the '{resourceFileName}' resource file."))
+            .WithLeadingTrivia(CreateDocumentation($"A XAML markup extension that looks up the strings of the '{resourceFileName}' resource file. Obsolete: it does not work in an app compiled with Native AOT, use x:Bind on the generated members instead."))
             .WithModifiers(TokenList(
                 Token(SyntaxKind.PublicKeyword),
                 Token(SyntaxKind.PartialKeyword)

@@ -1,4 +1,4 @@
-<Page
+﻿<Page
     x:Class="ReswPlusUWPSample.Pages.StronglyTypedSamplePage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -85,38 +85,6 @@
 
                 <StackPanel Style="{StaticResource ResultPanelStyle}">
                     <TextBlock Text="{x:Bind strings:Resources.WelcomeTitle.ToLower()}" />
-                </StackPanel>
-            </StackPanel>
-
-            <StackPanel Style="{StaticResource PartStyle}">
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Use resources where x:Bind is unavailable" />
-                <TextBlock Style="{StaticResource SectionDescriptionTextBlockStyle}" Text="x:Bind is fast and compile-time checked, but it is not supported by every XAML property. ReswPlus also generates a markup extension so you can reference a validated resource key in those locations." />
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML usage:" />
-                <StackPanel Style="{StaticResource CodePanelStyle}">
-                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&#x3C;TextBlock Text=&#x22;{strings:Resources Key=WelcomeTitle}&#x22; /&#x3E;&#x0a;&#x3C;Button Content=&#x22;{strings:Resources Key=WelcomeTitle}&#x22; ToolTipService.ToolTip=&#x22;{strings:Resources Key=ThisIsATooltip}&#x22; /&#x3E;" />
-                </StackPanel>
-                <TextBlock Style="{StaticResource ResultLabelTextBlockStyle}" Text="Result:" />
-
-                <StackPanel Style="{StaticResource ResultPanelStyle}">
-                    <TextBlock
-                        Style="{StaticResource SectionDescriptionTextBlockStyle}"
-                        Text="Not shown here. A markup extension is created by the XAML parser while it reads the page, and a UWP app compiled with Native AOT cannot create it, so a page that uses one fails to load. Both samples share these pages, so the markup extension is left out of them and x:Bind is used instead, which is resolved while the app is compiled and works either way." />
-                </StackPanel>
-            </StackPanel>
-
-            <StackPanel Style="{StaticResource PartStyle}">
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Use converters with the markup extension" />
-                <TextBlock Style="{StaticResource SectionDescriptionTextBlockStyle}" Text="The generated markup extension supports both IValueConverter and ConverterParameter." />
-                <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML usage:" />
-                <StackPanel Style="{StaticResource CodePanelStyle}">
-                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&#x3C;TextBlock Text=&#x22;{strings:Resources Key=WelcomeTitle, Converter={StaticResource ToUpperCaseConverter}}&#x22; /&#x3E;" />
-                </StackPanel>
-                <TextBlock Style="{StaticResource ResultLabelTextBlockStyle}" Text="Result:" />
-
-                <StackPanel Style="{StaticResource ResultPanelStyle}">
-                    <TextBlock
-                        Style="{StaticResource SectionDescriptionTextBlockStyle}"
-                        Text="Not shown here either, for the same reason. A converter can be applied to x:Bind in the same way, which the section above does." />
                 </StackPanel>
             </StackPanel>
 
