@@ -2,9 +2,11 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <ItemGroup>
         <CompilerVisibleProperty Include="MSBuildProjectFullPath" />
+        <CompilerVisibleProperty Include="ProjectDir" />
         <CompilerVisibleProperty Include="RootNamespace" />
         <CompilerVisibleProperty Include="DefaultLanguage" />
         <CompilerVisibleProperty Include="OutputType" />
+        <CompilerVisibleProperty Include="UseUwp" />
         <CompilerVisibleProperty Include="ReswPlusUseApplicationLanguages" />
     </ItemGroup>
     <PropertyGroup>

@@ -60,7 +60,9 @@ internal static class ReswGeneratorHarness
     /// <param name="projectTypeGuids">The <c>ProjectTypeGuids</c> of the project, which is how a legacy project declares that it is a library.</param>
     /// <param name="defaultLanguage">The <c>DefaultLanguage</c> of the project, which picks the language the code is generated from.</param>
     /// <param name="useApplicationLanguages">The <c>ReswPlusUseApplicationLanguages</c> of the project, or <see langword="null"/> to leave it undeclared.</param>
+    /// <param name="useUwp">The <c>UseUwp</c> of the project, which is how a UWP project built for Native AOT says what it is, or <see langword="null"/> to leave it undeclared.</param>
     /// <param name="assemblyName">The name of the assembly being compiled.</param>
+    /// <param name="nativeAotUwp">Whether the compilation should look like a UWP project built for Native AOT, which has the UWP types but no recognizable API contract reference.</param>
     /// <param name="additionalFiles">Files to pass to the compiler on top of <paramref name="files"/>, to cover what the generator does with the ones it doesn't own.</param>
     /// <returns>The result of the run.</returns>
     public static ReswGeneratorRun Run(
@@ -73,7 +75,9 @@ internal static class ReswGeneratorHarness
         string? projectTypeGuids = null,
         string? defaultLanguage = null,
         bool? useApplicationLanguages = null,
+        bool? useUwp = null,
         string assemblyName = "TestProject",
+        bool nativeAotUwp = false,
         IEnumerable<ReswFile>? additionalFiles = null)
     {
         var texts = files
@@ -92,11 +96,12 @@ internal static class ReswGeneratorHarness
         Declare("build_property.DefaultLanguage", defaultLanguage);
         Declare("build_property.RootNamespace", rootNamespace);
         Declare("build_property.ReswPlusUseApplicationLanguages", useApplicationLanguages?.ToString().ToLowerInvariant());
+        Declare("build_property.UseUwp", useUwp?.ToString().ToLowerInvariant());
 
         var compilation = CSharpCompilation.Create(
             assemblyName,
             syntaxTrees: null,
-            PlatformStubs.ReferencesFor(appType),
+            nativeAotUwp ? PlatformStubs.NativeAotUwpReferences() : PlatformStubs.ReferencesFor(appType),
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
         var driver = CSharpGeneratorDriver.Create(
@@ -513,6 +518,26 @@ internal static class PlatformStubs
 
     private static readonly Lazy<MetadataReference> Uwp = new(() =>
         Compile("ReswPlusTests.UwpStub", UwpStub, @"C:\Packages\UAP\Windows.Foundation.UniversalApiContract.winmd"));
+
+    /// <summary>
+    /// The same UWP types, under a name the app type detection cannot recognize.
+    /// </summary>
+    /// <remarks>
+    /// A UWP project built for Native AOT has the UWP XAML types available, but carries no reference named
+    /// <c>Windows.Foundation.UniversalApiContract</c> for the generator to recognize it by. This is what makes
+    /// such a project look like no supported app type at all unless it declares <c>UseUwp</c>.
+    /// </remarks>
+    private static readonly Lazy<MetadataReference> NativeAotUwp = new(() =>
+        Compile("ReswPlusTests.NativeAotUwpStub", UwpStub, @"C:\Packages\Microsoft.Windows.SDK.NET\Microsoft.Windows.SDK.NET.dll"));
+
+    /// <summary>
+    /// Returns the references of a UWP project built for Native AOT: the UWP types are there, but nothing names
+    /// the API contract the generator otherwise recognizes a UWP project by.
+    /// </summary>
+    public static ImmutableArray<MetadataReference> NativeAotUwpReferences()
+    {
+        return RuntimeReferences.Value.Add(NativeAotUwp.Value);
+    }
 
     /// <summary>
     /// Returns the references a compilation of the given kind of app is built with.

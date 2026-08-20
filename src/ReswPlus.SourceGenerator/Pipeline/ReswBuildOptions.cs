@@ -23,7 +23,8 @@ internal sealed class ReswBuildOptions : IEquatable<ReswBuildOptions>
         string? projectTypeGuids,
         string? defaultLanguage,
         string? rootNamespace,
-        bool useApplicationLanguages)
+        bool useApplicationLanguages,
+        bool useUwp)
     {
         ProjectDir = projectDir;
         MSBuildProjectFullPath = msBuildProjectFullPath;
@@ -32,6 +33,7 @@ internal sealed class ReswBuildOptions : IEquatable<ReswBuildOptions>
         DefaultLanguage = defaultLanguage;
         RootNamespace = rootNamespace;
         UseApplicationLanguages = useApplicationLanguages;
+        UseUwp = useUwp;
     }
 
     public string? ProjectDir { get; }
@@ -53,6 +55,17 @@ internal sealed class ReswBuildOptions : IEquatable<ReswBuildOptions>
     public bool UseApplicationLanguages { get; }
 
     /// <summary>
+    /// Gets whether the project declares itself as a UWP project.
+    /// </summary>
+    /// <remarks>
+    /// A UWP project is otherwise recognized by the <c>Windows.Foundation.UniversalApiContract</c> reference it
+    /// carries, which a UWP project built for Native AOT does not have. Such a project says so with this
+    /// property instead. It fills in what the references don't say rather than overriding them: a compilation
+    /// whose references positively identify it is left alone.
+    /// </remarks>
+    public bool UseUwp { get; }
+
+    /// <summary>
     /// Reads the properties of a project.
     /// </summary>
     /// <param name="globalOptions">The options of the compilation.</param>
@@ -66,7 +79,8 @@ internal sealed class ReswBuildOptions : IEquatable<ReswBuildOptions>
             Get("build_property.projecttypeguids"),
             Get("build_property.DefaultLanguage"),
             Get("build_property.RootNamespace"),
-            bool.TryParse(Get("build_property.ReswPlusUseApplicationLanguages"), out var parsed) && parsed);
+            bool.TryParse(Get("build_property.ReswPlusUseApplicationLanguages"), out var parsed) && parsed,
+            bool.TryParse(Get("build_property.UseUwp"), out var parsedUseUwp) && parsedUseUwp);
 
         string? Get(string key) => globalOptions.TryGetValue(key, out var value) ? value : null;
     }
@@ -95,7 +109,8 @@ internal sealed class ReswBuildOptions : IEquatable<ReswBuildOptions>
             && ProjectTypeGuids == other.ProjectTypeGuids
             && DefaultLanguage == other.DefaultLanguage
             && RootNamespace == other.RootNamespace
-            && UseApplicationLanguages == other.UseApplicationLanguages;
+            && UseApplicationLanguages == other.UseApplicationLanguages
+            && UseUwp == other.UseUwp;
     }
 
     /// <inheritdoc/>
@@ -111,6 +126,6 @@ internal sealed class ReswBuildOptions : IEquatable<ReswBuildOptions>
             hash = (hash * 31) + (value?.GetHashCode() ?? 0);
         }
 
-        return (hash * 31) + UseApplicationLanguages.GetHashCode();
+        return (hash * 31) + UseApplicationLanguages.GetHashCode() + (UseUwp.GetHashCode() * 7);
     }
 }

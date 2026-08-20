@@ -1,0 +1,64 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\..\nuget\ReswPlus.targets" />
+  <Import Project="..\ReswPlusUWPSample.Shared\ReswPlusUWPSample.Shared.projitems" Label="Shared" />
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <!--
+      The same namespace as the .NET Native sample, because the two build the very same sources: the pages the
+      shared project holds name their types with it.
+    -->
+    <RootNamespace>ReswPlusUWPSample</RootNamespace>
+    <AssemblyName>ReswPlusNativeAotUwpSample</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <LangVersion>latest</LangVersion>
+    <Platforms>x86;x64;ARM64</Platforms>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <!--
+      This is what makes the project a UWP project on modern .NET. It is also the only thing that tells
+      ReswPlus what kind of app this is: unlike a UWP project built with .NET Native, this one carries no
+      'Windows.Foundation.UniversalApiContract' reference for the generator to recognize it by.
+    -->
+    <UseUwp>true</UseUwp>
+    <!--
+      A UWP app is a packaged app: this is what builds the package manifest and, with it, the 'resources.pri'
+      that the resource loader reads the strings out of at runtime.
+    -->
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
+    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+    <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+    <GenerateTestArtifacts>False</GenerateTestArtifacts>
+    <AppxBundle>Never</AppxBundle>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <!--
+      Native AOT is what replaces the .NET Native toolchain a UWP app used to be compiled with. It is only
+      asked for while publishing: turning it on for an ordinary build produces an app that throws inside the
+      XAML framework before its first window. '_IsPublishing' is set by the SDK for the whole publish,
+      including the restore it runs, which is when the AOT compiler has to be brought in.
+
+      Publish one architecture at a time, from a developer command prompt for that architecture, because the
+      AOT link step needs the matching MSVC linker:
+
+        msbuild /t:Restore;Publish /p:Configuration=Release /p:PublishProfile=win-x64 /p:_IsPublishing=true
+    -->
+    <PublishAot Condition="'$(_IsPublishing)' == 'true'">true</PublishAot>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)' != 'true' and '$(EnableMsixTooling)' == 'true'">
+    <ProjectCapability Include="Msix" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\ReswPlus.SourceGenerator\ReswPlus.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" Private="false" SetPlatform="Platform=AnyCPU">
+      <Project>{44d125b3-6c8a-4f2f-a76f-bffb2ad7e70d}</Project>
+      <Name>ReswPlus.SourceGenerator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReswPlusNativeAotUwpSampleExternalLibrary\ReswPlusNativeAotUwpSampleExternalLibrary.csproj" />
+  </ItemGroup>
+</Project>

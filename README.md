@@ -38,6 +38,16 @@ _**Now available as a Source Generator!**_
 
 ⚡ [How to Install ReswPlus](https://github.com/reswplus/ReswPlus/wiki/How-to-install-ReswPlus) – Step-by-step installation guide.
 
+ReswPlus recognizes a UWP project by the `Windows.Foundation.UniversalApiContract` reference it carries, and a Windows App SDK project by its own. A **UWP project built for Native AOT** has no such reference, so it declares what it is with the standard `UseUwp` property instead, which ReswPlus reads and trusts over the references:
+
+```xml
+<PropertyGroup>
+    <UseUwp>true</UseUwp>
+</PropertyGroup>
+```
+
+Without it, such a project is reported as `RESWP0005` and no code is generated for it. The `samples/UWP` folder has one sample of each kind: `ReswPlusUWPSample` built with .NET Native, and `ReswPlusNativeAotUwpSample` built on modern .NET with Native AOT.
+
 ## 🔧 Features
 
 ### Strongly Typed Class Generator
