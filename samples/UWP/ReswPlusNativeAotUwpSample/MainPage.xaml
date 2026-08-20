@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="ReswPlusNativeAotUwpSample.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:strings="using:ReswPlusNativeAotUwpSample.Strings">
+
+    <ScrollViewer Padding="32">
+        <StackPanel Spacing="20" MaxWidth="720">
+
+            <!-- The markup extension is generated too, so a key that doesn't exist is a build error. -->
+            <TextBlock
+                Text="{strings:Resources Key=Title}"
+                Style="{ThemeResource TitleTextBlockStyle}" />
+
+            <TextBlock
+                Text="{strings:Resources Key=Introduction}"
+                TextWrapping="Wrap" />
+
+            <!-- Strongly typed property, read from code behind. -->
+            <TextBlock x:Name="StronglyTyped" TextWrapping="Wrap" />
+
+            <!-- Generated formatting method, with typed parameters. -->
+            <TextBlock x:Name="Formatted" TextWrapping="Wrap" />
+
+            <!-- Pluralization, including the empty state when the count is zero. -->
+            <TextBlock x:Name="NoItem" TextWrapping="Wrap" />
+            <TextBlock x:Name="OneItem" TextWrapping="Wrap" />
+            <TextBlock x:Name="SeveralItems" TextWrapping="Wrap" />
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

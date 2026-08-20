@@ -46,7 +46,7 @@ ReswPlus recognizes a UWP project by the `Windows.Foundation.UniversalApiContrac
 </PropertyGroup>
 ```
 
-Without it, such a project is reported as `RESWP0005` and no code is generated for it.
+Without it, such a project is reported as `RESWP0005` and no code is generated for it. The `samples/UWP` folder has one sample of each kind: `ReswPlusUWPSample` built with .NET Native, and `ReswPlusNativeAotUwpSample` built on modern .NET with Native AOT.
 
 ## 🔧 Features
 

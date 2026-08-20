@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\..\nuget\ReswPlus.targets" />
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <RootNamespace>ReswPlusNativeAotUwpSample</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <LangVersion>latest</LangVersion>
+    <Platforms>x86;x64;ARM64</Platforms>
+    <!--
+      This is what makes the project a UWP project on modern .NET. It is also the only thing that tells
+      ReswPlus what kind of app this is: unlike a UWP project built with .NET Native, this one carries no
+      'Windows.Foundation.UniversalApiContract' reference for the generator to recognize it by.
+    -->
+    <UseUwp>true</UseUwp>
+    <AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
+    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+    <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+    <GenerateTestArtifacts>False</GenerateTestArtifacts>
+    <AppxBundle>Never</AppxBundle>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--
+      A UWP project on modern .NET doesn't pick '.resw' files up on its own, so they are declared here. This is
+      also what hands them to ReswPlus: the targets add 'PRIResource' to the files the compiler passes to the
+      generators.
+    -->
+    <PRIResource Include="Strings\**\*.resw" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The images are shared with the .NET Native UWP sample rather than copied beside them. -->
+    <Content Include="..\ReswPlusUWPSample\Assets\*.png" Link="Assets\%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\ReswPlus.SourceGenerator\ReswPlus.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" Private="false">
+      <Project>{44d125b3-6c8a-4f2f-a76f-bffb2ad7e70d}</Project>
+      <Name>ReswPlus.SourceGenerator</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>
