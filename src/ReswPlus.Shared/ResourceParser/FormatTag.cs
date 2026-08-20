@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -126,7 +127,28 @@ public sealed class FormatTag
         {"Decimal", new FormatTagParameterTypeInfo(ParameterType.Decimal, true)}
     };
 
-    private static readonly Regex RegexNamedParameters = new("^(?:(?:\"(?<literalString>(?:\\\\.|[^\\\"])*)\")|(?:(?<localizationRef>\\w+)\\(\\))|(?:(?<quantifier>Plural\\s+)?(?<type>\\w+)\\s*(?<name>\\w+)?))$");
+    /// <summary>
+    /// How long a match is allowed to take before it is abandoned.
+    /// </summary>
+    /// <remarks>
+    /// The expressions here are written not to backtrack pathologically, and this is the net under them: a
+    /// resource file is written by hand, and a parser that never returns takes the whole build with it.
+    /// </remarks>
+    private static readonly TimeSpan RegexTimeout = TimeSpan.FromSeconds(5);
+    /// <summary>
+    /// Matches one parameter of a <c>#Format</c> tag.
+    /// </summary>
+    /// <remarks>
+    /// The run inside a quoted literal is written so that it can only be read one way: characters that are
+    /// neither a quote nor a backslash, then any number of escapes each followed by more of the same. Written
+    /// as <c>(?:\\.|[^"])*</c> instead, a backslash could be taken either on its own or as the start of an
+    /// escape, and the expression has to try every combination of a run of them before it can fail — which is
+    /// exponential, and happens on an unterminated literal, an ordinary typo.
+    /// </remarks>
+    private static readonly Regex RegexNamedParameters = new(
+        @"^(?:(?:""(?<literalString>[^""\\]*(?:\\.[^""\\]*)*)"")|(?:(?<localizationRef>\w+)\(\))|(?:(?<quantifier>Plural\s+)?(?<type>\w+)\s*(?<name>\w+)?))$",
+        RegexOptions.None,
+        RegexTimeout);
 
     public static FunctionFormatTagParametersInfo? ParseParameters(string key, IEnumerable<string> types, IEnumerable<ReswItem> basicLocalizedItems, string resourceFilename, IErrorLogger? logger)
     {
@@ -240,19 +262,94 @@ public sealed class FormatTag
     }
 
     /// <summary>
-    /// Extract parameters but ignore \" and , in literal strings.
+    /// Splits the parameters of a tag, leaving the commas and quotes inside a quoted literal alone.
     /// </summary>
+    /// <param name="source">The text between the brackets of the tag.</param>
+    /// <returns>The parameters, or nothing at all when the text does not read as a list of them.</returns>
+    /// <remarks>
+    /// Read by hand rather than with an expression. The text comes from the comment of a resource, which is
+    /// written by hand and read on every keystroke, and an expression over it has to be able to conclude that
+    /// an unterminated literal is unterminated without trying every way of reading the escapes inside it
+    /// first. Reading it once, left to right, takes the length of the text however malformed it is.
+    /// </remarks>
     public static IEnumerable<string> SplitParameters(string source)
     {
         source = source.Trim();
-        var regex = new Regex(@"(?:(?<param>(?:\x22(?:\\.|[^\x22])*\x22)|(?:\w[^\x22,]*?))\s*(?:,|$)\s*)+");
-        var match = regex.Match(source);
-        if (match.Success && match.Length == source.Length)
+
+        var parameters = new List<string>();
+        var index = 0;
+
+        while (index < source.Length)
         {
-            foreach (Capture capture in match.Groups["param"].Captures)
+            var start = index;
+
+            if (source[index] == '"')
             {
-                yield return capture.Value;
+                index++;
+
+                while (index < source.Length && source[index] != '"')
+                {
+                    // A backslash takes the character after it with it, so that an escaped quote does not end
+                    // the literal.
+                    index += source[index] == '\\' ? 2 : 1;
+                }
+
+                if (index >= source.Length)
+                {
+                    // The literal is never closed.
+                    return [];
+                }
+
+                index++;
+            }
+            else if (IsParameterStart(source[index]))
+            {
+                while (index < source.Length && source[index] != ',' && source[index] != '"')
+                {
+                    index++;
+                }
+            }
+            else
+            {
+                return [];
+            }
+
+            parameters.Add(source.Substring(start, index - start).TrimEnd());
+
+            index = SkipWhitespace(source, index);
+
+            if (index >= source.Length)
+            {
+                break;
+            }
+
+            if (source[index] != ',')
+            {
+                return [];
+            }
+
+            index = SkipWhitespace(source, index + 1);
+
+            if (index >= source.Length)
+            {
+                // A trailing comma announces a parameter that never comes.
+                return [];
             }
         }
+
+        return parameters;
+    }
+
+    private static bool IsParameterStart(char character) =>
+        char.IsLetterOrDigit(character) || character == '_';
+
+    private static int SkipWhitespace(string source, int index)
+    {
+        while (index < source.Length && char.IsWhiteSpace(source[index]))
+        {
+            index++;
+        }
+
+        return index;
     }
 }
