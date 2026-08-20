@@ -98,8 +98,9 @@
                 <TextBlock Style="{StaticResource ResultLabelTextBlockStyle}" Text="Result:" />
 
                 <StackPanel Style="{StaticResource ResultPanelStyle}">
-                    <TextBlock Text="{strings:Resources Key=WelcomeTitle}" />
-                    <Button Content="{strings:Resources Key=WelcomeTitle}" ToolTipService.ToolTip="{strings:Resources Key=ThisIsATooltip}" />
+                    <TextBlock
+                        Style="{StaticResource SectionDescriptionTextBlockStyle}"
+                        Text="Not shown here. A markup extension is created by the XAML parser while it reads the page, and a UWP app compiled with Native AOT cannot create it, so a page that uses one fails to load. Both samples share these pages, so the markup extension is left out of them and x:Bind is used instead, which is resolved while the app is compiled and works either way." />
                 </StackPanel>
             </StackPanel>
 
@@ -113,7 +114,9 @@
                 <TextBlock Style="{StaticResource ResultLabelTextBlockStyle}" Text="Result:" />
 
                 <StackPanel Style="{StaticResource ResultPanelStyle}">
-                    <TextBlock Text="{strings:Resources Key=WelcomeTitle, Converter={StaticResource ToUpperCaseConverter}}" />
+                    <TextBlock
+                        Style="{StaticResource SectionDescriptionTextBlockStyle}"
+                        Text="Not shown here either, for the same reason. A converter can be applied to x:Bind in the same way, which the section above does." />
                 </StackPanel>
             </StackPanel>
 
@@ -121,7 +124,7 @@
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Use resources from another assembly" />
                 <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="XAML usage:" />
                 <StackPanel Style="{StaticResource CodePanelStyle}">
-                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&#x3C;TextBlock Text=&#x22;{strings:Resources Key=WelcomeTitle, Converter={StaticResource ToUpperCaseConverter}}&#x22; /&#x3E;" />
+                    <TextBlock Style="{StaticResource DescriptionTextBlockStyle}" Text="&#x3C;TextBlock Text=&#x22;{x:Bind externalStrings:Resources.ExternalString}&#x22; /&#x3E;" />
                 </StackPanel>
                 <TextBlock Style="{StaticResource ResultLabelTextBlockStyle}" Text="Result:" />
 

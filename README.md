@@ -15,7 +15,7 @@ _**Now available as a Source Generator!**_
   - Typed and named parameters, literal strings, string references, and macros.
 - **Pluralization support** for *196 languages*, including handling empty states when the item count is zero.
 - **Variant support** for managing multiple versions of a string.
-- **Generation of a markup extension** for accessing strings with **compile-time verification**.
+- **Generation of a markup extension** for accessing strings with **compile-time verification**. *(Not usable when the app is compiled with Native AOT — see [Native AOT](#-native-aot).)*
 
 ## ✅ Feature Comparison
 
@@ -47,6 +47,22 @@ ReswPlus recognizes a UWP project by the `Windows.Foundation.UniversalApiContrac
 ```
 
 Without it, such a project is reported as `RESWP0005` and no code is generated for it. The `samples/UWP` folder has one sample of each kind: `ReswPlusUWPSample` built with .NET Native, and `ReswPlusNativeAotUwpSample` built on modern .NET with Native AOT.
+
+## ⚡ Native AOT
+
+Everything ReswPlus generates works when the app is compiled with Native AOT, **except the markup extension**:
+
+```xml
+<!-- Works with Native AOT: resolved while the app is compiled -->
+<TextBlock Text="{x:Bind strings:Resources.WelcomeTitle}" />
+
+<!-- Does NOT work with Native AOT: created by the XAML parser while the page is read -->
+<TextBlock Text="{strings:Resources Key=WelcomeTitle}" />
+```
+
+A page that uses the markup extension fails to load, with `Markup extension could not provide value`. Use `x:Bind` instead; it takes a converter the same way, and it is checked while the app is compiled rather than when the page is shown.
+
+This is not something a trimming directive can keep: preserving the generated types with `rd.xml` or a trimmer root does not change it.
 
 ## 🔧 Features
 
