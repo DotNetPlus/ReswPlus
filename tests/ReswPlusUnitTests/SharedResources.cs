@@ -49,7 +49,7 @@ public class SharedResources
         var run = ReswGeneratorHarness.Run([SharedFile()]);
 
         // A hint name is a file name, so the segments a relative path climbs through have no business in it.
-        var hintName = Assert.Single(run.Sources.Keys.Where(name => name.Contains(".resw")));
+        var hintName = Assert.Single(run.Sources.Keys, name => name.Contains(".resw"));
 
         Assert.DoesNotContain("..", hintName);
         Assert.StartsWith("TestProject.Resources.resw", hintName);

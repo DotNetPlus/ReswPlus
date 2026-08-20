@@ -61,19 +61,28 @@ public class NativeAotUwp
         Assert.Contains("using Windows.UI.Xaml.Markup;", run.Source("Resources.resw"));
         Assert.Contains("global::Windows.UI.Xaml.Markup.MarkupExtension", run.Source("Resources.resw"));
         Assert.Contains("GetForViewIndependentUse", run.Source("ResourceStringProvider"));
+        run.AssertCompiles();
     }
 
+    /// <summary>
+    /// The property says what the references don't; it doesn't contradict them.
+    /// </summary>
+    /// <remarks>
+    /// A project whose references positively identify it as a Windows App SDK app needs the Windows App SDK
+    /// types, so letting a stray <c>UseUwp</c> take it for a UWP app would generate code against types it
+    /// doesn't have.
+    /// </remarks>
     [Fact]
-    public void UseUwpIsTakenOverWhatTheReferencesSuggest()
+    public void UseUwpDoesNotOverrideReferencesThatIdentifyTheProject()
     {
-        // Declaring what the project is beats a reference happening to be named a certain way.
         var run = ReswGeneratorHarness.Run(
             [ReswGeneratorHarness.File("en-US", Sample)],
             AppType.WindowsAppSDK,
             useUwp: true);
 
-        Assert.Contains("using Windows.UI.Xaml.Markup;", run.Source("Resources.resw"));
-        Assert.DoesNotContain("using Microsoft.UI.Xaml.Markup;", run.Source("Resources.resw"));
+        Assert.Contains("using Microsoft.UI.Xaml.Markup;", run.Source("Resources.resw"));
+        Assert.DoesNotContain("using Windows.UI.Xaml.Markup;", run.Source("Resources.resw"));
+        run.AssertCompiles();
     }
 
     [Theory]

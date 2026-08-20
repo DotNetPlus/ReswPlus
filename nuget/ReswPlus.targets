@@ -6,7 +6,6 @@
         <CompilerVisibleProperty Include="RootNamespace" />
         <CompilerVisibleProperty Include="DefaultLanguage" />
         <CompilerVisibleProperty Include="OutputType" />
-        <CompilerVisibleProperty Include="ProjectTypeGuids" />
         <CompilerVisibleProperty Include="UseUwp" />
         <CompilerVisibleProperty Include="ReswPlusUseApplicationLanguages" />
     </ItemGroup>

@@ -105,10 +105,12 @@ internal sealed class ReswProject : IEquatable<ReswProject>
         }
 
         // A UWP project built for Native AOT carries no 'Windows.Foundation.UniversalApiContract' reference for
-        // the compilation to be recognized by, and says what it is with the 'UseUwp' property instead. Saying so
-        // outright is better evidence than a reference happening to be named a certain way, so the property wins
-        // over what the references suggest.
-        var appType = options.UseUwp ? AppType.UWP : compilationInfo.AppType;
+        // the compilation to be recognized by, and says what it is with the 'UseUwp' property instead. The
+        // property fills in what the references don't say rather than overriding them, so that a project whose
+        // references positively identify it can never be taken for something else by a stray property.
+        var appType = compilationInfo.AppType is AppType.Unknown && options.UseUwp
+            ? AppType.UWP
+            : compilationInfo.AppType;
 
         if (appType is not (AppType.WindowsAppSDK or AppType.UWP))
         {

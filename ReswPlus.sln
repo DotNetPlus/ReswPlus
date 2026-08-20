@@ -277,7 +277,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\ReswPlus.Shared\ReswPlus.Shared.projitems*{1a6ff0bd-991a-417e-a79d-98ebb4208816}*SharedItemsImports = 13
+		samples\UWP\ReswPlusUWPSampleExternalLibrary.Shared\ReswPlusUWPSampleExternalLibrary.Shared.projitems*{2e9a6d48-7c15-4b3f-9a82-d5e1f0c36b47}*SharedItemsImports = 5
 		src\ReswPlus.Shared\ReswPlus.Shared.projitems*{44d125b3-6c8a-4f2f-a76f-bffb2ad7e70d}*SharedItemsImports = 5
+		samples\UWP\ReswPlusUWPSample.Shared\ReswPlusUWPSample.Shared.projitems*{4d8f2c17-9a3b-4e5d-8f61-2b7c9e0a4d13}*SharedItemsImports = 13
+		samples\UWP\ReswPlusUWPSampleExternalLibrary.Shared\ReswPlusUWPSampleExternalLibrary.Shared.projitems*{6c1a4b9e-3f27-4d8a-b5e0-9d3f1c8a7b64}*SharedItemsImports = 13
+		samples\UWP\ReswPlusUWPSample.Shared\ReswPlusUWPSample.Shared.projitems*{7b3e9c41-5d2a-4f68-9e1b-0c4a8d6f2e35}*SharedItemsImports = 5
+		samples\UWP\ReswPlusUWPSampleExternalLibrary.Shared\ReswPlusUWPSampleExternalLibrary.Shared.projitems*{9dec4bee-a4b0-41ae-926f-4f97450f4115}*SharedItemsImports = 4
 		src\ReswPlus.Shared\ReswPlus.Shared.projitems*{ac1fb0f6-d947-46e0-9f28-694b1561bdb8}*SharedItemsImports = 5
+		samples\UWP\ReswPlusUWPSample.Shared\ReswPlusUWPSample.Shared.projitems*{c52e4620-d5eb-45cf-8740-ea9cd689f1fa}*SharedItemsImports = 4
 	EndGlobalSection
 EndGlobal

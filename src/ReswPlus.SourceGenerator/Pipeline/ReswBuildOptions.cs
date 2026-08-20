@@ -60,8 +60,8 @@ internal sealed class ReswBuildOptions : IEquatable<ReswBuildOptions>
     /// <remarks>
     /// A UWP project is otherwise recognized by the <c>Windows.Foundation.UniversalApiContract</c> reference it
     /// carries, which a UWP project built for Native AOT does not have. Such a project says so with this
-    /// property instead, and saying so outright is better evidence than a reference happening to be named a
-    /// certain way, so it is trusted over the references when it is set.
+    /// property instead. It fills in what the references don't say rather than overriding them: a compilation
+    /// whose references positively identify it is left alone.
     /// </remarks>
     public bool UseUwp { get; }
 
