@@ -31,10 +31,28 @@ public sealed class ReswClassGenerator
 
     static ReswClassGenerator()
     {
-        // Matches either #Format[...] or #FormatNet[...] including escaped quotes inside.
+        // Matches either #Format[...] or #FormatNet[...], where the content may hold quoted literals that
+        // escape a quote with a backslash.
+        //
+        // The run inside a literal is written so that it can only be read one way: characters that are
+        // neither a quote nor a backslash, then any number of escapes each followed by more of the same. Read
+        // as "anything up to a quote", a backslash could be taken either on its own or as the start of an
+        // escape, and the expression has to try every combination of a run of them before it can fail — which
+        // is exponential, and this runs over the comment of a resource on every keystroke.
         _regexStringFormat = new Regex(
-            $@"(?<tag>{TagFormat}|{TagFormatDotNet})\[(?<formats>(?:""(?:""|[^""])*""|[^\\""])+)\]");
+            $@"(?<tag>{TagFormat}|{TagFormatDotNet})\[(?<formats>(?:""[^""\\]*(?:\\.[^""\\]*)*""|[^\\""])+)\]",
+            RegexOptions.None,
+            RegexTimeout);
     }
+
+    /// <summary>
+    /// How long a match is allowed to take before it is abandoned.
+    /// </summary>
+    /// <remarks>
+    /// The expressions here are written not to backtrack pathologically, and this is the net under them: a
+    /// resource file is written by hand, and a generator that never returns takes the whole build with it.
+    /// </remarks>
+    private static readonly TimeSpan RegexTimeout = TimeSpan.FromSeconds(5);
 
     private ReswClassGenerator(ResourceFileInfo resourceInfo, ICodeGenerator generator, IErrorLogger? logger)
     {
