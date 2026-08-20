@@ -106,7 +106,7 @@ internal static class ReswGeneratorHarness
             new TestAnalyzerConfigOptionsProvider(options),
             new GeneratorDriverOptions(IncrementalGeneratorOutputKind.None, trackIncrementalGeneratorSteps: true));
 
-        return ReswGeneratorRun.From(driver, compilation);
+        return ReswGeneratorRun.From(driver, compilation, texts);
 
         void Declare(string key, string? value)
         {
@@ -143,11 +143,18 @@ internal sealed class ReswGeneratorRun
 {
     private readonly GeneratorDriver _driver;
     private readonly Compilation _inputCompilation;
+    private readonly ImmutableArray<AdditionalText> _texts;
 
-    private ReswGeneratorRun(GeneratorDriver driver, Compilation inputCompilation, Compilation outputCompilation, ImmutableArray<Diagnostic> diagnostics)
+    private ReswGeneratorRun(
+        GeneratorDriver driver,
+        Compilation inputCompilation,
+        ImmutableArray<AdditionalText> texts,
+        Compilation outputCompilation,
+        ImmutableArray<Diagnostic> diagnostics)
     {
         _driver = driver;
         _inputCompilation = inputCompilation;
+        _texts = texts;
         OutputCompilation = outputCompilation;
         Diagnostics = diagnostics;
     }
@@ -175,11 +182,11 @@ internal sealed class ReswGeneratorRun
     /// </summary>
     public IReadOnlyList<string> DiagnosticIds => [.. Diagnostics.Select(diagnostic => diagnostic.Id)];
 
-    internal static ReswGeneratorRun From(GeneratorDriver driver, Compilation compilation)
+    internal static ReswGeneratorRun From(GeneratorDriver driver, Compilation compilation, ImmutableArray<AdditionalText> texts)
     {
         driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out var outputCompilation, out var diagnostics);
 
-        return new ReswGeneratorRun(driver, compilation, outputCompilation, diagnostics);
+        return new ReswGeneratorRun(driver, compilation, texts, outputCompilation, diagnostics);
     }
 
     /// <summary>
@@ -188,16 +195,20 @@ internal sealed class ReswGeneratorRun
     /// <param name="files">The files of the project for this run.</param>
     /// <returns>The result of the second run, which remembers what the first one computed.</returns>
     /// <remarks>
-    /// This is how the compiler behaves while a project is edited, and it is the only way to observe what the
-    /// generator recomputes and what it reuses.
+    /// A file whose path and content did not change keeps the very object the previous run saw, which is what
+    /// the compiler does while a project is edited: it hands the generator a new
+    /// <see cref="AdditionalText"/> for the file that changed and the same ones as before for the rest. Handing
+    /// new objects for all of them would make every file look edited and hide what the generator reuses.
     /// </remarks>
     public ReswGeneratorRun RunAgain(IEnumerable<ReswFile> files)
     {
         var texts = files
-            .Select(file => (AdditionalText)new InMemoryAdditionalText(file.Path, file.Content))
+            .Select(file => _texts.FirstOrDefault(text =>
+                text.Path == file.Path && text is InMemoryAdditionalText { } existing && existing.Content == file.Content)
+                ?? new InMemoryAdditionalText(file.Path, file.Content))
             .ToImmutableArray();
 
-        return From(_driver.ReplaceAdditionalTexts(texts), _inputCompilation);
+        return From(_driver.ReplaceAdditionalTexts(texts), _inputCompilation, texts);
     }
 
     /// <summary>
@@ -271,19 +282,34 @@ internal sealed class ReswGeneratorRun
     }
 
     /// <summary>
-    /// Returns the reasons a step of the pipeline was run for, keyed by the name the step is tracked under.
+    /// Returns the reasons the outputs of a tracked step were produced for.
     /// </summary>
+    /// <param name="stepName">The name the step is tracked under.</param>
+    /// <returns>One reason per output the step produced.</returns>
     /// <remarks>
-    /// A step whose inputs didn't change is reported as <see cref="IncrementalStepRunReason.Cached"/> or
+    /// An output whose inputs didn't change is reported as <see cref="IncrementalStepRunReason.Cached"/> or
     /// <see cref="IncrementalStepRunReason.Unchanged"/>, which is what tells a test that the generator reused
     /// what it had rather than recomputing it.
     /// </remarks>
-    public IReadOnlyDictionary<string, IReadOnlyList<IncrementalStepRunReason>> TrackedSteps()
+    public IReadOnlyList<IncrementalStepRunReason> Reasons(string stepName)
     {
-        return _driver.GetRunResult().Results.Single().TrackedSteps.ToDictionary(
-            step => step.Key,
-            step => (IReadOnlyList<IncrementalStepRunReason>)
-                [.. step.Value.SelectMany(run => run.Outputs).Select(output => output.Reason)]);
+        var steps = _driver.GetRunResult().Results.Single().TrackedSteps;
+
+        Assert.True(
+            steps.ContainsKey(stepName),
+            $"No step is tracked under '{stepName}'. The pipeline tracks: " +
+            $"{string.Join(", ", steps.Keys.OrderBy(name => name, StringComparer.Ordinal))}.");
+
+        return [.. steps[stepName].SelectMany(run => run.Outputs).Select(output => output.Reason)];
+    }
+
+    /// <summary>
+    /// Returns how many outputs of a tracked step had to be computed again.
+    /// </summary>
+    /// <param name="stepName">The name the step is tracked under.</param>
+    public int RecomputedCount(string stepName)
+    {
+        return Reasons(stepName).Count(reason => reason is not (IncrementalStepRunReason.Cached or IncrementalStepRunReason.Unchanged));
     }
 
     /// <summary>
@@ -292,21 +318,15 @@ internal sealed class ReswGeneratorRun
     /// <param name="stepName">The name the step is tracked under.</param>
     public void AssertReused(string stepName)
     {
-        var steps = TrackedSteps();
-
-        Assert.True(
-            steps.ContainsKey(stepName),
-            $"No step is tracked under '{stepName}'. The pipeline tracks: " +
-            $"{string.Join(", ", steps.Keys.OrderBy(name => name, StringComparer.Ordinal))}.");
-
-        var recomputed = steps[stepName]
+        var reasons = Reasons(stepName);
+        var recomputed = reasons
             .Where(reason => reason is not (IncrementalStepRunReason.Cached or IncrementalStepRunReason.Unchanged))
             .ToArray();
 
         Assert.True(
             recomputed.Length == 0,
-            $"The step '{stepName}' was expected to be reused, but {recomputed.Length} of its outputs were " +
-            $"recomputed: {string.Join(", ", recomputed)}.");
+            $"The step '{stepName}' was expected to be reused, but {recomputed.Length} of its {reasons.Count} " +
+            $"outputs were recomputed: {string.Join(", ", recomputed)}.");
     }
 }
 
@@ -321,6 +341,11 @@ internal sealed class InMemoryAdditionalText(string path, string content) : Addi
 
     /// <inheritdoc/>
     public override string Path { get; } = path;
+
+    /// <summary>
+    /// Gets the content of the file.
+    /// </summary>
+    public string Content { get; } = content;
 
     /// <inheritdoc/>
     public override SourceText GetText(CancellationToken cancellationToken = default)
