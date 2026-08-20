@@ -36,11 +36,17 @@
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <!--
-      Native AOT is what replaces the .NET Native toolchain a UWP app used to be compiled with. It only takes
-      effect when the app is published, and it has to be declared here rather than in the publish profiles so
-      that the restore brings the AOT compiler in with the rest of the assets.
+      Native AOT is what replaces the .NET Native toolchain a UWP app used to be compiled with. It is only
+      asked for while publishing: turning it on for an ordinary build produces an app that throws inside the
+      XAML framework before its first window. '_IsPublishing' is set by the SDK for the whole publish,
+      including the restore it runs, which is when the AOT compiler has to be brought in.
+
+      Publish one architecture at a time, from a developer command prompt for that architecture, because the
+      AOT link step needs the matching MSVC linker:
+
+        msbuild /t:Restore;Publish /p:Configuration=Release /p:PublishProfile=win-x64 /p:_IsPublishing=true
     -->
-    <PublishAot>true</PublishAot>
+    <PublishAot Condition="'$(_IsPublishing)' == 'true'">true</PublishAot>
     <TrimmerSingleWarn>false</TrimmerSingleWarn>
   </PropertyGroup>
 
