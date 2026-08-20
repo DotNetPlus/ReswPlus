@@ -76,6 +76,17 @@
 
   <ItemGroup>
     <!--
+      The generated markup extension takes its key as an enumeration, and XAML converts the name written in
+      the markup into that enumeration at runtime, which needs the names of the enumeration to still be
+      there. Trimming is free to drop them, so the assemblies holding generated resource types are rooted.
+      The .NET Native sample keeps them the same way, through its runtime directives file.
+    -->
+    <TrimmerRootAssembly Include="ReswPlusNativeAotUwpSample" />
+    <TrimmerRootAssembly Include="ReswPlusNativeAotUwpSampleExternalLibrary" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
       The generator that emits the native export above ships in CsWinRT, and the one bundled with the SDK
       produces code that doesn't compile for this project. Referencing the package directly takes a version
       whose generator works, and brings with it the target that produces the small stub executable that sits

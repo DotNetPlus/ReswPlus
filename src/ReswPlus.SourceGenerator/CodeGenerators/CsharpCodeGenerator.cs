@@ -59,6 +59,17 @@ namespace ReswPlus.SourceGenerator.CodeGenerators;
 internal sealed class CSharpCodeGenerator : ICodeGenerator
 {
     /// <summary>
+    /// The name of the generated method mapping a member of the key enumeration to the name of its resource.
+    /// </summary>
+    /// <remarks>
+    /// The name of a resource is not read off the enumeration with <c>ToString</c>, because the names of an
+    /// enumeration are metadata that trimming and Native AOT are free to drop: the call then returns the
+    /// numeric value of the member, every lookup misses, and the markup extension fails to provide a value.
+    /// Emitting the names as literals keeps them out of the reach of the trimmer, and is faster besides.
+    /// </remarks>
+    private const string KeyNameMethod = "GetKeyName";
+
+    /// <summary>
     /// The text used for the <c>&lt;returns&gt;</c> element of the generated lookup members.
     /// </summary>
     private const string LocalizedStringReturns = "The localized string for the current UI culture.";
@@ -715,6 +726,50 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
     }
 
     /// <summary>
+    /// Creates the method mapping a member of the key enumeration to the name of the resource it identifies.
+    /// </summary>
+    /// <param name="keys">The keys of the resources the markup extension can look up.</param>
+    /// <returns>The declaration of the method.</returns>
+    /// <remarks>
+    /// The names are emitted as literals rather than read off the enumeration at runtime, so that they survive
+    /// trimming and Native AOT. See <see cref="KeyNameMethod"/>.
+    /// </remarks>
+    private static MethodDeclarationSyntax CreateKeyNameMethod(IEnumerable<string> keys)
+    {
+        var sections = keys.Select(key =>
+            SwitchSection()
+                .WithLabels(SingletonList<SwitchLabelSyntax>(
+                    CaseSwitchLabel(
+                        MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            IdentifierName("KeyEnum"),
+                            MemberName(key)))))
+                .WithStatements(SingletonList<StatementSyntax>(
+                    ReturnStatement(
+                        LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(key))))));
+
+        var defaultSection = SwitchSection()
+            .WithLabels(SingletonList<SwitchLabelSyntax>(DefaultSwitchLabel()))
+            .WithStatements(SingletonList<StatementSyntax>(
+                ReturnStatement(
+                    LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(string.Empty)))));
+
+        return MethodDeclaration(PredefinedType(Token(SyntaxKind.StringKeyword)), KeyNameMethod)
+            .WithModifiers(TokenList(Token(SyntaxKind.PrivateKeyword), Token(SyntaxKind.StaticKeyword)))
+            .WithParameterList(
+                ParameterList(
+                    SingletonSeparatedList(
+                        Parameter(Identifier("key")).WithType(ParseTypeName("KeyEnum")))))
+            .WithLeadingTrivia(CreateDocumentation(
+                "Returns the name of the resource a key identifies.",
+                "The name of the resource, or an empty string when the key identifies none.",
+                ("key", "The key to return the name of.")))
+            .WithBody(Block(
+                SwitchStatement(IdentifierName("key"))
+                    .WithSections(List(sections.Append(defaultSection)))));
+    }
+
+    /// <summary>
     /// Creates a markup extension class that can be used in XAML for resource lookup.
     /// This class includes an embedded KeyEnum, a static resource provider field,
     /// a static constructor, properties for Key, Converter, ConverterParameter, and
@@ -853,13 +908,11 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
                                         ArgumentList(
                                             SingletonSeparatedList(
                                                 Argument(
-                                                    InvocationExpression(
-                                                        MemberAccessExpression(
-                                                            SyntaxKind.SimpleMemberAccessExpression,
-                                                            IdentifierName("Key"),
-                                                            IdentifierName("ToString")
-                                                        )
-                                                    )
+                                                    InvocationExpression(IdentifierName(KeyNameMethod))
+                                                    .WithArgumentList(
+                                                        ArgumentList(
+                                                            SingletonSeparatedList(
+                                                                Argument(IdentifierName("Key")))))
                                                 )
                                             )
                                         )
@@ -917,6 +970,7 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
             ))
             .AddMembers(
                 keyEnum,
+                CreateKeyNameMethod(keys),
                 resourceField,
                 staticCtor,
                 // Create the Key property.
