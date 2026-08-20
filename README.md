@@ -87,6 +87,8 @@ Easily add **pluralization** support for *196 languages*, including correct hand
 ⚙️ [Handling Empty States](https://github.com/reswplus/ReswPlus/wiki/Features:-Pluralization---Empty-states)  
 ⚙️ [Supported Languages](https://github.com/reswplus/ReswPlus/wiki/Languages-supported-for-pluralization)
 
+The plural rules follow the cardinal rules of **Unicode CLDR 48**, and are checked against the rules CLDR publishes by the test suite, so that a language whose rules CLDR revises is reported rather than silently declined with the rules of an older release. Ordinal rules (1st, 2nd, 3rd) and plural ranges (1–2) are not supported.
+
 By default the plural rules are picked with the .NET UI culture, which comes from the display languages of the user. Windows resolves the resources themselves with the app runtime language list instead, so the two can disagree and a resource can be shown in one language while its plural form is picked with the rules of another. Set the following property to pick the plural rules with the same language the resources are resolved in:
 
 ```xml
