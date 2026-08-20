@@ -60,16 +60,16 @@ Everything ReswPlus generates works when the app is compiled with Native AOT, **
 <TextBlock Text="{strings:Resources Key=WelcomeTitle}" />
 ```
 
-A page that uses the markup extension fails to load, with `Markup extension could not provide value`. It is still generated, so an app that does not use Native AOT keeps building, but it is marked `[Obsolete]` and the build tells you what to write instead.
+A page that uses the markup extension fails to load, with `Markup extension could not provide value`. It is still generated, so an app that does not use Native AOT keeps building, but it is marked `[Obsolete]`: a page that uses it reports `WMC1500` on the line of the markup itself, so a build with `TreatWarningsAsErrors` will fail until it is rewritten or the warning suppressed.
 
-`x:Bind` replaces it everywhere. It reads the same generated members, takes a converter and a converter parameter the same way, and is checked while the app is compiled rather than when the page is shown:
+`x:Bind` replaces it in almost every case. It reads the same generated members, takes a converter and a converter parameter the same way, and is checked while the app is compiled rather than when the page is shown:
 
 | Instead of | Write |
 | --- | --- |
 | `{strings:Resources Key=Foo}` | `{x:Bind strings:Resources.Foo}` |
 | `{strings:Resources Key=Foo, Converter={StaticResource C}}` | `{x:Bind strings:Resources.Foo, Converter={StaticResource C}}` |
 
-`x:Bind` is not available in a few places — a `Setter` in a `Style`, for instance. Set those from code-behind using the same generated members.
+`x:Bind` is not available everywhere the markup extension was: a `Setter` in a `Style`, and a standalone `ResourceDictionary` with no code-behind — a shared `Styles.xaml`, say — both lack the compiled-binding host `x:Bind` needs. Set those from code-behind using the same generated members.
 
 This is not something a trimming directive can keep: preserving the generated types with `rd.xml` or a trimmer root does not change it.
 

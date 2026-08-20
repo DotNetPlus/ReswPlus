@@ -1,7 +1,7 @@
 ## What's the minimum version of Windows 10 supported for applications using Resw? 
 
-Because ReswPlus uses [MarkupExtension](https://docs.microsoft.com/en-us/uwp/api/windows.ui.xaml.markup.markupextension), the minimum version supported is 	
-Windows 10 Fall Creators Update (1709).
+Because ReswPlus's markup extension (deprecated — see below) uses [MarkupExtension](https://docs.microsoft.com/en-us/uwp/api/windows.ui.xaml.markup.markupextension), an app that still uses it needs 	
+Windows 10 Fall Creators Update (1709). An app that uses only the generated class and `x:Bind` has no such requirement.
 
 ## Can I use the markup extension in an app compiled with Native AOT?
 
@@ -11,7 +11,9 @@ page, and a UWP app compiled with Native AOT cannot create it, so a page that us
 does not change it.
 
 It is still generated, so an app that does not use Native AOT keeps building, but it is marked `[Obsolete]`
-and the build tells you what to write instead.
+and the build tells you what to write instead. A page that uses it reports `WMC1500` on the line of the
+markup itself, and the XAML compiler's own generated type table reports `CS0618` alongside it. A build with
+`TreatWarningsAsErrors` will therefore fail until the markup is rewritten or the warning is suppressed.
 
 Use `x:Bind`, which reads the same generated members, is resolved while the app is compiled, and works
 whichever way the app is built:
@@ -21,8 +23,10 @@ whichever way the app is built:
 | `{strings:Resources Key=Foo}` | `{x:Bind strings:Resources.Foo}` |
 | `{strings:Resources Key=Foo, Converter={StaticResource C}}` | `{x:Bind strings:Resources.Foo, Converter={StaticResource C}}` |
 
-`x:Bind` is not available in a few places — a `Setter` in a `Style`, for instance. Set those from code-behind
-using the same generated members:
+`x:Bind` is not available everywhere the markup extension was. A `Setter` in a `Style`, and a standalone
+`ResourceDictionary` with no code-behind — a shared `Styles.xaml`, say — are the two common cases: `x:Bind`
+needs a compiled-binding host, which those do not have. Set those from code-behind using the same generated
+members:
 
 ```csharp
 myTextBlock.Text = Resources.Foo;
