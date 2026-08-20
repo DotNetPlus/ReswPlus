@@ -17,6 +17,11 @@
     <Platforms>x86;x64;ARM64</Platforms>
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
     <!--
+      Naming the publish profile here is what gives an ordinary build a runtime identifier to resolve against,
+      which is what the Store's own UWP app does. It makes the build lay down a self-contained app.
+    -->
+    <PublishProfile>win-$(Platform).pubxml</PublishProfile>
+    <!--
       This is what makes the project a UWP project on modern .NET. It is also the only thing that tells
       ReswPlus what kind of app this is: unlike a UWP project built with .NET Native, this one carries no
       'Windows.Foundation.UniversalApiContract' reference for the generator to recognize it by.
@@ -32,21 +37,28 @@
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
     <GenerateTestArtifacts>False</GenerateTestArtifacts>
     <AppxBundle>Never</AppxBundle>
+
+    <!--
+      Native AOT replaces the .NET Native toolchain a UWP app used to be compiled with. Asking for it is safe
+      on every build: it only actually runs while the build produces an MSIX package, so an ordinary build
+      stays a normal managed build and stays debuggable. This is what the Store's UWP app does.
+    -->
+    <PublishAot>true</PublishAot>
+
+    <!--
+      Set this to package on build, which is what turns Native AOT on. In Visual Studio it is the
+      'NativeAOT Build' checkbox in the project properties, which writes 'GenerateAppxPackageOnBuild' into
+      the .user file. It is taken through a name of our own because setting 'GenerateAppxPackageOnBuild'
+      globally makes the libraries of the solution try to package themselves too.
+
+      Use it with the Release configuration: packaging a Debug build produces a package with no runtime in it.
+
+        msbuild /t:Rebuild /p:Configuration=Release /p:Platform=x64 /p:ReswPlusGenerateAppxPackageOnBuild=true
+    -->
+    <GenerateAppxPackageOnBuild Condition="'$(ReswPlusGenerateAppxPackageOnBuild)' == 'true'">true</GenerateAppxPackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <!--
-      Native AOT is what replaces the .NET Native toolchain a UWP app used to be compiled with. It is only
-      asked for while publishing: turning it on for an ordinary build produces an app that throws inside the
-      XAML framework before its first window. '_IsPublishing' is set by the SDK for the whole publish,
-      including the restore it runs, which is when the AOT compiler has to be brought in.
-
-      Publish one architecture at a time, from a developer command prompt for that architecture, because the
-      AOT link step needs the matching MSVC linker:
-
-        msbuild /t:Restore;Publish /p:Configuration=Release /p:PublishProfile=win-x64 /p:_IsPublishing=true
-    -->
-    <PublishAot Condition="'$(_IsPublishing)' == 'true'">true</PublishAot>
     <TrimmerSingleWarn>false</TrimmerSingleWarn>
   </PropertyGroup>
 
