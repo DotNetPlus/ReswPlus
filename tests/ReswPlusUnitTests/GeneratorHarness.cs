@@ -229,9 +229,28 @@ internal sealed class ReswGeneratorRun
     /// </remarks>
     public void AssertCompiles()
     {
+        AssertCompiles(OutputCompilation);
+    }
+
+    /// <summary>
+    /// Asserts that the generated sources compile beside code of the consumer.
+    /// </summary>
+    /// <param name="consumerSource">The source of the consumer to compile the generated sources with.</param>
+    public void AssertCompilesWith(string consumerSource)
+    {
+        // The documentation of the consumer is none of the generator's business, so it is not diagnosed.
+        var tree = CSharpSyntaxTree.ParseText(
+            consumerSource,
+            new CSharpParseOptions(LanguageVersion.CSharp7_3, DocumentationMode.None));
+
+        AssertCompiles(OutputCompilation.AddSyntaxTrees(tree));
+    }
+
+    private static void AssertCompiles(Compilation compilation)
+    {
         using var peStream = new MemoryStream();
 
-        var result = OutputCompilation.Emit(peStream);
+        var result = compilation.Emit(peStream);
 
         var problems = result.Diagnostics
             .Where(diagnostic => diagnostic.Severity is DiagnosticSeverity.Error or DiagnosticSeverity.Warning)

@@ -89,20 +89,30 @@ public sealed class ReswClassGenerator
             appType
         );
 
-        // Only use items with valid keys and that do not contain the ignore tag.
+        // Only use items with valid keys, that do not carry the ignore tag, and whose name the generated types
+        // don't already declare.
         var stringItems = reswInfo.Items
             .Where(i => IsValidPropertyName(i.Key) && !(i.Comment?.Contains(TagIgnore) ?? false))
+            .Where(i => !GeneratedIdentifier.ConflictsWithGeneratedMember(i.Key, className))
             .ToArray();
 
         if (isAdvanced)
         {
             // Handle pluralization and variant support
-            var itemsWithPluralOrVariant = reswInfo.Items.GetItemsWithVariantOrPlural();
+            var itemsWithPluralOrVariant = reswInfo.Items.GetItemsWithVariantOrPlural().ToArray();
             var basicItems = stringItems.Except(itemsWithPluralOrVariant.SelectMany(e => e.Items)).ToArray();
 
             foreach (var item in itemsWithPluralOrVariant)
             {
                 var itemKey = item.Key;
+
+                // The forms of the resource are already out of the plain items, so a conflicting group is
+                // dropped here rather than declined into members the generated types already declare.
+                if (GeneratedIdentifier.ConflictsWithGeneratedMember(itemKey, className))
+                {
+                    continue;
+                }
+
                 if (item.SupportPlural)
                 {
                     var hasNoneForm = reswInfo.Items.Any(i => i.Key == $"{itemKey}_None");
@@ -287,6 +297,14 @@ public sealed class ReswClassGenerator
             }
             pluralLocalization.ParameterToUseForPluralization = pluralizationParameter;
         }
+
+        // The generated member declares its extra parameters first, and every parameter it declares needs a name
+        // of its own: the tag can name a parameter after one the generator adds, or name two of them alike.
+        GeneratedIdentifier.MakeNamesUnique(
+        [
+            .. localization.ExtraParameters,
+            .. localization.Parameters.OfType<FunctionFormatTagParameter>(),
+        ]);
 
         return true;
     }

@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using ReswPlus.SourceGenerator.ClassGenerators;
+using ReswPlus.SourceGenerator.CodeGenerators;
 
 namespace ReswPlus.SourceGenerator.Analysis;
 
@@ -80,8 +82,66 @@ internal static class ReswResourceRules
     private static void AnalyzeDocument(ReswResourceModel model, ReswResourceModel defaultModel, Action<Diagnostic> reportDiagnostic)
     {
         ReportDuplicateMembers(model, reportDiagnostic);
+        ReportReservedNames(model, reportDiagnostic);
+        ReportDuplicateFormatParameters(model, reportDiagnostic);
         ReportMissingPluralForms(model, defaultModel, reportDiagnostic);
         ReportFormattingProblems(model, defaultModel, reportDiagnostic);
+    }
+
+    /// <summary>
+    /// RESWP0012: reports the resources the generated types already declare a member for.
+    /// </summary>
+    /// <remarks>
+    /// The generator skips these resources rather than emitting a member that would not compile, which makes
+    /// them silently absent from the generated class. This is what says so.
+    /// </remarks>
+    private static void ReportReservedNames(ReswResourceModel model, Action<Diagnostic> reportDiagnostic)
+    {
+        var className = Path.GetFileNameWithoutExtension(model.Document.Path);
+
+        foreach (var member in model.Members)
+        {
+            if (!GeneratedIdentifier.ConflictsWithGeneratedMember(member.Name, className))
+            {
+                continue;
+            }
+
+            reportDiagnostic(Diagnostic.Create(
+                Diagnostics.ReservedResourceName,
+                member.Entries[0].Location,
+                member.Entries[0].Key,
+                Path.GetFileName(model.Document.Path)));
+        }
+    }
+
+    /// <summary>
+    /// RESWP0013: reports the <c>#Format</c> tags that declare the same parameter name twice.
+    /// </summary>
+    /// <remarks>
+    /// Only the names the tag itself declares are compared. The generator adds a parameter of its own to a
+    /// pluralized or varianted resource, and renames it when the tag already uses its name, which is a
+    /// conflict the author of the tag did not create and is not asked to resolve.
+    /// </remarks>
+    private static void ReportDuplicateFormatParameters(ReswResourceModel model, Action<Diagnostic> reportDiagnostic)
+    {
+        foreach (var member in model.Members)
+        {
+            var seen = new HashSet<string>(StringComparer.Ordinal);
+
+            foreach (var name in member.FormatParameterNames)
+            {
+                if (seen.Add(name))
+                {
+                    continue;
+                }
+
+                reportDiagnostic(Diagnostic.Create(
+                    Diagnostics.DuplicateFormatParameter,
+                    member.Entries[0].Location,
+                    member.Name,
+                    name));
+            }
+        }
     }
 
     /// <summary>

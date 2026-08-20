@@ -12,12 +12,13 @@ namespace ReswPlus.SourceGenerator.Analysis;
 /// </summary>
 internal sealed class ReswMember
 {
-    public ReswMember(string name, bool isPlural, IReadOnlyList<ReswEntry> entries, int formatParameterCount)
+    public ReswMember(string name, bool isPlural, IReadOnlyList<ReswEntry> entries, ReswFormatTag formatTag)
     {
         Name = name;
         IsPlural = isPlural;
         Entries = entries;
-        FormatParameterCount = formatParameterCount;
+        FormatParameterCount = formatTag.ParameterCount;
+        FormatParameterNames = formatTag.ParameterNames;
     }
 
     /// <summary>
@@ -37,6 +38,13 @@ internal sealed class ReswMember
     public IReadOnlyList<ReswEntry> Entries { get; }
 
     /// <summary>
+    /// Gets the names of the parameters declared by the <c>#Format</c> tag of the resource, in declaration
+    /// order. Only the parameters the generated member takes an argument for are listed: the literal strings
+    /// and the references to other resources of the tag are resolved at generation time and carry no name.
+    /// </summary>
+    public IReadOnlyList<string> FormatParameterNames { get; }
+
+    /// <summary>
     /// Gets the number of parameters declared by the <c>#Format</c> tag of the resource, or <c>0</c> when the
     /// resource has no usable tag and its value is therefore returned without being formatted.
     /// </summary>
@@ -46,6 +54,35 @@ internal sealed class ReswMember
     /// Gets whether the value of the resource is passed to <see cref="string.Format(string, object[])"/>.
     /// </summary>
     public bool IsFormatted => FormatParameterCount > 0;
+}
+
+/// <summary>
+/// What the <c>#Format</c> tag of a resource declares.
+/// </summary>
+internal readonly struct ReswFormatTag
+{
+    public ReswFormatTag(int parameterCount, IReadOnlyList<string> parameterNames)
+    {
+        ParameterCount = parameterCount;
+        ParameterNames = parameterNames;
+    }
+
+    /// <summary>
+    /// Gets the number of arguments the generated code passes to <see cref="string.Format(string, object[])"/>,
+    /// which counts the literal strings and resource references of the tag as well as its parameters.
+    /// </summary>
+    public int ParameterCount { get; }
+
+    /// <summary>
+    /// Gets the names of the parameters the generated member takes, in declaration order.
+    /// </summary>
+    public IReadOnlyList<string> ParameterNames { get; }
+
+    /// <summary>
+    /// The tag of a resource that has none, or whose tag cannot be parsed. In both cases the generated member
+    /// returns the value of the resource without formatting it.
+    /// </summary>
+    public static readonly ReswFormatTag None = new(0, []);
 }
 
 /// <summary>
@@ -161,7 +198,7 @@ internal sealed class ReswResourceModel
                 group.Key,
                 group.SupportPlural,
                 group.Items.Where(entriesByItem.ContainsKey).Select(item => entriesByItem[item]).ToArray(),
-                CountFormatParameters(group.Key, comment, basicItems, resourceFileName)));
+                ReadFormatTag(group.Key, comment, basicItems, resourceFileName)));
         }
 
         foreach (var item in basicItems)
@@ -172,7 +209,7 @@ internal sealed class ReswResourceModel
                 item.Key,
                 isPlural: false,
                 [entriesByItem[item]],
-                CountFormatParameters(item.Key, item.Comment, basicItems, resourceFileName)));
+                ReadFormatTag(item.Key, item.Comment, basicItems, resourceFileName)));
         }
 
         return new ReswResourceModel(
@@ -188,27 +225,34 @@ internal sealed class ReswResourceModel
     }
 
     /// <summary>
-    /// Counts the arguments the generated code passes to <see cref="string.Format(string, object[])"/>.
+    /// Reads what the <c>#Format</c> tag of a resource declares.
     /// </summary>
     /// <param name="key">The name of the resource, used for diagnostics of the tag parser.</param>
     /// <param name="comment">The comment carrying the <c>#Format</c> tag, if any.</param>
     /// <param name="knownItems">The resources a <c>Reference()</c> parameter of the tag can point at.</param>
     /// <param name="resourceFileName">The name of the resource file, used for diagnostics of the tag parser.</param>
     /// <returns>
-    /// The number of declared parameters, or <c>0</c> when there is no tag or the tag cannot be parsed, since
-    /// in both cases the generated member returns the value of the resource without formatting it.
+    /// What the tag declares, or <see cref="ReswFormatTag.None"/> when there is no tag or the tag cannot be
+    /// parsed, since in both cases the generated member returns the value of the resource without formatting it.
     /// </returns>
-    private static int CountFormatParameters(string key, string? comment, IEnumerable<ReswItem> knownItems, string resourceFileName)
+    private static ReswFormatTag ReadFormatTag(string key, string? comment, IEnumerable<ReswItem> knownItems, string resourceFileName)
     {
         var (format, _) = ReswClassGenerator.ParseTag(comment);
 
         if (format is null)
         {
-            return 0;
+            return ReswFormatTag.None;
         }
 
         var parameters = FormatTag.ParseParameters(key, FormatTag.SplitParameters(format), knownItems, resourceFileName, logger: null);
 
-        return parameters?.Parameters.Count ?? 0;
+        if (parameters is null)
+        {
+            return ReswFormatTag.None;
+        }
+
+        return new ReswFormatTag(
+            parameters.Parameters.Count,
+            parameters.Parameters.OfType<FunctionFormatTagParameter>().Select(parameter => parameter.Name).ToArray());
     }
 }
