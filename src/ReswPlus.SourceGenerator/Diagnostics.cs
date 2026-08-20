@@ -193,4 +193,27 @@ internal static class Diagnostics
         ResourcesCategory,
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true);
+
+    /// <summary>
+    /// Returns the descriptor of a diagnostic from its identifier.
+    /// </summary>
+    /// <param name="id">The identifier of the diagnostic.</param>
+    /// <returns>The descriptor to report the diagnostic with.</returns>
+    /// <remarks>
+    /// A <see cref="DiagnosticDescriptor"/> compares by reference, so what is decided about the setup of a
+    /// project travels through the pipeline as identifiers and is resolved back here when it is reported.
+    /// Carrying the descriptors themselves would keep the stage from ever comparing equal to its previous run.
+    /// </remarks>
+    public static DiagnosticDescriptor GetDescriptor(string id)
+    {
+        return id switch
+        {
+            "RESWP0001" => UnsupportedLanguage,
+            "RESWP0002" => UnknownNamespace,
+            "RESWP0003" => MissingRootPath,
+            "RESWP0004" => UnknownProjectType,
+            "RESWP0005" => UnrecognizedAppType,
+            _ => throw new System.ArgumentOutOfRangeException(nameof(id), id, "No diagnostic carries that identifier."),
+        };
+    }
 }
