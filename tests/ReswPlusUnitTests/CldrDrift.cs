@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using ReswPlus.SourceGenerator.ClassGenerators;
+using ReswPlus.SourceGenerator.Plurals;
 using Xunit;
 
 namespace ReswPlusUnitTests;

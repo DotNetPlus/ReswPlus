@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using ReswPlus.SourceGenerator;
 using ReswPlus.SourceGenerator.ClassGenerators;
+using ReswPlus.SourceGenerator.Plurals;
 
 namespace ReswPlusUnitTests;
 
@@ -145,15 +146,27 @@ internal sealed class ResourceLoaderExtensionHost
             PluralTemplates.Read("Plurals.PluralTypeEnum"),
             PluralTemplates.Read("Utils.IntExt"),
             PluralTemplates.Read("Utils.DoubleExt"),
-            PluralTemplates.Read("Plurals.OtherProvider"),
+            EmitProvider("Other"),
             resourceLoaderExtension,
             ResourceStringProviderStub,
             ApplicationLanguagesStub
-        }.Concat(rules.Select(rule => PluralTemplates.Read($"Plurals.{rule.ProviderId}Provider")));
+        }.Concat(rules.Select(rule => EmitProvider(rule.ProviderId)));
 
         var assemblyName = $"ReswPlusLoader.{string.Join(".", rules.Select(rule => rule.ProviderId))}";
 
         return new ResourceLoaderExtensionHost(PluralTemplates.Compile(assemblyName, sources.Distinct()));
+    }
+
+    /// <summary>
+    /// Writes a provider the way the generator writes it.
+    /// </summary>
+    /// <param name="providerId">The identifier of the provider, without the <c>Provider</c> suffix.</param>
+    /// <returns>The source of the provider.</returns>
+    private static string EmitProvider(string providerId)
+    {
+        var form = PluralFormsRetriever.PluralFormsForTesting.FirstOrDefault(candidate => candidate.Id == providerId);
+
+        return CldrEmitter.Emit($"{providerId}Provider", form is null ? [] : CldrLanguages.RulesOfForm(form.Languages));
     }
 
     /// <summary>

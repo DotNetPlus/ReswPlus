@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace ReswPlusUnitTests;
+namespace ReswPlus.SourceGenerator.Plurals;
 
 /// <summary>
 /// Reads the plural rule syntax of UTS #35 and answers which category a quantity selects.
@@ -57,6 +57,16 @@ internal static class CldrRule
     }
 
     private static readonly Dictionary<string, ICondition> Parsed = [];
+
+    /// <summary>
+    /// The text of a condition that always holds.
+    /// </summary>
+    public const string True = "true";
+
+    /// <summary>
+    /// The text of a condition that never holds.
+    /// </summary>
+    public const string False = "false";
 
     private static ICondition ParseOr(string text)
     {
@@ -178,7 +188,27 @@ internal static class CldrRule
     {
         public bool Holds(Operands operands) => Alternatives.Any(alternative => alternative.Holds(operands));
 
-        public string ToCSharp() => string.Join(" || ", Alternatives.Select(alternative => alternative.ToCSharp()));
+        public string ToCSharp()
+        {
+            var kept = new List<string>();
+
+            foreach (var alternative in Alternatives)
+            {
+                var text = alternative.ToCSharp();
+
+                if (text == True)
+                {
+                    return True;
+                }
+
+                if (text != False)
+                {
+                    kept.Add(text);
+                }
+            }
+
+            return kept.Count == 0 ? False : string.Join(" || ", kept);
+        }
 
         public void CollectOperands(ISet<char> operands)
         {
@@ -193,9 +223,35 @@ internal static class CldrRule
     {
         public bool Holds(Operands operands) => Parts.All(part => part.Holds(operands));
 
-        // 'and' binds tighter than 'or', so an alternative nested inside one has to keep its brackets.
-        public string ToCSharp() =>
-            string.Join(" && ", Parts.Select(part => part is AnyOf ? $"({part.ToCSharp()})" : part.ToCSharp()));
+        public string ToCSharp()
+        {
+            var kept = new List<string>();
+
+            foreach (var part in Parts)
+            {
+                var text = part.ToCSharp();
+
+                if (text == False)
+                {
+                    return False;
+                }
+
+                if (text == True)
+                {
+                    continue;
+                }
+
+                // 'and' binds tighter than 'or', so an alternative nested inside one keeps its brackets.
+                kept.Add(part is AnyOf ? $"({text})" : text);
+            }
+
+            return kept.Count switch
+            {
+                0 => True,
+                1 => kept[0],
+                _ => string.Join(" && ", kept),
+            };
+        }
 
         public void CollectOperands(ISet<char> operands)
         {
@@ -231,7 +287,22 @@ internal static class CldrRule
 
         public string ToCSharp()
         {
+            // A quantity that reaches a provider carries no compact notation, so the operands holding its
+            // exponent are zero and every relation reading one is decided here rather than at run time.
+            if (Operand is 'c' or 'e')
+            {
+                return Holds(default) ? True : False;
+            }
+
             var subject = Modulus == 0 ? Operand.ToString() : $"({Operand} % {Modulus})";
+            var needsIntegerGuard = Operand == 'n' && Ranges.Any(range => range.From != range.To);
+
+            // A single value reads better compared directly than negated, and it is the commonest relation of
+            // all: 'i % 100 != 11' rather than '!(i % 100 == 11)'.
+            if (Negated && !needsIntegerGuard && Ranges.Count == 1 && Ranges[0].From == Ranges[0].To)
+            {
+                return $"{subject} != {Ranges[0].From}";
+            }
 
             var tests = Ranges.Select(range => range.From == range.To
                 ? $"{subject} == {range.From}"
@@ -246,7 +317,7 @@ internal static class CldrRule
 
             // Only 'n' can carry a fractional part, and a range holds whole numbers only, so 'n % 10 = 1' has
             // to stay false for 11.5 rather than match the way 11 does.
-            if (Operand == 'n' && Ranges.Any(range => range.From != range.To))
+            if (needsIntegerGuard)
             {
                 matches = $"({subject}.IsInt() && {matches})";
             }
@@ -254,7 +325,14 @@ internal static class CldrRule
             return Negated ? $"!({matches})" : matches;
         }
 
-        public void CollectOperands(ISet<char> operands) => operands.Add(Operand);
+        public void CollectOperands(ISet<char> operands)
+        {
+            // The exponent operands are folded away, so nothing has to be computed for them.
+            if (Operand is not ('c' or 'e'))
+            {
+                operands.Add(Operand);
+            }
+        }
     }
 
     /// <summary>

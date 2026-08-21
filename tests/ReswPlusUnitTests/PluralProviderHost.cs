@@ -1,16 +1,19 @@
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using ReswPlus.SourceGenerator.ClassGenerators;
+using ReswPlus.SourceGenerator.Plurals;
 
 namespace ReswPlusUnitTests;
 
 /// <summary>
-/// Compiles the pluralization templates shipped by the generator and runs them.
+/// Writes the pluralization providers the generator writes, compiles them, and runs them.
 /// </summary>
 /// <remarks>
-/// The plural providers are emitted verbatim into the consumer's compilation, so they are embedded resources
-/// rather than code that the test project can reference. Compiling them here is what makes it possible to test
-/// the rules that actually ship, instead of a copy of them that could drift.
+/// The providers are written from CLDR's rules into the consumer's compilation rather than kept as files, so
+/// there is nothing to read: the tests ask for the same source the generator would emit, and compile it the
+/// same way. Compiling it here is what makes it possible to test the rules that actually ship, instead of a
+/// copy of them that could drift.
 /// </remarks>
 internal static class PluralProviderHost
 {
@@ -36,9 +39,9 @@ internal static class PluralProviderHost
     {
         return Providers.GetOrAdd(providerId, static id =>
         {
-            var sources = SharedTemplates
-                .Concat([$"Plurals.{id}Provider"])
-                .Select(PluralTemplates.Read);
+            var form = PluralFormsRetriever.PluralFormsForTesting.FirstOrDefault(candidate => candidate.Id == id);
+            var rules = form is null ? [] : CldrLanguages.RulesOfForm(form.Languages);
+            var sources = SharedTemplates.Select(PluralTemplates.Read).Concat([CldrEmitter.Emit($"{id}Provider", rules)]);
 
             var assembly = PluralTemplates.Compile($"ReswPlusPlurals.{id}", sources);
             var type = assembly.GetTypes().Single(candidate => candidate.Name == $"{id}Provider");

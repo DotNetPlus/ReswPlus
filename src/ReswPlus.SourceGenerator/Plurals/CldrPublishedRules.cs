@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ReswPlusUnitTests;
+namespace ReswPlus.SourceGenerator.Plurals;
 
 /// <summary>
 /// Every cardinal plural rule Unicode CLDR publishes, for every language it publishes one for.

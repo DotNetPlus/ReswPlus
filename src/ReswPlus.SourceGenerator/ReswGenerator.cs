@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using ReswPlus.SourceGenerator.ClassGenerators;
+using ReswPlus.SourceGenerator.Plurals;
 using ReswPlus.SourceGenerator.CodeGenerators;
 using ReswPlus.SourceGenerator.Models;
 using ReswPlus.SourceGenerator.Pipeline;
@@ -271,11 +272,11 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
 
         // The single-form provider backs the fallback of the selector, which a language reaches by matching no
         // case at all, so it is emitted once up front and reused.
-        AddSourceFromResource(spc, emittedSources, $"{assemblyName}.Templates.Plurals.OtherProvider.txt", "OtherProvider");
+        AddProvider(spc, emittedSources, "Other", []);
 
         foreach (var pluralFile in PluralFormsRetriever.RetrievePluralFormsForLanguages(languages))
         {
-            AddSourceFromResource(spc, emittedSources, $"{assemblyName}.Templates.Plurals.{pluralFile.Id}Provider.txt", $"{pluralFile.Id}Provider");
+            AddProvider(spc, emittedSources, pluralFile.Id, CldrLanguages.RulesOfForm(pluralFile.Languages));
 
             // Add each language handled by this provider.
             foreach (var lng in pluralFile.Languages)
@@ -324,6 +325,29 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
         var start = new LinePosition(0, 0);
 
         return Location.Create(path, new TextSpan(0, 0), new LinePositionSpan(start, start));
+    }
+
+    /// <summary>
+    /// Writes a plural provider from the rules it implements and adds it as a source file, unless it was
+    /// already added.
+    /// </summary>
+    /// <param name="spc">The context to add the source to.</param>
+    /// <param name="emittedSources">The hint names already emitted for the project.</param>
+    /// <param name="providerId">The identifier of the provider, without the <c>Provider</c> suffix.</param>
+    /// <param name="rules">The rules CLDR publishes for the languages the provider serves.</param>
+    private static void AddProvider(SourceProductionContext spc, HashSet<string> emittedSources, string providerId, IReadOnlyList<CldrPublishedRules.Rule> rules)
+    {
+        var typeName = $"{providerId}Provider";
+        var hintName = $"{typeName}{GeneratedCode.FileExtension}";
+
+        if (!emittedSources.Add(hintName))
+        {
+            return;
+        }
+
+        var source = CldrEmitter.Emit(typeName, rules);
+
+        spc.AddSource(hintName, SourceText.From(GeneratedCode.AddFileHeader(source), Encoding.UTF8));
     }
 
     /// <summary>

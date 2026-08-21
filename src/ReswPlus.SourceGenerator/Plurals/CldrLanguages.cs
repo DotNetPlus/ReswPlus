@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ReswPlusUnitTests;
+namespace ReswPlus.SourceGenerator.Plurals;
 
 /// <summary>
 /// Finds the rules CLDR publishes for a language ReswPlus maps.
@@ -38,6 +38,22 @@ internal static class CldrLanguages
         var code = DeprecatedCodes.TryGetValue(language, out var current) ? current : language;
 
         return CldrPublishedRules.Cardinal.TryGetValue(code, out var rules) ? rules : null;
+    }
+
+    /// <summary>
+    /// Gets the rules a plural form implements.
+    /// </summary>
+    /// <param name="languages">The languages the form is given.</param>
+    /// <returns>The rules of the first of them CLDR publishes rules for.</returns>
+    /// <remarks>
+    /// A form is given several languages, and CLDR may write their rules differently while meaning the same
+    /// thing -- Catalan reads 'i = 1 and v = 0' where Spanish reads 'n = 1', which pick out the same quantities
+    /// once a quantity is a <see cref="double"/>. Any of them can therefore stand for the form, and the tests
+    /// check every language against the rules of its own language rather than trusting that.
+    /// </remarks>
+    public static IReadOnlyList<CldrPublishedRules.Rule> RulesOfForm(IEnumerable<string> languages)
+    {
+        return languages.Select(RulesOf).FirstOrDefault(rules => rules is not null) ?? [];
     }
 
     /// <summary>
