@@ -5,3 +5,7 @@
 *.jpg   binary
 *.png   binary
 *.gif   binary
+
+# Data vendored from upstream, kept exactly as published so that refreshing it is a clean diff and the file
+# can be checked against its source byte for byte.
+src/ReswPlus.SourceGenerator/Plurals/plurals.json -text
