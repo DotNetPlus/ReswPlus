@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Turns the plural rules of Unicode CLDR into the C# the generator holds them as. Deliberately not part of
+    ReswPlus.sln: it is run on demand by a maintainer refreshing CLDR, never by a build, and never packed.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>CldrRuleImporter</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ReswPlusUnitTests" />
+    <!-- The rule model and the emitter live in the generator: the importer only parses CLDR into them. -->
+    <ProjectReference Include="..\..\src\ReswPlus.SourceGenerator\ReswPlus.SourceGenerator.csproj" />
+  </ItemGroup>
+
+</Project>

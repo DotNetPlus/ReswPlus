@@ -1,5 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
+using ReswPlus.SourceGenerator;
+using ReswPlus.SourceGenerator.Pipeline;
+using ReswPlus.SourceGenerator.ClassGenerators;
 using Xunit;
 
 namespace ReswPlusUnitTests;
@@ -36,6 +41,151 @@ public class GeneratorIncrementality
         second.AssertReused(ReswPlus.SourceGenerator.Pipeline.TrackingNames.Layout);
         second.AssertReused(ReswPlus.SourceGenerator.Pipeline.TrackingNames.Generation);
         second.AssertReused(ReswPlus.SourceGenerator.Pipeline.TrackingNames.Support);
+    }
+
+    /// <summary>
+    /// Adding a resource file costs the work of that file, not the work of the project.
+    /// </summary>
+    /// <remarks>
+    /// Adding, removing or renaming a resource changes how the project is laid out, which every file's
+    /// generation reads to learn its own hint name. Reading it is cheap; parsing and formatting a resource file
+    /// is not, and there is no reason for a file nobody touched to be parsed again because a different file
+    /// appeared beside it.
+    /// </remarks>
+    [Fact]
+    public void AddingAResourceLeavesTheGenerationOfTheOthersAlone()
+    {
+        var before = ThreeResources();
+        var after = before.Append(
+            ReswGeneratorHarness.File(English, ReswTestHelpers.CreateResw(("Added", "Fourth", null)), baseName: "Fourth"))
+            .ToList();
+
+        AssertOnlyRan(before, after, ran: 1);
+    }
+
+    [Fact]
+    public void RemovingAResourceLeavesTheGenerationOfTheOthersAlone()
+    {
+        var before = ThreeResources();
+        var after = before.Take(2).ToList();
+
+        AssertOnlyRan(before, after, ran: 0);
+    }
+
+    [Fact]
+    public void RenamingAResourceLeavesTheGenerationOfTheOthersAlone()
+    {
+        var before = ThreeResources();
+        var after = before.Take(2).Append(
+            ReswGeneratorHarness.File(English, ReswTestHelpers.CreateResw(("Question", "Third", null)), baseName: "Renamed"))
+            .ToList();
+
+        AssertOnlyRan(before, after, ran: 1);
+    }
+
+    [Fact]
+    public void TranslatingAResourceIntoANewLanguageLeavesTheGenerationOfTheOthersAlone()
+    {
+        var before = ThreeResources();
+        var after = before.Append(
+            ReswGeneratorHarness.File("fr-FR", ReswTestHelpers.CreateResw(("Greeting", "Bonjour", null)), baseName: "First"))
+            .ToList();
+
+        // A translation is not generated from, so nothing should be generated at all for it -- and the files
+        // that were already there should not be touched because a language appeared beside them.
+        AssertOnlyRan(before, after, ran: 0);
+    }
+
+    /// <summary>
+    /// Asserts how many resource files had their code generated again after a structural change to a project.
+    /// </summary>
+    /// <param name="before">The files of the project on the first run.</param>
+    /// <param name="after">The files of the project on the second run.</param>
+    /// <param name="ran">How many files are expected to be generated on the second run.</param>
+    /// <remarks>
+    /// <see cref="IncrementalStepRunReason.Cached"/> is the transform not running at all, while
+    /// <see cref="IncrementalStepRunReason.Unchanged"/> is it running and happening to produce the same value,
+    /// which costs exactly as much as producing a different one. Only the former is free.
+    /// <para>
+    /// <see cref="IncrementalStepRunReason.Removed"/> is neither: it is the record of an output that used to
+    /// exist and no longer does, and nothing was computed for it.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void AFileIsGeneratedAgainWhenOnlyTheProjectChanged()
+    {
+        // What is generated for a file depends on the project it belongs to -- its namespace, the kind of app
+        // it is -- so two of these are the same only if the project is the same too. Drop the project from
+        // that comparison and a file whose project was renamed keeps the namespace it had.
+        var file = new InMemoryAdditionalText(@"C:\Project\Strings\en-US\Resources.resw", "<root />");
+
+        var before = new ReswFileToGenerate(file, Project("TestProject"), "Resources.g.cs");
+        var after = new ReswFileToGenerate(file, Project("RenamedProject"), "Resources.g.cs");
+
+        Assert.NotEqual(before, after);
+        Assert.Equal(before, new ReswFileToGenerate(file, Project("TestProject"), "Resources.g.cs"));
+    }
+
+    [Fact]
+    public void AFileIsGeneratedAgainWhenOnlyItsNameChanged()
+    {
+        var file = new InMemoryAdditionalText(@"C:\Project\Strings\en-US\Resources.resw", "<root />");
+
+        // Two resources of the same name in different folders are told apart by the name they are emitted
+        // under, so that has to count as well.
+        Assert.NotEqual(
+            new ReswFileToGenerate(file, Project("TestProject"), "Resources.g.cs"),
+            new ReswFileToGenerate(file, Project("TestProject"), "Resources.2.g.cs"));
+    }
+
+    [Fact]
+    public void TwoOfTheSameFileHashAlike()
+    {
+        var file = new InMemoryAdditionalText(@"C:\Project\Strings\en-US\Resources.resw", "<root />");
+
+        Assert.Equal(
+            new ReswFileToGenerate(file, Project("TestProject"), "Resources.g.cs").GetHashCode(),
+            new ReswFileToGenerate(file, Project("TestProject"), "Resources.g.cs").GetHashCode());
+    }
+
+    [Fact]
+    public void AFileIsGeneratedAgainWhenItIsTheOneThatChanged()
+    {
+        // The compiler hands back the same object for a file it has not seen change, so identity is the
+        // question being asked. Two files of the same content are still two files.
+        var project = Project("TestProject");
+
+        Assert.NotEqual(
+            new ReswFileToGenerate(new InMemoryAdditionalText(@"C:\Project\Strings\en-US\Resources.resw", "<root />"), project, "Resources.g.cs"),
+            new ReswFileToGenerate(new InMemoryAdditionalText(@"C:\Project\Strings\en-US\Resources.resw", "<root />"), project, "Resources.g.cs"));
+    }
+
+    private static ReswProject Project(string rootNamespace)
+    {
+        var options = new Dictionary<string, string>(AnalyzerConfigOptions.KeyComparer)
+        {
+            ["build_property.ProjectDir"] = ReswGeneratorHarness.ProjectDir,
+            ["build_property.OutputType"] = "Library",
+            ["build_property.RootNamespace"] = rootNamespace,
+        };
+
+        return ReswProject.Create(
+            new CompilationInfo(true, AppType.WindowsAppSDK, "TestProject"),
+            ReswBuildOptions.Read(new TestAnalyzerConfigOptionsProvider(options).GlobalOptions));
+    }
+
+    private static void AssertOnlyRan(IReadOnlyList<ReswFile> before, IReadOnlyList<ReswFile> after, int ran)
+    {
+        var second = ReswGeneratorHarness.Run(before).RunAgain(after);
+        var reasons = second.Reasons(ReswPlus.SourceGenerator.Pipeline.TrackingNames.Generation);
+
+        var executed = reasons.Count(reason =>
+            reason is not (IncrementalStepRunReason.Cached or IncrementalStepRunReason.Removed));
+
+        Assert.True(
+            executed == ran,
+            $"The code of {executed} resource files was generated again, where {ran} was expected. " +
+            $"Reasons: {string.Join(", ", reasons)}.");
     }
 
     /// <summary>

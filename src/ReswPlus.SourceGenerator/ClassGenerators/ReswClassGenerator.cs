@@ -242,9 +242,29 @@ public sealed class ReswClassGenerator
         // Remove bcp47 tag from the namespace if present.
         var splitted = defaultNamespace.Split('.');
         var lastSegment = splitted.Last().Replace('_', '-');
-        var culture = CultureInfo.GetCultures(CultureTypes.AllCultures)
-                                 .FirstOrDefault(c => string.Equals(c.Name, lastSegment, StringComparison.OrdinalIgnoreCase));
-        return culture != null ? splitted.Take(splitted.Length - 1).ToArray() : splitted;
+
+        return CultureNames.Contains(lastSegment) ? splitted.Take(splitted.Length - 1).ToArray() : splitted;
+    }
+
+    /// <summary>
+    /// The names of every culture the machine knows, to recognize a namespace segment that is a language tag.
+    /// </summary>
+    /// <remarks>
+    /// Built once rather than enumerated per resource: there are some hundreds of cultures, and this is reached
+    /// while a developer types in a resource file.
+    /// </remarks>
+    private static readonly HashSet<string> CultureNames = BuildCultureNames();
+
+    private static HashSet<string> BuildCultureNames()
+    {
+        var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var culture in CultureInfo.GetCultures(CultureTypes.AllCultures))
+        {
+            names.Add(culture.Name);
+        }
+
+        return names;
     }
 
     /// <summary>

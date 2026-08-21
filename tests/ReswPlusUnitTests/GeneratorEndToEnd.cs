@@ -1,5 +1,6 @@
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using ReswPlus.SourceGenerator.ClassGenerators;
 using Xunit;
 
 namespace ReswPlusUnitTests;
@@ -310,8 +311,10 @@ public class GeneratorEndToEnd
         Assert.Contains("case \"en\":", selector);
         Assert.Contains("case \"ru\":", selector);
         Assert.Contains("case \"cy\":", selector);
-        Assert.Contains(run.Sources.Keys, name => name.StartsWith("SlavicProvider", System.StringComparison.Ordinal));
-        Assert.Contains(run.Sources.Keys, name => name.StartsWith("WelshProvider", System.StringComparison.Ordinal));
+        Assert.Contains(run.Sources.Keys, name => name.StartsWith(
+            $"{PluralFormsRetriever.RetrievePluralFormForLanguage("ru")!.Id}Provider", System.StringComparison.Ordinal));
+        Assert.Contains(run.Sources.Keys, name => name.StartsWith(
+            $"{PluralFormsRetriever.RetrievePluralFormForLanguage("cy")!.Id}Provider", System.StringComparison.Ordinal));
         run.AssertCompiles();
     }
 

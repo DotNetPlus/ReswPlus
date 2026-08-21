@@ -39,7 +39,7 @@ public class PluralProviders
     [InlineData(2147483702d, "TWO")]
     public void Slovenian(double number, string expected)
     {
-        Assert.Equal(expected, PluralProviderHost.GetProvider("Slovenian")(number));
+        Assert.Equal(expected, PluralProviderHost.ForLanguage("sl")(number));
     }
 
     [Theory]
@@ -86,7 +86,7 @@ public class PluralProviders
     [InlineData(1e-300, "ONE")]
     public void Filipino(double number, string expected)
     {
-        Assert.Equal(expected, PluralProviderHost.GetProvider("Filipino")(number));
+        Assert.Equal(expected, PluralProviderHost.ForLanguage("fil")(number));
     }
 
     [Theory]
@@ -124,7 +124,7 @@ public class PluralProviders
     [InlineData(0.2, "OTHER")]
     public void Latvian(double number, string expected)
     {
-        Assert.Equal(expected, PluralProviderHost.GetProvider("Latvian")(number));
+        Assert.Equal(expected, PluralProviderHost.ForLanguage("lv")(number));
     }
 
     [Theory]
@@ -142,7 +142,7 @@ public class PluralProviders
     [InlineData(10, "OTHER")]
     public void Danish(double number, string expected)
     {
-        Assert.Equal(expected, PluralProviderHost.GetProvider("Danish")(number));
+        Assert.Equal(expected, PluralProviderHost.ForLanguage("da")(number));
     }
 
     [Theory]
@@ -169,7 +169,7 @@ public class PluralProviders
     [InlineData(0.9999999999999999, "MANY")]
     public void Czech(double number, string expected)
     {
-        Assert.Equal(expected, PluralProviderHost.GetProvider("Czech")(number));
+        Assert.Equal(expected, PluralProviderHost.ForLanguage("cs")(number));
     }
 
     [Theory]
@@ -199,7 +199,7 @@ public class PluralProviders
     [InlineData(2147483652d, "FEW")]
     public void Lithuanian(double number, string expected)
     {
-        Assert.Equal(expected, PluralProviderHost.GetProvider("Lithuanian")(number));
+        Assert.Equal(expected, PluralProviderHost.ForLanguage("lt")(number));
     }
 
     [Theory]
@@ -219,7 +219,7 @@ public class PluralProviders
     [InlineData(0.5, "OTHER")]
     public void OnlyOneOrMillions(double number, string expected)
     {
-        Assert.Equal(expected, PluralProviderHost.GetProvider("OnlyOneOrMillions")(number));
+        Assert.Equal(expected, PluralProviderHost.ForLanguage("ca")(number));
     }
 
     [Theory]
@@ -239,7 +239,7 @@ public class PluralProviders
     [InlineData(1000000.5, "OTHER")]
     public void ZeroToTwoExcludedOrMillions(double number, string expected)
     {
-        Assert.Equal(expected, PluralProviderHost.GetProvider("ZeroToTwoExcludedOrMillions")(number));
+        Assert.Equal(expected, PluralProviderHost.ForLanguage("fr")(number));
     }
 
     [Theory]
@@ -260,27 +260,27 @@ public class PluralProviders
     [InlineData(120, "OTHER")]
     public void Romanian(double number, string expected)
     {
-        Assert.Equal(expected, PluralProviderHost.GetProvider("Romanian")(number));
+        Assert.Equal(expected, PluralProviderHost.ForLanguage("ro")(number));
     }
 
     [Theory]
     // Every provider reads its integer part by truncating, so a quantity past the 32-bit range selects the
     // same form as the equivalent small one instead of overflowing into another.
-    [InlineData("Icelandic", 21, "ONE")]
-    [InlineData("Icelandic", 2147483651d, "ONE")]
-    [InlineData("Croat", 21, "ONE")]
-    [InlineData("Croat", 2147483651d, "ONE")]
-    [InlineData("Croat", 2147483652d, "FEW")]
-    [InlineData("Manx", 2147483651d, "ONE")]
-    [InlineData("Maltese", 3, "FEW")]
-    [InlineData("Maltese", 2147483603d, "FEW")]
+    [InlineData("is", 21, "ONE")]
+    [InlineData("is", 2147483651d, "ONE")]
+    [InlineData("hr", 21, "ONE")]
+    [InlineData("hr", 2147483651d, "ONE")]
+    [InlineData("hr", 2147483652d, "FEW")]
+    [InlineData("gv", 2147483651d, "ONE")]
+    [InlineData("mt", 3, "FEW")]
+    [InlineData("mt", 2147483603d, "FEW")]
     // Maltese declines two items with a dual form, which is an exact quantity rather than a last-digit rule,
     // so a large quantity ending in 02 is not declined with it.
-    [InlineData("Maltese", 2147483602d, "OTHER")]
-    [InlineData("ScottishGaelic", 2147483651d, "OTHER")]
-    [InlineData("Welsh", 2147483651d, "OTHER")]
-    public void TheIntegerPartIsReadPastTheThirtyTwoBitRange(string providerId, double number, string expected)
+    [InlineData("mt", 2147483602d, "OTHER")]
+    [InlineData("gd", 2147483651d, "OTHER")]
+    [InlineData("cy", 2147483651d, "OTHER")]
+    public void TheIntegerPartIsReadPastTheThirtyTwoBitRange(string language, double number, string expected)
     {
-        Assert.Equal(expected, PluralProviderHost.GetProvider(providerId)(number));
+        Assert.Equal(expected, PluralProviderHost.ForLanguage(language)(number));
     }
 }

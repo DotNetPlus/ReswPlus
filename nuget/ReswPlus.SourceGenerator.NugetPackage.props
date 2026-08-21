@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <Version>0.4.0</Version>
-    <AssemblyVersion>0.4.0.0</AssemblyVersion>
-    <FileVersion>0.4.0.0</FileVersion>
+    <Version>0.5.0</Version>
+    <AssemblyVersion>0.5.0.0</AssemblyVersion>
+    <FileVersion>0.5.0.0</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Title>ReswPlus</Title>
     <PackageId>ReswPlus</PackageId>
@@ -17,7 +17,7 @@
     <PackageTags>dotnet localization resw source-generator uwp winui plural pluralization</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>Roslyn-based generation, resource diagnostics, corrected CLDR plural rules, and refreshed UWP and WinUI samples. Requires a compiler host compatible with Roslyn 5.6.</PackageReleaseNotes>
+    <PackageReleaseNotes>Plural rules are now derived from the rules Unicode CLDR publishes rather than transcribed by hand. BREAKING for Portuguese: pt and pt-BR now take CLDR's rules for bare pt, where they previously took European Portuguese. A count of zero selects the singular there, so "0 arquivos" becomes "0 arquivo". pt-PT is unchanged. No diagnostic reports this -- the resource keys a translator supplies are the same -- so check any pt or pt-BR wording for a count of zero. Breton's "many" form is now optional, which changes only which build-time diagnostics fire.</PackageReleaseNotes>
     <NoWarn>$(NoWarn);NU5128</NoWarn>
   </PropertyGroup>
   <ItemGroup>

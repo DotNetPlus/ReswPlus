@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ReswPlus.SourceGenerator;
+using ReswPlus.SourceGenerator.ClassGenerators;
 using Xunit;
 
 namespace ReswPlusUnitTests;
@@ -16,6 +17,16 @@ namespace ReswPlusUnitTests;
 public class PluralLanguageSource
 {
     /// <summary>
+    /// The rules of a language, paired with the class implementing them.
+    /// </summary>
+    /// <remarks>
+    /// Asked for by language: the name of the class is generated from whichever of its languages sorts first,
+    /// and is nobody's business but the generator's.
+    /// </remarks>
+    private static (string Language, string ProviderId) Rules(string language) =>
+        (language, PluralFormsRetriever.RetrievePluralFormForLanguage(language)!.Id);
+
+    /// <summary>
     /// The rules of a language selecting a form for two, and of one that doesn't.
     /// </summary>
     /// <remarks>
@@ -23,7 +34,7 @@ public class PluralLanguageSource
     /// two selects says which of the two languages the rules were taken from.
     /// </remarks>
     private static readonly (string Language, string ProviderId)[] EnglishAndPolish =
-        [("en", "OnlyOne"), ("pl", "Polish")];
+        [Rules("en"), Rules("pl")];
 
     private static readonly Dictionary<string, string> Forms = new()
     {
@@ -181,7 +192,7 @@ public class PluralLanguageSource
     }
 
     [Theory]
-    // A tag is reduced to its primary subtag, which is what the generated selector keys languages by.
+    // A tag is matched whole first, then shortened one subtag at a time until something is held for it.
     [InlineData("pl")]
     [InlineData("pl-PL")]
     [InlineData("PL-pl")]
@@ -196,6 +207,56 @@ public class PluralLanguageSource
         ResourceLoaderExtensionHost.WithUICulture("en-US", () =>
         {
             Assert.Equal("few", host.GetPlural(Forms, "FileCount", 2));
+        });
+    }
+
+    /// <summary>
+    /// The rules of a language whose tag changes meaning when lower cased by the wrong culture.
+    /// </summary>
+    private static readonly (string Language, string ProviderId)[] Icelandic = [Rules("is")];
+
+    [Fact]
+    public void ATagIsMatchedUnderACultureThatLowerCasesLettersDifferently()
+    {
+        // Turkish lower cases 'I' to a dotless 'ı', so a tag folded with the culture of the moment rather than
+        // with the invariant one would turn 'IS-IS' into 'ıs-ıs' and match nothing for the rest of the run.
+        var host = ResourceLoaderExtensionHost.Create(Icelandic, useApplicationLanguages: true);
+
+        host.SetApplicationLanguages("IS-IS");
+
+        ResourceLoaderExtensionHost.WithUICulture("tr-TR", () =>
+        {
+            Assert.Equal("one", host.GetPlural(Forms, "FileCount", 21));
+        });
+    }
+
+    /// <summary>
+    /// The rules of Portuguese, which CLDR publishes separately for Portugal.
+    /// </summary>
+    /// <remarks>
+    /// 'pt-PT' selects <c>one</c> for exactly one, while everywhere else Portuguese selects it for anything
+    /// below two, so a count of zero is what tells the two apart.
+    /// </remarks>
+    private static readonly (string Language, string ProviderId)[] Portuguese =
+        [Rules("pt-PT"), Rules("pt")];
+
+    [Theory]
+    // Portugal declines zero as 'other'...
+    [InlineData("pt-PT", "other")]
+    // ...while Brazil, and Portuguese with no region at all, decline it as 'one'.
+    [InlineData("pt-BR", "one")]
+    [InlineData("pt", "one")]
+    // A region nothing is held for falls back on the language, not on the other region's rules.
+    [InlineData("pt-AO", "one")]
+    public void TheRegionOfATagSelectsItsOwnRulesWhenCldrPublishesThem(string languageTag, string expected)
+    {
+        var host = ResourceLoaderExtensionHost.Create(Portuguese, useApplicationLanguages: true);
+
+        host.SetApplicationLanguages(languageTag);
+
+        ResourceLoaderExtensionHost.WithUICulture("en-US", () =>
+        {
+            Assert.Equal(expected, host.GetPlural(Forms, "FileCount", 0));
         });
     }
 }

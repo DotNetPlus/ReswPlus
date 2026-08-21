@@ -1,5 +1,7 @@
+using System;
 using System.Linq;
 using ReswPlus.SourceGenerator.ClassGenerators;
+using ReswPlus.SourceGenerator.Plurals;
 using Xunit;
 
 namespace ReswPlusUnitTests;
@@ -25,7 +27,7 @@ public class PluralLanguageMapping
 
         var pluralForm = Assert.Single(PluralFormsRetriever.RetrievePluralFormsForLanguages([language]));
 
-        Assert.Equal("Other", pluralForm.Id);
+        Assert.Equal([ReswPlus.SourceGenerator.ClassGenerators.PluralCategory.Other], pluralForm.Categories);
     }
 
     [Theory]
@@ -50,30 +52,80 @@ public class PluralLanguageMapping
     }
 
     [Theory]
-    // The Romance languages that have a 'many' category are mapped to the providers that can return it.
-    [InlineData("es", "OnlyOneOrMillions")]
-    [InlineData("ca", "OnlyOneOrMillions")]
-    [InlineData("it", "OnlyOneOrMillions")]
-    // Portuguese keeps this rule even though CLDR gives 'pt' the one of French, because a resource folder
-    // and the language of the app are both reduced to their primary subtag, so 'pt-PT' and 'pt-BR' cannot be
-    // told apart. This is the rule of 'pt-PT'.
-    [InlineData("pt", "OnlyOneOrMillions")]
-    [InlineData("fr", "ZeroToTwoExcludedOrMillions")]
-    // The languages that share their rules with them keep the providers that don't.
-    [InlineData("en", "OnlyOne")]
-    [InlineData("de", "OnlyOne")]
-    [InlineData("hy", "ZeroToTwoExcluded")]
-    // Fulah selects 'one' for an integer part of 0 or 1, the same as Armenian, and not for 0 to 1 inclusive.
-    [InlineData("ff", "ZeroToTwoExcluded")]
-    // Marathi selects 'one' for exactly 1, so 0 and 0.5 are 'other' there.
-    [InlineData("mr", "OnlyOne")]
-    // Samburu is 'saq'. It was listed as 'sag', which is not a language code, so its rules never applied.
-    [InlineData("saq", "OnlyOne")]
-    public void LanguagesUseTheExpectedProvider(string language, string expectedProviderId)
+    // The Romance languages that have a 'many' category share the rules that can return it.
+    [InlineData("es", "ca")]
+    [InlineData("ca", "it")]
+    // Portuguese declines differently in Portugal than everywhere else, and CLDR publishes the two separately.
+    // The whole tag is what tells them apart, so 'pt-PT' takes its own rules and a bare 'pt' -- with it 'pt-BR'
+    // -- takes the ones CLDR gives it, which are the rules of French.
+    [InlineData("pt-PT", "ca")]
+    [InlineData("pt", "fr")]
+    [InlineData("pt-BR", "fr")]
+    // A tag no rules are held for falls back on the rules of its language.
+    [InlineData("fr-CA", "fr")]
+    // Shortening drops one subtag at a time, so a script and a region both fall away before the language is
+    // reached. Dropping everything after the first would look up 'zh' from the start and pass by accident.
+    [InlineData("zh-Hant-TW", "zh")]
+    [InlineData("sr-Latn-RS", "sr")]
+    // CLDR keys 'pt-PT', so a tag below it still has to find it rather than fall through to bare 'pt'.
+    [InlineData("pt-PT-x-private", "pt-PT")]
+    // The casing and the separator a tag is written with don't change which rules it gets.
+    [InlineData("PT_pt", "pt-PT")]
+    // Languages that decline alike share one set of rules, and so one generated class.
+    [InlineData("en", "de")]
+    // Marathi selects 'one' for exactly 1, so 0 and 0.5 are 'other' there, the same as English.
+    [InlineData("mr", "en")]
+    // Samburu is 'saq'. It was once listed as 'sag', which is not a language code, so its rules never applied.
+    [InlineData("saq", "en")]
+    // Fulah selects 'one' for an integer part of 0 or 1, the same as Armenian.
+    [InlineData("ff", "hy")]
+    public void LanguagesThatDeclineAlikeShareOneSetOfRules(string language, string other)
     {
-        var pluralForm = Assert.Single(PluralFormsRetriever.RetrievePluralFormsForLanguages([language]));
+        var form = PluralFormsRetriever.RetrievePluralFormForLanguage(language);
+        var otherForm = PluralFormsRetriever.RetrievePluralFormForLanguage(other);
 
-        Assert.Equal(expectedProviderId, pluralForm.Id);
+        Assert.NotNull(form);
+        Assert.NotNull(otherForm);
+        Assert.Equal(otherForm!.Id, form!.Id);
+    }
+
+    [Theory]
+    // European Portuguese is the case the whole tag exists for: CLDR declines it differently from the 'pt' that
+    // Brazil follows, and they disagree about zero.
+    [InlineData("pt-PT", "pt")]
+    [InlineData("pt-PT", "pt-BR")]
+    // Languages that merely look similar are not merged.
+    [InlineData("en", "fr")]
+    [InlineData("pl", "ru")]
+    public void LanguagesThatDeclineDifferentlyDoNotShareRules(string language, string other)
+    {
+        var form = PluralFormsRetriever.RetrievePluralFormForLanguage(language);
+        var otherForm = PluralFormsRetriever.RetrievePluralFormForLanguage(other);
+
+        Assert.NotNull(form);
+        Assert.NotNull(otherForm);
+        Assert.NotEqual(otherForm!.Id, form!.Id);
+    }
+
+    [Fact]
+    public void OneClassIsGeneratedForEachSetOfRules()
+    {
+        var forms = PluralFormsRetriever.PluralFormsForTesting.ToList();
+
+        // Far fewer classes than languages: the point of grouping by the rules themselves rather than by a list
+        // someone maintains.
+        Assert.True(
+            forms.Sum(form => form.Languages.Length) > forms.Count * 4,
+            $"{forms.Count} forms for {forms.Sum(form => form.Languages.Length)} languages.");
+
+        // And no two of them are the same rules under two names.
+        var duplicates = forms
+            .GroupBy(form => CldrEmitter.Emit($"{form.Id}Provider", form.Rules), StringComparer.Ordinal)
+            .Where(group => group.Count() > 1)
+            .Select(group => string.Join(", ", group.Select(form => form.Id)))
+            .ToArray();
+
+        Assert.Empty(duplicates);
     }
 
     [Fact]

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -68,6 +69,21 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
     /// Emitting the names as literals keeps them out of the reach of the trimmer, and is faster besides.
     /// </remarks>
     private const string KeyNameMethod = "GetKeyName";
+
+    /// <summary>
+    /// The name recorded in the <c>GeneratedCode</c> attribute of everything emitted.
+    /// </summary>
+    private const string GeneratorName = "ReswPlus";
+
+    /// <summary>
+    /// The version recorded in the <c>GeneratedCode</c> attribute of everything emitted.
+    /// </summary>
+    /// <remarks>
+    /// Read off the generator rather than written down, because a tool reading the attribute is asking which
+    /// version produced the file, and a number that never moves cannot answer that.
+    /// </remarks>
+    private static readonly string GeneratorVersion =
+        typeof(CSharpCodeGenerator).GetTypeInfo().Assembly.GetName().Version?.ToString() ?? "0.0.0.0";
 
     /// <summary>
     /// The reason the generated markup extension is marked obsolete, and what to use instead.
@@ -329,10 +345,9 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
     /// a static constructor to initialize it, and a GetString method to retrieve strings.
     /// </summary>
     private ClassDeclarationSyntax CreateStronglyTypedClass(StronglyTypedClass info)
-    {
-        // Define attributes for the generated class.
-        var assemblyName = "ReswPlus"; // This can be determined dynamically.
-        var version = "1.0.0.0";
+    {        // Define attributes for the generated class.
+        var assemblyName = GeneratorName;
+        var version = GeneratorVersion;
         var attributes = List(
         [
             AttributeList(
@@ -795,7 +810,7 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
     private ClassDeclarationSyntax CreateMarkupExtensionSyntax(string resourceFileName, string className, IEnumerable<string> keys, AppType appType)
     {
         var assemblyName = "ReswPlus";
-        var version = "1.0.0.0";
+        var version = GeneratorVersion;
         var attributes = List(
         [
             AttributeList(

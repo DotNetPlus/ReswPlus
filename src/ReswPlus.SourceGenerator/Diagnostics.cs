@@ -195,6 +195,29 @@ internal static class Diagnostics
         isEnabledByDefault: true);
 
     /// <summary>
+    /// RESWP0015: the plural support of the project could not be generated.
+    /// </summary>
+    /// <remarks>
+    /// The plural providers are written from the rules Unicode CLDR publishes, which ReswPlus holds as a table
+    /// generated ahead of time. Nothing a project does can make emitting them fail, so this is a defence
+    /// against a bug in ReswPlus rather than something a user can provoke. It reports the failure rather than
+    /// letting it escape as an unhandled exception, which the compiler turns into a single CS8785 naming
+    /// neither the reason nor the file, and which would take every other shared source down with it -- the
+    /// resource classes would still be generated, but nothing they call would be.
+    /// <para>
+    /// It is an error rather than a warning because there is no degraded behaviour behind it: the code that
+    /// looks a plural form up would not be emitted at all.
+    /// </para>
+    /// </remarks>
+    public static readonly DiagnosticDescriptor PluralRulesNotRead = new(
+        "RESWP0015",
+        "Plural support not generated",
+        "ReswPlus could not generate the plural support of this project: {0}",
+        ResourcesCategory,
+        DiagnosticSeverity.Error,
+        isEnabledByDefault: true);
+
+    /// <summary>
     /// Returns the descriptor of a diagnostic from its identifier.
     /// </summary>
     /// <param name="id">The identifier of the diagnostic.</param>

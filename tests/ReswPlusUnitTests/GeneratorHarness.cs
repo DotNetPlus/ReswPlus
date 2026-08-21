@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.Loader;
 using System.Text;
 using System.Threading;
 using Microsoft.CodeAnalysis;
@@ -173,6 +176,27 @@ internal sealed class ReswGeneratorRun
     /// The compilation the generated sources were added to.
     /// </summary>
     public Compilation OutputCompilation { get; }
+
+    /// <summary>
+    /// Compiles the generated sources and loads them, so that what they do can be checked rather than only
+    /// that they build.
+    /// </summary>
+    /// <returns>The compiled assembly.</returns>
+    public Assembly LoadAssembly()
+    {
+        PlatformStubs.EnsureStubsLoaded();
+
+        using var peStream = new MemoryStream();
+
+        var result = OutputCompilation.Emit(peStream);
+
+        Assert.True(
+            result.Success,
+            "The generated sources do not compile:" + Environment.NewLine +
+            string.Join(Environment.NewLine, result.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error)));
+
+        return Assembly.Load(peStream.ToArray());
+    }
 
     /// <summary>
     /// The sources the generator emitted, keyed by hint name.
@@ -430,9 +454,18 @@ internal static class PlatformStubs
         {
             public sealed class ResourceLoader
             {
+                // Seeded by a test that wants to run the generated code rather than only compile it.
+                public static System.Collections.Generic.Dictionary<string, string> Values =
+                    new System.Collections.Generic.Dictionary<string, string>();
+
                 public ResourceLoader(string fileName, string resourceMap) { }
                 public static string GetDefaultResourceFilePath() { return ""; }
-                public string GetString(string resourceId) { return ""; }
+
+                public string GetString(string resourceId)
+                {
+                    string value;
+                    return Values.TryGetValue(resourceId, out value) ? value : "";
+                }
             }
         }
 
@@ -554,6 +587,35 @@ internal static class PlatformStubs
         };
     }
 
+    /// <summary>
+    /// The images of the stubs compiled so far, so that generated code referencing one can be run and not only
+    /// compiled.
+    /// </summary>
+    private static readonly ConcurrentDictionary<string, byte[]> StubImages = new();
+
+    /// <summary>
+    /// Makes the stub assemblies the generated code was compiled against loadable at run time.
+    /// </summary>
+    /// <remarks>
+    /// A generated assembly references a stub by name, and the stubs only ever existed as images in memory, so
+    /// the name is resolved from the same image the reference was built from: what runs is what was compiled
+    /// against.
+    /// </remarks>
+    public static void EnsureStubsLoaded()
+    {
+        if (Interlocked.Exchange(ref _resolving, 1) != 0)
+        {
+            return;
+        }
+
+        AssemblyLoadContext.Default.Resolving += static (context, name) =>
+            name.Name is { } simpleName && StubImages.TryGetValue(simpleName, out var image)
+                ? context.LoadFromStream(new MemoryStream(image))
+                : null;
+    }
+
+    private static int _resolving;
+
     private static bool IsWindowsProjection(string path)
     {
         var name = Path.GetFileNameWithoutExtension(path);
@@ -583,7 +645,11 @@ internal static class PlatformStubs
 
         // The generator reads the kind of app off the name of the referenced files, so the stub is given the
         // path the real framework would have.
-        return AssemblyMetadata.CreateFromImage(peStream.ToArray())
+        var image = peStream.ToArray();
+
+        StubImages[assemblyName] = image;
+
+        return AssemblyMetadata.CreateFromImage(image)
             .GetReference(filePath: filePath, display: filePath);
     }
 }

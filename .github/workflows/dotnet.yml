@@ -61,6 +61,24 @@ jobs:
         run: dotnet test tests/ReswPlusUnitTests/ReswPlusUnitTests.csproj --configuration ${{ env.BUILD_CONFIG }} --no-build --verbosity normal
         working-directory: ${{ github.workspace }}
 
+      # The plural rules are generated from CLDR by a tool a maintainer runs by hand, so this checks that what
+      # is checked in is what the tool writes -- that nobody refreshed CLDR without rerunning it, or edited the
+      # generated file directly.
+      - name: Check the CLDR rules are up to date
+        shell: pwsh
+        run: |
+          dotnet run --project tools/CldrRuleImporter
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "tools/CldrRuleImporter failed to run."
+            exit 1
+          }
+          git diff --exit-code -- src/ReswPlus.SourceGenerator/Plurals/CldrPluralRules.cs
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "CldrPluralRules.cs is not what tools/CldrRuleImporter writes. Run 'dotnet run --project tools/CldrRuleImporter' and commit the result."
+            exit 1
+          }
+        working-directory: ${{ github.workspace }}
+
       - name: Validate release tag
         if: startsWith(github.ref, 'refs/tags/v')
         shell: pwsh
