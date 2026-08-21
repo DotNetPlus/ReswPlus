@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.CodeAnalysis;
 using Xunit;
 
 namespace ReswPlusUnitTests;
@@ -36,6 +37,88 @@ public class GeneratorIncrementality
         second.AssertReused(ReswPlus.SourceGenerator.Pipeline.TrackingNames.Layout);
         second.AssertReused(ReswPlus.SourceGenerator.Pipeline.TrackingNames.Generation);
         second.AssertReused(ReswPlus.SourceGenerator.Pipeline.TrackingNames.Support);
+    }
+
+    /// <summary>
+    /// Adding a resource file costs the work of that file, not the work of the project.
+    /// </summary>
+    /// <remarks>
+    /// Adding, removing or renaming a resource changes how the project is laid out, which every file's
+    /// generation reads to learn its own hint name. Reading it is cheap; parsing and formatting a resource file
+    /// is not, and there is no reason for a file nobody touched to be parsed again because a different file
+    /// appeared beside it.
+    /// </remarks>
+    [Fact]
+    public void AddingAResourceLeavesTheGenerationOfTheOthersAlone()
+    {
+        var before = ThreeResources();
+        var after = before.Append(
+            ReswGeneratorHarness.File(English, ReswTestHelpers.CreateResw(("Added", "Fourth", null)), baseName: "Fourth"))
+            .ToList();
+
+        AssertOnlyRan(before, after, ran: 1);
+    }
+
+    [Fact]
+    public void RemovingAResourceLeavesTheGenerationOfTheOthersAlone()
+    {
+        var before = ThreeResources();
+        var after = before.Take(2).ToList();
+
+        AssertOnlyRan(before, after, ran: 0);
+    }
+
+    [Fact]
+    public void RenamingAResourceLeavesTheGenerationOfTheOthersAlone()
+    {
+        var before = ThreeResources();
+        var after = before.Take(2).Append(
+            ReswGeneratorHarness.File(English, ReswTestHelpers.CreateResw(("Question", "Third", null)), baseName: "Renamed"))
+            .ToList();
+
+        AssertOnlyRan(before, after, ran: 1);
+    }
+
+    [Fact]
+    public void TranslatingAResourceIntoANewLanguageLeavesTheGenerationOfTheOthersAlone()
+    {
+        var before = ThreeResources();
+        var after = before.Append(
+            ReswGeneratorHarness.File("fr-FR", ReswTestHelpers.CreateResw(("Greeting", "Bonjour", null)), baseName: "First"))
+            .ToList();
+
+        // A translation is not generated from, so nothing should be generated at all for it -- and the files
+        // that were already there should not be touched because a language appeared beside them.
+        AssertOnlyRan(before, after, ran: 0);
+    }
+
+    /// <summary>
+    /// Asserts how many resource files had their code generated again after a structural change to a project.
+    /// </summary>
+    /// <param name="before">The files of the project on the first run.</param>
+    /// <param name="after">The files of the project on the second run.</param>
+    /// <param name="ran">How many files are expected to be generated on the second run.</param>
+    /// <remarks>
+    /// <see cref="IncrementalStepRunReason.Cached"/> is the transform not running at all, while
+    /// <see cref="IncrementalStepRunReason.Unchanged"/> is it running and happening to produce the same value,
+    /// which costs exactly as much as producing a different one. Only the former is free.
+    /// <para>
+    /// <see cref="IncrementalStepRunReason.Removed"/> is neither: it is the record of an output that used to
+    /// exist and no longer does, and nothing was computed for it.
+    /// </para>
+    /// </remarks>
+    private static void AssertOnlyRan(IReadOnlyList<ReswFile> before, IReadOnlyList<ReswFile> after, int ran)
+    {
+        var second = ReswGeneratorHarness.Run(before).RunAgain(after);
+        var reasons = second.Reasons(ReswPlus.SourceGenerator.Pipeline.TrackingNames.Generation);
+
+        var executed = reasons.Count(reason =>
+            reason is not (IncrementalStepRunReason.Cached or IncrementalStepRunReason.Removed));
+
+        Assert.True(
+            executed == ran,
+            $"The code of {executed} resource files was generated again, where {ran} was expected. " +
+            $"Reasons: {string.Join(", ", reasons)}.");
     }
 
     /// <summary>

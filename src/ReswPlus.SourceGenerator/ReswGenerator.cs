@@ -93,15 +93,28 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
             .Select(static (pair, _) => ReswLayout.Create(pair.Left, pair.Right.DefaultLanguage, pair.Right.GetNamespace))
             .WithTrackingName(TrackingNames.Layout);
 
-        // One run per resource file, so that editing one of them leaves the others alone.
-        var generated = resourceFiles
+        // Which file of a resource the code is generated from, and what to call the file generated from it,
+        // are read out of the layout here. That is cheap, so it can afford to run whenever the layout changes.
+        var toGenerate = resourceFiles
             .Combine(project)
             .Combine(layout)
-            .Select(static (input, cancellationToken) =>
-                GenerateFile(input.Left.Left, input.Left.Right, input.Right, cancellationToken))
+            .Select(static (input, _) => new ReswFileToGenerate(
+                input.Left.Left,
+                input.Left.Right,
+                input.Right.GetHintName(input.Left.Left.Path)))
+            .WithTrackingName(TrackingNames.FilesToGenerate);
+
+        // One run per resource file, so that editing one of them leaves the others alone. This is the step that
+        // parses and formats, and it is kept clear of the layout: a resource nobody touched compares equal to
+        // what it was and is not generated again because a different resource appeared beside it.
+        //
+        // The tracking name sits on the step that does the work, not on the filtering after it: a name further
+        // down reports the filtered result being reused even when the work above it ran again.
+        var generated = toGenerate
+            .Select(static (input, cancellationToken) => GenerateFile(input, cancellationToken))
+            .WithTrackingName(TrackingNames.Generation)
             .Where(static file => file is not null)
-            .Select(static (file, _) => file!)
-            .WithTrackingName(TrackingNames.Generation);
+            .Select(static (file, _) => file!);
 
         // Which support sources the project needs can only be decided once every file has been generated, but
         // it comes down to a handful of flags that almost never change while a project is edited.
@@ -131,17 +144,18 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
     /// <summary>
     /// Generates the code of one resource file.
     /// </summary>
-    /// <param name="file">The resource file.</param>
-    /// <param name="project">The project the code is generated for.</param>
-    /// <param name="layout">How the resource files of the project are laid out.</param>
+    /// <param name="input">The resource file, and what generating it depends on.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>
     /// The generated code, or <see langword="null"/> when the file holds a translation rather than the
     /// language the code is generated from, or when the project is not one ReswPlus supports.
     /// </returns>
-    private static ReswGeneratedFile? GenerateFile(AdditionalText file, ReswProject project, ReswLayout layout, CancellationToken cancellationToken)
+    private static ReswGeneratedFile? GenerateFile(ReswFileToGenerate input, CancellationToken cancellationToken)
     {
-        if (!project.IsSupported || layout.GetHintName(file.Path) is not { } hintName)
+        var file = input.File;
+        var project = input.Project;
+
+        if (!project.IsSupported || input.HintName is not { } hintName)
         {
             return null;
         }

@@ -21,6 +21,16 @@ internal static class TrackingNames
 
     public const string Layout = "ReswPlus.Layout";
 
+    /// <summary>
+
+    /// The step reading, out of the layout, what generating one resource file depends on.
+
+    /// </summary>
+
+    public const string FilesToGenerate = "ReswPlus.FilesToGenerate";
+
+    
+
     public const string Generation = "ReswPlus.Generation";
 
     public const string Support = "ReswPlus.Support";
