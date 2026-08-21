@@ -55,7 +55,7 @@ internal readonly struct ReswFileToGenerate : IEquatable<ReswFileToGenerate>
     /// <inheritdoc/>
     public override int GetHashCode()
     {
-        var hash = File.GetHashCode();
+        var hash = File?.GetHashCode() ?? 0;
 
         hash = (hash * 31) + (Project?.GetHashCode() ?? 0);
 

@@ -68,6 +68,10 @@ jobs:
         shell: pwsh
         run: |
           dotnet run --project tools/CldrRuleImporter
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "tools/CldrRuleImporter failed to run."
+            exit 1
+          }
           git diff --exit-code -- src/ReswPlus.SourceGenerator/Plurals/CldrPluralRules.cs
           if ($LASTEXITCODE -ne 0) {
             Write-Error "CldrPluralRules.cs is not what tools/CldrRuleImporter writes. Run 'dotnet run --project tools/CldrRuleImporter' and commit the result."

@@ -148,6 +148,18 @@ public class GeneratorIncrementality
             new ReswFileToGenerate(file, Project("TestProject"), "Resources.g.cs").GetHashCode());
     }
 
+    [Fact]
+    public void AFileIsGeneratedAgainWhenItIsTheOneThatChanged()
+    {
+        // The compiler hands back the same object for a file it has not seen change, so identity is the
+        // question being asked. Two files of the same content are still two files.
+        var project = Project("TestProject");
+
+        Assert.NotEqual(
+            new ReswFileToGenerate(new InMemoryAdditionalText(@"C:\Project\Strings\en-US\Resources.resw", "<root />"), project, "Resources.g.cs"),
+            new ReswFileToGenerate(new InMemoryAdditionalText(@"C:\Project\Strings\en-US\Resources.resw", "<root />"), project, "Resources.g.cs"));
+    }
+
     private static ReswProject Project(string rootNamespace)
     {
         var options = new Dictionary<string, string>(AnalyzerConfigOptions.KeyComparer)
