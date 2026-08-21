@@ -71,10 +71,10 @@ That is visible to whoever wrote the resources. A language that gains `few` mean
 it now wants a `_Few` string, and one that loses a category leaves a string nobody will read. Bump at least the
 minor version, and say which languages moved in the release notes.
 
-## What stays hand written
+## Matching a Windows tag to a CLDR language
 
-CLDR names a language one way. Windows names it several. Bridging that is the one thing left in
-`PluralFormsRetriever`:
+CLDR names a language one way. Windows names it several. Bridging that is the one thing
+`PluralFormsRetriever` decides:
 
 - Normalising a tag before looking it up — Windows writes `pt-PT` in a resource folder and `pt_PT` in some
   culture names, and neither casing is guaranteed.
