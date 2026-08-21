@@ -287,8 +287,8 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
         }
         catch (Exception error)
         {
-            // The rules are vendored into the generator, so nothing a project does can make reading them fail;
-            // a refresh of that file can. Reporting it keeps the failure named and keeps it from taking every
+            // The rules are a table generated ahead of time, so nothing a project does can make emitting them
+            // fail; a bug in ReswPlus can. Reporting it keeps the failure named and keeps it from taking every
             // other shared source down with it.
             spc.ReportDiagnostic(Diagnostic.Create(Diagnostics.PluralRulesNotRead, Location.None, error.Message));
         }

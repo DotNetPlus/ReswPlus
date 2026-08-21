@@ -6,15 +6,12 @@ using ReswPlus.SourceGenerator.Plurals;
 namespace ReswPlus.SourceGenerator.ClassGenerators;
 
 /// <summary>
-/// A set of plural rules, and the languages Unicode CLDR gives it to.
-/// </summary>
-/// <summary>
 /// Finds the plural rules of a language.
 /// </summary>
 /// <remarks>
-/// Which languages share a set of rules is not written down anywhere here. CLDR publishes the rules of every
-/// language it knows, and the languages whose rules are the same thing share a form because their rules compare
-/// equal, so a language CLDR adds, moves or revises follows its rules without anyone editing a list.
+/// Which languages share a set of rules is not decided here. CLDR publishes the rules of every language it
+/// knows, and <c>tools/CldrRuleImporter</c> groups the languages whose rules decide alike into one form, so a
+/// language CLDR adds, moves or revises follows its rules without anyone editing a list.
 /// </remarks>
 internal static class PluralFormsRetriever
 {
