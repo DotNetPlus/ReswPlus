@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CldrRuleImporter;
@@ -60,24 +61,24 @@ public class CldrRoundTrip
     }
 
     [Fact]
-    public void ARuleWrittenBackOutReadsBackAsTheSameRule()
+    public void AConditionNestedTheWayCldrCannotWriteIsRefused()
     {
-        var mismatches = new List<string>();
+        // 'and' binds tighter than 'or' and CLDR's syntax has no brackets, so 'a or b' inside an 'and' cannot
+        // be written back out. Parsing never produces that shape; building it by hand has to say so rather
+        // than emit text that reads back as a different rule.
+        var nested = new CldrAllOf(
+        [
+            new CldrRelation(CldrOperand.IntegerPart, 0, false, [new CldrRange(1, 1)]),
+            new CldrAnyOf(
+            [
+                new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new CldrRange(2, 2)]),
+                new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new CldrRange(3, 3)]),
+            ]),
+        ]);
 
-        foreach (var (language, rules) in Cldr.Cardinal)
-        {
-            foreach (var rule in rules.Where(candidate => candidate.Condition.Length != 0))
-            {
-                var parsed = CldrRule.Parse(rule.Condition);
+        Assert.Throws<InvalidOperationException>(() => nested.ToCldr());
 
-                // Not the same object: the cache is keyed by text, and the text is what is being checked.
-                if (!Equals(CldrRule.Parse(parsed.ToCldr()), parsed))
-                {
-                    mismatches.Add($"{language} {rule.Category.ToLowerInvariant()}: '{rule.Condition}'");
-                }
-            }
-        }
-
-        Assert.Empty(mismatches);
+        // The same shape is written as C#, where brackets exist, and keeps its meaning.
+        Assert.Equal("i == 1 && (n == 2 || n == 3)", nested.ToCSharp());
     }
 }

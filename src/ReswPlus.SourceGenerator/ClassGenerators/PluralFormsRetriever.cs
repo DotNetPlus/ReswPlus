@@ -46,11 +46,12 @@ internal static class PluralFormsRetriever
     /// <returns>The tag, lower cased and written with the separator BCP 47 uses.</returns>
     /// <remarks>
     /// Windows writes a tag either way round -- <c>pt-PT</c> in a resource folder, <c>pt_PT</c> in some culture
-    /// names -- and neither casing is guaranteed.
+    /// names -- and neither casing is guaranteed. A path with no folder to read a tag from arrives here as
+    /// nothing at all, which is a tag no rules are held for rather than a failure.
     /// </remarks>
-    public static string NormalizeTag(string languageTag)
+    public static string NormalizeTag(string? languageTag)
     {
-        return languageTag.Replace('_', '-').ToLowerInvariant();
+        return languageTag is null ? string.Empty : languageTag.Replace('_', '-').ToLowerInvariant();
     }
 
     /// <summary>

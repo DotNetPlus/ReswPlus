@@ -1,3 +1,5 @@
+using System;
+
 namespace ReswPlus.SourceGenerator.Plurals;
 
 /// <summary>
@@ -76,7 +78,8 @@ internal static class CldrOperandLetters
             CldrOperand.Decimals => 'f',
             CldrOperand.DecimalsWithoutTrailingZeros => 't',
             CldrOperand.CompactExponent => 'c',
-            _ => 'e',
+            CldrOperand.Exponent => 'e',
+            _ => throw new InvalidOperationException($"'{operand}' has no letter in CLDR's rule syntax."),
         };
     }
 

@@ -146,9 +146,22 @@ internal sealed record CldrAllOf(IReadOnlyList<ICldrCondition> Parts) : ICldrCon
         };
     }
 
-    // 'and' binds tighter than 'or' and CLDR's syntax has no brackets, so an alternative can only ever be
-    // nested inside an 'and' the other way round. Parsing produces alternatives of parts, never the reverse.
-    public string ToCldr() => string.Join(" and ", Parts.Select(part => part.ToCldr()));
+    // 'and' binds tighter than 'or' and CLDR's syntax has no brackets, so an alternative nested inside a part
+    // cannot be written back out at all. Parsing only ever produces alternatives of parts, never the reverse,
+    // so this says so rather than quietly emitting text that reads back as a different rule.
+    public string ToCldr()
+    {
+        foreach (var part in Parts)
+        {
+            if (part is CldrAnyOf)
+            {
+                throw new InvalidOperationException(
+                    "CLDR's rule syntax cannot write alternatives nested inside a part: it has no brackets.");
+            }
+        }
+
+        return string.Join(" and ", Parts.Select(part => part.ToCldr()));
+    }
 
     public void CollectOperands(ISet<CldrOperand> operands)
     {

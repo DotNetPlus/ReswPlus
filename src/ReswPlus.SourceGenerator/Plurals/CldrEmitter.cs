@@ -47,7 +47,6 @@ internal static class CldrEmitter
     /// <returns>The source of a provider implementing them.</returns>
     public static string Emit(string className, IReadOnlyList<CldrPluralRule> rules, IReadOnlyList<string>? languages = null, string version = "")
     {
-        var used = new HashSet<CldrOperand>();
         var conditions = new List<(PluralCategory Category, string Condition, string Source)>();
 
         foreach (var rule in rules)
@@ -66,7 +65,6 @@ internal static class CldrEmitter
                 continue;
             }
 
-            parsed.CollectOperands(used);
             conditions.Add((rule.Category, condition, parsed.ToCldr()));
 
             // Nothing after a rule that always holds can be reached.
@@ -78,9 +76,14 @@ internal static class CldrEmitter
 
         var body = new StringBuilder();
 
+        // Read from the code that survived rather than from the rules it was written from: an alternative
+        // folded away for reading an exponent takes its other operands with it, and a local declared for one
+        // of those would be computed for nothing.
+        var emitted = string.Join(" ", conditions.Select(entry => entry.Condition));
+
         // Only the operands the rules read are declared, so that nothing is computed twice and nothing is
         // computed for nothing.
-        foreach (var (operand, expression) in Operands.Where(candidate => used.Contains(candidate.Operand)))
+        foreach (var (operand, expression) in Operands.Where(candidate => Reads(emitted, candidate.Operand)))
         {
             body.Append("            double ").Append(operand.Letter()).Append(" = ").Append(expression).AppendLine(";");
         }
@@ -176,6 +179,35 @@ internal static class CldrEmitter
         source.AppendLine("}");
 
         return source.ToString();
+    }
+
+    /// <summary>
+    /// Gets whether emitted code reads an operand.
+    /// </summary>
+    /// <param name="code">The conditions that were emitted.</param>
+    /// <param name="operand">The operand.</param>
+    /// <returns><see langword="true"/> when a local has to be declared for it.</returns>
+    /// <remarks>
+    /// The letter is matched as a whole word, so that the <c>n</c> of <c>n.IsInt()</c> counts and the <c>n</c>
+    /// of <c>Between</c> does not.
+    /// </remarks>
+    private static bool Reads(string code, CldrOperand operand)
+    {
+        var letter = operand.Letter();
+
+        for (var index = 0; index < code.Length; index++)
+        {
+            if (code[index] != letter
+                || (index != 0 && (char.IsLetterOrDigit(code[index - 1]) || code[index - 1] == '_'))
+                || (index + 1 < code.Length && (char.IsLetterOrDigit(code[index + 1]) || code[index + 1] == '_')))
+            {
+                continue;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     /// <summary>

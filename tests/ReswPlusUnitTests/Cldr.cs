@@ -59,7 +59,7 @@ internal static class Cldr
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
 
-        while (directory is not null && !Directory.Exists(Path.Combine(directory.FullName, ".git")))
+        while (directory is not null && !IsRepositoryRoot(directory))
         {
             directory = directory.Parent;
         }
@@ -71,5 +71,21 @@ internal static class Cldr
             "plurals.json");
 
         return CldrPublishedRules.Read(File.ReadAllText(path));
+    }
+
+    /// <summary>
+    /// Gets whether a directory is the root of the repository.
+    /// </summary>
+    /// <param name="directory">The directory.</param>
+    /// <returns><see langword="true"/> when it holds the repository's git entry.</returns>
+    /// <remarks>
+    /// In a worktree or a submodule the entry is a file pointing at the real one rather than a directory, so
+    /// looking only for a directory finds nothing and the search walks off the top.
+    /// </remarks>
+    private static bool IsRepositoryRoot(DirectoryInfo directory)
+    {
+        var git = Path.Combine(directory.FullName, ".git");
+
+        return Directory.Exists(git) || File.Exists(git);
     }
 }

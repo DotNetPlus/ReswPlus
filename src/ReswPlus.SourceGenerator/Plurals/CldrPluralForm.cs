@@ -14,7 +14,7 @@ namespace ReswPlus.SourceGenerator.Plurals;
 /// <param name="Rules">The rules themselves, in the order CLDR publishes them.</param>
 /// <remarks>
 /// Which languages share a set of rules, what the class is called, and which categories are optional are all
-/// worked out by <c>tools/CldrRuleImporter</c> and written into <c>CldrPluralRules.g.cs</c>, so nothing about
+/// worked out by <c>tools/CldrRuleImporter</c> and written into <c>CldrPluralRules.cs</c>, so nothing about
 /// CLDR's file or its rule syntax is read while a project compiles. The rules arrive as objects and the code
 /// deciding them is written by <see cref="CldrEmitter"/> when a project is generated.
 /// </remarks>

@@ -184,6 +184,21 @@ internal sealed class CldrGrouping
                 ZeroOnlyForZero(rules)));
         }
 
+        // The identifier is derived from a language code, so two sets of rules whose first languages differ
+        // only where the derivation strips could end up sharing a class name. Nothing in CLDR 48 does, and if
+        // one ever did the generated code would fail to compile with a duplicate type rather than say why.
+        var collisions = forms
+            .GroupBy(form => form.Id, StringComparer.Ordinal)
+            .Where(group => group.Count() > 1)
+            .Select(group => $"{group.Key} ({string.Join(", ", group.Select(form => form.Languages[0]))})")
+            .ToArray();
+
+        if (collisions.Length != 0)
+        {
+            throw new InvalidOperationException(
+                $"Two sets of rules would share a class name: {string.Join("; ", collisions)}.");
+        }
+
         return [.. forms.OrderBy(form => form.Id, StringComparer.Ordinal)];
     }
 

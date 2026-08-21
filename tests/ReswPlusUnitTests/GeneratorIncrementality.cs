@@ -1,6 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
+using ReswPlus.SourceGenerator;
+using ReswPlus.SourceGenerator.Pipeline;
+using ReswPlus.SourceGenerator.ClassGenerators;
 using Xunit;
 
 namespace ReswPlusUnitTests;
@@ -107,6 +111,57 @@ public class GeneratorIncrementality
     /// exist and no longer does, and nothing was computed for it.
     /// </para>
     /// </remarks>
+    [Fact]
+    public void AFileIsGeneratedAgainWhenOnlyTheProjectChanged()
+    {
+        // What is generated for a file depends on the project it belongs to -- its namespace, the kind of app
+        // it is -- so two of these are the same only if the project is the same too. Drop the project from
+        // that comparison and a file whose project was renamed keeps the namespace it had.
+        var file = new InMemoryAdditionalText(@"C:\Project\Strings\en-US\Resources.resw", "<root />");
+
+        var before = new ReswFileToGenerate(file, Project("TestProject"), "Resources.g.cs");
+        var after = new ReswFileToGenerate(file, Project("RenamedProject"), "Resources.g.cs");
+
+        Assert.NotEqual(before, after);
+        Assert.Equal(before, new ReswFileToGenerate(file, Project("TestProject"), "Resources.g.cs"));
+    }
+
+    [Fact]
+    public void AFileIsGeneratedAgainWhenOnlyItsNameChanged()
+    {
+        var file = new InMemoryAdditionalText(@"C:\Project\Strings\en-US\Resources.resw", "<root />");
+
+        // Two resources of the same name in different folders are told apart by the name they are emitted
+        // under, so that has to count as well.
+        Assert.NotEqual(
+            new ReswFileToGenerate(file, Project("TestProject"), "Resources.g.cs"),
+            new ReswFileToGenerate(file, Project("TestProject"), "Resources.2.g.cs"));
+    }
+
+    [Fact]
+    public void TwoOfTheSameFileHashAlike()
+    {
+        var file = new InMemoryAdditionalText(@"C:\Project\Strings\en-US\Resources.resw", "<root />");
+
+        Assert.Equal(
+            new ReswFileToGenerate(file, Project("TestProject"), "Resources.g.cs").GetHashCode(),
+            new ReswFileToGenerate(file, Project("TestProject"), "Resources.g.cs").GetHashCode());
+    }
+
+    private static ReswProject Project(string rootNamespace)
+    {
+        var options = new Dictionary<string, string>(AnalyzerConfigOptions.KeyComparer)
+        {
+            ["build_property.ProjectDir"] = ReswGeneratorHarness.ProjectDir,
+            ["build_property.OutputType"] = "Library",
+            ["build_property.RootNamespace"] = rootNamespace,
+        };
+
+        return ReswProject.Create(
+            new CompilationInfo(true, AppType.WindowsAppSDK, "TestProject"),
+            ReswBuildOptions.Read(new TestAnalyzerConfigOptionsProvider(options).GlobalOptions));
+    }
+
     private static void AssertOnlyRan(IReadOnlyList<ReswFile> before, IReadOnlyList<ReswFile> after, int ran)
     {
         var second = ReswGeneratorHarness.Run(before).RunAgain(after);

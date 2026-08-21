@@ -285,7 +285,7 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
         {
             AddPluralSupport(spc, emittedSources, support, assemblyName);
         }
-        catch (Exception error)
+        catch (Exception error) when (error is not OperationCanceledException)
         {
             // The rules are a table generated ahead of time, so nothing a project does can make emitting them
             // fail; a bug in ReswPlus can. Reporting it keeps the failure named and keeps it from taking every
