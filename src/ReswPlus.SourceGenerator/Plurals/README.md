@@ -1,6 +1,6 @@
 # Plural rules
 
-`CldrPluralRules.g.cs` holds the plural rules of Unicode CLDR **as objects**: which languages share a set of
+`CldrPluralRules.cs` holds the plural rules of Unicode CLDR **as objects**: which languages share a set of
 rules, the categories a translator has to supply for them, and the conditions themselves — `CldrAnyOf`,
 `CldrAllOf`, `CldrRelation`. It is data, not code.
 
@@ -8,7 +8,7 @@ rules, the categories a translator has to supply for them, and the conditions th
 apart means a CLDR release arrives as the relations that moved, and how a relation is written as C# stays one
 decision in one place rather than being baked into a table.
 
-**`CldrPluralRules.g.cs` is generated. Do not edit it by hand.** It is written by `tools/CldrRuleImporter`,
+**`CldrPluralRules.cs` is generated. Do not edit it by hand.** It is written by `tools/CldrRuleImporter`,
 which reads the rules CLDR publishes and works the grouping out from them:
 
 ```powershell

@@ -2,7 +2,7 @@
 
 The plural providers ReswPlus emits are written from the rules Unicode CLDR publishes. Nothing is transcribed
 by hand, and nothing about CLDR is read at compile time: this tool turns the published rules into
-`src/ReswPlus.SourceGenerator/Plurals/CldrPluralRules.g.cs`, which is checked in.
+`src/ReswPlus.SourceGenerator/Plurals/CldrPluralRules.cs`, which is checked in.
 
 What is checked in is **the rules, as objects** — not the code deciding them. The generator holds the
 conditions (`CldrAnyOf`, `CldrAllOf`, `CldrRelation`) and writes the C# from them while a project is compiled,
@@ -27,7 +27,7 @@ dotnet run --project tools\CldrRuleImporter -- --download # refresh plurals.json
 dotnet test tests\ReswPlusUnitTests
 ```
 
-Commit `plurals.json` and `CldrPluralRules.g.cs` together.
+Commit `plurals.json` and `CldrPluralRules.cs` together.
 
 ## The files
 
