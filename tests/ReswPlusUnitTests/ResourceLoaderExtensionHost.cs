@@ -269,13 +269,16 @@ internal static class PluralTemplates
         return Assembly.Load(peStream.ToArray());
     }
 
-    private static IEnumerable<MetadataReference> GetRuntimeReferences()
-    {
-        var trustedAssemblies = (string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!;
-
-        return trustedAssemblies
+    private static readonly Lazy<IReadOnlyList<MetadataReference>> RuntimeReferences = new(() =>
+        ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
             .Split(Path.PathSeparator)
             .Where(path => path.Length > 0)
-            .Select(path => (MetadataReference)MetadataReference.CreateFromFile(path));
+            .Select(path => (MetadataReference)MetadataReference.CreateFromFile(path))
+            .ToArray());
+
+    private static IEnumerable<MetadataReference> GetRuntimeReferences()
+    {
+        // Read once: there are some two hundred of them, and a provider is compiled for every plural form.
+        return RuntimeReferences.Value;
     }
 }

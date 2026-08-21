@@ -281,6 +281,21 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
     /// </summary>
     private static void AddLanguageSupport(SourceProductionContext spc, HashSet<string> emittedSources, ReswSupport support, string assemblyName)
     {
+        try
+        {
+            AddPluralSupport(spc, emittedSources, support, assemblyName);
+        }
+        catch (Exception error)
+        {
+            // The rules are vendored into the generator, so nothing a project does can make reading them fail;
+            // a refresh of that file can. Reporting it keeps the failure named and keeps it from taking every
+            // other shared source down with it.
+            spc.ReportDiagnostic(Diagnostic.Create(Diagnostics.PluralRulesNotRead, Location.None, error.Message));
+        }
+    }
+
+    private static void AddPluralSupport(SourceProductionContext spc, HashSet<string> emittedSources, ReswSupport support, string assemblyName)
+    {
         var languages = support.Languages.Select(language => language.Name).ToArray();
         var mappings = new List<(string LanguageTag, string ProviderId)>();
 

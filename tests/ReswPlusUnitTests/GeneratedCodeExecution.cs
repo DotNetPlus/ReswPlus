@@ -63,15 +63,11 @@ public class GeneratedCodeExecution
         // assembly itself.
         var stub = Assembly.Load("ReswPlusTests.WindowsAppSdkStub");
         var loader = stub.GetType("Microsoft.Windows.ApplicationModel.Resources.ResourceLoader")!;
-        var values = (Dictionary<string, string>)loader.GetField("Values", BindingFlags.Public | BindingFlags.Static)!
-            .GetValue(null)!;
+        var values = loader.GetField("Values", BindingFlags.Public | BindingFlags.Static)!;
 
-        values.Clear();
-
-        foreach (var (key, value) in ReadDeclaredValues())
-        {
-            values[key] = value;
-        }
+        // Swapped in whole rather than emptied and refilled: the dictionary is shared by everything that runs
+        // generated code, and refilling it in place leaves a window where it holds nothing.
+        values.SetValue(null, ReadDeclaredValues().ToDictionary(entry => entry.Key, entry => entry.Value));
 
         return assembly.GetTypes().Single(type => type.Name == "Resources");
     }

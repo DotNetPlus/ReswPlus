@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 
 namespace ReswPlus.SourceGenerator.Plurals;
 
@@ -31,7 +32,16 @@ internal static class CldrPublishedRules
 {
     private const string ResourcePath = "ReswPlus.SourceGenerator.Plurals.plurals.json";
 
-    private static readonly Lazy<Data> Published = new(Read);
+    /// <remarks>
+    /// Read once and kept, because a generator's statics outlive the compilation that filled them: the file is
+    /// the same for every project the host builds.
+    /// <para>
+    /// The failure is deliberately not remembered with the value. A <see cref="Lazy{T}"/> left to itself keeps
+    /// the exception it first threw and hands it to every later caller, which would turn one unreadable file
+    /// into a failure for every project built for the rest of the session.
+    /// </para>
+    /// </remarks>
+    private static readonly Lazy<Data> Published = new(Read, LazyThreadSafetyMode.PublicationOnly);
 
     /// <summary>
     /// The CLDR release the rules were published in.
