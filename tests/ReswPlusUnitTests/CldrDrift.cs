@@ -75,30 +75,28 @@ public class CldrDrift
     public static TheoryData<string> Languages => [.. CldrPluralRules.Cardinal.Keys];
 
     /// <summary>
-    /// Checks that the two pinned copies of CLDR's rules say the same thing.
+    /// Checks that the two pinned copies of CLDR's rules say the same thing, in the same order.
     /// </summary>
     /// <remarks>
     /// The rules are pinned twice, with the sample lists in <see cref="CldrPluralRules"/> and without them in
     /// <see cref="CldrPublishedRules"/>, and one can be refreshed from a new CLDR release without the other.
+    /// <para>
+    /// They are compared as ordered sequences rather than as sets, because the order is part of what a rule
+    /// set means: the first rule that holds is the one that decides, so a copy carrying the same rules in a
+    /// different order is a different rule set.
+    /// </para>
     /// </remarks>
     [Theory]
     [MemberData(nameof(Languages))]
     public void TheTwoPinnedCopiesOfTheRulesOfALanguageAgree(string language)
     {
         var withSamples = CldrPluralRules.Cardinal[language]
-            .Select(rule => (rule.Key, Condition: rule.Value.Split('@')[0].Trim()));
+            .Select(rule => $"{rule.Key}: {rule.Value.Split('@')[0].Trim()}");
 
         var withoutSamples = CldrPublishedRules.Cardinal[language]
-            .ToDictionary(rule => rule.Category, rule => rule.Condition, StringComparer.Ordinal);
+            .Select(rule => $"{rule.Category}: {rule.Condition}");
 
-        foreach (var (category, condition) in withSamples)
-        {
-            Assert.True(
-                withoutSamples.TryGetValue(category, out var pinned),
-                $"'{language}' has a '{category}' rule in {nameof(CldrPluralRules)} and none in {nameof(CldrPublishedRules)}.");
-
-            Assert.Equal(condition, pinned);
-        }
+        Assert.Equal(withSamples, withoutSamples);
     }
 
     /// <summary>

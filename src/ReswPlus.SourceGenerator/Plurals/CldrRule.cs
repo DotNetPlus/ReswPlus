@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -53,10 +54,17 @@ internal static class CldrRule
     /// <returns>The condition, as something that can be asked whether it holds.</returns>
     public static ICondition Parse(string condition)
     {
-        return Parsed.TryGetValue(condition, out var known) ? known : Parsed[condition] = ParseOr(condition);
+        return Parsed.GetOrAdd(condition, static text => ParseOr(text));
     }
 
-    private static readonly Dictionary<string, ICondition> Parsed = [];
+    /// <summary>
+    /// The conditions read so far.
+    /// </summary>
+    /// <remarks>
+    /// A generator's statics are shared by every compilation the host runs through it, and it may run several
+    /// at once, so this cannot be a plain dictionary.
+    /// </remarks>
+    private static readonly ConcurrentDictionary<string, ICondition> Parsed = new();
 
     /// <summary>
     /// The text of a condition that always holds.

@@ -5,6 +5,8 @@ using System.Linq;
 using ReswPlus.SourceGenerator.Analysis;
 using ReswPlus.SourceGenerator.CodeGenerators;
 
+using ReswPlus.SourceGenerator.ClassGenerators;
+
 namespace ReswPlus.SourceGenerator.Pipeline;
 
 /// <summary>
@@ -105,15 +107,16 @@ internal sealed class ReswLayout : IEquatable<ReswLayout>
             generatedFiles.Add(new NamedPath(hintName, path));
         }
 
-        // The folder of a resource is reduced to its language exactly the way the generated code reduces the
-        // language of the app, so that the two always agree: a culture-sensitive ToLower would turn 'IS-IS'
-        // into 'ıs' under Turkish and never match again.
+        // The folder of a resource is kept whole and normalised exactly the way the generated code normalises
+        // the language of the app, so that the two always agree: a region can decline differently from the
+        // language it belongs to, and a culture-sensitive ToLower would turn 'IS-IS' into 'ıs' under Turkish
+        // and never match again.
         var languages = new List<NamedPath>();
         var seenLanguages = new HashSet<string>(StringComparer.Ordinal);
 
         foreach (var path in allPaths)
         {
-            var language = Path.GetFileName(Path.GetDirectoryName(path)).Split('-', '_')[0].ToLowerInvariant();
+            var language = PluralFormsRetriever.NormalizeTag(Path.GetFileName(Path.GetDirectoryName(path)));
 
             if (seenLanguages.Add(language))
             {
