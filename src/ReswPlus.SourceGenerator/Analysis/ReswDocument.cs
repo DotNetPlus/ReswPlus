@@ -70,8 +70,9 @@ internal sealed class ReswDocument
     /// if the file is not inside a folder.
     /// </summary>
     /// <remarks>
-    /// This is the primary language subtag, matching the granularity of the plural providers: the region of a
-    /// bcp47 tag such as <c>en-US</c> doesn't influence pluralization.
+    /// This is the whole tag the folder is named with, normalised, because a region can decline differently
+    /// from the language it belongs to: CLDR publishes separate rules for <c>pt-PT</c> and for bare <c>pt</c>,
+    /// which is what <c>pt-BR</c> follows.
     /// </remarks>
     public string? Language { get; }
 

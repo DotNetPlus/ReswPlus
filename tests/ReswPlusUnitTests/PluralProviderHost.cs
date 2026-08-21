@@ -40,6 +40,24 @@ internal static class PluralProviderHost
     private static readonly ConcurrentDictionary<string, Func<double, string>> Providers = new();
 
     /// <summary>
+    /// Gets the plural rules of a language, as a function from a quantity to a CLDR plural category.
+    /// </summary>
+    /// <param name="language">The language whose rules to run.</param>
+    /// <returns>A function returning the name of the plural category selected for a quantity.</returns>
+    /// <remarks>
+    /// Asked for by language rather than by the name of the class implementing the rules, because that name is
+    /// generated from whichever of its languages sorts first and is nobody's business but the generator's.
+    /// </remarks>
+    public static Func<double, string> ForLanguage(string language)
+    {
+        var form = PluralFormsRetriever.RetrievePluralFormForLanguage(language);
+
+        Assert.True(form is not null, $"CLDR publishes no plural rules for '{language}'.");
+
+        return GetProvider(form!.Id);
+    }
+
+    /// <summary>
     /// Gets the plural rules of a provider, as a function from a quantity to a CLDR plural category.
     /// </summary>
     /// <param name="providerId">The identifier of the provider, without the <c>Provider</c> suffix.</param>

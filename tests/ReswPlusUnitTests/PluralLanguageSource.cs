@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ReswPlus.SourceGenerator;
+using ReswPlus.SourceGenerator.ClassGenerators;
 using Xunit;
 
 namespace ReswPlusUnitTests;
@@ -16,6 +17,16 @@ namespace ReswPlusUnitTests;
 public class PluralLanguageSource
 {
     /// <summary>
+    /// The rules of a language, paired with the class implementing them.
+    /// </summary>
+    /// <remarks>
+    /// Asked for by language: the name of the class is generated from whichever of its languages sorts first,
+    /// and is nobody's business but the generator's.
+    /// </remarks>
+    private static (string Language, string ProviderId) Rules(string language) =>
+        (language, PluralFormsRetriever.RetrievePluralFormForLanguage(language)!.Id);
+
+    /// <summary>
     /// The rules of a language selecting a form for two, and of one that doesn't.
     /// </summary>
     /// <remarks>
@@ -23,7 +34,7 @@ public class PluralLanguageSource
     /// two selects says which of the two languages the rules were taken from.
     /// </remarks>
     private static readonly (string Language, string ProviderId)[] EnglishAndPolish =
-        [("en", "OnlyOne"), ("pl", "Polish")];
+        [Rules("en"), Rules("pl")];
 
     private static readonly Dictionary<string, string> Forms = new()
     {
@@ -202,7 +213,7 @@ public class PluralLanguageSource
     /// <summary>
     /// The rules of a language whose tag changes meaning when lower cased by the wrong culture.
     /// </summary>
-    private static readonly (string Language, string ProviderId)[] Icelandic = [("is", "Icelandic")];
+    private static readonly (string Language, string ProviderId)[] Icelandic = [Rules("is")];
 
     [Fact]
     public void ATagIsMatchedUnderACultureThatLowerCasesLettersDifferently()
@@ -227,7 +238,7 @@ public class PluralLanguageSource
     /// below two, so a count of zero is what tells the two apart.
     /// </remarks>
     private static readonly (string Language, string ProviderId)[] Portuguese =
-        [("pt-PT", "OnlyOneOrMillions"), ("pt", "ZeroToTwoExcludedOrMillions")];
+        [Rules("pt-PT"), Rules("pt")];
 
     [Theory]
     // Portugal declines zero as 'other'...

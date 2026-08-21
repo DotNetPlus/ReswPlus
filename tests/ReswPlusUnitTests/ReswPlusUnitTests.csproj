@@ -22,6 +22,7 @@
       <Project>{44d125b3-6c8a-4f2f-a76f-bffb2ad7e70d}</Project>
       <Name>ReswPlus.SourceGenerator</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\tools\CldrRuleImporter\CldrRuleImporter.csproj" />
   </ItemGroup>
 
 </Project>

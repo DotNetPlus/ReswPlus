@@ -1,4 +1,5 @@
 using System.Linq;
+using ReswPlus.SourceGenerator.ClassGenerators;
 using Xunit;
 
 namespace ReswPlusUnitTests;
@@ -34,7 +35,9 @@ public class PluralGeneration
         run.AssertCompiles();
 
         // European Portuguese declines the way Catalan and Italian do, not the way CLDR declines bare 'pt'.
-        Assert.Contains("OnlyOneOrMillionsProvider.g.cs", run.Sources.Keys);
+        var portugal = PluralFormsRetriever.RetrievePluralFormForLanguage("pt-PT")!.Id;
+
+        Assert.Contains($"{portugal}Provider.g.cs", run.Sources.Keys);
         Assert.Contains("case \"pt-pt\":", run.Sources["ResourceLoaderExtension.g.cs"]);
     }
 
@@ -51,7 +54,9 @@ public class PluralGeneration
 
         // CLDR publishes no rules for 'pt-BR', so it takes the ones it publishes for 'pt', which are the rules
         // of French. The tag is matched at run time, so it is the language that appears in the selector.
-        Assert.Contains("ZeroToTwoExcludedOrMillionsProvider.g.cs", run.Sources.Keys);
+        var brazil = PluralFormsRetriever.RetrievePluralFormForLanguage("pt-BR")!.Id;
+
+        Assert.Contains($"{brazil}Provider.g.cs", run.Sources.Keys);
 
         var selector = run.Sources["ResourceLoaderExtension.g.cs"];
 
@@ -86,11 +91,15 @@ public class PluralGeneration
 
         var providers = run.Sources.Keys.Where(name => name.EndsWith("Provider.g.cs")).ToArray();
 
+        var polish = PluralFormsRetriever.RetrievePluralFormForLanguage("pl")!.Id;
+        var english = PluralFormsRetriever.RetrievePluralFormForLanguage("en")!.Id;
+        var arabic = PluralFormsRetriever.RetrievePluralFormForLanguage("ar")!.Id;
+
         // The fallback provider, the interface, and one provider each for English and Polish.
-        Assert.Contains("PolishProvider.g.cs", providers);
-        Assert.Contains("OnlyOneProvider.g.cs", providers);
+        Assert.Contains($"{polish}Provider.g.cs", providers);
+        Assert.Contains($"{english}Provider.g.cs", providers);
         Assert.Contains("OtherProvider.g.cs", providers);
-        Assert.DoesNotContain("ArabicProvider.g.cs", providers);
+        Assert.DoesNotContain($"{arabic}Provider.g.cs", providers);
     }
 
     [Fact]
@@ -106,6 +115,6 @@ public class PluralGeneration
         // generated file can check one against the other without leaving it.
         Assert.Contains(
             "// few: v = 0 and i % 10 = 2..4 and i % 100 != 12..14",
-            run.Sources["PolishProvider.g.cs"]);
+            run.Sources[$"{PluralFormsRetriever.RetrievePluralFormForLanguage("pl")!.Id}Provider.g.cs"]);
     }
 }

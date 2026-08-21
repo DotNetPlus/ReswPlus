@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ReswPlus.SourceGenerator.ClassGenerators;
 using ReswPlus.SourceGenerator.Plurals;
+using CldrRuleImporter;
 using Xunit;
 
 namespace ReswPlusUnitTests;
@@ -28,7 +29,7 @@ public class CldrConformance
     public static TheoryData<string> Languages =>
         [.. PluralFormsRetriever.PluralFormsForTesting
             .SelectMany(form => form.Languages)
-            .Where(language => CldrLanguages.RulesOf(language) is not null)
+            .Where(language => Cldr.RulesOf(language) is not null)
             .Distinct(StringComparer.Ordinal)
             .OrderBy(language => language, StringComparer.Ordinal)];
 
@@ -43,7 +44,7 @@ public class CldrConformance
         var provider = PluralProviderHost.GetProvider(form!.Id);
         var mistakes = new List<string>();
 
-        foreach (var rule in CldrLanguages.RulesOf(language)!)
+        foreach (var rule in Cldr.RulesOf(language)!)
         {
             foreach (var (quantity, literal) in CldrSamples.Read(rule.Published))
             {
@@ -58,7 +59,7 @@ public class CldrConformance
 
         Assert.True(
             mistakes.Count == 0,
-            $"The '{form.Id}' plural form disagrees with CLDR {CldrPublishedRules.Version} for '{language}':" +
+            $"The '{form.Id}' plural form disagrees with CLDR {Cldr.Version} for '{language}':" +
             $"{Environment.NewLine}{string.Join(Environment.NewLine, mistakes)}");
     }
 
@@ -71,7 +72,7 @@ public class CldrConformance
         Assert.NotNull(form);
 
         var declared = form!.Categories.Select(category => category.ToString().ToUpperInvariant()).OrderBy(name => name, StringComparer.Ordinal);
-        var published = CldrLanguages.RulesOf(language)!.Select(rule => rule.Category).OrderBy(name => name, StringComparer.Ordinal);
+        var published = Cldr.RulesOf(language)!.Select(rule => rule.Category).OrderBy(name => name, StringComparer.Ordinal);
 
         // A category ReswPlus declares but CLDR doesn't is a form the diagnostics ask translators to write and
         // the runtime never looks up. One CLDR declares but ReswPlus doesn't is a quantity that silently reads

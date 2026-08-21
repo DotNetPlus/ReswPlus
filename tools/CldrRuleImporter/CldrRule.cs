@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace ReswPlus.SourceGenerator.Plurals;
+namespace CldrRuleImporter;
 
 /// <summary>
 /// Reads the plural rule syntax of UTS #35 and answers which category a quantity selects.

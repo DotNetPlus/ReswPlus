@@ -4,7 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 
-namespace ReswPlus.SourceGenerator.Plurals;
+namespace CldrRuleImporter;
 
 /// <summary>
 /// Every cardinal plural rule Unicode CLDR publishes, for every language it publishes one for.
@@ -30,7 +30,7 @@ namespace ReswPlus.SourceGenerator.Plurals;
 /// </remarks>
 internal static class CldrPublishedRules
 {
-    private const string ResourcePath = "ReswPlus.SourceGenerator.Plurals.plurals.json";
+
 
     /// <remarks>
     /// Read once and kept, because a generator's statics outlive the compilation that filled them: the file is
@@ -41,17 +41,17 @@ internal static class CldrPublishedRules
     /// into a failure for every project built for the rest of the session.
     /// </para>
     /// </remarks>
-    private static readonly Lazy<Data> Published = new(Read, LazyThreadSafetyMode.PublicationOnly);
+
 
     /// <summary>
     /// The CLDR release the rules were published in.
     /// </summary>
-    public static string Version => Published.Value.Version;
+
 
     /// <summary>
     /// The rules of every language CLDR publishes rules for, keyed by language.
     /// </summary>
-    public static IReadOnlyDictionary<string, IReadOnlyList<Rule>> Cardinal => Published.Value.Cardinal;
+
 
     /// <summary>
     /// A rule CLDR publishes.
@@ -64,7 +64,7 @@ internal static class CldrPublishedRules
     /// </param>
     public readonly record struct Rule(string Category, string Condition, string Published);
 
-    private sealed record Data(string Version, IReadOnlyDictionary<string, IReadOnlyList<Rule>> Cardinal);
+    public sealed record Data(string Version, IReadOnlyDictionary<string, IReadOnlyList<Rule>> Cardinal);
 
     /// <summary>
     /// Reads the vendored data.
@@ -74,9 +74,9 @@ internal static class CldrPublishedRules
     /// Read once and kept, because a generator's statics outlive the compilation that filled them: the file is
     /// the same for every project the host builds.
     /// </remarks>
-    private static Data Read()
+    public static Data Read(string json)
     {
-        var supplemental = CldrJson.Parse(ReadResource()).Object("supplemental");
+        var supplemental = CldrJson.Parse(json).Object("supplemental");
         var cardinal = new Dictionary<string, IReadOnlyList<Rule>>(StringComparer.Ordinal);
 
         foreach (var language in supplemental.Object("plurals-type-cardinal").Objects)
@@ -100,13 +100,5 @@ internal static class CldrPublishedRules
         return new Data(supplemental.Object("version").String("_cldrVersion"), cardinal);
     }
 
-    private static string ReadResource()
-    {
-        using var stream = typeof(CldrPublishedRules).GetTypeInfo().Assembly.GetManifestResourceStream(ResourcePath)
-            ?? throw new InvalidOperationException($"'{ResourcePath}' is not embedded in the generator.");
 
-        using var reader = new StreamReader(stream);
-
-        return reader.ReadToEnd();
-    }
 }

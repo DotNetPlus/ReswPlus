@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace ReswPlus.SourceGenerator.Plurals;
+namespace CldrRuleImporter;
 
 /// <summary>
 /// Reads the shape of JSON the CLDR supplemental data is published in.

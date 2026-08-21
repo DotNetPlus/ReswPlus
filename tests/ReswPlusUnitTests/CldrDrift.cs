@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using ReswPlus.SourceGenerator.ClassGenerators;
 using ReswPlus.SourceGenerator.Plurals;
+using CldrRuleImporter;
 using Xunit;
 
 namespace ReswPlusUnitTests;
@@ -47,7 +48,7 @@ public class CldrDrift
     [MemberData(nameof(Languages))]
     public void ReadingARuleAgreesWithTheQuantitiesPublishedWithIt(string language)
     {
-        var rules = CldrLanguages.RulesOf(language)!;
+        var rules = Cldr.RulesOf(language)!;
         var mistakes = new List<string>();
 
         foreach (var rule in rules)
@@ -87,9 +88,9 @@ public class CldrDrift
 
         // Languages CLDR declines identically are checked once: the sweep is the same work for each of them,
         // and a form is given up to ninety languages.
-        foreach (var group in form.Languages.GroupBy(CldrLanguages.RulesOf, CldrLanguages.RuleComparer.Instance))
+        foreach (var group in form.Languages.GroupBy(language => string.Join("|", (Cldr.RulesOf(language) ?? []).Select(r => r.Category + ":" + r.Condition)), StringComparer.Ordinal))
         {
-            if (group.Key is null)
+            if (group.Key.Length == 0)
             {
                 continue;
             }
@@ -97,7 +98,7 @@ public class CldrDrift
             foreach (var quantity in CldrQuantities.Sweep)
             {
                 var selected = provider(quantity);
-                var published = CldrRule.Select(group.Key, quantity);
+                var published = CldrRule.Select(Cldr.RulesOf(group.First())!, quantity);
 
                 if (!string.Equals(selected, published, StringComparison.Ordinal))
                 {
@@ -112,7 +113,7 @@ public class CldrDrift
 
         Assert.True(
             mistakes.Count == 0,
-            $"The '{formId}' plural form disagrees with CLDR {CldrPublishedRules.Version} for languages it is given:"
+            $"The '{formId}' plural form disagrees with CLDR {Cldr.Version} for languages it is given:"
                 + $"{Environment.NewLine}{string.Join(Environment.NewLine, mistakes)}");
     }
 
@@ -127,24 +128,24 @@ public class CldrDrift
     [Fact]
     public void TheVendoredRulesAreReadableAndWhole()
     {
-        Assert.False(string.IsNullOrWhiteSpace(CldrPublishedRules.Version));
+        Assert.False(string.IsNullOrWhiteSpace(Cldr.Version));
 
         // CLDR has published rules for upwards of two hundred languages for years. A file holding a handful
         // is one that was cut short.
         Assert.True(
-            CldrPublishedRules.Cardinal.Count > 150,
-            $"CLDR {CldrPublishedRules.Version} was read as holding only {CldrPublishedRules.Cardinal.Count} languages.");
+            Cldr.Cardinal.Count > 150,
+            $"CLDR {Cldr.Version} was read as holding only {Cldr.Cardinal.Count} languages.");
 
         foreach (var language in new[] { "en", "ar", "pl", "pt", "pt-PT" })
         {
             Assert.True(
-                CldrPublishedRules.Cardinal.ContainsKey(language),
-                $"CLDR {CldrPublishedRules.Version} was read as publishing no rules for '{language}'.");
+                Cldr.Cardinal.ContainsKey(language),
+                $"CLDR {Cldr.Version} was read as publishing no rules for '{language}'.");
         }
 
         // Every language has to end with the category that carries no condition, which is the one the runtime
         // falls back to.
-        foreach (var language in CldrPublishedRules.Cardinal)
+        foreach (var language in Cldr.Cardinal)
         {
             Assert.Equal("OTHER", language.Value[language.Value.Count - 1].Category);
         }
@@ -163,7 +164,7 @@ public class CldrDrift
     {
         var unknown = PluralFormsRetriever.PluralFormsForTesting
             .SelectMany(form => form.Languages)
-            .Where(language => CldrLanguages.RulesOf(language) is null)
+            .Where(language => Cldr.RulesOf(language) is null)
             .OrderBy(language => language, StringComparer.Ordinal);
 
         Assert.Empty(unknown);

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ReswPlus.SourceGenerator.ClassGenerators;
 using Xunit;
 
 namespace ReswPlusUnitTests;
@@ -22,7 +23,7 @@ public class PluralResourceLookup
     [Fact]
     public void TheFormOfTheQuantityIsLookedUp()
     {
-        var host = ResourceLoaderExtensionHost.Create("pl", "Polish");
+        var host = ResourceLoaderExtensionHost.Create("pl");
 
         ResourceLoaderExtensionHost.WithUICulture("pl", () =>
         {
@@ -35,7 +36,7 @@ public class PluralResourceLookup
     [Fact]
     public void AFormThatIsNotDeclaredFallsBackToTheOtherForm()
     {
-        var host = ResourceLoaderExtensionHost.Create("pl", "Polish");
+        var host = ResourceLoaderExtensionHost.Create("pl");
 
         // A translation that only declares the two forms English needs used to render nothing at all for the
         // quantities selecting the forms it left out.
@@ -55,7 +56,7 @@ public class PluralResourceLookup
     [Fact]
     public void AFormThatIsNotDeclaredFallsBackWhenTheLookupThrows()
     {
-        var host = ResourceLoaderExtensionHost.Create("pl", "Polish");
+        var host = ResourceLoaderExtensionHost.Create("pl");
 
         var values = new Dictionary<string, string>
         {
@@ -72,7 +73,7 @@ public class PluralResourceLookup
     [Fact]
     public void AResourceWithNoFormAtAllStillReturnsAnEmptyString()
     {
-        var host = ResourceLoaderExtensionHost.Create("pl", "Polish");
+        var host = ResourceLoaderExtensionHost.Create("pl");
 
         ResourceLoaderExtensionHost.WithUICulture("pl", () =>
         {
@@ -83,7 +84,7 @@ public class PluralResourceLookup
     [Fact]
     public void TheEmptyStateIsUsedForZero()
     {
-        var host = ResourceLoaderExtensionHost.Create("en", "OnlyOne");
+        var host = ResourceLoaderExtensionHost.Create("en");
 
         var values = new Dictionary<string, string>
         {
@@ -101,7 +102,7 @@ public class PluralResourceLookup
     [Fact]
     public void AnEmptyStateThatIsNotDeclaredFallsBackToTheSelectedForm()
     {
-        var host = ResourceLoaderExtensionHost.Create("en", "OnlyOne");
+        var host = ResourceLoaderExtensionHost.Create("en");
 
         // The empty state is declared in the default language, which is what makes the generator ask for it,
         // so a translation that leaves it out used to render nothing for zero.
@@ -120,13 +121,14 @@ public class PluralResourceLookup
     [Theory]
     // A negative quantity selects the same form as its positive counterpart, because CLDR defines its
     // operands over the absolute value of the quantity.
-    [InlineData("OnlyOneOrMillions", -1, "ONE")]
-    [InlineData("ZeroToTwoExcludedOrMillions", -1, "ONE")]
-    [InlineData("Polish", -2, "FEW")]
-    [InlineData("Slovenian", -3, "FEW")]
-    [InlineData("Latvian", -10, "ZERO")]
-    public void TheFormIsSelectedOnTheAbsoluteValue(string providerId, double number, string expected)
+    [InlineData("ca", -1, "ONE")]
+    [InlineData("fr", -1, "ONE")]
+    [InlineData("pl", -2, "FEW")]
+    [InlineData("sl", -3, "FEW")]
+    [InlineData("lv", -10, "ZERO")]
+    public void TheFormIsSelectedOnTheAbsoluteValue(string language, double number, string expected)
     {
+        var providerId = PluralFormsRetriever.RetrievePluralFormForLanguage(language)!.Id;
         var host = ResourceLoaderExtensionHost.Create("en", providerId);
 
         var values = new Dictionary<string, string>

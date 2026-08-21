@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ReswPlus.SourceGenerator.Plurals;
+namespace CldrRuleImporter;
 
 /// <summary>
 /// Writes the C# of a plural provider from the rules CLDR publishes.
@@ -44,9 +44,9 @@ internal static class CldrEmitter
     /// </summary>
     /// <param name="className">The name to give the class.</param>
     /// <param name="rules">The rules, in the order CLDR publishes them.</param>
-    /// <param name="language">The language CLDR publishes those rules for, named in the generated code.</param>
+    /// <param name="languages">The languages CLDR publishes those rules for, named in the generated code.</param>
     /// <returns>The source of a provider implementing them.</returns>
-    public static string Emit(string className, IReadOnlyList<CldrPublishedRules.Rule> rules, string? language = null)
+    public static string Emit(string className, IReadOnlyList<CldrPublishedRules.Rule> rules, IReadOnlyList<string>? languages = null, string version = "")
     {
         var used = new HashSet<char>();
         var conditions = new List<(string Category, string Condition, string Source)>();
@@ -133,19 +133,40 @@ internal static class CldrEmitter
         source.AppendLine("{");
 
         // A reader of the generated file should not have to guess where the rules came from, so the class says
-        // it: the release, the language, and the syntax the conditions quoted below are written in.
-        source.Append("    /// <summary>The plural rules Unicode CLDR ").Append(CldrPublishedRules.Version)
+        // it: the release, the languages, and the syntax the conditions quoted below are written in. The name of
+        // the class is taken from the first of its languages and means nothing on its own, so the languages it
+        // actually decides for are spelled out rather than left to be inferred from it.
+        source.Append("    /// <summary>The plural rules Unicode CLDR ").Append(version)
             .Append(" publishes");
 
-        if (!string.IsNullOrEmpty(language))
+        if (languages is { Count: > 0 })
         {
-            source.Append(" for '").Append(language).Append('\'');
+            source.Append(" for '").Append(languages[0]).Append('\'');
+
+            if (languages.Count > 1)
+            {
+                source.Append(" and ").Append(languages.Count - 1)
+                    .Append(languages.Count == 2 ? " other language" : " other languages");
+            }
         }
 
         source.AppendLine(".</summary>");
         source.AppendLine("    /// <remarks>");
+
+        if (languages is { Count: > 1 })
+        {
+            source.Append("    /// Shared by ").Append(string.Join(", ", languages)).AppendLine(".");
+            source.AppendLine("    /// <para>");
+        }
+
         source.AppendLine("    /// The condition quoted above each branch is the rule as CLDR publishes it, in the plural rule");
         source.AppendLine("    /// syntax of UTS #35: https://unicode.org/reports/tr35/tr35-numbers.html#Language_Plural_Rules");
+
+        if (languages is { Count: > 1 })
+        {
+            source.AppendLine("    /// </para>");
+        }
+
         source.AppendLine("    /// </remarks>");
         source.Append("    internal sealed class ").Append(className).AppendLine(" : IPluralProvider");
         source.AppendLine("    {");
