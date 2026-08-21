@@ -73,7 +73,14 @@ minor version, and say which languages moved in the release notes.
 
 ## What stays hand written
 
-CLDR does not express these, so they are decided in `PluralFormsRetriever`:
+CLDR names a language one way. Windows names it several. Bridging that is the one thing left in
+`PluralFormsRetriever`:
 
-- `pt-PT`, which CLDR publishes separately from `pt` and which Windows may hand us either way round.
-- How a region tag is shortened to a language when CLDR has no rules for the region.
+- Normalising a tag before looking it up — Windows writes `pt-PT` in a resource folder and `pt_PT` in some
+  culture names, and neither casing is guaranteed.
+- Matching the whole tag first and shortening it one subtag at a time. CLDR keys *both* `pt` and `pt-PT`, so
+  the primary subtag alone is not a safe key; but `fr-CA` is not keyed at all and has to fall through to
+  `fr`.
+
+Which rules `pt-PT` gets is not decided here — CLDR publishes it as its own language and the importer carries
+it through like any other.
