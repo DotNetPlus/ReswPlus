@@ -200,6 +200,26 @@ public class PluralLanguageSource
     }
 
     /// <summary>
+    /// The rules of a language whose tag changes meaning when lower cased by the wrong culture.
+    /// </summary>
+    private static readonly (string Language, string ProviderId)[] Icelandic = [("is", "Icelandic")];
+
+    [Fact]
+    public void ATagIsMatchedUnderACultureThatLowerCasesLettersDifferently()
+    {
+        // Turkish lower cases 'I' to a dotless 'ı', so a tag folded with the culture of the moment rather than
+        // with the invariant one would turn 'IS-IS' into 'ıs-ıs' and match nothing for the rest of the run.
+        var host = ResourceLoaderExtensionHost.Create(Icelandic, useApplicationLanguages: true);
+
+        host.SetApplicationLanguages("IS-IS");
+
+        ResourceLoaderExtensionHost.WithUICulture("tr-TR", () =>
+        {
+            Assert.Equal("one", host.GetPlural(Forms, "FileCount", 21));
+        });
+    }
+
+    /// <summary>
     /// The rules of Portuguese, which CLDR publishes separately for Portugal.
     /// </summary>
     /// <remarks>
