@@ -305,7 +305,8 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
 
         foreach (var pluralFile in PluralFormsRetriever.RetrievePluralFormsForLanguages(languages))
         {
-            AddProvider(spc, emittedSources, pluralFile.Id, pluralFile.Source);
+            AddProvider(spc, emittedSources, pluralFile.Id, CldrEmitter.Emit(
+                $"{pluralFile.Id}Provider", pluralFile.Rules, pluralFile.Languages, CldrPluralRules.Version));
 
             // Add each language handled by this provider.
             foreach (var lng in pluralFile.Languages)

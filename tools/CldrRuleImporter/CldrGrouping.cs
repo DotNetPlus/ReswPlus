@@ -15,9 +15,9 @@ namespace CldrRuleImporter;
 /// form because their rules compare equal. Two hundred and some languages come out as a few dozen forms, and a
 /// language CLDR adds or moves follows its rules without anyone editing a list.
 /// </remarks>
-internal sealed class CldrPluralForm
+internal sealed class CldrGrouping
 {
-    private CldrPluralForm(
+    private CldrGrouping(
         string id,
         IReadOnlyList<string> languages,
         IReadOnlyList<CldrPublishedRules.Rule> rules,
@@ -139,7 +139,7 @@ internal sealed class CldrPluralForm
     /// Works out the forms from the rules CLDR publishes.
     /// </summary>
     /// <returns>Every form, in a stable order.</returns>
-    public static IReadOnlyList<CldrPluralForm> Create(
+    public static IReadOnlyList<CldrGrouping> Create(
         IReadOnlyDictionary<string, IReadOnlyList<CldrPublishedRules.Rule>> cardinal)
     {
         var byRules = new Dictionary<string, List<string>>(StringComparer.Ordinal);
@@ -168,14 +168,14 @@ internal sealed class CldrPluralForm
             }
         }
 
-        var forms = new List<CldrPluralForm>();
+        var forms = new List<CldrGrouping>();
 
         foreach (var group in byRules)
         {
             var languages = group.Value.OrderBy(language => language, StringComparer.Ordinal).ToArray();
             var rules = cardinal[languages[0]];
 
-            forms.Add(new CldrPluralForm(
+            forms.Add(new CldrGrouping(
                 Identifier(languages[0]),
                 languages,
                 rules,

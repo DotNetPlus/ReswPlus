@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using ReswPlus.SourceGenerator.Plurals;
 
 namespace CldrRuleImporter;
 
@@ -43,7 +44,7 @@ internal static class Program
 
             var json = File.ReadAllText(vendored);
             var rules = CldrPublishedRules.Read(json);
-            var forms = CldrPluralForm.Create(rules.Cardinal);
+            var forms = CldrGrouping.Create(rules.Cardinal);
 
             File.WriteAllText(output, Emit(rules.Version, forms), new UTF8Encoding(false));
 
@@ -74,7 +75,7 @@ internal static class Program
     /// <summary>
     /// Writes the table the generator reads.
     /// </summary>
-    private static string Emit(string version, IReadOnlyList<CldrPluralForm> forms)
+    private static string Emit(string version, IReadOnlyList<CldrGrouping> forms)
     {
         var source = new StringBuilder();
 
@@ -91,9 +92,10 @@ internal static class Program
         source.AppendLine("/// The plural rules of Unicode CLDR, as the classes implementing them.");
         source.AppendLine("/// </summary>");
         source.AppendLine("/// <remarks>");
-        source.AppendLine("/// Each entry is one set of rules, the languages CLDR gives it to, and the source of the class that");
-        source.AppendLine("/// decides a quantity by them. Languages sharing a set of rules share an entry, so a project gets one");
-        source.AppendLine("/// class per set of rules its languages use rather than one per language.");
+        source.AppendLine("/// Each entry is one set of rules and the languages CLDR gives it to. Languages sharing a set of rules");
+        source.AppendLine("/// share an entry, so a project gets one class per set of rules its languages use rather than one per");
+        source.AppendLine("/// language. The rules are held as the objects they are made of; the code deciding them is written by");
+        source.AppendLine("/// <see cref=\"CldrEmitter\"/> when a project is generated.");
         source.AppendLine("/// </remarks>");
         source.AppendLine("internal static class CldrPluralRules");
         source.AppendLine("{");
@@ -117,9 +119,19 @@ internal static class Program
             source.AppendLine($"            [{string.Join(", ", form.Categories.Select(Category))}],");
             source.AppendLine($"            [{string.Join(", ", form.OptionalCategories.Select(Category))}],");
             source.AppendLine($"            {(form.ZeroIsOnlyForZeroQuantity ? "true" : "false")},");
-            source.AppendLine("            \"\"\"");
-            source.Append(Indent(CldrEmitter.Emit(form.Id + "Provider", form.Rules, form.Languages, version), "            "));
-            source.AppendLine("            \"\"\"),");
+            source.AppendLine("            [");
+
+            foreach (var rule in form.Rules)
+            {
+                // The fallback rule carries no condition and is reached only when nothing else matches.
+                var condition = rule.Condition.Length == 0 ? null : CldrRule.Parse(rule.Condition);
+
+                source.Append("                new(").Append(Quote(rule.Category)).Append(", ")
+                    .Append(Quote(rule.Condition)).Append(", ")
+                    .Append(Condition(condition)).AppendLine("),");
+            }
+
+            source.AppendLine("            ]),");
         }
 
         source.AppendLine("    ];");
@@ -128,11 +140,28 @@ internal static class Program
         return source.ToString();
     }
 
-    private static string Indent(string text, string indent)
+    /// <summary>
+    /// Writes a condition as the expression constructing it.
+    /// </summary>
+    /// <param name="condition">The condition, or <see langword="null"/> for CLDR's fallback rule.</param>
+    /// <returns>An expression building the same condition.</returns>
+    /// <remarks>
+    /// This is what keeps the checked-in file data rather than code: a CLDR release shows up as the relations
+    /// that moved, and how a relation is turned into C# stays a decision the generator makes.
+    /// </remarks>
+    private static string Condition(ICldrCondition? condition)
     {
-        var lines = text.Replace("\r\n", "\n").TrimEnd('\n').Split('\n');
-
-        return string.Concat(lines.Select(line => line.Length == 0 ? "\n" : indent + line + "\n"));
+        return condition switch
+        {
+            null => "null",
+            CldrAnyOf anyOf => $"new CldrAnyOf([{string.Join(", ", anyOf.Alternatives.Select(Condition))}])",
+            CldrAllOf allOf => $"new CldrAllOf([{string.Join(", ", allOf.Parts.Select(Condition))}])",
+            CldrRelation relation =>
+                $"new CldrRelation('{relation.Operand}', {relation.Modulus}, " +
+                $"{(relation.Negated ? "true" : "false")}, " +
+                $"[{string.Join(", ", relation.Ranges.Select(range => $"new({range.From}, {range.To})"))}])",
+            _ => throw new InvalidOperationException($"'{condition.GetType().Name}' is not a condition."),
+        };
     }
 
     private static string Category(string category)

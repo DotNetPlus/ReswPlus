@@ -13,6 +13,7 @@
     </PropertyGroup>
     <ItemGroup>
       <InternalsVisibleTo Include="ReswPlusUnitTests" />
+      <InternalsVisibleTo Include="CldrRuleImporter" />
     </ItemGroup>
     <ItemGroup>
       <EmbeddedResource Include="Templates\ResourceStringProviders\WindowsResourceStringProvider.txt" />

@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CldrRuleImporter;
+namespace ReswPlus.SourceGenerator.Plurals;
 
 /// <summary>
 /// Writes the C# of a plural provider from the rules CLDR publishes.
 /// </summary>
 /// <remarks>
-/// The providers are not kept as files. Each one is written here from the rules of the language it implements,
-/// so that the code a project compiles says what CLDR says by construction rather than by someone having
-/// transcribed it correctly, and so that a new CLDR release is a change to the rules rather than an edit to
-/// thirty-four files.
+/// The providers are not kept as files, and their code is not kept in a table either. Each one is written here,
+/// while a project is generated, from the rules of the languages it implements, so that the code a project
+/// compiles says what CLDR says by construction rather than by someone having transcribed it correctly, and so
+/// that a new CLDR release is a change to the rules rather than an edit to thirty-four files.
 /// <para>
 /// What comes out is ordinary C#, the same shape the providers had when they were written by hand: no
 /// reflection, nothing built at run time, and the rule it came from above each branch.
@@ -46,33 +46,32 @@ internal static class CldrEmitter
     /// <param name="rules">The rules, in the order CLDR publishes them.</param>
     /// <param name="languages">The languages CLDR publishes those rules for, named in the generated code.</param>
     /// <returns>The source of a provider implementing them.</returns>
-    public static string Emit(string className, IReadOnlyList<CldrPublishedRules.Rule> rules, IReadOnlyList<string>? languages = null, string version = "")
+    public static string Emit(string className, IReadOnlyList<CldrPluralRule> rules, IReadOnlyList<string>? languages = null, string version = "")
     {
         var used = new HashSet<char>();
         var conditions = new List<(string Category, string Condition, string Source)>();
 
         foreach (var rule in rules)
         {
-            if (rule.Condition.Length == 0)
+            if (rule.Condition is not { } parsed)
             {
                 continue;
             }
 
-            var parsed = CldrRule.Parse(rule.Condition);
             var condition = parsed.ToCSharp();
 
             // A rule that can never hold is left out rather than written as an unreachable branch: the ones
             // reading a compact notation's exponent are all of this kind, since a quantity never carries one.
-            if (condition == CldrRule.False)
+            if (condition == CldrConditions.False)
             {
                 continue;
             }
 
             parsed.CollectOperands(used);
-            conditions.Add((rule.Category, condition, rule.Condition));
+            conditions.Add((rule.Category, condition, rule.Published));
 
             // Nothing after a rule that always holds can be reached.
-            if (condition == CldrRule.True)
+            if (condition == CldrConditions.True)
             {
                 break;
             }
@@ -100,7 +99,7 @@ internal static class CldrEmitter
 
             // A rule that always holds is written as the answer itself: wrapping it in a condition would leave
             // everything after it unreachable, which the compiler warns about.
-            if (condition == CldrRule.True)
+            if (condition == CldrConditions.True)
             {
                 body.Append("            return PluralTypeEnum.").Append(category).AppendLine(";");
                 alwaysReturns = true;

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using ReswPlus.SourceGenerator.ClassGenerators;
+using ReswPlus.SourceGenerator.Plurals;
 using Xunit;
 
 namespace ReswPlusUnitTests;
@@ -62,6 +63,12 @@ public class PluralLanguageMapping
     [InlineData("pt-BR", "fr")]
     // A tag no rules are held for falls back on the rules of its language.
     [InlineData("fr-CA", "fr")]
+    // Shortening drops one subtag at a time, so a script and a region both fall away before the language is
+    // reached. Dropping everything after the first would look up 'zh' from the start and pass by accident.
+    [InlineData("zh-Hant-TW", "zh")]
+    [InlineData("sr-Latn-RS", "sr")]
+    // CLDR keys 'pt-PT', so a tag below it still has to find it rather than fall through to bare 'pt'.
+    [InlineData("pt-PT-x-private", "pt-PT")]
     // The casing and the separator a tag is written with don't change which rules it gets.
     [InlineData("PT_pt", "pt-PT")]
     // Languages that decline alike share one set of rules, and so one generated class.
@@ -113,7 +120,7 @@ public class PluralLanguageMapping
 
         // And no two of them are the same rules under two names.
         var duplicates = forms
-            .GroupBy(form => form.Source, StringComparer.Ordinal)
+            .GroupBy(form => CldrEmitter.Emit($"{form.Id}Provider", form.Rules), StringComparer.Ordinal)
             .Where(group => group.Count() > 1)
             .Select(group => string.Join(", ", group.Select(form => form.Id)))
             .ToArray();

@@ -16,6 +16,8 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="ReswPlusUnitTests" />
+    <!-- The rule model and the emitter live in the generator: the importer only parses CLDR into them. -->
+    <ProjectReference Include="..\..\src\ReswPlus.SourceGenerator\ReswPlus.SourceGenerator.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,19 +1,22 @@
+using System.Collections.Generic;
 using ReswPlus.SourceGenerator.ClassGenerators;
 
 namespace ReswPlus.SourceGenerator.Plurals;
 
 /// <summary>
-/// One set of plural rules, the languages Unicode CLDR gives it to, and the class implementing it.
+/// One set of plural rules, and the languages Unicode CLDR gives it to.
 /// </summary>
 /// <param name="Id">The identifier of the class, generated from the languages that share the rules.</param>
 /// <param name="Languages">The languages these rules apply to, including the codes CLDR has renamed.</param>
 /// <param name="Categories">The categories the rules can select, which a resource has to define.</param>
 /// <param name="OptionalCategories">The categories of <paramref name="Categories"/> a resource may leave out.</param>
 /// <param name="ZeroIsOnlyForZeroQuantity">Whether <c>zero</c> is selected by nothing but zero itself.</param>
-/// <param name="Source">The source of the class, ready to be emitted into a compilation.</param>
+/// <param name="Rules">The rules themselves, in the order CLDR publishes them.</param>
 /// <remarks>
-/// Everything here is worked out by <c>tools/CldrRuleImporter</c> and written into
-/// <c>CldrPluralRules.g.cs</c>. Nothing about CLDR's file or its rule syntax is read while a project compiles.
+/// Which languages share a set of rules, what the class is called, and which categories are optional are all
+/// worked out by <c>tools/CldrRuleImporter</c> and written into <c>CldrPluralRules.g.cs</c>, so nothing about
+/// CLDR's file or its rule syntax is read while a project compiles. The rules arrive as objects and the code
+/// deciding them is written by <see cref="CldrEmitter"/> when a project is generated.
 /// </remarks>
 internal sealed record CldrPluralForm(
     string Id,
@@ -21,4 +24,15 @@ internal sealed record CldrPluralForm(
     PluralCategory[] Categories,
     PluralCategory[] OptionalCategories,
     bool ZeroIsOnlyForZeroQuantity,
-    string Source);
+    IReadOnlyList<CldrPluralRule> Rules);
+
+/// <summary>
+/// One rule: the category it selects, and the condition under which it does.
+/// </summary>
+/// <param name="Category">The category selected, upper cased.</param>
+/// <param name="Published">The condition as CLDR publishes it, quoted above the code written from it.</param>
+/// <param name="Condition">
+/// The condition, or <see langword="null"/> for CLDR's fallback rule, which carries none and is reached only
+/// when no other rule matches.
+/// </param>
+internal sealed record CldrPluralRule(string Category, string Published, ICldrCondition? Condition);

@@ -2,12 +2,22 @@
 
 The plural providers ReswPlus emits are written from the rules Unicode CLDR publishes. Nothing is transcribed
 by hand, and nothing about CLDR is read at compile time: this tool turns the published rules into
-`src/ReswPlus.SourceGenerator/Plurals/CldrPluralRules.g.cs`, which is checked in, and the generator does no
-more than look a language up in it.
+`src/ReswPlus.SourceGenerator/Plurals/CldrPluralRules.g.cs`, which is checked in.
+
+What is checked in is **the rules, as objects** — not the code deciding them. The generator holds the
+conditions (`CldrAnyOf`, `CldrAllOf`, `CldrRelation`) and writes the C# from them while a project is compiled,
+so a CLDR release shows up in review as the relations that moved, and how a relation becomes C# stays one
+decision in one place (`Plurals/CldrEmitter.cs`) rather than 35 blobs of pre-rendered source.
 
 That split is deliberate. An analyzer runs inside Visual Studio, so parsing JSON and a rule grammar on every
-compile buys nothing that doing it once, offline, does not — and a CLDR release then shows up in review as the
-rules that actually moved rather than as a file the build reads differently.
+compile buys nothing that doing it once, offline, does not.
+
+## Where each piece lives
+
+| | Runs | Holds |
+|---|---|---|
+| `tools/CldrRuleImporter` | offline, on demand | reading `plurals.json`, reading the UTS #35 rule syntax, grouping languages |
+| `src/ReswPlus.SourceGenerator/Plurals` | in every compile | the rule objects, and turning them into C# |
 
 ## Running it
 
@@ -25,11 +35,10 @@ Commit `plurals.json` and `CldrPluralRules.g.cs` together.
 |---|---|
 | `plurals.json` | The rules, vendored byte for byte from [cldr-json](https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-core/supplemental/plurals.json). **Never edit this by hand.** |
 | `CldrJson.cs` | Reads the shape of JSON that file is written in. |
-| `CldrRule.cs` | Reads the plural rule syntax of [UTS #35](https://unicode.org/reports/tr35/tr35-numbers.html#Language_Plural_Rules), and both evaluates a rule and writes it back out as C#. |
+| `CldrRule.cs` | Reads the plural rule syntax of [UTS #35](https://unicode.org/reports/tr35/tr35-numbers.html#Language_Plural_Rules) into the generator's condition objects. The only thing that understands that syntax. |
 | `CldrPublishedRules.cs` | Hands the parsed rules to the rest of the tool. |
 | `CldrLanguages.cs` | The legacy ISO codes CLDR publishes under a newer name, and the codes Windows may still hand us. |
-| `CldrPluralForm.cs` | Works out which languages share a set of rules, what to call the class, and which categories a translator has to supply. |
-| `CldrEmitter.cs` | Assembles a provider class from a set of rules. |
+| `CldrGrouping.cs` | Works out which languages share a set of rules, what to call the class, and which categories a translator has to supply. |
 
 ## What is derived, and how
 
