@@ -11,17 +11,28 @@ internal class Program
 {
     private static int Main(string[] args)
     {
-        var returnValue = 0;
-        _ = Parser.Default.ParseArguments<ReswToAndroidParameters, AndroidToReswParameters>(args)
-            .WithParsed((Action<ReswToAndroidParameters>)(parameters =>
-            {
-                returnValue = ReswToAndroidCommand(parameters);
-            })).WithParsed((Action<AndroidToReswParameters>)(parameters =>
-            {
-                returnValue = AndroidToReswCommand(parameters);
-            }));
+        try
+        {
+            var returnValue = 0;
+            _ = Parser.Default.ParseArguments<ReswToAndroidParameters, AndroidToReswParameters>(args)
+                .WithParsed((Action<ReswToAndroidParameters>)(parameters =>
+                {
+                    returnValue = ReswToAndroidCommand(parameters);
+                })).WithParsed((Action<AndroidToReswParameters>)(parameters =>
+                {
+                    returnValue = AndroidToReswCommand(parameters);
+                }));
 
-        return returnValue;
+            return returnValue;
+        }
+        catch (Exception error)
+        {
+            // A file that cannot be read or written is something the caller can act on, so it is reported as a
+            // line of text rather than as a stack trace.
+            Console.Error.WriteLine($"Error: {error.Message}");
+
+            return -1;
+        }
     }
 
     #region Commands

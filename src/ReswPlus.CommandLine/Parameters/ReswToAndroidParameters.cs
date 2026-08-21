@@ -5,7 +5,7 @@ namespace ReswPlusCmd.Parameters;
 [Verb("resw-to-xml", HelpText = "Convert a single resw file to Android XML format")]
 public class ReswToAndroidParameters
 {
-    [Value(0, HelpText = "Output File Path", MetaName = "output")]
+    [Value(0, HelpText = "Output File Path", MetaName = "output", Required = true)]
     public string? OutputFilePath { get; set; }
 
     [Option('i', "input", HelpText = "Resw input file", Required = true)]
