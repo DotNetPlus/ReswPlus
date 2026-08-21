@@ -104,7 +104,8 @@ internal sealed class PluralFormsRetriever
             "ZeroToTwoExcludedOrMillions",
             [PluralCategory.One, PluralCategory.Many, PluralCategory.Other],
             [
-                "fr" // French
+                "fr", // French
+                "pt"  // Portuguese, everywhere but Portugal, which CLDR declines separately as 'pt-PT'
             ]
         )
         { OptionalCategories = [PluralCategory.Many] },
@@ -114,11 +115,10 @@ internal sealed class PluralFormsRetriever
             [
                 "ca", // Catalan
                 "it", // Italian
-                // Portuguese is left here even though CLDR gives 'pt' the rule of French, because the folder
-                // of a resource and the language of the app are both reduced to their primary subtag: moving
-                // it would put 'pt-PT', whose rule is this one, on the rule of 'pt-BR'. Telling them apart
-                // needs the plural rules to be keyed by the whole tag.
-                "pt", // Portuguese
+                // European Portuguese declines the way Catalan and Italian do, while CLDR gives bare 'pt' --
+                // and with it Brazilian Portuguese -- the rule of French. Both are kept, and the whole tag is
+                // what tells them apart.
+                "pt-PT", // Portuguese, in Portugal
                 "es"  // Spanish
             ]
         )
@@ -494,13 +494,27 @@ internal sealed class PluralFormsRetriever
             foreach (var lang in pf.Languages)
             {
                 // Since one language can only have one plural form, add only if not already present.
-                if (!dict.ContainsKey(lang))
+                if (!dict.ContainsKey(NormalizeTag(lang)))
                 {
-                    dict[lang] = pf;
+                    dict[NormalizeTag(lang)] = pf;
                 }
             }
         }
         return dict;
+    }
+
+    /// <summary>
+    /// Puts a language tag in the form the plural forms are keyed by.
+    /// </summary>
+    /// <param name="languageTag">The tag, as a resource folder or a culture names it.</param>
+    /// <returns>The tag, lower cased and written with the separator BCP 47 uses.</returns>
+    /// <remarks>
+    /// Windows writes a tag either way round -- <c>pt-PT</c> in a resource folder, <c>pt_PT</c> in some culture
+    /// names -- and neither casing is guaranteed.
+    /// </remarks>
+    public static string NormalizeTag(string languageTag)
+    {
+        return languageTag.Replace('_', '-').ToLowerInvariant();
     }
 
     /// <summary>
@@ -514,7 +528,7 @@ internal sealed class PluralFormsRetriever
         var result = new Dictionary<string, PluralForm>();
         foreach (var lang in languages)
         {
-            if (LanguageToPluralForm.TryGetValue(lang, out var pf))
+            if (RetrievePluralFormForLanguage(lang) is { } pf)
             {
                 result[pf.Id] = pf;
             }
@@ -525,14 +539,33 @@ internal sealed class PluralFormsRetriever
     /// <summary>
     /// Retrieves the plural form of a language.
     /// </summary>
-    /// <param name="language">The primary language subtag to retrieve the plural form for.</param>
+    /// <param name="language">The language tag to retrieve the plural form for.</param>
     /// <returns>
     /// The plural form of <paramref name="language"/>, or <see langword="null"/> if the language has no dedicated
     /// plural provider, in which case no plural form can be assumed to be required.
     /// </returns>
+    /// <remarks>
+    /// The whole tag is looked up before the language on its own, because a region can decline differently from
+    /// the language it belongs to: <c>pt-PT</c> does not follow the rules CLDR gives <c>pt</c>. A tag no rules
+    /// are held for falls back on the rules of the language, which is what makes <c>fr-CA</c> decline like
+    /// <c>fr</c> without either having to be listed.
+    /// </remarks>
     public static PluralForm? RetrievePluralFormForLanguage(string language)
     {
-        return LanguageToPluralForm.TryGetValue(language, out var pluralForm) ? pluralForm : null;
+        var tag = NormalizeTag(language);
+
+        while (tag.Length != 0)
+        {
+            if (LanguageToPluralForm.TryGetValue(tag, out var pluralForm))
+            {
+                return pluralForm;
+            }
+
+            var separator = tag.LastIndexOf('-');
+            tag = separator <= 0 ? string.Empty : tag.Substring(0, separator);
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -549,7 +582,7 @@ internal sealed class PluralFormsRetriever
         var reported = new HashSet<string>();
         foreach (var lang in languages)
         {
-            if (!LanguageToPluralForm.ContainsKey(lang) && reported.Add(lang))
+            if (RetrievePluralFormForLanguage(lang) is null && reported.Add(lang))
             {
                 yield return lang;
             }

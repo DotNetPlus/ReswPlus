@@ -61,27 +61,6 @@ public class CldrDrift
     };
 
     /// <summary>
-    /// The languages whose rules deliberately differ from the ones CLDR gives them.
-    /// </summary>
-    /// <remarks>
-    /// A divergence is only allowed here with the reason it exists and, more importantly, with the fact that
-    /// reason rests on, restated as something this test re-derives from CLDR every run. An entry naming only a
-    /// language would go on passing long after whatever justified it stopped being true; an entry that has to
-    /// prove its own premise fails the moment CLDR moves out from under it.
-    /// </remarks>
-    private static readonly KnownDivergence[] Allowed =
-    [
-        new(
-            "pt",
-            "Plural rules are keyed by primary subtag, so 'pt-PT' and 'pt-BR' both arrive as 'pt'. The rules of "
-                + "'pt-PT' are the ones shipped, which is the closer of the two answers available while the key "
-                + "cannot tell them apart. Moving to the rules CLDR gives bare 'pt' would decline European "
-                + "Portuguese the way Brazilian Portuguese declines.",
-            "CLDR gives 'pt' and 'pt-PT' different rules",
-            static () => !SameRules("pt", "pt-PT")),
-    ];
-
-    /// <summary>
     /// The plural forms ReswPlus ships, by the identifier of the provider implementing them.
     /// </summary>
     public static TheoryData<string> Forms =>
@@ -168,7 +147,7 @@ public class CldrDrift
         // and a form is given up to ninety languages.
         foreach (var group in form.Languages.GroupBy(RulesOf, RuleComparer.Instance))
         {
-            if (group.Key is null || Allowed.Any(divergence => group.Contains(divergence.Language, StringComparer.Ordinal)))
+            if (group.Key is null)
             {
                 continue;
             }
@@ -215,47 +194,6 @@ public class CldrDrift
     }
 
     /// <summary>
-    /// Checks that the reason each allowed divergence exists is still true.
-    /// </summary>
-    [Fact]
-    public void EveryAllowedDivergenceStillHasItsReason()
-    {
-        foreach (var divergence in Allowed)
-        {
-            Assert.True(
-                divergence.StillHolds(),
-                $"The rules of '{divergence.Language}' are allowed to differ from CLDR's because "
-                    + $"{divergence.Premise}, and that is no longer true of CLDR {CldrPluralRules.Version}. "
-                    + $"The reason recorded for it was: {divergence.Reason}");
-        }
-    }
-
-    /// <summary>
-    /// Checks that a divergence is only allowed for a language that has one.
-    /// </summary>
-    /// <remarks>
-    /// An entry that has been fixed, or was never needed, exempts a language from the sweep for nothing.
-    /// </remarks>
-    [Fact]
-    public void EveryAllowedDivergenceIsOneThatHappens()
-    {
-        foreach (var divergence in Allowed)
-        {
-            var form = PluralFormsRetriever.RetrievePluralFormForLanguage(divergence.Language);
-
-            Assert.NotNull(form);
-
-            var provider = PluralProviderHost.GetProvider(form!.Id);
-            var rules = RulesOf(divergence.Language);
-
-            Assert.NotNull(rules);
-            Assert.Contains(
-                Quantities,
-                quantity => !string.Equals(provider(quantity), CldrRule.Select(rules!, quantity), StringComparison.Ordinal));
-        }
-    }
-
-    /// <summary>
     /// Gets the rules CLDR publishes for a language, under its current code.
     /// </summary>
     /// <param name="language">The language, as ReswPlus maps it.</param>
@@ -265,17 +203,6 @@ public class CldrDrift
         var code = DeprecatedCodes.TryGetValue(language, out var current) ? current : language;
 
         return CldrPublishedRules.Cardinal.TryGetValue(code, out var rules) ? rules : null;
-    }
-
-    /// <summary>
-    /// Gets whether CLDR declines two languages the same way.
-    /// </summary>
-    /// <param name="language">The first language.</param>
-    /// <param name="other">The second language.</param>
-    /// <returns><see langword="true"/> when both have the same rules.</returns>
-    private static bool SameRules(string language, string other)
-    {
-        return RuleComparer.Instance.Equals(RulesOf(language), RulesOf(other));
     }
 
     private static double[] BuildQuantities()
@@ -309,15 +236,6 @@ public class CldrDrift
 
         static double Parse(string literal) => double.Parse(literal, CultureInfo.InvariantCulture);
     }
-
-    /// <summary>
-    /// A language whose rules deliberately differ from the ones CLDR gives it.
-    /// </summary>
-    /// <param name="Language">The language.</param>
-    /// <param name="Reason">Why the rules ReswPlus ships are the ones it wants, in full.</param>
-    /// <param name="Premise">The fact the reason rests on, as it reads in a failure.</param>
-    /// <param name="StillHolds">Re-derives that fact from the rules CLDR publishes now.</param>
-    private sealed record KnownDivergence(string Language, string Reason, string Premise, Func<bool> StillHolds);
 
     /// <summary>
     /// Compares two sets of rules by what they say.

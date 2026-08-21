@@ -20,7 +20,8 @@ internal static class PluralLanguageResolvers
     /// list.
     /// </remarks>
     private const string CurrentUICulture = """
-                        return CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+                        return ReadLanguage(CultureInfo.CurrentUICulture.Name)
+                        ?? CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
             """;
 
     /// <summary>
@@ -47,7 +48,8 @@ internal static class PluralLanguageResolvers
                         {
                             // The app runtime language list is not readable outside of an app package.
                         }
-                        return CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+                        return ReadLanguage(CultureInfo.CurrentUICulture.Name)
+                        ?? CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
             """;
 
     /// <summary>
@@ -82,7 +84,8 @@ internal static class PluralLanguageResolvers
                         {
                             // The app runtime language list is not readable outside of an app package.
                         }
-                        return CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+                        return ReadLanguage(CultureInfo.CurrentUICulture.Name)
+                        ?? CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
             """;
 
     /// <summary>

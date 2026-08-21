@@ -54,11 +54,17 @@ public class PluralLanguageMapping
     [InlineData("es", "OnlyOneOrMillions")]
     [InlineData("ca", "OnlyOneOrMillions")]
     [InlineData("it", "OnlyOneOrMillions")]
-    // Portuguese keeps this rule even though CLDR gives 'pt' the one of French, because a resource folder
-    // and the language of the app are both reduced to their primary subtag, so 'pt-PT' and 'pt-BR' cannot be
-    // told apart. This is the rule of 'pt-PT'.
-    [InlineData("pt", "OnlyOneOrMillions")]
+    // Portuguese declines differently in Portugal than everywhere else, and CLDR publishes the two separately.
+    // The whole tag is what tells them apart, so 'pt-PT' takes its own rule and a bare 'pt' -- with it 'pt-BR'
+    // -- takes the one CLDR gives it, which is the rule of French.
+    [InlineData("pt-PT", "OnlyOneOrMillions")]
+    [InlineData("pt", "ZeroToTwoExcludedOrMillions")]
+    [InlineData("pt-BR", "ZeroToTwoExcludedOrMillions")]
     [InlineData("fr", "ZeroToTwoExcludedOrMillions")]
+    // A tag no rules are held for falls back on the rules of its language.
+    [InlineData("fr-CA", "ZeroToTwoExcludedOrMillions")]
+    // The casing and the separator a tag is written with don't change which rules it gets.
+    [InlineData("PT_pt", "OnlyOneOrMillions")]
     // The languages that share their rules with them keep the providers that don't.
     [InlineData("en", "OnlyOne")]
     [InlineData("de", "OnlyOne")]

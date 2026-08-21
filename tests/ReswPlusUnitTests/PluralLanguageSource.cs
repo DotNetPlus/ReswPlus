@@ -181,7 +181,7 @@ public class PluralLanguageSource
     }
 
     [Theory]
-    // A tag is reduced to its primary subtag, which is what the generated selector keys languages by.
+    // A tag is matched whole first, then shortened one subtag at a time until something is held for it.
     [InlineData("pl")]
     [InlineData("pl-PL")]
     [InlineData("PL-pl")]
@@ -196,6 +196,36 @@ public class PluralLanguageSource
         ResourceLoaderExtensionHost.WithUICulture("en-US", () =>
         {
             Assert.Equal("few", host.GetPlural(Forms, "FileCount", 2));
+        });
+    }
+
+    /// <summary>
+    /// The rules of Portuguese, which CLDR publishes separately for Portugal.
+    /// </summary>
+    /// <remarks>
+    /// 'pt-PT' selects <c>one</c> for exactly one, while everywhere else Portuguese selects it for anything
+    /// below two, so a count of zero is what tells the two apart.
+    /// </remarks>
+    private static readonly (string Language, string ProviderId)[] Portuguese =
+        [("pt-PT", "OnlyOneOrMillions"), ("pt", "ZeroToTwoExcludedOrMillions")];
+
+    [Theory]
+    // Portugal declines zero as 'other'...
+    [InlineData("pt-PT", "other")]
+    // ...while Brazil, and Portuguese with no region at all, decline it as 'one'.
+    [InlineData("pt-BR", "one")]
+    [InlineData("pt", "one")]
+    // A region nothing is held for falls back on the language, not on the other region's rules.
+    [InlineData("pt-AO", "one")]
+    public void TheRegionOfATagSelectsItsOwnRulesWhenCldrPublishesThem(string languageTag, string expected)
+    {
+        var host = ResourceLoaderExtensionHost.Create(Portuguese, useApplicationLanguages: true);
+
+        host.SetApplicationLanguages(languageTag);
+
+        ResourceLoaderExtensionHost.WithUICulture("en-US", () =>
+        {
+            Assert.Equal(expected, host.GetPlural(Forms, "FileCount", 0));
         });
     }
 }

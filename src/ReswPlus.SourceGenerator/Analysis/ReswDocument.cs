@@ -7,6 +7,7 @@ using System.Xml;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using ReswPlus.Core.ResourceParser;
+using ReswPlus.SourceGenerator.ClassGenerators;
 
 namespace ReswPlus.SourceGenerator.Analysis;
 
@@ -255,6 +256,10 @@ internal sealed class ReswDocument
     /// <summary>
     /// Returns the language a <c>.resw</c> file is written in, based on the folder containing it.
     /// </summary>
+    /// <remarks>
+    /// The whole tag is kept rather than just the language: a region can decline differently from the language
+    /// it belongs to, so a <c>pt-PT</c> folder has to stay distinguishable from a <c>pt-BR</c> one.
+    /// </remarks>
     private static string? GetLanguage(string path)
     {
         var folder = System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(path));
@@ -264,6 +269,6 @@ internal sealed class ReswDocument
             return null;
         }
 
-        return folder.Split('-')[0].ToLowerInvariant();
+        return PluralFormsRetriever.NormalizeTag(folder);
     }
 }
