@@ -34,6 +34,17 @@ internal interface ICldrCondition
     string ToCSharp();
 
     /// <summary>
+    /// Writes the condition back out in the syntax CLDR publishes it in.
+    /// </summary>
+    /// <returns>The condition, as UTS #35 writes it.</returns>
+    /// <remarks>
+    /// The generated provider quotes the rule above the code written from it. Rendering that quote from the
+    /// objects rather than carrying the published text alongside them keeps the rules a single
+    /// representation: there is nothing for a refresh to leave saying one thing while the objects say another.
+    /// </remarks>
+    string ToCldr();
+
+    /// <summary>
     /// Adds the operands the condition reads to a set.
     /// </summary>
     /// <param name="operands">The set to add to.</param>
@@ -86,6 +97,8 @@ internal sealed record CldrAnyOf(IReadOnlyList<ICldrCondition> Alternatives) : I
         return kept.Count == 0 ? CldrConditions.False : string.Join(" || ", kept);
     }
 
+    public string ToCldr() => string.Join(" or ", Alternatives.Select(alternative => alternative.ToCldr()));
+
     public void CollectOperands(ISet<char> operands)
     {
         foreach (var alternative in Alternatives)
@@ -132,6 +145,10 @@ internal sealed record CldrAllOf(IReadOnlyList<ICldrCondition> Parts) : ICldrCon
             _ => string.Join(" && ", kept),
         };
     }
+
+    // 'and' binds tighter than 'or' and CLDR's syntax has no brackets, so an alternative can only ever be
+    // nested inside an 'and' the other way round. Parsing produces alternatives of parts, never the reverse.
+    public string ToCldr() => string.Join(" and ", Parts.Select(part => part.ToCldr()));
 
     public void CollectOperands(ISet<char> operands)
     {
@@ -207,6 +224,15 @@ internal sealed record CldrRelation(char Operand, long Modulus, bool Negated, IR
         }
 
         return Negated ? $"!({matches})" : matches;
+    }
+
+    public string ToCldr()
+    {
+        var subject = Modulus == 0 ? Operand.ToString() : $"{Operand} % {Modulus}";
+        var values = string.Join(",", Ranges.Select(range =>
+            range.From == range.To ? range.From.ToString() : $"{range.From}..{range.To}"));
+
+        return $"{subject} {(Negated ? "!=" : "=")} {values}";
     }
 
     public void CollectOperands(ISet<char> operands)

@@ -28,7 +28,6 @@ internal static class CldrPluralRules
     /// </summary>
     public static readonly CldrPluralForm[] Forms =
     [
-        // af, an, asa, ast, az, bal, bem, bez, bg, brx, ce, cgg, chr, ckb, de, dv, ee, el, en, eo, et, eu, fi, fo, fur, fy, gl, gsw, ha, haw, hu, ia, ie, io, jgo, ji, jmc, ka, kaj, kcg, kk, kkj, kl, ks, ksb, ku, ky, lb, lg, lij, mas, mgo, ml, mn, mr, nah, nb, nd, ne, nl, nn, nnh, no, nr, ny, nyn, om, or, os, pap, ps, rm, rof, rwk, saq, sc, sd, sdh, seh, sn, so, sq, ss, ssy, st, sv, sw, syr, ta, te, teo, tig, tk, tn, tr, ts, ug, ur, uz, ve, vo, vun, wae, xh, xog, yi
         new(
             "Af",
             ["af", "an", "asa", "ast", "az", "bal", "bem", "bez", "bg", "brx", "ce", "cgg", "chr", "ckb", "de", "dv", "ee", "el", "en", "eo", "et", "eu", "fi", "fo", "fur", "fy", "gl", "gsw", "ha", "haw", "hu", "ia", "ie", "io", "jgo", "ji", "jmc", "ka", "kaj", "kcg", "kk", "kkj", "kl", "ks", "ksb", "ku", "ky", "lb", "lg", "lij", "mas", "mgo", "ml", "mn", "mr", "nah", "nb", "nd", "ne", "nl", "nn", "nnh", "no", "nr", "ny", "nyn", "om", "or", "os", "pap", "ps", "rm", "rof", "rwk", "saq", "sc", "sd", "sdh", "seh", "sn", "so", "sq", "ss", "ssy", "st", "sv", "sw", "syr", "ta", "te", "teo", "tig", "tk", "tn", "tr", "ts", "ug", "ur", "uz", "ve", "vo", "vun", "wae", "xh", "xog", "yi"],
@@ -36,10 +35,9 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "n = 1", new CldrRelation('n', 0, false, [new(1, 1)])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrRelation('n', 0, false, [new(1, 1)])),
+                new(PluralCategory.Other, null),
             ]),
-        // ak, bh, bho, csw, guw, ln, mg, nso, pa, ti, wa
         new(
             "Ak",
             ["ak", "bh", "bho", "csw", "guw", "ln", "mg", "nso", "pa", "ti", "wa"],
@@ -47,10 +45,9 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "n = 0..1", new CldrRelation('n', 0, false, [new(0, 1)])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrRelation('n', 0, false, [new(0, 1)])),
+                new(PluralCategory.Other, null),
             ]),
-        // am, as, bn, doi, fa, gu, hi, kn, kok, kok-Latn, pcm, zu
         new(
             "Am",
             ["am", "as", "bn", "doi", "fa", "gu", "hi", "kn", "kok", "kok-Latn", "pcm", "zu"],
@@ -58,10 +55,9 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "i = 0 or n = 1", new CldrAnyOf([new CldrRelation('i', 0, false, [new(0, 0)]), new CldrRelation('n', 0, false, [new(1, 1)])])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrAnyOf([new CldrRelation('i', 0, false, [new(0, 0)]), new CldrRelation('n', 0, false, [new(1, 1)])])),
+                new(PluralCategory.Other, null),
             ]),
-        // ar, ars
         new(
             "Ar",
             ["ar", "ars"],
@@ -69,14 +65,13 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ZERO", "n = 0", new CldrRelation('n', 0, false, [new(0, 0)])),
-                new("ONE", "n = 1", new CldrRelation('n', 0, false, [new(1, 1)])),
-                new("TWO", "n = 2", new CldrRelation('n', 0, false, [new(2, 2)])),
-                new("FEW", "n % 100 = 3..10", new CldrRelation('n', 100, false, [new(3, 10)])),
-                new("MANY", "n % 100 = 11..99", new CldrRelation('n', 100, false, [new(11, 99)])),
-                new("OTHER", "", null),
+                new(PluralCategory.Zero, new CldrRelation('n', 0, false, [new(0, 0)])),
+                new(PluralCategory.One, new CldrRelation('n', 0, false, [new(1, 1)])),
+                new(PluralCategory.Two, new CldrRelation('n', 0, false, [new(2, 2)])),
+                new(PluralCategory.Few, new CldrRelation('n', 100, false, [new(3, 10)])),
+                new(PluralCategory.Many, new CldrRelation('n', 100, false, [new(11, 99)])),
+                new(PluralCategory.Other, null),
             ]),
-        // be, ru, uk
         new(
             "Be",
             ["be", "ru", "uk"],
@@ -84,12 +79,11 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "n % 10 = 1 and n % 100 != 11", new CldrAllOf([new CldrRelation('n', 10, false, [new(1, 1)]), new CldrRelation('n', 100, true, [new(11, 11)])])),
-                new("FEW", "n % 10 = 2..4 and n % 100 != 12..14", new CldrAllOf([new CldrRelation('n', 10, false, [new(2, 4)]), new CldrRelation('n', 100, true, [new(12, 14)])])),
-                new("MANY", "n % 10 = 0 or n % 10 = 5..9 or n % 100 = 11..14", new CldrAnyOf([new CldrRelation('n', 10, false, [new(0, 0)]), new CldrRelation('n', 10, false, [new(5, 9)]), new CldrRelation('n', 100, false, [new(11, 14)])])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrAllOf([new CldrRelation('n', 10, false, [new(1, 1)]), new CldrRelation('n', 100, true, [new(11, 11)])])),
+                new(PluralCategory.Few, new CldrAllOf([new CldrRelation('n', 10, false, [new(2, 4)]), new CldrRelation('n', 100, true, [new(12, 14)])])),
+                new(PluralCategory.Many, new CldrAnyOf([new CldrRelation('n', 10, false, [new(0, 0)]), new CldrRelation('n', 10, false, [new(5, 9)]), new CldrRelation('n', 100, false, [new(11, 14)])])),
+                new(PluralCategory.Other, null),
             ]),
-        // blo, cv, ksh
         new(
             "Blo",
             ["blo", "cv", "ksh"],
@@ -97,11 +91,10 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ZERO", "n = 0", new CldrRelation('n', 0, false, [new(0, 0)])),
-                new("ONE", "n = 1", new CldrRelation('n', 0, false, [new(1, 1)])),
-                new("OTHER", "", null),
+                new(PluralCategory.Zero, new CldrRelation('n', 0, false, [new(0, 0)])),
+                new(PluralCategory.One, new CldrRelation('n', 0, false, [new(1, 1)])),
+                new(PluralCategory.Other, null),
             ]),
-        // bm, bo, dz, hnj, id, ig, ii, in, ja, jbo, jv, jw, kde, kea, km, ko, lkt, lo, ms, my, nqo, osa, sah, ses, sg, su, th, to, tpi, und, vi, wo, yo, yue, zh
         new(
             "Bm",
             ["bm", "bo", "dz", "hnj", "id", "ig", "ii", "in", "ja", "jbo", "jv", "jw", "kde", "kea", "km", "ko", "lkt", "lo", "ms", "my", "nqo", "osa", "sah", "ses", "sg", "su", "th", "to", "tpi", "und", "vi", "wo", "yo", "yue", "zh"],
@@ -109,9 +102,8 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("OTHER", "", null),
+                new(PluralCategory.Other, null),
             ]),
-        // br
         new(
             "Br",
             ["br"],
@@ -119,13 +111,12 @@ internal static class CldrPluralRules
             [PluralCategory.Many],
             true,
             [
-                new("ONE", "n % 10 = 1 and n % 100 != 11,71,91", new CldrAllOf([new CldrRelation('n', 10, false, [new(1, 1)]), new CldrRelation('n', 100, true, [new(11, 11), new(71, 71), new(91, 91)])])),
-                new("TWO", "n % 10 = 2 and n % 100 != 12,72,92", new CldrAllOf([new CldrRelation('n', 10, false, [new(2, 2)]), new CldrRelation('n', 100, true, [new(12, 12), new(72, 72), new(92, 92)])])),
-                new("FEW", "n % 10 = 3..4,9 and n % 100 != 10..19,70..79,90..99", new CldrAllOf([new CldrRelation('n', 10, false, [new(3, 4), new(9, 9)]), new CldrRelation('n', 100, true, [new(10, 19), new(70, 79), new(90, 99)])])),
-                new("MANY", "n != 0 and n % 1000000 = 0", new CldrAllOf([new CldrRelation('n', 0, true, [new(0, 0)]), new CldrRelation('n', 1000000, false, [new(0, 0)])])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrAllOf([new CldrRelation('n', 10, false, [new(1, 1)]), new CldrRelation('n', 100, true, [new(11, 11), new(71, 71), new(91, 91)])])),
+                new(PluralCategory.Two, new CldrAllOf([new CldrRelation('n', 10, false, [new(2, 2)]), new CldrRelation('n', 100, true, [new(12, 12), new(72, 72), new(92, 92)])])),
+                new(PluralCategory.Few, new CldrAllOf([new CldrRelation('n', 10, false, [new(3, 4), new(9, 9)]), new CldrRelation('n', 100, true, [new(10, 19), new(70, 79), new(90, 99)])])),
+                new(PluralCategory.Many, new CldrAllOf([new CldrRelation('n', 0, true, [new(0, 0)]), new CldrRelation('n', 1000000, false, [new(0, 0)])])),
+                new(PluralCategory.Other, null),
             ]),
-        // bs, hr, sh, sr
         new(
             "Bs",
             ["bs", "hr", "sh", "sr"],
@@ -133,11 +124,10 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "v = 0 and i % 10 = 1 and i % 100 != 11 or f % 10 = 1 and f % 100 != 11", new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 10, false, [new(1, 1)]), new CldrRelation('i', 100, true, [new(11, 11)])]), new CldrAllOf([new CldrRelation('f', 10, false, [new(1, 1)]), new CldrRelation('f', 100, true, [new(11, 11)])])])),
-                new("FEW", "v = 0 and i % 10 = 2..4 and i % 100 != 12..14 or f % 10 = 2..4 and f % 100 != 12..14", new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 10, false, [new(2, 4)]), new CldrRelation('i', 100, true, [new(12, 14)])]), new CldrAllOf([new CldrRelation('f', 10, false, [new(2, 4)]), new CldrRelation('f', 100, true, [new(12, 14)])])])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 10, false, [new(1, 1)]), new CldrRelation('i', 100, true, [new(11, 11)])]), new CldrAllOf([new CldrRelation('f', 10, false, [new(1, 1)]), new CldrRelation('f', 100, true, [new(11, 11)])])])),
+                new(PluralCategory.Few, new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 10, false, [new(2, 4)]), new CldrRelation('i', 100, true, [new(12, 14)])]), new CldrAllOf([new CldrRelation('f', 10, false, [new(2, 4)]), new CldrRelation('f', 100, true, [new(12, 14)])])])),
+                new(PluralCategory.Other, null),
             ]),
-        // ca, es, it, lld, pt-PT, scn, vec
         new(
             "Ca",
             ["ca", "es", "it", "lld", "pt-PT", "scn", "vec"],
@@ -145,11 +135,10 @@ internal static class CldrPluralRules
             [PluralCategory.Many],
             true,
             [
-                new("ONE", "i = 1 and v = 0", new CldrAllOf([new CldrRelation('i', 0, false, [new(1, 1)]), new CldrRelation('v', 0, false, [new(0, 0)])])),
-                new("MANY", "e = 0 and i != 0 and i % 1000000 = 0 and v = 0 or e != 0..5", new CldrAnyOf([new CldrAllOf([new CldrRelation('e', 0, false, [new(0, 0)]), new CldrRelation('i', 0, true, [new(0, 0)]), new CldrRelation('i', 1000000, false, [new(0, 0)]), new CldrRelation('v', 0, false, [new(0, 0)])]), new CldrRelation('e', 0, true, [new(0, 5)])])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrAllOf([new CldrRelation('i', 0, false, [new(1, 1)]), new CldrRelation('v', 0, false, [new(0, 0)])])),
+                new(PluralCategory.Many, new CldrAnyOf([new CldrAllOf([new CldrRelation('e', 0, false, [new(0, 0)]), new CldrRelation('i', 0, true, [new(0, 0)]), new CldrRelation('i', 1000000, false, [new(0, 0)]), new CldrRelation('v', 0, false, [new(0, 0)])]), new CldrRelation('e', 0, true, [new(0, 5)])])),
+                new(PluralCategory.Other, null),
             ]),
-        // ceb, fil, tl
         new(
             "Ceb",
             ["ceb", "fil", "tl"],
@@ -157,10 +146,9 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "v = 0 and i = 1,2,3 or v = 0 and i % 10 != 4,6,9 or v != 0 and f % 10 != 4,6,9", new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 0, false, [new(1, 1), new(2, 2), new(3, 3)])]), new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 10, true, [new(4, 4), new(6, 6), new(9, 9)])]), new CldrAllOf([new CldrRelation('v', 0, true, [new(0, 0)]), new CldrRelation('f', 10, true, [new(4, 4), new(6, 6), new(9, 9)])])])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 0, false, [new(1, 1), new(2, 2), new(3, 3)])]), new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 10, true, [new(4, 4), new(6, 6), new(9, 9)])]), new CldrAllOf([new CldrRelation('v', 0, true, [new(0, 0)]), new CldrRelation('f', 10, true, [new(4, 4), new(6, 6), new(9, 9)])])])),
+                new(PluralCategory.Other, null),
             ]),
-        // cs, sk
         new(
             "Cs",
             ["cs", "sk"],
@@ -168,12 +156,11 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "i = 1 and v = 0", new CldrAllOf([new CldrRelation('i', 0, false, [new(1, 1)]), new CldrRelation('v', 0, false, [new(0, 0)])])),
-                new("FEW", "i = 2..4 and v = 0", new CldrAllOf([new CldrRelation('i', 0, false, [new(2, 4)]), new CldrRelation('v', 0, false, [new(0, 0)])])),
-                new("MANY", "v != 0", new CldrRelation('v', 0, true, [new(0, 0)])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrAllOf([new CldrRelation('i', 0, false, [new(1, 1)]), new CldrRelation('v', 0, false, [new(0, 0)])])),
+                new(PluralCategory.Few, new CldrAllOf([new CldrRelation('i', 0, false, [new(2, 4)]), new CldrRelation('v', 0, false, [new(0, 0)])])),
+                new(PluralCategory.Many, new CldrRelation('v', 0, true, [new(0, 0)])),
+                new(PluralCategory.Other, null),
             ]),
-        // cy
         new(
             "Cy",
             ["cy"],
@@ -181,14 +168,13 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ZERO", "n = 0", new CldrRelation('n', 0, false, [new(0, 0)])),
-                new("ONE", "n = 1", new CldrRelation('n', 0, false, [new(1, 1)])),
-                new("TWO", "n = 2", new CldrRelation('n', 0, false, [new(2, 2)])),
-                new("FEW", "n = 3", new CldrRelation('n', 0, false, [new(3, 3)])),
-                new("MANY", "n = 6", new CldrRelation('n', 0, false, [new(6, 6)])),
-                new("OTHER", "", null),
+                new(PluralCategory.Zero, new CldrRelation('n', 0, false, [new(0, 0)])),
+                new(PluralCategory.One, new CldrRelation('n', 0, false, [new(1, 1)])),
+                new(PluralCategory.Two, new CldrRelation('n', 0, false, [new(2, 2)])),
+                new(PluralCategory.Few, new CldrRelation('n', 0, false, [new(3, 3)])),
+                new(PluralCategory.Many, new CldrRelation('n', 0, false, [new(6, 6)])),
+                new(PluralCategory.Other, null),
             ]),
-        // da
         new(
             "Da",
             ["da"],
@@ -196,10 +182,9 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "n = 1 or t != 0 and i = 0,1", new CldrAnyOf([new CldrRelation('n', 0, false, [new(1, 1)]), new CldrAllOf([new CldrRelation('t', 0, true, [new(0, 0)]), new CldrRelation('i', 0, false, [new(0, 0), new(1, 1)])])])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrAnyOf([new CldrRelation('n', 0, false, [new(1, 1)]), new CldrAllOf([new CldrRelation('t', 0, true, [new(0, 0)]), new CldrRelation('i', 0, false, [new(0, 0), new(1, 1)])])])),
+                new(PluralCategory.Other, null),
             ]),
-        // dsb, hsb
         new(
             "Dsb",
             ["dsb", "hsb"],
@@ -207,12 +192,11 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "v = 0 and i % 100 = 1 or f % 100 = 1", new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(1, 1)])]), new CldrRelation('f', 100, false, [new(1, 1)])])),
-                new("TWO", "v = 0 and i % 100 = 2 or f % 100 = 2", new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(2, 2)])]), new CldrRelation('f', 100, false, [new(2, 2)])])),
-                new("FEW", "v = 0 and i % 100 = 3..4 or f % 100 = 3..4", new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(3, 4)])]), new CldrRelation('f', 100, false, [new(3, 4)])])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(1, 1)])]), new CldrRelation('f', 100, false, [new(1, 1)])])),
+                new(PluralCategory.Two, new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(2, 2)])]), new CldrRelation('f', 100, false, [new(2, 2)])])),
+                new(PluralCategory.Few, new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(3, 4)])]), new CldrRelation('f', 100, false, [new(3, 4)])])),
+                new(PluralCategory.Other, null),
             ]),
-        // ff, hy, kab
         new(
             "Ff",
             ["ff", "hy", "kab"],
@@ -220,10 +204,9 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "i = 0,1", new CldrRelation('i', 0, false, [new(0, 0), new(1, 1)])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrRelation('i', 0, false, [new(0, 0), new(1, 1)])),
+                new(PluralCategory.Other, null),
             ]),
-        // fr, pt
         new(
             "Fr",
             ["fr", "pt"],
@@ -231,11 +214,10 @@ internal static class CldrPluralRules
             [PluralCategory.Many],
             true,
             [
-                new("ONE", "i = 0,1", new CldrRelation('i', 0, false, [new(0, 0), new(1, 1)])),
-                new("MANY", "e = 0 and i != 0 and i % 1000000 = 0 and v = 0 or e != 0..5", new CldrAnyOf([new CldrAllOf([new CldrRelation('e', 0, false, [new(0, 0)]), new CldrRelation('i', 0, true, [new(0, 0)]), new CldrRelation('i', 1000000, false, [new(0, 0)]), new CldrRelation('v', 0, false, [new(0, 0)])]), new CldrRelation('e', 0, true, [new(0, 5)])])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrRelation('i', 0, false, [new(0, 0), new(1, 1)])),
+                new(PluralCategory.Many, new CldrAnyOf([new CldrAllOf([new CldrRelation('e', 0, false, [new(0, 0)]), new CldrRelation('i', 0, true, [new(0, 0)]), new CldrRelation('i', 1000000, false, [new(0, 0)]), new CldrRelation('v', 0, false, [new(0, 0)])]), new CldrRelation('e', 0, true, [new(0, 5)])])),
+                new(PluralCategory.Other, null),
             ]),
-        // ga
         new(
             "Ga",
             ["ga"],
@@ -243,13 +225,12 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "n = 1", new CldrRelation('n', 0, false, [new(1, 1)])),
-                new("TWO", "n = 2", new CldrRelation('n', 0, false, [new(2, 2)])),
-                new("FEW", "n = 3..6", new CldrRelation('n', 0, false, [new(3, 6)])),
-                new("MANY", "n = 7..10", new CldrRelation('n', 0, false, [new(7, 10)])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrRelation('n', 0, false, [new(1, 1)])),
+                new(PluralCategory.Two, new CldrRelation('n', 0, false, [new(2, 2)])),
+                new(PluralCategory.Few, new CldrRelation('n', 0, false, [new(3, 6)])),
+                new(PluralCategory.Many, new CldrRelation('n', 0, false, [new(7, 10)])),
+                new(PluralCategory.Other, null),
             ]),
-        // gd
         new(
             "Gd",
             ["gd"],
@@ -257,12 +238,11 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "n = 1,11", new CldrRelation('n', 0, false, [new(1, 1), new(11, 11)])),
-                new("TWO", "n = 2,12", new CldrRelation('n', 0, false, [new(2, 2), new(12, 12)])),
-                new("FEW", "n = 3..10,13..19", new CldrRelation('n', 0, false, [new(3, 10), new(13, 19)])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrRelation('n', 0, false, [new(1, 1), new(11, 11)])),
+                new(PluralCategory.Two, new CldrRelation('n', 0, false, [new(2, 2), new(12, 12)])),
+                new(PluralCategory.Few, new CldrRelation('n', 0, false, [new(3, 10), new(13, 19)])),
+                new(PluralCategory.Other, null),
             ]),
-        // gv
         new(
             "Gv",
             ["gv"],
@@ -270,13 +250,12 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "v = 0 and i % 10 = 1", new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 10, false, [new(1, 1)])])),
-                new("TWO", "v = 0 and i % 10 = 2", new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 10, false, [new(2, 2)])])),
-                new("FEW", "v = 0 and i % 100 = 0,20,40,60,80", new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(0, 0), new(20, 20), new(40, 40), new(60, 60), new(80, 80)])])),
-                new("MANY", "v != 0", new CldrRelation('v', 0, true, [new(0, 0)])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 10, false, [new(1, 1)])])),
+                new(PluralCategory.Two, new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 10, false, [new(2, 2)])])),
+                new(PluralCategory.Few, new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(0, 0), new(20, 20), new(40, 40), new(60, 60), new(80, 80)])])),
+                new(PluralCategory.Many, new CldrRelation('v', 0, true, [new(0, 0)])),
+                new(PluralCategory.Other, null),
             ]),
-        // he, iw
         new(
             "He",
             ["he", "iw"],
@@ -284,11 +263,10 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "i = 1 and v = 0 or i = 0 and v != 0", new CldrAnyOf([new CldrAllOf([new CldrRelation('i', 0, false, [new(1, 1)]), new CldrRelation('v', 0, false, [new(0, 0)])]), new CldrAllOf([new CldrRelation('i', 0, false, [new(0, 0)]), new CldrRelation('v', 0, true, [new(0, 0)])])])),
-                new("TWO", "i = 2 and v = 0", new CldrAllOf([new CldrRelation('i', 0, false, [new(2, 2)]), new CldrRelation('v', 0, false, [new(0, 0)])])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrAnyOf([new CldrAllOf([new CldrRelation('i', 0, false, [new(1, 1)]), new CldrRelation('v', 0, false, [new(0, 0)])]), new CldrAllOf([new CldrRelation('i', 0, false, [new(0, 0)]), new CldrRelation('v', 0, true, [new(0, 0)])])])),
+                new(PluralCategory.Two, new CldrAllOf([new CldrRelation('i', 0, false, [new(2, 2)]), new CldrRelation('v', 0, false, [new(0, 0)])])),
+                new(PluralCategory.Other, null),
             ]),
-        // is, mk
         new(
             "Is",
             ["is", "mk"],
@@ -296,10 +274,9 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "t = 0 and i % 10 = 1 and i % 100 != 11 or t % 10 = 1 and t % 100 != 11", new CldrAnyOf([new CldrAllOf([new CldrRelation('t', 0, false, [new(0, 0)]), new CldrRelation('i', 10, false, [new(1, 1)]), new CldrRelation('i', 100, true, [new(11, 11)])]), new CldrAllOf([new CldrRelation('t', 10, false, [new(1, 1)]), new CldrRelation('t', 100, true, [new(11, 11)])])])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrAnyOf([new CldrAllOf([new CldrRelation('t', 0, false, [new(0, 0)]), new CldrRelation('i', 10, false, [new(1, 1)]), new CldrRelation('i', 100, true, [new(11, 11)])]), new CldrAllOf([new CldrRelation('t', 10, false, [new(1, 1)]), new CldrRelation('t', 100, true, [new(11, 11)])])])),
+                new(PluralCategory.Other, null),
             ]),
-        // iu, naq, sat, se, sma, smi, smj, smn, sms
         new(
             "Iu",
             ["iu", "naq", "sat", "se", "sma", "smi", "smj", "smn", "sms"],
@@ -307,11 +284,10 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "n = 1", new CldrRelation('n', 0, false, [new(1, 1)])),
-                new("TWO", "n = 2", new CldrRelation('n', 0, false, [new(2, 2)])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrRelation('n', 0, false, [new(1, 1)])),
+                new(PluralCategory.Two, new CldrRelation('n', 0, false, [new(2, 2)])),
+                new(PluralCategory.Other, null),
             ]),
-        // kw
         new(
             "Kw",
             ["kw"],
@@ -319,14 +295,13 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ZERO", "n = 0", new CldrRelation('n', 0, false, [new(0, 0)])),
-                new("ONE", "n = 1", new CldrRelation('n', 0, false, [new(1, 1)])),
-                new("TWO", "n % 100 = 2,22,42,62,82 or n % 1000 = 0 and n % 100000 = 1000..20000,40000,60000,80000 or n != 0 and n % 1000000 = 100000", new CldrAnyOf([new CldrRelation('n', 100, false, [new(2, 2), new(22, 22), new(42, 42), new(62, 62), new(82, 82)]), new CldrAllOf([new CldrRelation('n', 1000, false, [new(0, 0)]), new CldrRelation('n', 100000, false, [new(1000, 20000), new(40000, 40000), new(60000, 60000), new(80000, 80000)])]), new CldrAllOf([new CldrRelation('n', 0, true, [new(0, 0)]), new CldrRelation('n', 1000000, false, [new(100000, 100000)])])])),
-                new("FEW", "n % 100 = 3,23,43,63,83", new CldrRelation('n', 100, false, [new(3, 3), new(23, 23), new(43, 43), new(63, 63), new(83, 83)])),
-                new("MANY", "n != 1 and n % 100 = 1,21,41,61,81", new CldrAllOf([new CldrRelation('n', 0, true, [new(1, 1)]), new CldrRelation('n', 100, false, [new(1, 1), new(21, 21), new(41, 41), new(61, 61), new(81, 81)])])),
-                new("OTHER", "", null),
+                new(PluralCategory.Zero, new CldrRelation('n', 0, false, [new(0, 0)])),
+                new(PluralCategory.One, new CldrRelation('n', 0, false, [new(1, 1)])),
+                new(PluralCategory.Two, new CldrAnyOf([new CldrRelation('n', 100, false, [new(2, 2), new(22, 22), new(42, 42), new(62, 62), new(82, 82)]), new CldrAllOf([new CldrRelation('n', 1000, false, [new(0, 0)]), new CldrRelation('n', 100000, false, [new(1000, 20000), new(40000, 40000), new(60000, 60000), new(80000, 80000)])]), new CldrAllOf([new CldrRelation('n', 0, true, [new(0, 0)]), new CldrRelation('n', 1000000, false, [new(100000, 100000)])])])),
+                new(PluralCategory.Few, new CldrRelation('n', 100, false, [new(3, 3), new(23, 23), new(43, 43), new(63, 63), new(83, 83)])),
+                new(PluralCategory.Many, new CldrAllOf([new CldrRelation('n', 0, true, [new(1, 1)]), new CldrRelation('n', 100, false, [new(1, 1), new(21, 21), new(41, 41), new(61, 61), new(81, 81)])])),
+                new(PluralCategory.Other, null),
             ]),
-        // lag
         new(
             "Lag",
             ["lag"],
@@ -334,11 +309,10 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ZERO", "n = 0", new CldrRelation('n', 0, false, [new(0, 0)])),
-                new("ONE", "i = 0,1 and n != 0", new CldrAllOf([new CldrRelation('i', 0, false, [new(0, 0), new(1, 1)]), new CldrRelation('n', 0, true, [new(0, 0)])])),
-                new("OTHER", "", null),
+                new(PluralCategory.Zero, new CldrRelation('n', 0, false, [new(0, 0)])),
+                new(PluralCategory.One, new CldrAllOf([new CldrRelation('i', 0, false, [new(0, 0), new(1, 1)]), new CldrRelation('n', 0, true, [new(0, 0)])])),
+                new(PluralCategory.Other, null),
             ]),
-        // lt
         new(
             "Lt",
             ["lt"],
@@ -346,12 +320,11 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "n % 10 = 1 and n % 100 != 11..19", new CldrAllOf([new CldrRelation('n', 10, false, [new(1, 1)]), new CldrRelation('n', 100, true, [new(11, 19)])])),
-                new("FEW", "n % 10 = 2..9 and n % 100 != 11..19", new CldrAllOf([new CldrRelation('n', 10, false, [new(2, 9)]), new CldrRelation('n', 100, true, [new(11, 19)])])),
-                new("MANY", "f != 0", new CldrRelation('f', 0, true, [new(0, 0)])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrAllOf([new CldrRelation('n', 10, false, [new(1, 1)]), new CldrRelation('n', 100, true, [new(11, 19)])])),
+                new(PluralCategory.Few, new CldrAllOf([new CldrRelation('n', 10, false, [new(2, 9)]), new CldrRelation('n', 100, true, [new(11, 19)])])),
+                new(PluralCategory.Many, new CldrRelation('f', 0, true, [new(0, 0)])),
+                new(PluralCategory.Other, null),
             ]),
-        // lv, prg
         new(
             "Lv",
             ["lv", "prg"],
@@ -359,11 +332,10 @@ internal static class CldrPluralRules
             [],
             false,
             [
-                new("ZERO", "n % 10 = 0 or n % 100 = 11..19 or v = 2 and f % 100 = 11..19", new CldrAnyOf([new CldrRelation('n', 10, false, [new(0, 0)]), new CldrRelation('n', 100, false, [new(11, 19)]), new CldrAllOf([new CldrRelation('v', 0, false, [new(2, 2)]), new CldrRelation('f', 100, false, [new(11, 19)])])])),
-                new("ONE", "n % 10 = 1 and n % 100 != 11 or v = 2 and f % 10 = 1 and f % 100 != 11 or v != 2 and f % 10 = 1", new CldrAnyOf([new CldrAllOf([new CldrRelation('n', 10, false, [new(1, 1)]), new CldrRelation('n', 100, true, [new(11, 11)])]), new CldrAllOf([new CldrRelation('v', 0, false, [new(2, 2)]), new CldrRelation('f', 10, false, [new(1, 1)]), new CldrRelation('f', 100, true, [new(11, 11)])]), new CldrAllOf([new CldrRelation('v', 0, true, [new(2, 2)]), new CldrRelation('f', 10, false, [new(1, 1)])])])),
-                new("OTHER", "", null),
+                new(PluralCategory.Zero, new CldrAnyOf([new CldrRelation('n', 10, false, [new(0, 0)]), new CldrRelation('n', 100, false, [new(11, 19)]), new CldrAllOf([new CldrRelation('v', 0, false, [new(2, 2)]), new CldrRelation('f', 100, false, [new(11, 19)])])])),
+                new(PluralCategory.One, new CldrAnyOf([new CldrAllOf([new CldrRelation('n', 10, false, [new(1, 1)]), new CldrRelation('n', 100, true, [new(11, 11)])]), new CldrAllOf([new CldrRelation('v', 0, false, [new(2, 2)]), new CldrRelation('f', 10, false, [new(1, 1)]), new CldrRelation('f', 100, true, [new(11, 11)])]), new CldrAllOf([new CldrRelation('v', 0, true, [new(2, 2)]), new CldrRelation('f', 10, false, [new(1, 1)])])])),
+                new(PluralCategory.Other, null),
             ]),
-        // mo, ro
         new(
             "Mo",
             ["mo", "ro"],
@@ -371,11 +343,10 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "i = 1 and v = 0", new CldrAllOf([new CldrRelation('i', 0, false, [new(1, 1)]), new CldrRelation('v', 0, false, [new(0, 0)])])),
-                new("FEW", "v != 0 or n = 0 or n != 1 and n % 100 = 1..19", new CldrAnyOf([new CldrRelation('v', 0, true, [new(0, 0)]), new CldrRelation('n', 0, false, [new(0, 0)]), new CldrAllOf([new CldrRelation('n', 0, true, [new(1, 1)]), new CldrRelation('n', 100, false, [new(1, 19)])])])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrAllOf([new CldrRelation('i', 0, false, [new(1, 1)]), new CldrRelation('v', 0, false, [new(0, 0)])])),
+                new(PluralCategory.Few, new CldrAnyOf([new CldrRelation('v', 0, true, [new(0, 0)]), new CldrRelation('n', 0, false, [new(0, 0)]), new CldrAllOf([new CldrRelation('n', 0, true, [new(1, 1)]), new CldrRelation('n', 100, false, [new(1, 19)])])])),
+                new(PluralCategory.Other, null),
             ]),
-        // mt
         new(
             "Mt",
             ["mt"],
@@ -383,13 +354,12 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "n = 1", new CldrRelation('n', 0, false, [new(1, 1)])),
-                new("TWO", "n = 2", new CldrRelation('n', 0, false, [new(2, 2)])),
-                new("FEW", "n = 0 or n % 100 = 3..10", new CldrAnyOf([new CldrRelation('n', 0, false, [new(0, 0)]), new CldrRelation('n', 100, false, [new(3, 10)])])),
-                new("MANY", "n % 100 = 11..19", new CldrRelation('n', 100, false, [new(11, 19)])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrRelation('n', 0, false, [new(1, 1)])),
+                new(PluralCategory.Two, new CldrRelation('n', 0, false, [new(2, 2)])),
+                new(PluralCategory.Few, new CldrAnyOf([new CldrRelation('n', 0, false, [new(0, 0)]), new CldrRelation('n', 100, false, [new(3, 10)])])),
+                new(PluralCategory.Many, new CldrRelation('n', 100, false, [new(11, 19)])),
+                new(PluralCategory.Other, null),
             ]),
-        // pl
         new(
             "Pl",
             ["pl"],
@@ -397,12 +367,11 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "i = 1 and v = 0", new CldrAllOf([new CldrRelation('i', 0, false, [new(1, 1)]), new CldrRelation('v', 0, false, [new(0, 0)])])),
-                new("FEW", "v = 0 and i % 10 = 2..4 and i % 100 != 12..14", new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 10, false, [new(2, 4)]), new CldrRelation('i', 100, true, [new(12, 14)])])),
-                new("MANY", "v = 0 and i != 1 and i % 10 = 0..1 or v = 0 and i % 10 = 5..9 or v = 0 and i % 100 = 12..14", new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 0, true, [new(1, 1)]), new CldrRelation('i', 10, false, [new(0, 1)])]), new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 10, false, [new(5, 9)])]), new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(12, 14)])])])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrAllOf([new CldrRelation('i', 0, false, [new(1, 1)]), new CldrRelation('v', 0, false, [new(0, 0)])])),
+                new(PluralCategory.Few, new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 10, false, [new(2, 4)]), new CldrRelation('i', 100, true, [new(12, 14)])])),
+                new(PluralCategory.Many, new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 0, true, [new(1, 1)]), new CldrRelation('i', 10, false, [new(0, 1)])]), new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 10, false, [new(5, 9)])]), new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(12, 14)])])])),
+                new(PluralCategory.Other, null),
             ]),
-        // sgs
         new(
             "Sgs",
             ["sgs"],
@@ -410,13 +379,12 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "n % 10 = 1 and n % 100 != 11", new CldrAllOf([new CldrRelation('n', 10, false, [new(1, 1)]), new CldrRelation('n', 100, true, [new(11, 11)])])),
-                new("TWO", "n = 2", new CldrRelation('n', 0, false, [new(2, 2)])),
-                new("FEW", "n != 2 and n % 10 = 2..9 and n % 100 != 11..19", new CldrAllOf([new CldrRelation('n', 0, true, [new(2, 2)]), new CldrRelation('n', 10, false, [new(2, 9)]), new CldrRelation('n', 100, true, [new(11, 19)])])),
-                new("MANY", "f != 0", new CldrRelation('f', 0, true, [new(0, 0)])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrAllOf([new CldrRelation('n', 10, false, [new(1, 1)]), new CldrRelation('n', 100, true, [new(11, 11)])])),
+                new(PluralCategory.Two, new CldrRelation('n', 0, false, [new(2, 2)])),
+                new(PluralCategory.Few, new CldrAllOf([new CldrRelation('n', 0, true, [new(2, 2)]), new CldrRelation('n', 10, false, [new(2, 9)]), new CldrRelation('n', 100, true, [new(11, 19)])])),
+                new(PluralCategory.Many, new CldrRelation('f', 0, true, [new(0, 0)])),
+                new(PluralCategory.Other, null),
             ]),
-        // shi
         new(
             "Shi",
             ["shi"],
@@ -424,11 +392,10 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "i = 0 or n = 1", new CldrAnyOf([new CldrRelation('i', 0, false, [new(0, 0)]), new CldrRelation('n', 0, false, [new(1, 1)])])),
-                new("FEW", "n = 2..10", new CldrRelation('n', 0, false, [new(2, 10)])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrAnyOf([new CldrRelation('i', 0, false, [new(0, 0)]), new CldrRelation('n', 0, false, [new(1, 1)])])),
+                new(PluralCategory.Few, new CldrRelation('n', 0, false, [new(2, 10)])),
+                new(PluralCategory.Other, null),
             ]),
-        // si
         new(
             "Si",
             ["si"],
@@ -436,10 +403,9 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "n = 0,1 or i = 0 and f = 1", new CldrAnyOf([new CldrRelation('n', 0, false, [new(0, 0), new(1, 1)]), new CldrAllOf([new CldrRelation('i', 0, false, [new(0, 0)]), new CldrRelation('f', 0, false, [new(1, 1)])])])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrAnyOf([new CldrRelation('n', 0, false, [new(0, 0), new(1, 1)]), new CldrAllOf([new CldrRelation('i', 0, false, [new(0, 0)]), new CldrRelation('f', 0, false, [new(1, 1)])])])),
+                new(PluralCategory.Other, null),
             ]),
-        // sl
         new(
             "Sl",
             ["sl"],
@@ -447,12 +413,11 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "v = 0 and i % 100 = 1", new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(1, 1)])])),
-                new("TWO", "v = 0 and i % 100 = 2", new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(2, 2)])])),
-                new("FEW", "v = 0 and i % 100 = 3..4 or v != 0", new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(3, 4)])]), new CldrRelation('v', 0, true, [new(0, 0)])])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(1, 1)])])),
+                new(PluralCategory.Two, new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(2, 2)])])),
+                new(PluralCategory.Few, new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(3, 4)])]), new CldrRelation('v', 0, true, [new(0, 0)])])),
+                new(PluralCategory.Other, null),
             ]),
-        // tzm
         new(
             "Tzm",
             ["tzm"],
@@ -460,8 +425,8 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new("ONE", "n = 0..1 or n = 11..99", new CldrAnyOf([new CldrRelation('n', 0, false, [new(0, 1)]), new CldrRelation('n', 0, false, [new(11, 99)])])),
-                new("OTHER", "", null),
+                new(PluralCategory.One, new CldrAnyOf([new CldrRelation('n', 0, false, [new(0, 1)]), new CldrRelation('n', 0, false, [new(11, 99)])])),
+                new(PluralCategory.Other, null),
             ]),
     ];
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ReswPlus.SourceGenerator.ClassGenerators;
 
 namespace ReswPlus.SourceGenerator.Plurals;
 
@@ -49,7 +50,7 @@ internal static class CldrEmitter
     public static string Emit(string className, IReadOnlyList<CldrPluralRule> rules, IReadOnlyList<string>? languages = null, string version = "")
     {
         var used = new HashSet<char>();
-        var conditions = new List<(string Category, string Condition, string Source)>();
+        var conditions = new List<(PluralCategory Category, string Condition, string Source)>();
 
         foreach (var rule in rules)
         {
@@ -68,7 +69,7 @@ internal static class CldrEmitter
             }
 
             parsed.CollectOperands(used);
-            conditions.Add((rule.Category, condition, rule.Published));
+            conditions.Add((rule.Category, condition, parsed.ToCldr()));
 
             // Nothing after a rule that always holds can be reached.
             if (condition == CldrConditions.True)
@@ -95,20 +96,20 @@ internal static class CldrEmitter
 
         foreach (var (category, condition, published) in conditions)
         {
-            body.Append("            // ").Append(category.ToLowerInvariant()).Append(": ").AppendLine(published);
+            body.Append("            // ").Append(category.ToString().ToLowerInvariant()).Append(": ").AppendLine(published);
 
             // A rule that always holds is written as the answer itself: wrapping it in a condition would leave
             // everything after it unreachable, which the compiler warns about.
             if (condition == CldrConditions.True)
             {
-                body.Append("            return PluralTypeEnum.").Append(category).AppendLine(";");
+                body.Append("            return PluralTypeEnum.").Append(Name(category)).AppendLine(";");
                 alwaysReturns = true;
                 break;
             }
 
             body.Append("            if (").Append(Unwrap(condition)).AppendLine(")");
             body.AppendLine("            {");
-            body.Append("                return PluralTypeEnum.").Append(category).AppendLine(";");
+            body.Append("                return PluralTypeEnum.").Append(Name(category)).AppendLine(";");
             body.AppendLine("            }");
             body.AppendLine();
         }
@@ -177,6 +178,16 @@ internal static class CldrEmitter
         source.AppendLine("}");
 
         return source.ToString();
+    }
+
+    /// <summary>
+    /// Names a category as the generated enum spells it.
+    /// </summary>
+    /// <param name="category">The category.</param>
+    /// <returns>The name of the matching <c>PluralTypeEnum</c> member.</returns>
+    private static string Name(PluralCategory category)
+    {
+        return category.ToString().ToUpperInvariant();
     }
 
     /// <summary>

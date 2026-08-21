@@ -112,7 +112,6 @@ internal static class Program
 
         foreach (var form in forms)
         {
-            source.AppendLine($"        // {string.Join(", ", form.Languages)}");
             source.AppendLine("        new(");
             source.AppendLine($"            {Quote(form.Id)},");
             source.AppendLine($"            [{string.Join(", ", form.Languages.Select(Quote))}],");
@@ -126,8 +125,7 @@ internal static class Program
                 // The fallback rule carries no condition and is reached only when nothing else matches.
                 var condition = rule.Condition.Length == 0 ? null : CldrRule.Parse(rule.Condition);
 
-                source.Append("                new(").Append(Quote(rule.Category)).Append(", ")
-                    .Append(Quote(rule.Condition)).Append(", ")
+                source.Append("                new(").Append(Category(rule.Category)).Append(", ")
                     .Append(Condition(condition)).AppendLine("),");
             }
 

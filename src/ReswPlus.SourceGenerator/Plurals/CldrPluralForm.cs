@@ -29,10 +29,14 @@ internal sealed record CldrPluralForm(
 /// <summary>
 /// One rule: the category it selects, and the condition under which it does.
 /// </summary>
-/// <param name="Category">The category selected, upper cased.</param>
-/// <param name="Published">The condition as CLDR publishes it, quoted above the code written from it.</param>
+/// <param name="Category">The category selected.</param>
 /// <param name="Condition">
 /// The condition, or <see langword="null"/> for CLDR's fallback rule, which carries none and is reached only
 /// when no other rule matches.
 /// </param>
-internal sealed record CldrPluralRule(string Category, string Published, ICldrCondition? Condition);
+/// <remarks>
+/// The condition as CLDR publishes it is not kept beside the objects: it is written back out of them by
+/// <see cref="ICldrCondition.ToCldr"/> when a provider quotes it. One representation, so there is nothing to
+/// disagree with itself.
+/// </remarks>
+internal sealed record CldrPluralRule(PluralCategory Category, ICldrCondition? Condition);
