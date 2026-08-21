@@ -117,6 +117,40 @@ public class CldrDrift
     }
 
     /// <summary>
+    /// Checks that the vendored rules are readable and whole.
+    /// </summary>
+    /// <remarks>
+    /// The rules are one file, replaced wholesale when CLDR is refreshed, so the way they break is the file
+    /// being truncated, half written or edited by hand rather than a rule being subtly wrong. Everything else
+    /// here reads that file, so this says plainly what is wrong when it is the file itself.
+    /// </remarks>
+    [Fact]
+    public void TheVendoredRulesAreReadableAndWhole()
+    {
+        Assert.False(string.IsNullOrWhiteSpace(CldrPublishedRules.Version));
+
+        // CLDR has published rules for upwards of two hundred languages for years. A file holding a handful
+        // is one that was cut short.
+        Assert.True(
+            CldrPublishedRules.Cardinal.Count > 150,
+            $"CLDR {CldrPublishedRules.Version} was read as holding only {CldrPublishedRules.Cardinal.Count} languages.");
+
+        foreach (var language in new[] { "en", "ar", "pl", "pt", "pt-PT" })
+        {
+            Assert.True(
+                CldrPublishedRules.Cardinal.ContainsKey(language),
+                $"CLDR {CldrPublishedRules.Version} was read as publishing no rules for '{language}'.");
+        }
+
+        // Every language has to end with the category that carries no condition, which is the one the runtime
+        // falls back to.
+        foreach (var language in CldrPublishedRules.Cardinal)
+        {
+            Assert.Equal("OTHER", language.Value[language.Value.Count - 1].Category);
+        }
+    }
+
+    /// <summary>
     /// Checks that CLDR still publishes rules for every language ReswPlus maps.
     /// </summary>
     /// <remarks>
