@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <Import Project="..\..\nuget\ReswPlus.SourceGenerator.NugetPackage.props" Condition="'$(Configuration)' == 'Release'" />
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
@@ -59,7 +59,7 @@
       <EmbeddedResource Include="Templates\Plurals\ZeroToTwoExcludedProvider.txt" />
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.6.0" PrivateAssets="all" />
+      <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" PrivateAssets="all" />
     </ItemGroup>
     <Import Project="..\ReswPlus.Shared\ReswPlus.Shared.projitems" Label="Shared" />
 </Project>
