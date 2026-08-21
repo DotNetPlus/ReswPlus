@@ -1,13 +1,13 @@
 // -----------------------------------------------------------------------------------
-// DO NOT EDIT BY HAND. This file is written by tools/CldrRuleImporter, which reads the
-// plural rules Unicode CLDR 48 publishes and works out which languages share a set
-// of them. To change anything here, change the importer or refresh CLDR, and rerun it:
+// DO NOT EDIT BY HAND.
+//
+// Written by tools/CldrRuleImporter from the plural rules of Unicode CLDR 48.
+// To change anything here, change the importer or refresh CLDR, then rerun it:
 //
 //     dotnet run --project tools/CldrRuleImporter               regenerate
 //     dotnet run --project tools/CldrRuleImporter -- --download  refresh CLDR first
 //
-// It is checked in and reviewed like any other source file, so that a CLDR release shows
-// up as the rules that actually moved. See tools/CldrRuleImporter/README.md.
+// See tools/CldrRuleImporter/README.md.
 // -----------------------------------------------------------------------------------
 
 using ReswPlus.SourceGenerator.ClassGenerators;

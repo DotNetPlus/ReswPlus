@@ -80,15 +80,15 @@ internal static class Program
         var source = new StringBuilder();
 
         source.AppendLine("// -----------------------------------------------------------------------------------");
-        source.AppendLine("// DO NOT EDIT BY HAND. This file is written by tools/CldrRuleImporter, which reads the");
-        source.AppendLine($"// plural rules Unicode CLDR {version} publishes and works out which languages share a set");
-        source.AppendLine("// of them. To change anything here, change the importer or refresh CLDR, and rerun it:");
+        source.AppendLine("// DO NOT EDIT BY HAND.");
+        source.AppendLine("//");
+        source.AppendLine($"// Written by tools/CldrRuleImporter from the plural rules of Unicode CLDR {version}.");
+        source.AppendLine("// To change anything here, change the importer or refresh CLDR, then rerun it:");
         source.AppendLine("//");
         source.AppendLine("//     dotnet run --project tools/CldrRuleImporter               regenerate");
         source.AppendLine("//     dotnet run --project tools/CldrRuleImporter -- --download  refresh CLDR first");
         source.AppendLine("//");
-        source.AppendLine("// It is checked in and reviewed like any other source file, so that a CLDR release shows");
-        source.AppendLine("// up as the rules that actually moved. See tools/CldrRuleImporter/README.md.");
+        source.AppendLine("// See tools/CldrRuleImporter/README.md.");
         source.AppendLine("// -----------------------------------------------------------------------------------");
         source.AppendLine();
         source.AppendLine("using ReswPlus.SourceGenerator.ClassGenerators;");
