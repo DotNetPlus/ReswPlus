@@ -276,7 +276,12 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
 
         foreach (var pluralFile in PluralFormsRetriever.RetrievePluralFormsForLanguages(languages))
         {
-            AddProvider(spc, emittedSources, pluralFile.Id, CldrLanguages.RulesOfForm(pluralFile.Languages));
+            AddProvider(
+                spc,
+                emittedSources,
+                pluralFile.Id,
+                CldrLanguages.RulesOfForm(pluralFile.Languages),
+                CldrLanguages.LanguageOfForm(pluralFile.Languages));
 
             // Add each language handled by this provider.
             foreach (var lng in pluralFile.Languages)
@@ -335,7 +340,8 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
     /// <param name="emittedSources">The hint names already emitted for the project.</param>
     /// <param name="providerId">The identifier of the provider, without the <c>Provider</c> suffix.</param>
     /// <param name="rules">The rules CLDR publishes for the languages the provider serves.</param>
-    private static void AddProvider(SourceProductionContext spc, HashSet<string> emittedSources, string providerId, IReadOnlyList<CldrPublishedRules.Rule> rules)
+    /// <param name="language">The language CLDR publishes those rules for.</param>
+    private static void AddProvider(SourceProductionContext spc, HashSet<string> emittedSources, string providerId, IReadOnlyList<CldrPublishedRules.Rule> rules, string? language = null)
     {
         var typeName = $"{providerId}Provider";
         var hintName = $"{typeName}{GeneratedCode.FileExtension}";
@@ -345,7 +351,7 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
             return;
         }
 
-        var source = CldrEmitter.Emit(typeName, rules);
+        var source = CldrEmitter.Emit(typeName, rules, language);
 
         spc.AddSource(hintName, SourceText.From(GeneratedCode.AddFileHeader(source), Encoding.UTF8));
     }

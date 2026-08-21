@@ -41,7 +41,7 @@ internal static class PluralProviderHost
         {
             var form = PluralFormsRetriever.PluralFormsForTesting.FirstOrDefault(candidate => candidate.Id == id);
             var rules = form is null ? [] : CldrLanguages.RulesOfForm(form.Languages);
-            var sources = SharedTemplates.Select(PluralTemplates.Read).Concat([CldrEmitter.Emit($"{id}Provider", rules)]);
+            var sources = SharedTemplates.Select(PluralTemplates.Read).Concat([CldrEmitter.Emit($"{id}Provider", rules, form is null ? null : CldrLanguages.LanguageOfForm(form.Languages))]);
 
             var assembly = PluralTemplates.Compile($"ReswPlusPlurals.{id}", sources);
             var type = assembly.GetTypes().Single(candidate => candidate.Name == $"{id}Provider");

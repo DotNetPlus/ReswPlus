@@ -21,6 +21,7 @@
       <EmbeddedResource Include="Templates\Plurals\ResourceLoaderExtension.txt" />
       <EmbeddedResource Include="Templates\Utils\DoubleExt.txt" />
       <EmbeddedResource Include="Templates\Utils\IntExt.txt" />
+      <EmbeddedResource Include="Plurals\plurals.json" />
       <EmbeddedResource Include="Templates\Plurals\IPluralProvider.txt" />
       <EmbeddedResource Include="Templates\Plurals\PluralTypeEnum.txt" />
     </ItemGroup>

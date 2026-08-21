@@ -57,6 +57,20 @@ internal static class CldrLanguages
     }
 
     /// <summary>
+    /// Gets the language whose rules stand for a plural form.
+    /// </summary>
+    /// <param name="languages">The languages the form is given.</param>
+    /// <returns>The first of them CLDR publishes rules for, or <see langword="null"/> when it publishes none.</returns>
+    /// <remarks>
+    /// This is the language <see cref="RulesOfForm"/> read the rules of, and it is named in the generated code
+    /// so that a reader can find the rules it was written from.
+    /// </remarks>
+    public static string? LanguageOfForm(IEnumerable<string> languages)
+    {
+        return languages.FirstOrDefault(language => RulesOf(language) is not null);
+    }
+
+    /// <summary>
     /// Compares two sets of rules by what they say.
     /// </summary>
     public sealed class RuleComparer : IEqualityComparer<IReadOnlyList<CldrPublishedRules.Rule>?>

@@ -166,7 +166,10 @@ internal sealed class ResourceLoaderExtensionHost
     {
         var form = PluralFormsRetriever.PluralFormsForTesting.FirstOrDefault(candidate => candidate.Id == providerId);
 
-        return CldrEmitter.Emit($"{providerId}Provider", form is null ? [] : CldrLanguages.RulesOfForm(form.Languages));
+        return CldrEmitter.Emit(
+            $"{providerId}Provider",
+            form is null ? [] : CldrLanguages.RulesOfForm(form.Languages),
+            form is null ? null : CldrLanguages.LanguageOfForm(form.Languages));
     }
 
     /// <summary>

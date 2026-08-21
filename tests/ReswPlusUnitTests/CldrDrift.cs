@@ -47,18 +47,18 @@ public class CldrDrift
     [MemberData(nameof(Languages))]
     public void ReadingARuleAgreesWithTheQuantitiesPublishedWithIt(string language)
     {
-        var rules = CldrPublishedRules.Cardinal[language];
+        var rules = CldrLanguages.RulesOf(language)!;
         var mistakes = new List<string>();
 
-        foreach (var (category, published) in CldrPluralRules.Cardinal[language])
+        foreach (var rule in rules)
         {
-            foreach (var (quantity, literal) in CldrSamples.Read(published))
+            foreach (var (quantity, literal) in CldrSamples.Read(rule.Published))
             {
                 var selected = CldrRule.Select(rules, quantity);
 
-                if (!string.Equals(selected, category, StringComparison.Ordinal))
+                if (!string.Equals(selected, rule.Category, StringComparison.Ordinal))
                 {
-                    mistakes.Add($"    {literal}: published under '{category}', read as '{selected}'");
+                    mistakes.Add($"    {literal}: published under '{rule.Category}', read as '{selected}'");
                 }
             }
         }
@@ -72,32 +72,7 @@ public class CldrDrift
     /// <summary>
     /// The languages the rules of a plural form are pinned for.
     /// </summary>
-    public static TheoryData<string> Languages => [.. CldrPluralRules.Cardinal.Keys];
-
-    /// <summary>
-    /// Checks that the two pinned copies of CLDR's rules say the same thing, in the same order.
-    /// </summary>
-    /// <remarks>
-    /// The rules are pinned twice, with the sample lists in <see cref="CldrPluralRules"/> and without them in
-    /// <see cref="CldrPublishedRules"/>, and one can be refreshed from a new CLDR release without the other.
-    /// <para>
-    /// They are compared as ordered sequences rather than as sets, because the order is part of what a rule
-    /// set means: the first rule that holds is the one that decides, so a copy carrying the same rules in a
-    /// different order is a different rule set.
-    /// </para>
-    /// </remarks>
-    [Theory]
-    [MemberData(nameof(Languages))]
-    public void TheTwoPinnedCopiesOfTheRulesOfALanguageAgree(string language)
-    {
-        var withSamples = CldrPluralRules.Cardinal[language]
-            .Select(rule => $"{rule.Key}: {rule.Value.Split('@')[0].Trim()}");
-
-        var withoutSamples = CldrPublishedRules.Cardinal[language]
-            .Select(rule => $"{rule.Category}: {rule.Condition}");
-
-        Assert.Equal(withSamples, withoutSamples);
-    }
+    public static TheoryData<string> Languages => CldrConformance.Languages;
 
     /// <summary>
     /// Checks that every language a plural form is given selects what CLDR says it should.
@@ -137,7 +112,7 @@ public class CldrDrift
 
         Assert.True(
             mistakes.Count == 0,
-            $"The '{formId}' plural form disagrees with CLDR {CldrPluralRules.Version} for languages it is given:"
+            $"The '{formId}' plural form disagrees with CLDR {CldrPublishedRules.Version} for languages it is given:"
                 + $"{Environment.NewLine}{string.Join(Environment.NewLine, mistakes)}");
     }
 
