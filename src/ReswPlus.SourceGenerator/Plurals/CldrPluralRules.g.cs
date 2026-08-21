@@ -35,7 +35,7 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrRelation('n', 0, false, [new(1, 1)])),
+                new(PluralCategory.One, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(1, 1)])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -45,7 +45,7 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrRelation('n', 0, false, [new(0, 1)])),
+                new(PluralCategory.One, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(0, 1)])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -55,7 +55,7 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrAnyOf([new CldrRelation('i', 0, false, [new(0, 0)]), new CldrRelation('n', 0, false, [new(1, 1)])])),
+                new(PluralCategory.One, new CldrAnyOf([new CldrRelation(CldrOperand.IntegerPart, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(1, 1)])])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -65,11 +65,11 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.Zero, new CldrRelation('n', 0, false, [new(0, 0)])),
-                new(PluralCategory.One, new CldrRelation('n', 0, false, [new(1, 1)])),
-                new(PluralCategory.Two, new CldrRelation('n', 0, false, [new(2, 2)])),
-                new(PluralCategory.Few, new CldrRelation('n', 100, false, [new(3, 10)])),
-                new(PluralCategory.Many, new CldrRelation('n', 100, false, [new(11, 99)])),
+                new(PluralCategory.Zero, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(0, 0)])),
+                new(PluralCategory.One, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(1, 1)])),
+                new(PluralCategory.Two, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(2, 2)])),
+                new(PluralCategory.Few, new CldrRelation(CldrOperand.AbsoluteValue, 100, false, [new(3, 10)])),
+                new(PluralCategory.Many, new CldrRelation(CldrOperand.AbsoluteValue, 100, false, [new(11, 99)])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -79,9 +79,9 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrAllOf([new CldrRelation('n', 10, false, [new(1, 1)]), new CldrRelation('n', 100, true, [new(11, 11)])])),
-                new(PluralCategory.Few, new CldrAllOf([new CldrRelation('n', 10, false, [new(2, 4)]), new CldrRelation('n', 100, true, [new(12, 14)])])),
-                new(PluralCategory.Many, new CldrAnyOf([new CldrRelation('n', 10, false, [new(0, 0)]), new CldrRelation('n', 10, false, [new(5, 9)]), new CldrRelation('n', 100, false, [new(11, 14)])])),
+                new(PluralCategory.One, new CldrAllOf([new CldrRelation(CldrOperand.AbsoluteValue, 10, false, [new(1, 1)]), new CldrRelation(CldrOperand.AbsoluteValue, 100, true, [new(11, 11)])])),
+                new(PluralCategory.Few, new CldrAllOf([new CldrRelation(CldrOperand.AbsoluteValue, 10, false, [new(2, 4)]), new CldrRelation(CldrOperand.AbsoluteValue, 100, true, [new(12, 14)])])),
+                new(PluralCategory.Many, new CldrAnyOf([new CldrRelation(CldrOperand.AbsoluteValue, 10, false, [new(0, 0)]), new CldrRelation(CldrOperand.AbsoluteValue, 10, false, [new(5, 9)]), new CldrRelation(CldrOperand.AbsoluteValue, 100, false, [new(11, 14)])])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -91,8 +91,8 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.Zero, new CldrRelation('n', 0, false, [new(0, 0)])),
-                new(PluralCategory.One, new CldrRelation('n', 0, false, [new(1, 1)])),
+                new(PluralCategory.Zero, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(0, 0)])),
+                new(PluralCategory.One, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(1, 1)])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -111,10 +111,10 @@ internal static class CldrPluralRules
             [PluralCategory.Many],
             true,
             [
-                new(PluralCategory.One, new CldrAllOf([new CldrRelation('n', 10, false, [new(1, 1)]), new CldrRelation('n', 100, true, [new(11, 11), new(71, 71), new(91, 91)])])),
-                new(PluralCategory.Two, new CldrAllOf([new CldrRelation('n', 10, false, [new(2, 2)]), new CldrRelation('n', 100, true, [new(12, 12), new(72, 72), new(92, 92)])])),
-                new(PluralCategory.Few, new CldrAllOf([new CldrRelation('n', 10, false, [new(3, 4), new(9, 9)]), new CldrRelation('n', 100, true, [new(10, 19), new(70, 79), new(90, 99)])])),
-                new(PluralCategory.Many, new CldrAllOf([new CldrRelation('n', 0, true, [new(0, 0)]), new CldrRelation('n', 1000000, false, [new(0, 0)])])),
+                new(PluralCategory.One, new CldrAllOf([new CldrRelation(CldrOperand.AbsoluteValue, 10, false, [new(1, 1)]), new CldrRelation(CldrOperand.AbsoluteValue, 100, true, [new(11, 11), new(71, 71), new(91, 91)])])),
+                new(PluralCategory.Two, new CldrAllOf([new CldrRelation(CldrOperand.AbsoluteValue, 10, false, [new(2, 2)]), new CldrRelation(CldrOperand.AbsoluteValue, 100, true, [new(12, 12), new(72, 72), new(92, 92)])])),
+                new(PluralCategory.Few, new CldrAllOf([new CldrRelation(CldrOperand.AbsoluteValue, 10, false, [new(3, 4), new(9, 9)]), new CldrRelation(CldrOperand.AbsoluteValue, 100, true, [new(10, 19), new(70, 79), new(90, 99)])])),
+                new(PluralCategory.Many, new CldrAllOf([new CldrRelation(CldrOperand.AbsoluteValue, 0, true, [new(0, 0)]), new CldrRelation(CldrOperand.AbsoluteValue, 1000000, false, [new(0, 0)])])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -124,8 +124,8 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 10, false, [new(1, 1)]), new CldrRelation('i', 100, true, [new(11, 11)])]), new CldrAllOf([new CldrRelation('f', 10, false, [new(1, 1)]), new CldrRelation('f', 100, true, [new(11, 11)])])])),
-                new(PluralCategory.Few, new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 10, false, [new(2, 4)]), new CldrRelation('i', 100, true, [new(12, 14)])]), new CldrAllOf([new CldrRelation('f', 10, false, [new(2, 4)]), new CldrRelation('f', 100, true, [new(12, 14)])])])),
+                new(PluralCategory.One, new CldrAnyOf([new CldrAllOf([new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.IntegerPart, 10, false, [new(1, 1)]), new CldrRelation(CldrOperand.IntegerPart, 100, true, [new(11, 11)])]), new CldrAllOf([new CldrRelation(CldrOperand.Decimals, 10, false, [new(1, 1)]), new CldrRelation(CldrOperand.Decimals, 100, true, [new(11, 11)])])])),
+                new(PluralCategory.Few, new CldrAnyOf([new CldrAllOf([new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.IntegerPart, 10, false, [new(2, 4)]), new CldrRelation(CldrOperand.IntegerPart, 100, true, [new(12, 14)])]), new CldrAllOf([new CldrRelation(CldrOperand.Decimals, 10, false, [new(2, 4)]), new CldrRelation(CldrOperand.Decimals, 100, true, [new(12, 14)])])])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -135,8 +135,8 @@ internal static class CldrPluralRules
             [PluralCategory.Many],
             true,
             [
-                new(PluralCategory.One, new CldrAllOf([new CldrRelation('i', 0, false, [new(1, 1)]), new CldrRelation('v', 0, false, [new(0, 0)])])),
-                new(PluralCategory.Many, new CldrAnyOf([new CldrAllOf([new CldrRelation('e', 0, false, [new(0, 0)]), new CldrRelation('i', 0, true, [new(0, 0)]), new CldrRelation('i', 1000000, false, [new(0, 0)]), new CldrRelation('v', 0, false, [new(0, 0)])]), new CldrRelation('e', 0, true, [new(0, 5)])])),
+                new(PluralCategory.One, new CldrAllOf([new CldrRelation(CldrOperand.IntegerPart, 0, false, [new(1, 1)]), new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)])])),
+                new(PluralCategory.Many, new CldrAnyOf([new CldrAllOf([new CldrRelation(CldrOperand.Exponent, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.IntegerPart, 0, true, [new(0, 0)]), new CldrRelation(CldrOperand.IntegerPart, 1000000, false, [new(0, 0)]), new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)])]), new CldrRelation(CldrOperand.Exponent, 0, true, [new(0, 5)])])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -146,7 +146,7 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 0, false, [new(1, 1), new(2, 2), new(3, 3)])]), new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 10, true, [new(4, 4), new(6, 6), new(9, 9)])]), new CldrAllOf([new CldrRelation('v', 0, true, [new(0, 0)]), new CldrRelation('f', 10, true, [new(4, 4), new(6, 6), new(9, 9)])])])),
+                new(PluralCategory.One, new CldrAnyOf([new CldrAllOf([new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.IntegerPart, 0, false, [new(1, 1), new(2, 2), new(3, 3)])]), new CldrAllOf([new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.IntegerPart, 10, true, [new(4, 4), new(6, 6), new(9, 9)])]), new CldrAllOf([new CldrRelation(CldrOperand.DecimalCount, 0, true, [new(0, 0)]), new CldrRelation(CldrOperand.Decimals, 10, true, [new(4, 4), new(6, 6), new(9, 9)])])])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -156,9 +156,9 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrAllOf([new CldrRelation('i', 0, false, [new(1, 1)]), new CldrRelation('v', 0, false, [new(0, 0)])])),
-                new(PluralCategory.Few, new CldrAllOf([new CldrRelation('i', 0, false, [new(2, 4)]), new CldrRelation('v', 0, false, [new(0, 0)])])),
-                new(PluralCategory.Many, new CldrRelation('v', 0, true, [new(0, 0)])),
+                new(PluralCategory.One, new CldrAllOf([new CldrRelation(CldrOperand.IntegerPart, 0, false, [new(1, 1)]), new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)])])),
+                new(PluralCategory.Few, new CldrAllOf([new CldrRelation(CldrOperand.IntegerPart, 0, false, [new(2, 4)]), new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)])])),
+                new(PluralCategory.Many, new CldrRelation(CldrOperand.DecimalCount, 0, true, [new(0, 0)])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -168,11 +168,11 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.Zero, new CldrRelation('n', 0, false, [new(0, 0)])),
-                new(PluralCategory.One, new CldrRelation('n', 0, false, [new(1, 1)])),
-                new(PluralCategory.Two, new CldrRelation('n', 0, false, [new(2, 2)])),
-                new(PluralCategory.Few, new CldrRelation('n', 0, false, [new(3, 3)])),
-                new(PluralCategory.Many, new CldrRelation('n', 0, false, [new(6, 6)])),
+                new(PluralCategory.Zero, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(0, 0)])),
+                new(PluralCategory.One, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(1, 1)])),
+                new(PluralCategory.Two, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(2, 2)])),
+                new(PluralCategory.Few, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(3, 3)])),
+                new(PluralCategory.Many, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(6, 6)])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -182,7 +182,7 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrAnyOf([new CldrRelation('n', 0, false, [new(1, 1)]), new CldrAllOf([new CldrRelation('t', 0, true, [new(0, 0)]), new CldrRelation('i', 0, false, [new(0, 0), new(1, 1)])])])),
+                new(PluralCategory.One, new CldrAnyOf([new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(1, 1)]), new CldrAllOf([new CldrRelation(CldrOperand.DecimalsWithoutTrailingZeros, 0, true, [new(0, 0)]), new CldrRelation(CldrOperand.IntegerPart, 0, false, [new(0, 0), new(1, 1)])])])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -192,9 +192,9 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(1, 1)])]), new CldrRelation('f', 100, false, [new(1, 1)])])),
-                new(PluralCategory.Two, new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(2, 2)])]), new CldrRelation('f', 100, false, [new(2, 2)])])),
-                new(PluralCategory.Few, new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(3, 4)])]), new CldrRelation('f', 100, false, [new(3, 4)])])),
+                new(PluralCategory.One, new CldrAnyOf([new CldrAllOf([new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.IntegerPart, 100, false, [new(1, 1)])]), new CldrRelation(CldrOperand.Decimals, 100, false, [new(1, 1)])])),
+                new(PluralCategory.Two, new CldrAnyOf([new CldrAllOf([new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.IntegerPart, 100, false, [new(2, 2)])]), new CldrRelation(CldrOperand.Decimals, 100, false, [new(2, 2)])])),
+                new(PluralCategory.Few, new CldrAnyOf([new CldrAllOf([new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.IntegerPart, 100, false, [new(3, 4)])]), new CldrRelation(CldrOperand.Decimals, 100, false, [new(3, 4)])])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -204,7 +204,7 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrRelation('i', 0, false, [new(0, 0), new(1, 1)])),
+                new(PluralCategory.One, new CldrRelation(CldrOperand.IntegerPart, 0, false, [new(0, 0), new(1, 1)])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -214,8 +214,8 @@ internal static class CldrPluralRules
             [PluralCategory.Many],
             true,
             [
-                new(PluralCategory.One, new CldrRelation('i', 0, false, [new(0, 0), new(1, 1)])),
-                new(PluralCategory.Many, new CldrAnyOf([new CldrAllOf([new CldrRelation('e', 0, false, [new(0, 0)]), new CldrRelation('i', 0, true, [new(0, 0)]), new CldrRelation('i', 1000000, false, [new(0, 0)]), new CldrRelation('v', 0, false, [new(0, 0)])]), new CldrRelation('e', 0, true, [new(0, 5)])])),
+                new(PluralCategory.One, new CldrRelation(CldrOperand.IntegerPart, 0, false, [new(0, 0), new(1, 1)])),
+                new(PluralCategory.Many, new CldrAnyOf([new CldrAllOf([new CldrRelation(CldrOperand.Exponent, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.IntegerPart, 0, true, [new(0, 0)]), new CldrRelation(CldrOperand.IntegerPart, 1000000, false, [new(0, 0)]), new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)])]), new CldrRelation(CldrOperand.Exponent, 0, true, [new(0, 5)])])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -225,10 +225,10 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrRelation('n', 0, false, [new(1, 1)])),
-                new(PluralCategory.Two, new CldrRelation('n', 0, false, [new(2, 2)])),
-                new(PluralCategory.Few, new CldrRelation('n', 0, false, [new(3, 6)])),
-                new(PluralCategory.Many, new CldrRelation('n', 0, false, [new(7, 10)])),
+                new(PluralCategory.One, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(1, 1)])),
+                new(PluralCategory.Two, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(2, 2)])),
+                new(PluralCategory.Few, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(3, 6)])),
+                new(PluralCategory.Many, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(7, 10)])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -238,9 +238,9 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrRelation('n', 0, false, [new(1, 1), new(11, 11)])),
-                new(PluralCategory.Two, new CldrRelation('n', 0, false, [new(2, 2), new(12, 12)])),
-                new(PluralCategory.Few, new CldrRelation('n', 0, false, [new(3, 10), new(13, 19)])),
+                new(PluralCategory.One, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(1, 1), new(11, 11)])),
+                new(PluralCategory.Two, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(2, 2), new(12, 12)])),
+                new(PluralCategory.Few, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(3, 10), new(13, 19)])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -250,10 +250,10 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 10, false, [new(1, 1)])])),
-                new(PluralCategory.Two, new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 10, false, [new(2, 2)])])),
-                new(PluralCategory.Few, new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(0, 0), new(20, 20), new(40, 40), new(60, 60), new(80, 80)])])),
-                new(PluralCategory.Many, new CldrRelation('v', 0, true, [new(0, 0)])),
+                new(PluralCategory.One, new CldrAllOf([new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.IntegerPart, 10, false, [new(1, 1)])])),
+                new(PluralCategory.Two, new CldrAllOf([new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.IntegerPart, 10, false, [new(2, 2)])])),
+                new(PluralCategory.Few, new CldrAllOf([new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.IntegerPart, 100, false, [new(0, 0), new(20, 20), new(40, 40), new(60, 60), new(80, 80)])])),
+                new(PluralCategory.Many, new CldrRelation(CldrOperand.DecimalCount, 0, true, [new(0, 0)])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -263,8 +263,8 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrAnyOf([new CldrAllOf([new CldrRelation('i', 0, false, [new(1, 1)]), new CldrRelation('v', 0, false, [new(0, 0)])]), new CldrAllOf([new CldrRelation('i', 0, false, [new(0, 0)]), new CldrRelation('v', 0, true, [new(0, 0)])])])),
-                new(PluralCategory.Two, new CldrAllOf([new CldrRelation('i', 0, false, [new(2, 2)]), new CldrRelation('v', 0, false, [new(0, 0)])])),
+                new(PluralCategory.One, new CldrAnyOf([new CldrAllOf([new CldrRelation(CldrOperand.IntegerPart, 0, false, [new(1, 1)]), new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)])]), new CldrAllOf([new CldrRelation(CldrOperand.IntegerPart, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.DecimalCount, 0, true, [new(0, 0)])])])),
+                new(PluralCategory.Two, new CldrAllOf([new CldrRelation(CldrOperand.IntegerPart, 0, false, [new(2, 2)]), new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)])])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -274,7 +274,7 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrAnyOf([new CldrAllOf([new CldrRelation('t', 0, false, [new(0, 0)]), new CldrRelation('i', 10, false, [new(1, 1)]), new CldrRelation('i', 100, true, [new(11, 11)])]), new CldrAllOf([new CldrRelation('t', 10, false, [new(1, 1)]), new CldrRelation('t', 100, true, [new(11, 11)])])])),
+                new(PluralCategory.One, new CldrAnyOf([new CldrAllOf([new CldrRelation(CldrOperand.DecimalsWithoutTrailingZeros, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.IntegerPart, 10, false, [new(1, 1)]), new CldrRelation(CldrOperand.IntegerPart, 100, true, [new(11, 11)])]), new CldrAllOf([new CldrRelation(CldrOperand.DecimalsWithoutTrailingZeros, 10, false, [new(1, 1)]), new CldrRelation(CldrOperand.DecimalsWithoutTrailingZeros, 100, true, [new(11, 11)])])])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -284,8 +284,8 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrRelation('n', 0, false, [new(1, 1)])),
-                new(PluralCategory.Two, new CldrRelation('n', 0, false, [new(2, 2)])),
+                new(PluralCategory.One, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(1, 1)])),
+                new(PluralCategory.Two, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(2, 2)])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -295,11 +295,11 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.Zero, new CldrRelation('n', 0, false, [new(0, 0)])),
-                new(PluralCategory.One, new CldrRelation('n', 0, false, [new(1, 1)])),
-                new(PluralCategory.Two, new CldrAnyOf([new CldrRelation('n', 100, false, [new(2, 2), new(22, 22), new(42, 42), new(62, 62), new(82, 82)]), new CldrAllOf([new CldrRelation('n', 1000, false, [new(0, 0)]), new CldrRelation('n', 100000, false, [new(1000, 20000), new(40000, 40000), new(60000, 60000), new(80000, 80000)])]), new CldrAllOf([new CldrRelation('n', 0, true, [new(0, 0)]), new CldrRelation('n', 1000000, false, [new(100000, 100000)])])])),
-                new(PluralCategory.Few, new CldrRelation('n', 100, false, [new(3, 3), new(23, 23), new(43, 43), new(63, 63), new(83, 83)])),
-                new(PluralCategory.Many, new CldrAllOf([new CldrRelation('n', 0, true, [new(1, 1)]), new CldrRelation('n', 100, false, [new(1, 1), new(21, 21), new(41, 41), new(61, 61), new(81, 81)])])),
+                new(PluralCategory.Zero, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(0, 0)])),
+                new(PluralCategory.One, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(1, 1)])),
+                new(PluralCategory.Two, new CldrAnyOf([new CldrRelation(CldrOperand.AbsoluteValue, 100, false, [new(2, 2), new(22, 22), new(42, 42), new(62, 62), new(82, 82)]), new CldrAllOf([new CldrRelation(CldrOperand.AbsoluteValue, 1000, false, [new(0, 0)]), new CldrRelation(CldrOperand.AbsoluteValue, 100000, false, [new(1000, 20000), new(40000, 40000), new(60000, 60000), new(80000, 80000)])]), new CldrAllOf([new CldrRelation(CldrOperand.AbsoluteValue, 0, true, [new(0, 0)]), new CldrRelation(CldrOperand.AbsoluteValue, 1000000, false, [new(100000, 100000)])])])),
+                new(PluralCategory.Few, new CldrRelation(CldrOperand.AbsoluteValue, 100, false, [new(3, 3), new(23, 23), new(43, 43), new(63, 63), new(83, 83)])),
+                new(PluralCategory.Many, new CldrAllOf([new CldrRelation(CldrOperand.AbsoluteValue, 0, true, [new(1, 1)]), new CldrRelation(CldrOperand.AbsoluteValue, 100, false, [new(1, 1), new(21, 21), new(41, 41), new(61, 61), new(81, 81)])])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -309,8 +309,8 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.Zero, new CldrRelation('n', 0, false, [new(0, 0)])),
-                new(PluralCategory.One, new CldrAllOf([new CldrRelation('i', 0, false, [new(0, 0), new(1, 1)]), new CldrRelation('n', 0, true, [new(0, 0)])])),
+                new(PluralCategory.Zero, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(0, 0)])),
+                new(PluralCategory.One, new CldrAllOf([new CldrRelation(CldrOperand.IntegerPart, 0, false, [new(0, 0), new(1, 1)]), new CldrRelation(CldrOperand.AbsoluteValue, 0, true, [new(0, 0)])])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -320,9 +320,9 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrAllOf([new CldrRelation('n', 10, false, [new(1, 1)]), new CldrRelation('n', 100, true, [new(11, 19)])])),
-                new(PluralCategory.Few, new CldrAllOf([new CldrRelation('n', 10, false, [new(2, 9)]), new CldrRelation('n', 100, true, [new(11, 19)])])),
-                new(PluralCategory.Many, new CldrRelation('f', 0, true, [new(0, 0)])),
+                new(PluralCategory.One, new CldrAllOf([new CldrRelation(CldrOperand.AbsoluteValue, 10, false, [new(1, 1)]), new CldrRelation(CldrOperand.AbsoluteValue, 100, true, [new(11, 19)])])),
+                new(PluralCategory.Few, new CldrAllOf([new CldrRelation(CldrOperand.AbsoluteValue, 10, false, [new(2, 9)]), new CldrRelation(CldrOperand.AbsoluteValue, 100, true, [new(11, 19)])])),
+                new(PluralCategory.Many, new CldrRelation(CldrOperand.Decimals, 0, true, [new(0, 0)])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -332,8 +332,8 @@ internal static class CldrPluralRules
             [],
             false,
             [
-                new(PluralCategory.Zero, new CldrAnyOf([new CldrRelation('n', 10, false, [new(0, 0)]), new CldrRelation('n', 100, false, [new(11, 19)]), new CldrAllOf([new CldrRelation('v', 0, false, [new(2, 2)]), new CldrRelation('f', 100, false, [new(11, 19)])])])),
-                new(PluralCategory.One, new CldrAnyOf([new CldrAllOf([new CldrRelation('n', 10, false, [new(1, 1)]), new CldrRelation('n', 100, true, [new(11, 11)])]), new CldrAllOf([new CldrRelation('v', 0, false, [new(2, 2)]), new CldrRelation('f', 10, false, [new(1, 1)]), new CldrRelation('f', 100, true, [new(11, 11)])]), new CldrAllOf([new CldrRelation('v', 0, true, [new(2, 2)]), new CldrRelation('f', 10, false, [new(1, 1)])])])),
+                new(PluralCategory.Zero, new CldrAnyOf([new CldrRelation(CldrOperand.AbsoluteValue, 10, false, [new(0, 0)]), new CldrRelation(CldrOperand.AbsoluteValue, 100, false, [new(11, 19)]), new CldrAllOf([new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(2, 2)]), new CldrRelation(CldrOperand.Decimals, 100, false, [new(11, 19)])])])),
+                new(PluralCategory.One, new CldrAnyOf([new CldrAllOf([new CldrRelation(CldrOperand.AbsoluteValue, 10, false, [new(1, 1)]), new CldrRelation(CldrOperand.AbsoluteValue, 100, true, [new(11, 11)])]), new CldrAllOf([new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(2, 2)]), new CldrRelation(CldrOperand.Decimals, 10, false, [new(1, 1)]), new CldrRelation(CldrOperand.Decimals, 100, true, [new(11, 11)])]), new CldrAllOf([new CldrRelation(CldrOperand.DecimalCount, 0, true, [new(2, 2)]), new CldrRelation(CldrOperand.Decimals, 10, false, [new(1, 1)])])])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -343,8 +343,8 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrAllOf([new CldrRelation('i', 0, false, [new(1, 1)]), new CldrRelation('v', 0, false, [new(0, 0)])])),
-                new(PluralCategory.Few, new CldrAnyOf([new CldrRelation('v', 0, true, [new(0, 0)]), new CldrRelation('n', 0, false, [new(0, 0)]), new CldrAllOf([new CldrRelation('n', 0, true, [new(1, 1)]), new CldrRelation('n', 100, false, [new(1, 19)])])])),
+                new(PluralCategory.One, new CldrAllOf([new CldrRelation(CldrOperand.IntegerPart, 0, false, [new(1, 1)]), new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)])])),
+                new(PluralCategory.Few, new CldrAnyOf([new CldrRelation(CldrOperand.DecimalCount, 0, true, [new(0, 0)]), new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(0, 0)]), new CldrAllOf([new CldrRelation(CldrOperand.AbsoluteValue, 0, true, [new(1, 1)]), new CldrRelation(CldrOperand.AbsoluteValue, 100, false, [new(1, 19)])])])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -354,10 +354,10 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrRelation('n', 0, false, [new(1, 1)])),
-                new(PluralCategory.Two, new CldrRelation('n', 0, false, [new(2, 2)])),
-                new(PluralCategory.Few, new CldrAnyOf([new CldrRelation('n', 0, false, [new(0, 0)]), new CldrRelation('n', 100, false, [new(3, 10)])])),
-                new(PluralCategory.Many, new CldrRelation('n', 100, false, [new(11, 19)])),
+                new(PluralCategory.One, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(1, 1)])),
+                new(PluralCategory.Two, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(2, 2)])),
+                new(PluralCategory.Few, new CldrAnyOf([new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.AbsoluteValue, 100, false, [new(3, 10)])])),
+                new(PluralCategory.Many, new CldrRelation(CldrOperand.AbsoluteValue, 100, false, [new(11, 19)])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -367,9 +367,9 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrAllOf([new CldrRelation('i', 0, false, [new(1, 1)]), new CldrRelation('v', 0, false, [new(0, 0)])])),
-                new(PluralCategory.Few, new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 10, false, [new(2, 4)]), new CldrRelation('i', 100, true, [new(12, 14)])])),
-                new(PluralCategory.Many, new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 0, true, [new(1, 1)]), new CldrRelation('i', 10, false, [new(0, 1)])]), new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 10, false, [new(5, 9)])]), new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(12, 14)])])])),
+                new(PluralCategory.One, new CldrAllOf([new CldrRelation(CldrOperand.IntegerPart, 0, false, [new(1, 1)]), new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)])])),
+                new(PluralCategory.Few, new CldrAllOf([new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.IntegerPart, 10, false, [new(2, 4)]), new CldrRelation(CldrOperand.IntegerPart, 100, true, [new(12, 14)])])),
+                new(PluralCategory.Many, new CldrAnyOf([new CldrAllOf([new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.IntegerPart, 0, true, [new(1, 1)]), new CldrRelation(CldrOperand.IntegerPart, 10, false, [new(0, 1)])]), new CldrAllOf([new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.IntegerPart, 10, false, [new(5, 9)])]), new CldrAllOf([new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.IntegerPart, 100, false, [new(12, 14)])])])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -379,10 +379,10 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrAllOf([new CldrRelation('n', 10, false, [new(1, 1)]), new CldrRelation('n', 100, true, [new(11, 11)])])),
-                new(PluralCategory.Two, new CldrRelation('n', 0, false, [new(2, 2)])),
-                new(PluralCategory.Few, new CldrAllOf([new CldrRelation('n', 0, true, [new(2, 2)]), new CldrRelation('n', 10, false, [new(2, 9)]), new CldrRelation('n', 100, true, [new(11, 19)])])),
-                new(PluralCategory.Many, new CldrRelation('f', 0, true, [new(0, 0)])),
+                new(PluralCategory.One, new CldrAllOf([new CldrRelation(CldrOperand.AbsoluteValue, 10, false, [new(1, 1)]), new CldrRelation(CldrOperand.AbsoluteValue, 100, true, [new(11, 11)])])),
+                new(PluralCategory.Two, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(2, 2)])),
+                new(PluralCategory.Few, new CldrAllOf([new CldrRelation(CldrOperand.AbsoluteValue, 0, true, [new(2, 2)]), new CldrRelation(CldrOperand.AbsoluteValue, 10, false, [new(2, 9)]), new CldrRelation(CldrOperand.AbsoluteValue, 100, true, [new(11, 19)])])),
+                new(PluralCategory.Many, new CldrRelation(CldrOperand.Decimals, 0, true, [new(0, 0)])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -392,8 +392,8 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrAnyOf([new CldrRelation('i', 0, false, [new(0, 0)]), new CldrRelation('n', 0, false, [new(1, 1)])])),
-                new(PluralCategory.Few, new CldrRelation('n', 0, false, [new(2, 10)])),
+                new(PluralCategory.One, new CldrAnyOf([new CldrRelation(CldrOperand.IntegerPart, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(1, 1)])])),
+                new(PluralCategory.Few, new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(2, 10)])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -403,7 +403,7 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrAnyOf([new CldrRelation('n', 0, false, [new(0, 0), new(1, 1)]), new CldrAllOf([new CldrRelation('i', 0, false, [new(0, 0)]), new CldrRelation('f', 0, false, [new(1, 1)])])])),
+                new(PluralCategory.One, new CldrAnyOf([new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(0, 0), new(1, 1)]), new CldrAllOf([new CldrRelation(CldrOperand.IntegerPart, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.Decimals, 0, false, [new(1, 1)])])])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -413,9 +413,9 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(1, 1)])])),
-                new(PluralCategory.Two, new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(2, 2)])])),
-                new(PluralCategory.Few, new CldrAnyOf([new CldrAllOf([new CldrRelation('v', 0, false, [new(0, 0)]), new CldrRelation('i', 100, false, [new(3, 4)])]), new CldrRelation('v', 0, true, [new(0, 0)])])),
+                new(PluralCategory.One, new CldrAllOf([new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.IntegerPart, 100, false, [new(1, 1)])])),
+                new(PluralCategory.Two, new CldrAllOf([new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.IntegerPart, 100, false, [new(2, 2)])])),
+                new(PluralCategory.Few, new CldrAnyOf([new CldrAllOf([new CldrRelation(CldrOperand.DecimalCount, 0, false, [new(0, 0)]), new CldrRelation(CldrOperand.IntegerPart, 100, false, [new(3, 4)])]), new CldrRelation(CldrOperand.DecimalCount, 0, true, [new(0, 0)])])),
                 new(PluralCategory.Other, null),
             ]),
         new(
@@ -425,7 +425,7 @@ internal static class CldrPluralRules
             [],
             true,
             [
-                new(PluralCategory.One, new CldrAnyOf([new CldrRelation('n', 0, false, [new(0, 1)]), new CldrRelation('n', 0, false, [new(11, 99)])])),
+                new(PluralCategory.One, new CldrAnyOf([new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(0, 1)]), new CldrRelation(CldrOperand.AbsoluteValue, 0, false, [new(11, 99)])])),
                 new(PluralCategory.Other, null),
             ]),
     ];

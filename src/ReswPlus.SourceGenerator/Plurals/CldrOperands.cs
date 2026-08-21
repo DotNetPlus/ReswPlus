@@ -128,24 +128,23 @@ internal readonly record struct CldrOperands(double N, double I, int V, int W, l
     /// <summary>
     /// Gets an operand by the letter CLDR writes it as.
     /// </summary>
-    /// <param name="operand">The letter.</param>
+    /// <param name="operand">The operand.</param>
     /// <returns>The value of the operand.</returns>
     /// <remarks>
-    /// <c>c</c> and <c>e</c> are the exponent of a compact notation -- "1c6" for a million -- which a
+    /// The exponent operands hold the exponent of a compact notation -- "1c6" for a million -- which a
     /// quantity that reaches a provider as a <see cref="double"/> never carries, so both are zero.
     /// </remarks>
-    public double Of(char operand)
+    public double Of(CldrOperand operand)
     {
         return operand switch
         {
-            'n' => N,
-            'i' => I,
-            'v' => V,
-            'w' => W,
-            'f' => F,
-            't' => T,
-            'c' or 'e' => 0,
-            _ => throw new FormatException($"'{operand}' is not one of CLDR's operands."),
+            CldrOperand.AbsoluteValue => N,
+            CldrOperand.IntegerPart => I,
+            CldrOperand.DecimalCount => V,
+            CldrOperand.DecimalCountWithoutTrailingZeros => W,
+            CldrOperand.Decimals => F,
+            CldrOperand.DecimalsWithoutTrailingZeros => T,
+            _ => 0,
         };
     }
 }

@@ -115,7 +115,28 @@ internal static class CldrRule
             throw new FormatException($"'{subject}' is not an operand: CLDR's operands are single letters.");
         }
 
-        return new CldrRelation(subject[0], modulus, negated, ParseRanges(values));
+        return new CldrRelation(Operand(subject[0]), modulus, negated, ParseRanges(values));
+    }
+
+    /// <summary>
+    /// Reads the letter CLDR writes an operand as.
+    /// </summary>
+    /// <param name="letter">The letter.</param>
+    /// <returns>The operand.</returns>
+    private static CldrOperand Operand(char letter)
+    {
+        return letter switch
+        {
+            'n' => CldrOperand.AbsoluteValue,
+            'i' => CldrOperand.IntegerPart,
+            'v' => CldrOperand.DecimalCount,
+            'w' => CldrOperand.DecimalCountWithoutTrailingZeros,
+            'f' => CldrOperand.Decimals,
+            't' => CldrOperand.DecimalsWithoutTrailingZeros,
+            'c' => CldrOperand.CompactExponent,
+            'e' => CldrOperand.Exponent,
+            _ => throw new FormatException($"'{letter}' is not one of CLDR's operands."),
+        };
     }
 
     private static List<CldrRange> ParseRanges(string text)

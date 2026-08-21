@@ -48,7 +48,7 @@ internal interface ICldrCondition
     /// Adds the operands the condition reads to a set.
     /// </summary>
     /// <param name="operands">The set to add to.</param>
-    void CollectOperands(ISet<char> operands);
+    void CollectOperands(ISet<CldrOperand> operands);
 }
 
 /// <summary>
@@ -99,7 +99,7 @@ internal sealed record CldrAnyOf(IReadOnlyList<ICldrCondition> Alternatives) : I
 
     public string ToCldr() => string.Join(" or ", Alternatives.Select(alternative => alternative.ToCldr()));
 
-    public void CollectOperands(ISet<char> operands)
+    public void CollectOperands(ISet<CldrOperand> operands)
     {
         foreach (var alternative in Alternatives)
         {
@@ -150,7 +150,7 @@ internal sealed record CldrAllOf(IReadOnlyList<ICldrCondition> Parts) : ICldrCon
     // nested inside an 'and' the other way round. Parsing produces alternatives of parts, never the reverse.
     public string ToCldr() => string.Join(" and ", Parts.Select(part => part.ToCldr()));
 
-    public void CollectOperands(ISet<char> operands)
+    public void CollectOperands(ISet<CldrOperand> operands)
     {
         foreach (var part in Parts)
         {
@@ -166,7 +166,7 @@ internal sealed record CldrAllOf(IReadOnlyList<ICldrCondition> Parts) : ICldrCon
 /// <param name="Modulus">The value the operand is taken modulo of, or zero when it is read whole.</param>
 /// <param name="Negated">Whether the relation holds when the operand is <em>not</em> one of the values.</param>
 /// <param name="Ranges">The values and ranges the operand is tested against, each inclusive of both ends.</param>
-internal sealed record CldrRelation(char Operand, long Modulus, bool Negated, IReadOnlyList<CldrRange> Ranges)
+internal sealed record CldrRelation(CldrOperand Operand, long Modulus, bool Negated, IReadOnlyList<CldrRange> Ranges)
     : ICldrCondition
 {
     public bool Holds(CldrOperands operands)
@@ -190,13 +190,14 @@ internal sealed record CldrRelation(char Operand, long Modulus, bool Negated, IR
     {
         // A quantity that reaches a provider carries no compact notation, so the operands holding its
         // exponent are zero and every relation reading one is decided here rather than at run time.
-        if (Operand is 'c' or 'e')
+        if (Operand.IsExponent())
         {
             return Holds(default) ? CldrConditions.True : CldrConditions.False;
         }
 
-        var subject = Modulus == 0 ? Operand.ToString() : $"({Operand} % {Modulus})";
-        var needsIntegerGuard = Operand == 'n' && Ranges.Any(range => range.From != range.To);
+        var letter = Operand.Letter();
+        var subject = Modulus == 0 ? letter.ToString() : $"({letter} % {Modulus})";
+        var needsIntegerGuard = Operand == CldrOperand.AbsoluteValue && Ranges.Any(range => range.From != range.To);
 
         // A single value reads better compared directly than negated, and it is the commonest relation of
         // all: 'i % 100 != 11' rather than '!(i % 100 == 11)'.
@@ -228,17 +229,17 @@ internal sealed record CldrRelation(char Operand, long Modulus, bool Negated, IR
 
     public string ToCldr()
     {
-        var subject = Modulus == 0 ? Operand.ToString() : $"{Operand} % {Modulus}";
+        var subject = Modulus == 0 ? Operand.Letter().ToString() : $"{Operand.Letter()} % {Modulus}";
         var values = string.Join(",", Ranges.Select(range =>
             range.From == range.To ? range.From.ToString() : $"{range.From}..{range.To}"));
 
         return $"{subject} {(Negated ? "!=" : "=")} {values}";
     }
 
-    public void CollectOperands(ISet<char> operands)
+    public void CollectOperands(ISet<CldrOperand> operands)
     {
         // The exponent operands are folded away, so nothing has to be computed for them.
-        if (Operand is not ('c' or 'e'))
+        if (!Operand.IsExponent())
         {
             operands.Add(Operand);
         }

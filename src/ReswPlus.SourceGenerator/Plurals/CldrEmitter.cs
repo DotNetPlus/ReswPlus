@@ -26,18 +26,16 @@ internal static class CldrEmitter
     /// </summary>
     /// <remarks>
     /// A <see cref="double"/> carries no trailing zeros, so the operands that count the decimals with them and
-    /// the operands that count them without come out equal. <c>c</c> and <c>e</c> are the exponent of a compact
-    /// notation, which a quantity never arrives here carrying.
+    /// the operands that count them without come out equal. The exponent operands are absent because a
+    /// relation reading one is decided when the provider is written, so nothing is left to compute.
     /// </remarks>
-    private static readonly (char Operand, string Expression)[] Operands =
+    private static readonly (CldrOperand Operand, string Expression)[] Operands =
     [
-        ('i', "System.Math.Truncate(n)"),
-        ('v', "n.GetNumberOfDigitsAfterDecimal()"),
-        ('w', "n.GetNumberOfDigitsAfterDecimal()"),
-        ('f', "n.DigitsAfterDecimal()"),
-        ('t', "n.DigitsAfterDecimal()"),
-        ('c', "0"),
-        ('e', "0"),
+        (CldrOperand.IntegerPart, "System.Math.Truncate(n)"),
+        (CldrOperand.DecimalCount, "n.GetNumberOfDigitsAfterDecimal()"),
+        (CldrOperand.DecimalCountWithoutTrailingZeros, "n.GetNumberOfDigitsAfterDecimal()"),
+        (CldrOperand.Decimals, "n.DigitsAfterDecimal()"),
+        (CldrOperand.DecimalsWithoutTrailingZeros, "n.DigitsAfterDecimal()"),
     ];
 
     /// <summary>
@@ -49,7 +47,7 @@ internal static class CldrEmitter
     /// <returns>The source of a provider implementing them.</returns>
     public static string Emit(string className, IReadOnlyList<CldrPluralRule> rules, IReadOnlyList<string>? languages = null, string version = "")
     {
-        var used = new HashSet<char>();
+        var used = new HashSet<CldrOperand>();
         var conditions = new List<(PluralCategory Category, string Condition, string Source)>();
 
         foreach (var rule in rules)
@@ -84,7 +82,7 @@ internal static class CldrEmitter
         // computed for nothing.
         foreach (var (operand, expression) in Operands.Where(candidate => used.Contains(candidate.Operand)))
         {
-            body.Append("            double ").Append(operand).Append(" = ").Append(expression).AppendLine(";");
+            body.Append("            double ").Append(operand.Letter()).Append(" = ").Append(expression).AppendLine(";");
         }
 
         if (body.Length != 0)

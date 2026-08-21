@@ -155,7 +155,7 @@ internal static class Program
             CldrAnyOf anyOf => $"new CldrAnyOf([{string.Join(", ", anyOf.Alternatives.Select(Condition))}])",
             CldrAllOf allOf => $"new CldrAllOf([{string.Join(", ", allOf.Parts.Select(Condition))}])",
             CldrRelation relation =>
-                $"new CldrRelation('{relation.Operand}', {relation.Modulus}, " +
+                $"new CldrRelation(CldrOperand.{relation.Operand}, {relation.Modulus}, " +
                 $"{(relation.Negated ? "true" : "false")}, " +
                 $"[{string.Join(", ", relation.Ranges.Select(range => $"new({range.From}, {range.To})"))}])",
             _ => throw new InvalidOperationException($"'{condition.GetType().Name}' is not a condition."),
