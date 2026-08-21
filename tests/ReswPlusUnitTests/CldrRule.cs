@@ -160,16 +160,50 @@ internal static class CldrRule
         /// <param name="operands">The operands of the quantity.</param>
         /// <returns><see langword="true"/> when the condition holds.</returns>
         bool Holds(Operands operands);
+
+        /// <summary>
+        /// Writes the condition as the C# that decides it.
+        /// </summary>
+        /// <returns>An expression over locals named after the operands it reads.</returns>
+        string ToCSharp();
+
+        /// <summary>
+        /// Adds the operands the condition reads to a set.
+        /// </summary>
+        /// <param name="operands">The set to add to.</param>
+        void CollectOperands(ISet<char> operands);
     }
 
     private sealed record AnyOf(IReadOnlyList<ICondition> Alternatives) : ICondition
     {
         public bool Holds(Operands operands) => Alternatives.Any(alternative => alternative.Holds(operands));
+
+        public string ToCSharp() => string.Join(" || ", Alternatives.Select(alternative => alternative.ToCSharp()));
+
+        public void CollectOperands(ISet<char> operands)
+        {
+            foreach (var alternative in Alternatives)
+            {
+                alternative.CollectOperands(operands);
+            }
+        }
     }
 
     private sealed record AllOf(IReadOnlyList<ICondition> Parts) : ICondition
     {
         public bool Holds(Operands operands) => Parts.All(part => part.Holds(operands));
+
+        // 'and' binds tighter than 'or', so an alternative nested inside one has to keep its brackets.
+        public string ToCSharp() =>
+            string.Join(" && ", Parts.Select(part => part is AnyOf ? $"({part.ToCSharp()})" : part.ToCSharp()));
+
+        public void CollectOperands(ISet<char> operands)
+        {
+            foreach (var part in Parts)
+            {
+                part.CollectOperands(operands);
+            }
+        }
     }
 
     /// <summary>
@@ -194,6 +228,33 @@ internal static class CldrRule
 
             return Negated ? !matches : matches;
         }
+
+        public string ToCSharp()
+        {
+            var subject = Modulus == 0 ? Operand.ToString() : $"({Operand} % {Modulus})";
+
+            var tests = Ranges.Select(range => range.From == range.To
+                ? $"{subject} == {range.From}"
+                : $"{subject}.IsBetween({range.From}, {range.To})");
+
+            var matches = string.Join(" || ", tests);
+
+            if (Ranges.Count > 1)
+            {
+                matches = $"({matches})";
+            }
+
+            // Only 'n' can carry a fractional part, and a range holds whole numbers only, so 'n % 10 = 1' has
+            // to stay false for 11.5 rather than match the way 11 does.
+            if (Operand == 'n' && Ranges.Any(range => range.From != range.To))
+            {
+                matches = $"({subject}.IsInt() && {matches})";
+            }
+
+            return Negated ? $"!({matches})" : matches;
+        }
+
+        public void CollectOperands(ISet<char> operands) => operands.Add(Operand);
     }
 
     /// <summary>
@@ -205,41 +266,111 @@ internal static class CldrRule
     /// <param name="W">The number of visible decimals without trailing zeros.</param>
     /// <param name="F">The visible decimals, as an integer.</param>
     /// <param name="T">The visible decimals without trailing zeros, as an integer.</param>
-    public readonly record struct Operands(double N, long I, int V, int W, long F, long T)
+    public readonly record struct Operands(double N, double I, int V, int W, long F, long T)
     {
+        /// <summary>
+        /// The general formats, by rising number of significant digits, a quantity is searched through.
+        /// </summary>
+        private static readonly string[] GeneralFormats =
+        [
+            "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8",
+            "G9", "G10", "G11", "G12", "G13", "G14", "G15"
+        ];
+
         /// <summary>
         /// Derives the operands of a quantity.
         /// </summary>
         /// <param name="quantity">The quantity.</param>
         /// <returns>Its operands.</returns>
         /// <remarks>
-        /// The decimals are read from the shortest representation that round trips, which is the same thing the
-        /// providers read them from, and is all a <see cref="double"/> carries: it holds no trailing zeros, so
-        /// the operands that count them and the operands that don't come out equal here.
+        /// Which decimals a quantity has is read the same way the shipped helper reads them, deliberately: what
+        /// is being checked here is the rules, not the reading of a <see cref="double"/>, and a second answer to
+        /// "how many decimals does this have" would only report the two readings disagreeing.
+        /// <para>
+        /// A <see cref="double"/> carries no trailing zeros, so the operands counting the decimals with them and
+        /// the ones counting without come out equal.
+        /// </para>
         /// </remarks>
         public static Operands Of(double quantity)
         {
             var value = Math.Abs(quantity);
-            var text = value.ToString("R", CultureInfo.InvariantCulture);
-            var point = text.IndexOf('.');
-            var decimals = point < 0 ? string.Empty : text.Substring(point + 1);
-
-            // An exponent means a quantity far past the range any plural rule distinguishes, and no decimals
-            // that can be read off the text.
-            if (decimals.IndexOf('E') >= 0)
-            {
-                decimals = string.Empty;
-            }
-
+            var decimals = VisibleDecimals(value);
             var trimmed = decimals.TrimEnd('0');
 
             return new Operands(
                 value,
-                (long)Math.Truncate(value),
+                Math.Truncate(value),
                 decimals.Length,
                 trimmed.Length,
-                decimals.Length == 0 ? 0 : long.Parse(decimals, CultureInfo.InvariantCulture),
-                trimmed.Length == 0 ? 0 : long.Parse(trimmed, CultureInfo.InvariantCulture));
+                ReadDigits(decimals),
+                ReadDigits(trimmed));
+        }
+
+        /// <summary>
+        /// Reads a run of digits, or zero when there are more of them than a quantity can be declined on.
+        /// </summary>
+        private static long ReadDigits(string digits)
+        {
+            return digits.Length != 0
+                && long.TryParse(digits, NumberStyles.None, CultureInfo.InvariantCulture, out var value)
+                    ? value
+                    : 0;
+        }
+
+        /// <summary>
+        /// Returns the decimals of a quantity, or an empty string when it has none.
+        /// </summary>
+        private static string VisibleDecimals(double number)
+        {
+            var shortest = ShortestRoundTrip(number);
+            var mantissaAndExponent = shortest.Split('E');
+            var mantissa = mantissaAndExponent[0].Split('.');
+            var integerDigits = mantissa[0];
+            var decimalDigits = mantissa.Length > 1 ? mantissa[1] : string.Empty;
+
+            if (mantissaAndExponent.Length == 1)
+            {
+                return decimalDigits;
+            }
+
+            // Small and large quantities come back in scientific notation, which has to be expanded before its
+            // decimals can be read: those of '1E-06' are five zeros and a one, not none at all.
+            var exponent = int.Parse(mantissaAndExponent[1], NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
+            var digits = integerDigits + decimalDigits;
+            var pointPosition = integerDigits.Length + exponent;
+
+            if (pointPosition >= digits.Length)
+            {
+                return string.Empty;
+            }
+
+            return pointPosition <= 0
+                ? new string('0', -pointPosition) + digits
+                : digits.Substring(pointPosition);
+        }
+
+        /// <summary>
+        /// Returns the shortest representation of a quantity that reads back as the same quantity.
+        /// </summary>
+        private static string ShortestRoundTrip(double number)
+        {
+            if (double.IsNaN(number) || double.IsInfinity(number))
+            {
+                return "0";
+            }
+
+            foreach (var format in GeneralFormats)
+            {
+                var candidate = number.ToString(format, CultureInfo.InvariantCulture);
+
+                if (double.TryParse(candidate, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)
+                    && parsed == number)
+                {
+                    return candidate;
+                }
+            }
+
+            return number.ToString("R", CultureInfo.InvariantCulture);
         }
 
         /// <summary>

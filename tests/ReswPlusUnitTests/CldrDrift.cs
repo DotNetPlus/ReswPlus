@@ -29,38 +29,6 @@ namespace ReswPlusUnitTests;
 public class CldrDrift
 {
     /// <summary>
-    /// The quantities every language is checked over.
-    /// </summary>
-    /// <remarks>
-    /// The rules are written in terms of the last digits of a quantity and the digits after its decimal point,
-    /// so the sweep is built to cross every one of those boundaries rather than to be large: every integer to
-    /// 1200 exhausts the hundreds and thousands the rules are written modulo, the values around a million cover
-    /// the rules that single it out, and the decimal grid crosses one and two decimals against every value the
-    /// rules read the decimals of a quantity as.
-    /// </remarks>
-    private static readonly double[] Quantities = BuildQuantities();
-
-    /// <summary>
-    /// The languages CLDR publishes rules for under a name ReswPlus does not use for them.
-    /// </summary>
-    /// <remarks>
-    /// ReswPlus maps the deprecated ISO 639 codes as well as the current ones, because a resource folder or a
-    /// Windows display language can still be named with them. CLDR publishes its rules under the current code
-    /// only, so they are looked up under it.
-    /// </remarks>
-    private static readonly IReadOnlyDictionary<string, string> DeprecatedCodes = new Dictionary<string, string>
-    {
-        ["bh"] = "bho",
-        ["in"] = "id",
-        ["iw"] = "he",
-        ["ji"] = "yi",
-        ["jw"] = "jv",
-        ["mo"] = "ro",
-        ["sh"] = "sr",
-        ["tl"] = "fil",
-    };
-
-    /// <summary>
     /// The plural forms ReswPlus ships, by the identifier of the provider implementing them.
     /// </summary>
     public static TheoryData<string> Forms =>
@@ -145,14 +113,14 @@ public class CldrDrift
 
         // Languages CLDR declines identically are checked once: the sweep is the same work for each of them,
         // and a form is given up to ninety languages.
-        foreach (var group in form.Languages.GroupBy(RulesOf, RuleComparer.Instance))
+        foreach (var group in form.Languages.GroupBy(CldrLanguages.RulesOf, CldrLanguages.RuleComparer.Instance))
         {
             if (group.Key is null)
             {
                 continue;
             }
 
-            foreach (var quantity in Quantities)
+            foreach (var quantity in CldrQuantities.Sweep)
             {
                 var selected = provider(quantity);
                 var published = CldrRule.Select(group.Key, quantity);
@@ -187,78 +155,10 @@ public class CldrDrift
     {
         var unknown = PluralFormsRetriever.PluralFormsForTesting
             .SelectMany(form => form.Languages)
-            .Where(language => RulesOf(language) is null)
+            .Where(language => CldrLanguages.RulesOf(language) is null)
             .OrderBy(language => language, StringComparer.Ordinal);
 
         Assert.Empty(unknown);
     }
 
-    /// <summary>
-    /// Gets the rules CLDR publishes for a language, under its current code.
-    /// </summary>
-    /// <param name="language">The language, as ReswPlus maps it.</param>
-    /// <returns>The rules, or <see langword="null"/> when CLDR publishes none.</returns>
-    private static IReadOnlyList<CldrPublishedRules.Rule>? RulesOf(string language)
-    {
-        var code = DeprecatedCodes.TryGetValue(language, out var current) ? current : language;
-
-        return CldrPublishedRules.Cardinal.TryGetValue(code, out var rules) ? rules : null;
-    }
-
-    private static double[] BuildQuantities()
-    {
-        var quantities = new List<double>();
-
-        for (var value = 0; value <= 1200; value++)
-        {
-            quantities.Add(value);
-        }
-
-        quantities.AddRange([9999, 10000, 100000, 1000000, 1000001, 1100000, 2000000, 123456]);
-
-        for (var whole = 0; whole <= 30; whole++)
-        {
-            // Built from the text of the quantity rather than by arithmetic: 4 + 94/100d is not the double
-            // nearest 4.94, and a rule reads the decimals of a quantity off the shortest text that round trips
-            // to it, so arithmetic would sweep quantities carrying sixteen decimals instead of two.
-            for (var hundredths = 1; hundredths <= 99; hundredths++)
-            {
-                quantities.Add(Parse($"{whole}.{hundredths:00}"));
-            }
-
-            for (var tenths = 1; tenths <= 9; tenths++)
-            {
-                quantities.Add(Parse($"{whole}.{tenths}"));
-            }
-        }
-
-        return [.. quantities];
-
-        static double Parse(string literal) => double.Parse(literal, CultureInfo.InvariantCulture);
-    }
-
-    /// <summary>
-    /// Compares two sets of rules by what they say.
-    /// </summary>
-    private sealed class RuleComparer : IEqualityComparer<IReadOnlyList<CldrPublishedRules.Rule>?>
-    {
-        public static readonly RuleComparer Instance = new();
-
-        public bool Equals(IReadOnlyList<CldrPublishedRules.Rule>? x, IReadOnlyList<CldrPublishedRules.Rule>? y)
-        {
-            return ReferenceEquals(x, y) || (x is not null && y is not null && x.SequenceEqual(y));
-        }
-
-        public int GetHashCode(IReadOnlyList<CldrPublishedRules.Rule>? rules)
-        {
-            var hash = 17;
-
-            foreach (var rule in rules ?? [])
-            {
-                hash = (hash * 31) + rule.GetHashCode();
-            }
-
-            return hash;
-        }
-    }
 }
