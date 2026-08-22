@@ -52,6 +52,10 @@ Without it, such a project is reported as `RESWP0005` and no code is generated f
 
 🗨 [How to inject generated resources](docs/Injectable-resource-providers.md)
 
+### Pseudo-localization
+
+🗨 [How to test localization before translations are available](docs/Pseudo-localization.md)
+
 ### Generator performance diagnostics
 
 To include compiler-measured source-generator timings in detailed build output, enable:
