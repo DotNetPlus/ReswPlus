@@ -48,6 +48,43 @@ ReswPlus recognizes a UWP project by the `Windows.Foundation.UniversalApiContrac
 
 Without it, such a project is reported as `RESWP0005` and no code is generated for it. The `samples/UWP` folder has one sample of each kind: `ReswPlusUWPSample` built with .NET Native, and `ReswPlusNativeAotUwpSample` built on modern .NET with Native AOT.
 
+### Injectable resource interfaces
+
+Resource classes are static by default. Projects that inject localization into view models or services can opt into an interface for every generated resource class:
+
+```xml
+<PropertyGroup>
+    <ReswPlusGenerateResourceInterfaces>true</ReswPlusGenerateResourceInterfaces>
+</PropertyGroup>
+```
+
+For `Resources.resw`, ReswPlus then generates `IResources` and makes `Resources` a sealed, instantiable implementation while retaining its existing static members. Existing calls such as `Resources.WelcomeTitle` keep working. The instance members are explicit interface implementations, so dependency-injected code accesses them through `IResources`:
+
+```csharp
+IResources resources = new Resources();
+var title = resources.WelcomeTitle;
+```
+
+The interface includes `GetString`, regular resource properties, and all generated formatting, plural, and variant overloads.
+
+### Generator performance diagnostics
+
+To include compiler-measured source-generator timings in detailed build output, enable:
+
+```xml
+<PropertyGroup>
+    <ReswPlusReportGeneratorPerformance>true</ReswPlusReportGeneratorPerformance>
+</PropertyGroup>
+```
+
+Then build with detailed verbosity:
+
+```console
+dotnet build --verbosity detailed
+```
+
+The timing comes from the compiler rather than instrumentation inside generated code. The compiler-wide report also includes every other analyzer and source generator in the project. Roslyn does not expose incremental cache hits to a running generator, so ReswPlus tracks its named pipeline stages in its incrementality test suite instead; those tests verify that unchanged files are cached and that editing one resource regenerates only that resource.
+
 ## ⚡ Native AOT
 
 Everything ReswPlus generates works when the app is compiled with Native AOT, **except the markup extension**, which is deprecated for that reason:

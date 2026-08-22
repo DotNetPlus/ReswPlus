@@ -52,9 +52,12 @@ internal static class ReswTestHelpers
     /// <param name="reswContent">The content of the <c>.resw</c> file.</param>
     /// <param name="appType">The type of the consuming application.</param>
     /// <returns>The generated C# code.</returns>
-    public static string GenerateCode(string reswContent, AppType appType = AppType.WindowsAppSDK)
+    public static string GenerateCode(
+        string reswContent,
+        AppType appType = AppType.WindowsAppSDK,
+        bool generateResourceInterface = false)
     {
-        return GenerateFile(reswContent, appType).Content;
+        return GenerateFile(reswContent, appType, generateResourceInterface).Content;
     }
 
     /// <summary>
@@ -63,7 +66,10 @@ internal static class ReswTestHelpers
     /// <param name="reswContent">The content of the <c>.resw</c> file.</param>
     /// <param name="appType">The type of the consuming application.</param>
     /// <returns>The generated file.</returns>
-    public static GeneratedFile GenerateFile(string reswContent, AppType appType = AppType.WindowsAppSDK)
+    public static GeneratedFile GenerateFile(
+        string reswContent,
+        AppType appType = AppType.WindowsAppSDK,
+        bool generateResourceInterface = false)
     {
         var resourceFileInfo = new ResourceFileInfo(@"C:\Project\Strings\en-US\Resources.resw", new Project("TestProject", isLibrary: false));
         var generator = ReswClassGenerator.CreateGenerator(resourceFileInfo, logger: null);
@@ -75,7 +81,8 @@ internal static class ReswTestHelpers
             content: reswContent,
             defaultNamespace: "TestProject.Strings",
             isAdvanced: true,
-            appType: appType);
+            appType: appType,
+            generateResourceInterface: generateResourceInterface);
 
         Assert.NotNull(result);
 

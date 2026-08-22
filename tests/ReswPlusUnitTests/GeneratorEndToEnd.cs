@@ -1,6 +1,8 @@
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 using ReswPlus.SourceGenerator.ClassGenerators;
+using ReswPlus.SourceGenerator.Pipeline;
 using Xunit;
 
 namespace ReswPlusUnitTests;
@@ -42,6 +44,93 @@ public class GeneratorEndToEnd
         var run = ReswGeneratorHarness.Run([ReswGeneratorHarness.File("en-US", EveryFeature)], appType);
 
         Assert.Empty(run.Diagnostics.Where(diagnostic => diagnostic.Severity >= DiagnosticSeverity.Warning));
+        run.AssertCompiles();
+    }
+
+    [Fact]
+    public void ResourceInterfacesAreNotGeneratedByDefault()
+    {
+        var run = ReswGeneratorHarness.Run(
+            [ReswGeneratorHarness.File("en-US", ReswTestHelpers.CreateResw(("Plain", "A plain string", null)))]);
+
+        Assert.DoesNotContain("interface IResources", run.Source("Resources.resw"));
+        Assert.Contains("public static class Resources", run.Source("Resources.resw"));
+    }
+
+    [Fact]
+    public void ResourceInterfaceOptionIsReadFromTheBuild()
+    {
+        var options = new System.Collections.Generic.Dictionary<string, string>(AnalyzerConfigOptions.KeyComparer)
+        {
+            ["build_property.ReswPlusGenerateResourceInterfaces"] = "true",
+        };
+
+        var buildOptions = ReswBuildOptions.Read(new TestAnalyzerConfigOptionsProvider(options).GlobalOptions);
+
+        Assert.True(buildOptions.GenerateResourceInterfaces);
+    }
+
+    [Fact]
+    public void ResourceInterfaceCanBeGeneratedDirectly()
+    {
+        var generated = ReswTestHelpers.GenerateCode(
+            ReswTestHelpers.CreateResw(("Plain", "A plain string", null)),
+            generateResourceInterface: true);
+
+        Assert.Contains("public interface IResources", generated);
+    }
+
+    [Theory]
+    [InlineData(ReswPlus.SourceGenerator.AppType.WindowsAppSDK)]
+    [InlineData(ReswPlus.SourceGenerator.AppType.UWP)]
+    public void ResourceInterfacesCanBeInjectedWithoutChangingTheStaticApi(ReswPlus.SourceGenerator.AppType appType)
+    {
+        var run = ReswGeneratorHarness.Run(
+            [ReswGeneratorHarness.File("en-US", EveryFeature)],
+            appType,
+            generateResourceInterfaces: true);
+
+        var generated = run.Source("Resources.resw");
+
+        Assert.Contains("public interface IResources", generated);
+        Assert.Contains("GeneratedCodeAttribute(\"ReswPlus\"", generated);
+        Assert.Contains("public sealed class Resources : IResources", generated);
+        Assert.Contains("string IResources.Plain => Resources.Plain;", generated);
+        Assert.Contains("string IResources.Formatted(string name, int age) => Resources.Formatted(name, age);", generated);
+
+        run.AssertCompilesWith(
+            """
+            namespace TestProject.Consumer
+            {
+                public sealed class ViewModel
+                {
+                    private readonly global::TestProject.Strings.IResources _resources;
+
+                    public ViewModel(global::TestProject.Strings.IResources resources)
+                    {
+                        _resources = resources;
+                    }
+
+                    public string Greeting => _resources.Formatted("Ada", 37);
+                }
+
+                public static class Composition
+                {
+                    public static ViewModel Create() =>
+                        new ViewModel(new global::TestProject.Strings.Resources());
+                }
+            }
+            """);
+    }
+
+    [Fact]
+    public void AResourceCannotCollideWithItsGeneratedInterface()
+    {
+        var run = ReswGeneratorHarness.Run(
+            [ReswGeneratorHarness.File("en-US", ReswTestHelpers.CreateResw(("IResources", "A collision", null)))],
+            generateResourceInterfaces: true);
+
+        Assert.DoesNotContain("string IResources {", run.Source("Resources.resw"));
         run.AssertCompiles();
     }
 
