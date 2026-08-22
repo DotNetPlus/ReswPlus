@@ -1,0 +1,66 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="ARM" />
+    <Platform Name="ARM64" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/ReswPlus/">
+    <Project Path="src/ReswPlus.CommandLine/ReswPlusCmd.csproj" />
+    <Project Path="src/ReswPlus.Shared/ReswPlus.Shared.shproj" />
+    <Project Path="src/ReswPlus.SourceGenerator/ReswPlus.SourceGenerator.csproj" />
+  </Folder>
+  <Folder Name="/Samples/" />
+  <Folder Name="/Samples/UWP/">
+    <Project Path="samples/UWP/ReswPlusNativeAotUwpSample/ReswPlusNativeAotUwpSample.csproj">
+      <Platform Solution="*|Any CPU" Project="x64" />
+      <Platform Solution="*|ARM" Project="x64" />
+      <Platform Solution="*|ARM64" Project="ARM64" />
+      <Platform Solution="*|x64" Project="x64" />
+      <Platform Solution="*|x86" Project="x86" />
+      <Build Solution="*|ARM" Project="false" />
+    </Project>
+    <Project Path="samples/UWP/ReswPlusNativeAotUwpSampleExternalLibrary/ReswPlusNativeAotUwpSampleExternalLibrary.csproj">
+      <Platform Solution="*|Any CPU" Project="x64" />
+      <Platform Solution="*|ARM" Project="x64" />
+      <Platform Solution="*|ARM64" Project="ARM64" />
+      <Platform Solution="*|x64" Project="x64" />
+      <Platform Solution="*|x86" Project="x86" />
+      <Build Solution="*|ARM" Project="false" />
+    </Project>
+    <Project Path="samples/UWP/ReswPlusUWPSample.Shared/ReswPlusUWPSample.Shared.shproj" />
+    <Project Path="samples/UWP/ReswPlusUWPSample/ReswPlusUWPSample.csproj" Id="c52e4620-d5eb-45cf-8740-ea9cd689f1fa">
+      <Platform Solution="*|Any CPU" Project="x64" />
+      <Platform Solution="*|ARM" Project="ARM" />
+      <Platform Solution="*|ARM64" Project="ARM64" />
+      <Platform Solution="*|x64" Project="x64" />
+      <Platform Solution="*|x86" Project="x86" />
+      <Deploy />
+    </Project>
+    <Project Path="samples/UWP/ReswPlusUWPSampleExternalLibrary.Shared/ReswPlusUWPSampleExternalLibrary.Shared.shproj" />
+    <Project Path="samples/UWP/ReswPlusUWPSampleExternalLibrary/ReswPlusUWPSampleExternalLibrary.csproj" Id="9dec4bee-a4b0-41ae-926f-4f97450f4115">
+      <Platform Solution="*|ARM" Project="ARM" />
+      <Platform Solution="*|ARM64" Project="ARM64" />
+      <Platform Solution="*|x64" Project="x64" />
+      <Platform Solution="*|x86" Project="x86" />
+    </Project>
+  </Folder>
+  <Folder Name="/Samples/WinAppSDK/">
+    <Project Path="samples/WinAppSDK/ReswPlusWinAppSDKSample/ReswPlusWinAppSDKSample.csproj">
+      <Platform Solution="*|Any CPU" Project="x64" />
+      <Platform Solution="*|ARM" Project="x64" />
+      <Platform Solution="*|ARM64" Project="ARM64" />
+      <Platform Solution="*|x64" Project="x64" />
+      <Platform Solution="*|x86" Project="x86" />
+      <Deploy />
+    </Project>
+    <Project Path="samples/WinAppSDK/ReswPlusWinAppSDKSampleExternalLibrary/ReswPlusWinAppSDKSampleExternalLibrary.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="tests/ReswPlusUnitTests/ReswPlusUnitTests.csproj" />
+  </Folder>
+</Solution>

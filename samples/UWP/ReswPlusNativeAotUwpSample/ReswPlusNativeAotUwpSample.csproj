@@ -13,7 +13,6 @@
     <RootNamespace>ReswPlusUWPSample</RootNamespace>
     <AssemblyName>ReswPlusNativeAotUwpSample</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <LangVersion>latest</LangVersion>
     <Platforms>x86;x64;ARM64</Platforms>
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
     <!--
@@ -92,7 +91,7 @@
       whose generator works, and brings with it the target that produces the small stub executable that sits
       beside the native binary. The Store references it for the same reason.
     -->
-    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.1" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)' != 'true' and '$(EnableMsixTooling)' == 'true'">
