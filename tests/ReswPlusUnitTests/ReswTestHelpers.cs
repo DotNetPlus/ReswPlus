@@ -118,6 +118,7 @@ internal static class ReswTestHelpers
             documents,
             defaultLanguage,
             generateResourceInterfaces,
+            ReswTranslationChecks.Default,
             diagnostics.Add,
             CancellationToken.None);
 
@@ -132,14 +133,38 @@ internal static class ReswTestHelpers
     /// <returns>The diagnostics reported for those files.</returns>
     public static async Task<ImmutableArray<Diagnostic>> RunAnalyzerAsync(params (string Language, string Content)[] files)
     {
+        return await RunAnalyzerAsyncWithOptions(defaultLanguage: null, translationChecks: null, files);
+    }
+
+    /// <summary>
+    /// Runs the resource analyzer through the compiler with explicit project translation options.
+    /// </summary>
+    public static async Task<ImmutableArray<Diagnostic>> RunAnalyzerAsyncWithOptions(
+        string? defaultLanguage,
+        string? translationChecks,
+        params (string Language, string Content)[] files)
+    {
         var additionalFiles = files
             .Select(file => (AdditionalText)new InMemoryAdditionalText(GetPath(file.Language), file.Content))
             .ToImmutableArray();
 
         var compilation = CSharpCompilation.Create("TestProject");
+        var globalOptions = new Dictionary<string, string>(AnalyzerConfigOptions.KeyComparer);
+
+        if (defaultLanguage is not null)
+        {
+            globalOptions["build_property.DefaultLanguage"] = defaultLanguage;
+        }
+
+        if (translationChecks is not null)
+        {
+            globalOptions["build_property.ReswPlusTranslationChecks"] = translationChecks;
+        }
 
         return await compilation
-            .WithAnalyzers([new ReswResourceAnalyzer()], new AnalyzerOptions(additionalFiles))
+            .WithAnalyzers(
+                [new ReswResourceAnalyzer()],
+                new AnalyzerOptions(additionalFiles, new TestAnalyzerConfigOptionsProvider(globalOptions)))
             .GetAnalyzerDiagnosticsAsync(CancellationToken.None);
     }
 

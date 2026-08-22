@@ -12,10 +12,18 @@ namespace ReswPlus.SourceGenerator.Analysis;
 /// </summary>
 internal sealed class ReswMember
 {
-    public ReswMember(string name, bool isPlural, IReadOnlyList<ReswEntry> entries, ReswFormatTag formatTag)
+    public ReswMember(
+        string name,
+        bool isPlural,
+        bool supportsVariants,
+        IReadOnlyList<string> variantIds,
+        IReadOnlyList<ReswEntry> entries,
+        ReswFormatTag formatTag)
     {
         Name = name;
         IsPlural = isPlural;
+        SupportsVariants = supportsVariants;
+        VariantIds = variantIds;
         Entries = entries;
         FormatParameterCount = formatTag.ParameterCount;
         FormatParameterNames = formatTag.ParameterNames;
@@ -30,6 +38,16 @@ internal sealed class ReswMember
     /// Gets whether the member is generated from a set of pluralized resources.
     /// </summary>
     public bool IsPlural { get; }
+
+    /// <summary>
+    /// Gets whether the member selects between named variants.
+    /// </summary>
+    public bool SupportsVariants { get; }
+
+    /// <summary>
+    /// Gets the variant identifiers declared by the resource, without the <c>Variant</c> prefix.
+    /// </summary>
+    public IReadOnlyList<string> VariantIds { get; }
 
     /// <summary>
     /// Gets the entries the member is generated from, in document order. A member generated from a plain
@@ -197,6 +215,8 @@ internal sealed class ReswResourceModel
             members.Add(new ReswMember(
                 group.Key,
                 group.SupportPlural,
+                group.SupportVariants,
+                GetVariantIds(group.Key, group.Items),
                 group.Items.Where(entriesByItem.ContainsKey).Select(item => entriesByItem[item]).ToArray(),
                 ReadFormatTag(group.Key, comment, basicItems, resourceFileName)));
         }
@@ -208,6 +228,8 @@ internal sealed class ReswResourceModel
             members.Add(new ReswMember(
                 item.Key,
                 isPlural: false,
+                supportsVariants: false,
+                variantIds: [],
                 [entriesByItem[item]],
                 ReadFormatTag(item.Key, item.Comment, basicItems, resourceFileName)));
         }
@@ -217,6 +239,31 @@ internal sealed class ReswResourceModel
             members.Where(member => member.Entries.Count > 0)
                    .OrderBy(member => positions[member.Entries[0].Item])
                    .ToArray());
+    }
+
+    private static IReadOnlyList<string> GetVariantIds(string memberName, IEnumerable<ReswItem> items)
+    {
+        var prefix = memberName + "_Variant";
+        var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var item in items)
+        {
+            if (!item.Key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            var suffix = item.Key.Substring(prefix.Length);
+            var separator = suffix.IndexOf('_');
+            var id = separator < 0 ? suffix : suffix.Substring(0, separator);
+
+            if (id.Length > 0)
+            {
+                ids.Add(id);
+            }
+        }
+
+        return ids.OrderBy(id => id, StringComparer.OrdinalIgnoreCase).ToArray();
     }
 
     private static bool HasFormatTag(string? comment)

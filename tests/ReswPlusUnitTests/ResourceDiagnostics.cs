@@ -72,7 +72,7 @@ public class ResourceDiagnostics
             ("en-US", ReswTestHelpers.CreateResw(("Greeting", "Hello {0}", "#Format[String name]"))),
             ("fr", ReswTestHelpers.CreateResw(("Other", "Autre", null))));
 
-        Assert.Empty(diagnostics);
+        Assert.DoesNotContain(diagnostics, diagnostic => diagnostic.Id == "RESWP0006");
     }
 
     [Fact]
@@ -294,7 +294,7 @@ public class ResourceDiagnostics
             ("en-US", ReswTestHelpers.CreateResw(("Welcome", "Welcome!", null))),
             ("pl", ReswTestHelpers.CreateResw(("Orphan_One", "{0} plik", null))));
 
-        Assert.Empty(diagnostics);
+        Assert.DoesNotContain(diagnostics, diagnostic => diagnostic.Id == "RESWP0008");
     }
 
     [Fact]

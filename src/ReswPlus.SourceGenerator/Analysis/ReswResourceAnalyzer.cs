@@ -28,7 +28,14 @@ public sealed class ReswResourceAnalyzer : DiagnosticAnalyzer
         Diagnostics.UndeclaredFormatParameter,
         Diagnostics.MissingPluralForms,
         Diagnostics.DuplicateResource,
-        Diagnostics.InvalidFormatString
+        Diagnostics.InvalidFormatString,
+        Diagnostics.ReservedResourceName,
+        Diagnostics.DuplicateFormatParameter,
+        Diagnostics.MissingTranslation,
+        Diagnostics.TranslationWithoutDefault,
+        Diagnostics.UnchangedTranslation,
+        Diagnostics.IncompatibleTranslationShape,
+        Diagnostics.ExtraTranslationVariants
     ];
 
     /// <inheritdoc/>
@@ -74,11 +81,16 @@ public sealed class ReswResourceAnalyzer : DiagnosticAnalyzer
             !globalOptions.TryGetValue("build_property.ReswPlusGenerateResourceInterfaces", out var interfaceOption)
             || !bool.TryParse(interfaceOption, out var parsedInterfaces)
             || parsedInterfaces;
+        var translationChecks = ReswTranslationChecksParser.Parse(
+            globalOptions.TryGetValue("build_property.ReswPlusTranslationChecks", out var checks)
+                ? checks
+                : null);
 
         ReswResourceRules.Analyze(
             reswFiles,
             defaultLanguage,
             generateResourceInterfaces,
+            translationChecks,
             context.ReportDiagnostic,
             context.CancellationToken);
     }
