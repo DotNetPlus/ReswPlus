@@ -9,12 +9,14 @@
         <CompilerVisibleProperty Include="UseUwp" />
         <CompilerVisibleProperty Include="ReswPlusUseApplicationLanguages" />
         <CompilerVisibleProperty Include="ReswPlusGenerateResourceInterfaces" />
+        <CompilerVisibleProperty Include="ReswPlusTranslationChecks" />
     </ItemGroup>
     <PropertyGroup>
         <AdditionalFileItemNames>$(AdditionalFileItemNames);PRIResource</AdditionalFileItemNames>
         <!-- Read the plural language from the app runtime language list instead of the .NET UI culture -->
         <ReswPlusUseApplicationLanguages Condition="'$(ReswPlusUseApplicationLanguages)' == ''">false</ReswPlusUseApplicationLanguages>
         <ReswPlusGenerateResourceInterfaces Condition="'$(ReswPlusGenerateResourceInterfaces)' == ''">true</ReswPlusGenerateResourceInterfaces>
+        <ReswPlusTranslationChecks Condition="'$(ReswPlusTranslationChecks)' == ''">Default</ReswPlusTranslationChecks>
         <!-- Ask the compiler to include source-generator timings in detailed build output. -->
         <ReswPlusReportGeneratorPerformance Condition="'$(ReswPlusReportGeneratorPerformance)' == ''">false</ReswPlusReportGeneratorPerformance>
         <!-- Generate intermediate qps-ploc/qps-plocm resources before PRI indexing. -->

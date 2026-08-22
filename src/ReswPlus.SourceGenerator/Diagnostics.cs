@@ -218,6 +218,61 @@ internal static class Diagnostics
         isEnabledByDefault: true);
 
     /// <summary>
+    /// RESWP0016: a resource from the default language has no translation.
+    /// </summary>
+    public static readonly DiagnosticDescriptor MissingTranslation = new(
+        "RESWP0016",
+        "Resource is not translated",
+        "The resource '{0}' exists only in the default language and is missing from the '{1}' translation",
+        ResourcesCategory,
+        DiagnosticSeverity.Info,
+        isEnabledByDefault: true);
+
+    /// <summary>
+    /// RESWP0017: a translated resource no longer exists in the default language.
+    /// </summary>
+    public static readonly DiagnosticDescriptor TranslationWithoutDefault = new(
+        "RESWP0017",
+        "Translated resource has no default value",
+        "The resource '{0}' exists in the '{1}' translation but not in the default language",
+        ResourcesCategory,
+        DiagnosticSeverity.Info,
+        isEnabledByDefault: true);
+
+    /// <summary>
+    /// RESWP0018: a translation is textually identical to its default value.
+    /// </summary>
+    public static readonly DiagnosticDescriptor UnchangedTranslation = new(
+        "RESWP0018",
+        "Translation is unchanged",
+        "The value of the resource '{0}' in the '{1}' translation is identical to the default-language value",
+        ResourcesCategory,
+        DiagnosticSeverity.Info,
+        isEnabledByDefault: true);
+
+    /// <summary>
+    /// RESWP0019: a translation cannot serve every generated plural or variant lookup of the default resource.
+    /// </summary>
+    public static readonly DiagnosticDescriptor IncompatibleTranslationShape = new(
+        "RESWP0019",
+        "Translation has an incompatible resource shape",
+        "The resource '{0}' in the '{1}' translation {2}",
+        ResourcesCategory,
+        DiagnosticSeverity.Warning,
+        isEnabledByDefault: true);
+
+    /// <summary>
+    /// RESWP0020: a translation declares variants that the default language does not use.
+    /// </summary>
+    public static readonly DiagnosticDescriptor ExtraTranslationVariants = new(
+        "RESWP0020",
+        "Translation has extra variants",
+        "The resource '{0}' in the '{1}' translation defines the extra variant(s) {2}",
+        ResourcesCategory,
+        DiagnosticSeverity.Info,
+        isEnabledByDefault: true);
+
+    /// <summary>
     /// Returns the descriptor of a diagnostic from its identifier.
     /// </summary>
     /// <param name="id">The identifier of the diagnostic.</param>

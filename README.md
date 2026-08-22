@@ -56,6 +56,10 @@ Without it, such a project is reported as `RESWP0005` and no code is generated f
 
 🗨 [How to test localization before translations are available](docs/Pseudo-localization.md)
 
+### Translation checks
+
+🗨 [How to detect incomplete or drifting translations](docs/Translation-checks.md)
+
 ### Generator performance diagnostics
 
 To include compiler-measured source-generator timings in detailed build output, enable:
@@ -152,8 +156,15 @@ ReswPlus checks the content of your `.resw` files while it generates the code, a
 | `RESWP0012` | A resource carries the name of a member the generated class declares itself, so it is skipped. |
 | `RESWP0013` | A `#Format` tag declares the same parameter name twice, so the generated method renames all but the first. |
 | `RESWP0014` | A `.resw` file could not be turned into code, and the rest of the project was generated without it. |
+| `RESWP0016` | A resource exists in the default language but is missing from a translation. |
+| `RESWP0017` | A translated resource does not exist in the default language. |
+| `RESWP0018` | A translated value is identical to its default-language value. |
+| `RESWP0019` | A translation has an incompatible plain, plural, or variant shape. |
+| `RESWP0020` | A translation defines variants that do not exist in the default language. |
 
-These are reported as **warnings**, so that updating the package never breaks a build that already has an inconsistency. Escalate the ones you want to be fatal from your `.editorconfig`:
+Translation completeness is configurable with `ReswPlusTranslationChecks=Off|Default|Strict`. In the default mode, normal translation lag is informational and only defects that can break localized output are warnings. See [Translation checks](docs/Translation-checks.md) for the severity table and CI configuration.
+
+Individual diagnostics can also be configured from `.editorconfig`:
 
 ```ini
 dotnet_diagnostic.RESWP0006.severity = error

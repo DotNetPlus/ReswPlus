@@ -15,9 +15,8 @@ namespace ReswPlus.SourceGenerator.Analysis;
 /// Implements the rules reported on the content of the <c>.resw</c> files of a project.
 /// </summary>
 /// <remarks>
-/// Every rule is reported as a warning rather than an error: raising the severity would break the build of every
-/// project that already has an inconsistency the moment it updates the package. Projects that want a rule to be
-/// fatal can escalate it through <c>.editorconfig</c>.
+/// Translation lag is informational by default, while problems that can break localized output are warnings.
+/// Strict translation checks promote incomplete translations to warnings and output-breaking problems to errors.
 /// <para>
 /// The rules err on the side of not firing. A noisy analyzer gets disabled wholesale, taking the valuable rules
 /// with it, so a rule that cannot decide stays silent.
@@ -36,12 +35,14 @@ internal static class ReswResourceRules
     /// <param name="reswFiles">The <c>.resw</c> files of the project, with their content.</param>
     /// <param name="defaultLanguage">The default language of the project, if it declares one.</param>
     /// <param name="generateResourceInterfaces">Whether injectable resource interfaces and providers are generated.</param>
+    /// <param name="translationChecks">How diagnostics comparing translations with the default language are reported.</param>
     /// <param name="reportDiagnostic">The callback invoked for every problem found.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     public static void Analyze(
         IReadOnlyList<(string Path, SourceText Text)> reswFiles,
         string? defaultLanguage,
         bool generateResourceInterfaces,
+        ReswTranslationChecks translationChecks,
         Action<Diagnostic> reportDiagnostic,
         CancellationToken cancellationToken)
     {
@@ -65,7 +66,7 @@ internal static class ReswResourceRules
 
             var defaultModel = ReswResourceModel.Create(defaultDocument);
 
-            AnalyzeDocument(defaultModel, defaultModel, generateResourceInterfaces, reportDiagnostic);
+            AnalyzeDocument(defaultModel, defaultModel, generateResourceInterfaces, translationChecks, reportDiagnostic);
 
             foreach (var path in group)
             {
@@ -76,7 +77,12 @@ internal static class ReswResourceRules
                     continue;
                 }
 
-                AnalyzeDocument(ReswResourceModel.Create(document), defaultModel, generateResourceInterfaces, reportDiagnostic);
+                AnalyzeDocument(
+                    ReswResourceModel.Create(document),
+                    defaultModel,
+                    generateResourceInterfaces,
+                    translationChecks,
+                    reportDiagnostic);
             }
         }
     }
@@ -85,13 +91,26 @@ internal static class ReswResourceRules
         ReswResourceModel model,
         ReswResourceModel defaultModel,
         bool generateResourceInterfaces,
+        ReswTranslationChecks translationChecks,
         Action<Diagnostic> reportDiagnostic)
     {
-        ReportDuplicateMembers(model, reportDiagnostic);
-        ReportReservedNames(model, generateResourceInterfaces, reportDiagnostic);
-        ReportDuplicateFormatParameters(model, reportDiagnostic);
-        ReportMissingPluralForms(model, defaultModel, reportDiagnostic);
-        ReportFormattingProblems(model, defaultModel, reportDiagnostic);
+        ReportDuplicateMembers(model, translationChecks, reportDiagnostic);
+        ReportReservedNames(model, generateResourceInterfaces, translationChecks, reportDiagnostic);
+        ReportDuplicateFormatParameters(model, translationChecks, reportDiagnostic);
+
+        var isDefaultLanguage = ReferenceEquals(model, defaultModel);
+
+        if (!isDefaultLanguage && translationChecks != ReswTranslationChecks.Off)
+        {
+            ReportTranslationDifferences(model, defaultModel, translationChecks, reportDiagnostic);
+        }
+
+        if (isDefaultLanguage || translationChecks != ReswTranslationChecks.Off)
+        {
+            ReportMissingPluralForms(model, defaultModel, translationChecks, reportDiagnostic);
+        }
+
+        ReportFormattingProblems(model, defaultModel, translationChecks, reportDiagnostic);
     }
 
     /// <summary>
@@ -104,6 +123,7 @@ internal static class ReswResourceRules
     private static void ReportReservedNames(
         ReswResourceModel model,
         bool generateResourceInterfaces,
+        ReswTranslationChecks translationChecks,
         Action<Diagnostic> reportDiagnostic)
     {
         var className = Path.GetFileNameWithoutExtension(model.Document.Path);
@@ -115,11 +135,11 @@ internal static class ReswResourceRules
                 continue;
             }
 
-            reportDiagnostic(Diagnostic.Create(
+            ReportDiagnostic(reportDiagnostic, translationChecks,
                 Diagnostics.ReservedResourceName,
                 member.Entries[0].Location,
                 member.Entries[0].Key,
-                Path.GetFileName(model.Document.Path)));
+                Path.GetFileName(model.Document.Path));
         }
     }
 
@@ -131,7 +151,10 @@ internal static class ReswResourceRules
     /// pluralized or varianted resource, and renames it when the tag already uses its name, which is a
     /// conflict the author of the tag did not create and is not asked to resolve.
     /// </remarks>
-    private static void ReportDuplicateFormatParameters(ReswResourceModel model, Action<Diagnostic> reportDiagnostic)
+    private static void ReportDuplicateFormatParameters(
+        ReswResourceModel model,
+        ReswTranslationChecks translationChecks,
+        Action<Diagnostic> reportDiagnostic)
     {
         foreach (var member in model.Members)
         {
@@ -144,11 +167,11 @@ internal static class ReswResourceRules
                     continue;
                 }
 
-                reportDiagnostic(Diagnostic.Create(
+                ReportDiagnostic(reportDiagnostic, translationChecks,
                     Diagnostics.DuplicateFormatParameter,
                     member.Entries[0].Location,
                     member.Name,
-                    name));
+                    name);
             }
         }
     }
@@ -161,7 +184,10 @@ internal static class ReswResourceRules
     /// case resolve to the same string at runtime. A plain resource can also conflict with a pluralized or
     /// varianted one, in which case the generated members collide and the project no longer compiles.
     /// </remarks>
-    private static void ReportDuplicateMembers(ReswResourceModel model, Action<Diagnostic> reportDiagnostic)
+    private static void ReportDuplicateMembers(
+        ReswResourceModel model,
+        ReswTranslationChecks translationChecks,
+        Action<Diagnostic> reportDiagnostic)
     {
         var membersByName = new Dictionary<string, ReswMember>(StringComparer.OrdinalIgnoreCase);
 
@@ -169,11 +195,11 @@ internal static class ReswResourceRules
         {
             if (membersByName.TryGetValue(member.Name, out var existing))
             {
-                reportDiagnostic(Diagnostic.Create(
+                ReportDiagnostic(reportDiagnostic, translationChecks,
                     Diagnostics.DuplicateResource,
                     member.Entries[0].Location,
                     member.Entries[0].Key,
-                    existing.Entries[0].Key));
+                    existing.Entries[0].Key);
             }
             else
             {
@@ -189,7 +215,11 @@ internal static class ReswResourceRules
     /// A missing form is not a build failure: the lookup simply returns an empty string at runtime, which makes
     /// this the kind of problem that ships unnoticed.
     /// </remarks>
-    private static void ReportMissingPluralForms(ReswResourceModel model, ReswResourceModel defaultModel, Action<Diagnostic> reportDiagnostic)
+    private static void ReportMissingPluralForms(
+        ReswResourceModel model,
+        ReswResourceModel defaultModel,
+        ReswTranslationChecks translationChecks,
+        Action<Diagnostic> reportDiagnostic)
     {
         if (model.Document.Language is not { Length: > 0 } language ||
             PluralFormsRetriever.RetrievePluralFormForLanguage(language) is not { } pluralForm)
@@ -225,12 +255,12 @@ internal static class ReswResourceRules
                     continue;
                 }
 
-                reportDiagnostic(Diagnostic.Create(
+                ReportDiagnostic(reportDiagnostic, translationChecks,
                     Diagnostics.MissingPluralForms,
                     declension.Location,
                     declension.Prefix,
                     string.Join(", ", missingCategories.Select(category => $"'_{category}'")),
-                    language));
+                    language);
             }
         }
     }
@@ -245,7 +275,11 @@ internal static class ReswResourceRules
     /// only one that determines whether, and with how many arguments, a resource is formatted.
     /// </param>
     /// <param name="reportDiagnostic">The callback invoked for every problem found.</param>
-    private static void ReportFormattingProblems(ReswResourceModel model, ReswResourceModel defaultModel, Action<Diagnostic> reportDiagnostic)
+    private static void ReportFormattingProblems(
+        ReswResourceModel model,
+        ReswResourceModel defaultModel,
+        ReswTranslationChecks translationChecks,
+        Action<Diagnostic> reportDiagnostic)
     {
         var isDefaultLanguage = ReferenceEquals(model, defaultModel);
 
@@ -261,26 +295,32 @@ internal static class ReswResourceRules
             {
                 if (!CompositeFormatString.TryGetArgumentIndexes(entry.Value, out var indexes))
                 {
-                    reportDiagnostic(Diagnostic.Create(Diagnostics.InvalidFormatString, entry.Location, entry.Key));
+                    ReportDiagnostic(
+                        reportDiagnostic,
+                        translationChecks,
+                        Diagnostics.InvalidFormatString,
+                        entry.Location,
+                        entry.Key);
 
                     continue;
                 }
 
                 if (TryGetUndeclaredIndex(indexes, defaultMember.FormatParameterCount, out var undeclaredIndex))
                 {
-                    reportDiagnostic(Diagnostic.Create(
+                    ReportDiagnostic(reportDiagnostic, translationChecks,
                         Diagnostics.UndeclaredFormatParameter,
                         entry.Location,
                         entry.Key,
                         undeclaredIndex,
-                        defaultMember.FormatParameterCount));
+                        defaultMember.FormatParameterCount);
 
                     continue;
                 }
 
                 // Comparing a translation against itself would always match, and a resource that only exists in
                 // the default language has nothing to be compared with.
-                if (isDefaultLanguage ||
+                if (translationChecks == ReswTranslationChecks.Off ||
+                    isDefaultLanguage ||
                     !defaultModel.TryGetEntry(entry.Key, out var defaultEntry) ||
                     !CompositeFormatString.TryGetArgumentIndexes(defaultEntry.Value, out var defaultIndexes))
                 {
@@ -298,13 +338,156 @@ internal static class ReswResourceRules
                     continue;
                 }
 
-                reportDiagnostic(Diagnostic.Create(
+                ReportDiagnostic(reportDiagnostic, translationChecks,
                     Diagnostics.PlaceholderMismatch,
                     entry.Location,
                     entry.Key,
-                    DescribePlaceholders(missingPlaceholders)));
+                    DescribePlaceholders(missingPlaceholders));
             }
         }
+    }
+
+    private static void ReportTranslationDifferences(
+        ReswResourceModel model,
+        ReswResourceModel defaultModel,
+        ReswTranslationChecks translationChecks,
+        Action<Diagnostic> reportDiagnostic)
+    {
+        var language = model.Document.Language ?? Path.GetFileName(Path.GetDirectoryName(model.Document.Path));
+
+        foreach (var defaultMember in defaultModel.Members)
+        {
+            if (!model.TryGetMember(defaultMember.Name, out var translatedMember))
+            {
+                ReportDiagnostic(
+                    reportDiagnostic,
+                    translationChecks,
+                    Diagnostics.MissingTranslation,
+                    defaultMember.Entries[0].Location,
+                    defaultMember.Name,
+                    language);
+
+                continue;
+            }
+
+            if (defaultMember.IsPlural != translatedMember.IsPlural ||
+                defaultMember.SupportsVariants != translatedMember.SupportsVariants)
+            {
+                ReportDiagnostic(
+                    reportDiagnostic,
+                    translationChecks,
+                    Diagnostics.IncompatibleTranslationShape,
+                    translatedMember.Entries[0].Location,
+                    defaultMember.Name,
+                    language,
+                    "uses a different plain, plural, or variant structure than the default-language resource");
+
+                continue;
+            }
+
+            var missingVariants = defaultMember.VariantIds
+                .Where(id => !translatedMember.VariantIds.Contains(id, StringComparer.OrdinalIgnoreCase))
+                .ToArray();
+
+            if (missingVariants.Length > 0)
+            {
+                ReportDiagnostic(
+                    reportDiagnostic,
+                    translationChecks,
+                    Diagnostics.IncompatibleTranslationShape,
+                    translatedMember.Entries[0].Location,
+                    defaultMember.Name,
+                    language,
+                    $"does not define the required variant(s) {DescribeValues(missingVariants)}");
+            }
+
+            var extraVariants = translatedMember.VariantIds
+                .Where(id => !defaultMember.VariantIds.Contains(id, StringComparer.OrdinalIgnoreCase))
+                .ToArray();
+
+            if (extraVariants.Length > 0)
+            {
+                ReportDiagnostic(
+                    reportDiagnostic,
+                    translationChecks,
+                    Diagnostics.ExtraTranslationVariants,
+                    translatedMember.Entries[0].Location,
+                    defaultMember.Name,
+                    language,
+                    DescribeValues(extraVariants));
+            }
+        }
+
+        foreach (var translatedMember in model.Members)
+        {
+            if (!defaultModel.TryGetMember(translatedMember.Name, out _))
+            {
+                ReportDiagnostic(
+                    reportDiagnostic,
+                    translationChecks,
+                    Diagnostics.TranslationWithoutDefault,
+                    translatedMember.Entries[0].Location,
+                    translatedMember.Name,
+                    language);
+            }
+        }
+
+        foreach (var entry in model.Members.SelectMany(member => member.Entries))
+        {
+            if (defaultModel.TryGetEntry(entry.Key, out var defaultEntry) &&
+                string.Equals(entry.Value, defaultEntry.Value, StringComparison.Ordinal))
+            {
+                ReportDiagnostic(
+                    reportDiagnostic,
+                    translationChecks,
+                    Diagnostics.UnchangedTranslation,
+                    entry.Location,
+                    entry.Key,
+                    language);
+            }
+        }
+    }
+
+    private static string DescribeValues(IEnumerable<string> values)
+    {
+        return string.Join(", ", values.Select(value => $"'{value}'"));
+    }
+
+    private static void ReportDiagnostic(
+        Action<Diagnostic> reportDiagnostic,
+        ReswTranslationChecks translationChecks,
+        DiagnosticDescriptor descriptor,
+        Location location,
+        params object[] messageArgs)
+    {
+        var severity = GetSeverity(descriptor, translationChecks);
+
+        reportDiagnostic(Diagnostic.Create(
+            descriptor,
+            location,
+            severity,
+            additionalLocations: null,
+            properties: null,
+            messageArgs));
+    }
+
+    private static DiagnosticSeverity GetSeverity(
+        DiagnosticDescriptor descriptor,
+        ReswTranslationChecks translationChecks)
+    {
+        if (translationChecks != ReswTranslationChecks.Strict)
+        {
+            return descriptor.DefaultSeverity;
+        }
+
+        return descriptor.Id switch
+        {
+            "RESWP0016" or "RESWP0017" or "RESWP0020" => DiagnosticSeverity.Warning,
+            "RESWP0018" => DiagnosticSeverity.Info,
+            "RESWP0006" or "RESWP0007" or "RESWP0008" or "RESWP0009" or "RESWP0010" or
+            "RESWP0012" or "RESWP0019" => DiagnosticSeverity.Error,
+            _ => descriptor.DefaultSeverity,
+        };
     }
 
     /// <summary>
