@@ -59,6 +59,33 @@ public class GeneratorEndToEnd
     }
 
     [Fact]
+    public void ResourceInterfacesAndProvidersCanBeDisabled()
+    {
+        var run = ReswGeneratorHarness.Run(
+            [ReswGeneratorHarness.File("en-US", ReswTestHelpers.CreateResw(
+                ("Plain", "A plain string", null),
+                ("IResources", "An interface-shaped resource", null),
+                ("ResourcesProvider", "A provider-shaped resource", null)))],
+            generateResourceInterfaces: false);
+
+        var generated = run.Source("Resources.resw");
+
+        Assert.DoesNotContain("interface IResources", generated);
+        Assert.DoesNotContain("class ResourcesProvider", generated);
+        Assert.Contains("public static class Resources", generated);
+        Assert.Contains("public static string IResources", generated);
+        Assert.Contains("public static string ResourcesProvider", generated);
+        run.AssertCompiles();
+
+        Assert.Empty(ReswTestHelpers.Analyze(
+            defaultLanguage: null,
+            generateResourceInterfaces: false,
+            ("en-US", ReswTestHelpers.CreateResw(
+                ("IResources", "An interface-shaped resource", null),
+                ("ResourcesProvider", "A provider-shaped resource", null)))));
+    }
+
+    [Fact]
     public void ResourceInterfaceCanBeGeneratedDirectly()
     {
         var generated = ReswTestHelpers.GenerateCode(

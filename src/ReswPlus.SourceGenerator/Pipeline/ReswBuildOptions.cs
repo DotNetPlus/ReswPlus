@@ -24,7 +24,8 @@ internal sealed class ReswBuildOptions : IEquatable<ReswBuildOptions>
         string? defaultLanguage,
         string? rootNamespace,
         bool useApplicationLanguages,
-        bool useUwp)
+        bool useUwp,
+        bool generateResourceInterfaces)
     {
         ProjectDir = projectDir;
         MSBuildProjectFullPath = msBuildProjectFullPath;
@@ -34,6 +35,7 @@ internal sealed class ReswBuildOptions : IEquatable<ReswBuildOptions>
         RootNamespace = rootNamespace;
         UseApplicationLanguages = useApplicationLanguages;
         UseUwp = useUwp;
+        GenerateResourceInterfaces = generateResourceInterfaces;
     }
 
     public string? ProjectDir { get; }
@@ -66,6 +68,11 @@ internal sealed class ReswBuildOptions : IEquatable<ReswBuildOptions>
     public bool UseUwp { get; }
 
     /// <summary>
+    /// Gets whether injectable resource interfaces and providers should be generated.
+    /// </summary>
+    public bool GenerateResourceInterfaces { get; }
+
+    /// <summary>
     /// Reads the properties of a project.
     /// </summary>
     /// <param name="globalOptions">The options of the compilation.</param>
@@ -80,7 +87,8 @@ internal sealed class ReswBuildOptions : IEquatable<ReswBuildOptions>
             Get("build_property.DefaultLanguage"),
             Get("build_property.RootNamespace"),
             bool.TryParse(Get("build_property.ReswPlusUseApplicationLanguages"), out var parsed) && parsed,
-            bool.TryParse(Get("build_property.UseUwp"), out var parsedUseUwp) && parsedUseUwp);
+            bool.TryParse(Get("build_property.UseUwp"), out var parsedUseUwp) && parsedUseUwp,
+            !bool.TryParse(Get("build_property.ReswPlusGenerateResourceInterfaces"), out var parsedInterfaces) || parsedInterfaces);
 
         string? Get(string key) => globalOptions.TryGetValue(key, out var value) ? value : null;
     }
@@ -110,7 +118,8 @@ internal sealed class ReswBuildOptions : IEquatable<ReswBuildOptions>
             && DefaultLanguage == other.DefaultLanguage
             && RootNamespace == other.RootNamespace
             && UseApplicationLanguages == other.UseApplicationLanguages
-            && UseUwp == other.UseUwp;
+            && UseUwp == other.UseUwp
+            && GenerateResourceInterfaces == other.GenerateResourceInterfaces;
     }
 
     /// <inheritdoc/>
@@ -127,6 +136,7 @@ internal sealed class ReswBuildOptions : IEquatable<ReswBuildOptions>
         }
 
         hash = (hash * 31) + UseApplicationLanguages.GetHashCode();
-        return (hash * 31) + UseUwp.GetHashCode();
+        hash = (hash * 31) + UseUwp.GetHashCode();
+        return (hash * 31) + GenerateResourceInterfaces.GetHashCode();
     }
 }

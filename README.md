@@ -59,6 +59,14 @@ var title = resources.WelcomeTitle;
 
 The interface includes `GetString`, regular resource properties, and all generated formatting, plural, and variant overloads.
 
+Generation is enabled by default. Projects that do not use dependency injection can disable the additional types:
+
+```xml
+<PropertyGroup>
+    <ReswPlusGenerateResourceInterfaces>false</ReswPlusGenerateResourceInterfaces>
+</PropertyGroup>
+```
+
 ### Generator performance diagnostics
 
 To include compiler-measured source-generator timings in detailed build output, enable:

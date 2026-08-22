@@ -90,7 +90,8 @@ public sealed class ReswClassGenerator
         string content,
         string defaultNamespace,
         bool isAdvanced,
-        AppType appType)
+        AppType appType,
+        bool generateResourceInterfaces)
     {
         var namespacesToUse = ExtractNamespace(defaultNamespace);
         var resourceFileName = Path.GetFileName(_resourceFileInfo.Path);
@@ -108,14 +109,15 @@ public sealed class ReswClassGenerator
             namespacesToUse,
             resourceLoaderName,
             className,
-            appType
+            appType,
+            generateResourceInterfaces
         );
 
         // Only use items with valid keys, that do not carry the ignore tag, and whose name the generated types
         // don't already declare.
         var stringItems = reswInfo.Items
             .Where(i => IsValidPropertyName(i.Key) && !(i.Comment?.Contains(TagIgnore) ?? false))
-            .Where(i => !GeneratedIdentifier.ConflictsWithGeneratedMember(i.Key, className))
+            .Where(i => !GeneratedIdentifier.ConflictsWithGeneratedMember(i.Key, className, generateResourceInterfaces))
             .ToArray();
 
         if (isAdvanced)
@@ -130,7 +132,7 @@ public sealed class ReswClassGenerator
 
                 // The forms of the resource are already out of the plain items, so a conflicting group is
                 // dropped here rather than declined into members the generated types already declare.
-                if (GeneratedIdentifier.ConflictsWithGeneratedMember(itemKey, className))
+                if (GeneratedIdentifier.ConflictsWithGeneratedMember(itemKey, className, generateResourceInterfaces))
                 {
                     continue;
                 }
@@ -217,9 +219,10 @@ public sealed class ReswClassGenerator
         string content,
         string defaultNamespace,
         bool isAdvanced,
-        AppType appType)
+        AppType appType,
+        bool generateResourceInterfaces)
     {
-        var stronglyTypedClassInfo = Parse(content, defaultNamespace, isAdvanced, appType);
+        var stronglyTypedClassInfo = Parse(content, defaultNamespace, isAdvanced, appType, generateResourceInterfaces);
         if (stronglyTypedClassInfo is null)
         {
             return null;

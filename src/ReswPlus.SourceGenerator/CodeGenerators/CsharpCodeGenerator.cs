@@ -169,20 +169,25 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
         // Add the generated members (format methods/properties) to the strongly-typed class.
         strongClassDecl = strongClassDecl.AddMembers(formatMembers.ToArray());
 
-        var interfaceName = "I" + info.ClassName;
-        var providerName = info.ClassName + "Provider";
-        var publicMembers = strongClassDecl.Members
-            .Where(member =>
-                member is MethodDeclarationSyntax or PropertyDeclarationSyntax
-                && member.Modifiers.Any(SyntaxKind.PublicKeyword))
-            .ToArray();
-        var resourceInterfaceDecl = CreateResourceInterface(interfaceName, info, publicMembers);
-        var resourceProviderDecl = CreateResourceProvider(
-            providerName,
-            interfaceName,
-            info.ClassName,
-            info,
-            publicMembers);
+        InterfaceDeclarationSyntax? resourceInterfaceDecl = null;
+        ClassDeclarationSyntax? resourceProviderDecl = null;
+        if (info.GenerateResourceInterfaces)
+        {
+            var interfaceName = "I" + info.ClassName;
+            var providerName = info.ClassName + "Provider";
+            var publicMembers = strongClassDecl.Members
+                .Where(member =>
+                    member is MethodDeclarationSyntax or PropertyDeclarationSyntax
+                    && member.Modifiers.Any(SyntaxKind.PublicKeyword))
+                .ToArray();
+            resourceInterfaceDecl = CreateResourceInterface(interfaceName, info, publicMembers);
+            resourceProviderDecl = CreateResourceProvider(
+                providerName,
+                interfaceName,
+                info.ClassName,
+                info,
+                publicMembers);
+        }
 
         // Create the markup extension class that allows resource keys to be used in XAML.
         var markupExtensionDecl = CreateMarkupExtensionSyntax(info.ResoureFile, info.ClassName + "Extension", info.Items.Select(x => x.Key), info.AppType);
@@ -192,21 +197,17 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
         {
             var nsName = string.Join(".", info.Namespaces);
             var namespaceDecl = NamespaceDeclaration(ParseName(nsName));
-            namespaceDecl = namespaceDecl.AddMembers(
-                resourceInterfaceDecl,
-                resourceProviderDecl,
-                strongClassDecl,
-                markupExtensionDecl);
+            namespaceDecl = resourceInterfaceDecl is null || resourceProviderDecl is null
+                ? namespaceDecl.AddMembers(strongClassDecl, markupExtensionDecl)
+                : namespaceDecl.AddMembers(resourceInterfaceDecl, resourceProviderDecl, strongClassDecl, markupExtensionDecl);
             compilationUnit = compilationUnit.AddMembers(namespaceDecl);
         }
         else
         {
             // Otherwise, add the classes at the root level.
-            compilationUnit = compilationUnit.AddMembers(
-                resourceInterfaceDecl,
-                resourceProviderDecl,
-                strongClassDecl,
-                markupExtensionDecl);
+            compilationUnit = resourceInterfaceDecl is null || resourceProviderDecl is null
+                ? compilationUnit.AddMembers(strongClassDecl, markupExtensionDecl)
+                : compilationUnit.AddMembers(resourceInterfaceDecl, resourceProviderDecl, strongClassDecl, markupExtensionDecl);
         }
 
         // Normalize the whitespace (formatting) and return the generated source code.

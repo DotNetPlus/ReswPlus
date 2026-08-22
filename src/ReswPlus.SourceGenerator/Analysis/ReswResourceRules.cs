@@ -35,11 +35,13 @@ internal static class ReswResourceRules
     /// </summary>
     /// <param name="reswFiles">The <c>.resw</c> files of the project, with their content.</param>
     /// <param name="defaultLanguage">The default language of the project, if it declares one.</param>
+    /// <param name="generateResourceInterfaces">Whether injectable resource interfaces and providers are generated.</param>
     /// <param name="reportDiagnostic">The callback invoked for every problem found.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     public static void Analyze(
         IReadOnlyList<(string Path, SourceText Text)> reswFiles,
         string? defaultLanguage,
+        bool generateResourceInterfaces,
         Action<Diagnostic> reportDiagnostic,
         CancellationToken cancellationToken)
     {
@@ -63,7 +65,7 @@ internal static class ReswResourceRules
 
             var defaultModel = ReswResourceModel.Create(defaultDocument);
 
-            AnalyzeDocument(defaultModel, defaultModel, reportDiagnostic);
+            AnalyzeDocument(defaultModel, defaultModel, generateResourceInterfaces, reportDiagnostic);
 
             foreach (var path in group)
             {
@@ -74,15 +76,19 @@ internal static class ReswResourceRules
                     continue;
                 }
 
-                AnalyzeDocument(ReswResourceModel.Create(document), defaultModel, reportDiagnostic);
+                AnalyzeDocument(ReswResourceModel.Create(document), defaultModel, generateResourceInterfaces, reportDiagnostic);
             }
         }
     }
 
-    private static void AnalyzeDocument(ReswResourceModel model, ReswResourceModel defaultModel, Action<Diagnostic> reportDiagnostic)
+    private static void AnalyzeDocument(
+        ReswResourceModel model,
+        ReswResourceModel defaultModel,
+        bool generateResourceInterfaces,
+        Action<Diagnostic> reportDiagnostic)
     {
         ReportDuplicateMembers(model, reportDiagnostic);
-        ReportReservedNames(model, reportDiagnostic);
+        ReportReservedNames(model, generateResourceInterfaces, reportDiagnostic);
         ReportDuplicateFormatParameters(model, reportDiagnostic);
         ReportMissingPluralForms(model, defaultModel, reportDiagnostic);
         ReportFormattingProblems(model, defaultModel, reportDiagnostic);
@@ -95,13 +101,16 @@ internal static class ReswResourceRules
     /// The generator skips these resources rather than emitting a member that would not compile, which makes
     /// them silently absent from the generated class. This is what says so.
     /// </remarks>
-    private static void ReportReservedNames(ReswResourceModel model, Action<Diagnostic> reportDiagnostic)
+    private static void ReportReservedNames(
+        ReswResourceModel model,
+        bool generateResourceInterfaces,
+        Action<Diagnostic> reportDiagnostic)
     {
         var className = Path.GetFileNameWithoutExtension(model.Document.Path);
 
         foreach (var member in model.Members)
         {
-            if (!GeneratedIdentifier.ConflictsWithGeneratedMember(member.Name, className))
+            if (!GeneratedIdentifier.ConflictsWithGeneratedMember(member.Name, className, generateResourceInterfaces))
             {
                 continue;
             }
