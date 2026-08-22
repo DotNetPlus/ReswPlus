@@ -64,7 +64,6 @@ internal static class ReswGeneratorHarness
     /// <param name="defaultLanguage">The <c>DefaultLanguage</c> of the project, which picks the language the code is generated from.</param>
     /// <param name="useApplicationLanguages">The <c>ReswPlusUseApplicationLanguages</c> of the project, or <see langword="null"/> to leave it undeclared.</param>
     /// <param name="useUwp">The <c>UseUwp</c> of the project, which is how a UWP project built for Native AOT says what it is, or <see langword="null"/> to leave it undeclared.</param>
-    /// <param name="generateResourceInterfaces">Whether to generate injectable resource interfaces.</param>
     /// <param name="assemblyName">The name of the assembly being compiled.</param>
     /// <param name="nativeAotUwp">Whether the compilation should look like a UWP project built for Native AOT, which has the UWP types but no recognizable API contract reference.</param>
     /// <param name="additionalFiles">Files to pass to the compiler on top of <paramref name="files"/>, to cover what the generator does with the ones it doesn't own.</param>
@@ -80,7 +79,6 @@ internal static class ReswGeneratorHarness
         string? defaultLanguage = null,
         bool? useApplicationLanguages = null,
         bool? useUwp = null,
-        bool? generateResourceInterfaces = null,
         string assemblyName = "TestProject",
         bool nativeAotUwp = false,
         IEnumerable<ReswFile>? additionalFiles = null)
@@ -102,7 +100,6 @@ internal static class ReswGeneratorHarness
         Declare("build_property.RootNamespace", rootNamespace);
         Declare("build_property.ReswPlusUseApplicationLanguages", useApplicationLanguages?.ToString().ToLowerInvariant());
         Declare("build_property.UseUwp", useUwp?.ToString().ToLowerInvariant());
-        Declare("build_property.ReswPlusGenerateResourceInterfaces", generateResourceInterfaces?.ToString().ToLowerInvariant());
 
         var compilation = CSharpCompilation.Create(
             assemblyName,

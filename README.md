@@ -50,18 +50,10 @@ Without it, such a project is reported as `RESWP0005` and no code is generated f
 
 ### Injectable resource interfaces
 
-Resource classes are static by default. Projects that inject localization into view models or services can opt into an interface for every generated resource class:
-
-```xml
-<PropertyGroup>
-    <ReswPlusGenerateResourceInterfaces>true</ReswPlusGenerateResourceInterfaces>
-</PropertyGroup>
-```
-
-For `Resources.resw`, ReswPlus then generates `IResources` and makes `Resources` a sealed, instantiable implementation while retaining its existing static members. Existing calls such as `Resources.WelcomeTitle` keep working. The instance members are explicit interface implementations, so dependency-injected code accesses them through `IResources`:
+For `Resources.resw`, ReswPlus generates the static `Resources` class as before, plus an `IResources` interface and a sealed `ResourcesProvider` adapter. The provider delegates to the static API, so existing calls such as `Resources.WelcomeTitle` remain unchanged while view models and services can receive an injectable resource dependency:
 
 ```csharp
-IResources resources = new Resources();
+IResources resources = new ResourcesProvider();
 var title = resources.WelcomeTitle;
 ```
 

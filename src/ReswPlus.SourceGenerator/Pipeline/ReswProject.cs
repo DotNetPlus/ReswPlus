@@ -19,7 +19,6 @@ internal sealed class ReswProject : IEquatable<ReswProject>
         string rootNamespace,
         bool isLibrary,
         bool useApplicationLanguages,
-        bool generateResourceInterfaces,
         string? defaultLanguage,
         EquatableArray<string> setupProblems)
     {
@@ -31,7 +30,6 @@ internal sealed class ReswProject : IEquatable<ReswProject>
         RootNamespace = rootNamespace;
         IsLibrary = isLibrary;
         UseApplicationLanguages = useApplicationLanguages;
-        GenerateResourceInterfaces = generateResourceInterfaces;
         SetupProblems = setupProblems;
     }
 
@@ -51,8 +49,6 @@ internal sealed class ReswProject : IEquatable<ReswProject>
     public bool IsLibrary { get; }
 
     public bool UseApplicationLanguages { get; }
-
-    public bool GenerateResourceInterfaces { get; }
 
     /// <summary>
     /// Gets the default language of the project, which picks the resource file the code is generated from.
@@ -134,12 +130,11 @@ internal sealed class ReswProject : IEquatable<ReswProject>
             options.RootNamespace!,
             isLibrary,
             options.UseApplicationLanguages,
-            options.GenerateResourceInterfaces,
             options.DefaultLanguage,
             new EquatableArray<string>(problems));
 
         ReswProject Unsupported(params string[] problems) =>
-            new(false, AppType.Unknown, "", "", "", false, false, false, options.DefaultLanguage, new EquatableArray<string>(problems));
+            new(false, AppType.Unknown, "", "", "", false, false, options.DefaultLanguage, new EquatableArray<string>(problems));
     }
 
     /// <summary>
@@ -214,7 +209,6 @@ internal sealed class ReswProject : IEquatable<ReswProject>
             && RootNamespace == other.RootNamespace
             && IsLibrary == other.IsLibrary
             && UseApplicationLanguages == other.UseApplicationLanguages
-            && GenerateResourceInterfaces == other.GenerateResourceInterfaces
             && DefaultLanguage == other.DefaultLanguage
             && SetupProblems.Equals(other.SetupProblems);
     }
@@ -234,7 +228,6 @@ internal sealed class ReswProject : IEquatable<ReswProject>
         hash = (hash * 31) + RootNamespace.GetHashCode();
         hash = (hash * 31) + IsLibrary.GetHashCode();
         hash = (hash * 31) + UseApplicationLanguages.GetHashCode();
-        hash = (hash * 31) + GenerateResourceInterfaces.GetHashCode();
         hash = (hash * 31) + (DefaultLanguage?.GetHashCode() ?? 0);
 
         return (hash * 31) + SetupProblems.GetHashCode();

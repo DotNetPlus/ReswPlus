@@ -183,8 +183,7 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
                 content: content,
                 defaultNamespace: project.GetNamespace(file.Path),
                 isAdvanced: true,
-                appType: project.AppType,
-                generateResourceInterface: project.GenerateResourceInterfaces);
+                appType: project.AppType);
 
             if (generated?.Files.FirstOrDefault() is not { } generatedFile)
             {

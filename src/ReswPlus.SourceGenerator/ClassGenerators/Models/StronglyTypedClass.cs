@@ -9,15 +9,13 @@ internal sealed class StronglyTypedClass
         string[] namespaces,
         string resoureFile,
         string className,
-        AppType appType,
-        bool generateResourceInterface)
+        AppType appType)
     {
         IsAdvanced = isAdvanced;
         Namespaces = namespaces;
         ResoureFile = resoureFile;
         ClassName = className;
         AppType = appType;
-        GenerateResourceInterface = generateResourceInterface;
         Items = [];
     }
 
@@ -26,7 +24,6 @@ internal sealed class StronglyTypedClass
     public string ResoureFile { get; }
     public string ClassName { get; }
     public AppType AppType { get; }
-    public bool GenerateResourceInterface { get; }
 
     public List<Localization> Items { get; }
 }

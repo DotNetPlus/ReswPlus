@@ -48,36 +48,24 @@ public class GeneratorEndToEnd
     }
 
     [Fact]
-    public void ResourceInterfacesAreNotGeneratedByDefault()
+    public void ResourceInterfacesAndProvidersAreGeneratedByDefault()
     {
         var run = ReswGeneratorHarness.Run(
             [ReswGeneratorHarness.File("en-US", ReswTestHelpers.CreateResw(("Plain", "A plain string", null)))]);
 
-        Assert.DoesNotContain("interface IResources", run.Source("Resources.resw"));
+        Assert.Contains("public interface IResources", run.Source("Resources.resw"));
+        Assert.Contains("public sealed class ResourcesProvider : IResources", run.Source("Resources.resw"));
         Assert.Contains("public static class Resources", run.Source("Resources.resw"));
-    }
-
-    [Fact]
-    public void ResourceInterfaceOptionIsReadFromTheBuild()
-    {
-        var options = new System.Collections.Generic.Dictionary<string, string>(AnalyzerConfigOptions.KeyComparer)
-        {
-            ["build_property.ReswPlusGenerateResourceInterfaces"] = "true",
-        };
-
-        var buildOptions = ReswBuildOptions.Read(new TestAnalyzerConfigOptionsProvider(options).GlobalOptions);
-
-        Assert.True(buildOptions.GenerateResourceInterfaces);
     }
 
     [Fact]
     public void ResourceInterfaceCanBeGeneratedDirectly()
     {
         var generated = ReswTestHelpers.GenerateCode(
-            ReswTestHelpers.CreateResw(("Plain", "A plain string", null)),
-            generateResourceInterface: true);
+            ReswTestHelpers.CreateResw(("Plain", "A plain string", null)));
 
         Assert.Contains("public interface IResources", generated);
+        Assert.Contains("public sealed class ResourcesProvider : IResources", generated);
     }
 
     [Theory]
@@ -87,14 +75,14 @@ public class GeneratorEndToEnd
     {
         var run = ReswGeneratorHarness.Run(
             [ReswGeneratorHarness.File("en-US", EveryFeature)],
-            appType,
-            generateResourceInterfaces: true);
+            appType);
 
         var generated = run.Source("Resources.resw");
 
         Assert.Contains("public interface IResources", generated);
         Assert.Contains("GeneratedCodeAttribute(\"ReswPlus\"", generated);
-        Assert.Contains("public sealed class Resources : IResources", generated);
+        Assert.Contains("public sealed class ResourcesProvider : IResources", generated);
+        Assert.Contains("public static class Resources", generated);
         Assert.Contains("string IResources.Plain => Resources.Plain;", generated);
         Assert.Contains("string IResources.Formatted(string name, int age) => Resources.Formatted(name, age);", generated);
 
@@ -117,7 +105,7 @@ public class GeneratorEndToEnd
                 public static class Composition
                 {
                     public static ViewModel Create() =>
-                        new ViewModel(new global::TestProject.Strings.Resources());
+                        new ViewModel(new global::TestProject.Strings.ResourcesProvider());
                 }
             }
             """);
@@ -127,10 +115,12 @@ public class GeneratorEndToEnd
     public void AResourceCannotCollideWithItsGeneratedInterface()
     {
         var run = ReswGeneratorHarness.Run(
-            [ReswGeneratorHarness.File("en-US", ReswTestHelpers.CreateResw(("IResources", "A collision", null)))],
-            generateResourceInterfaces: true);
+            [ReswGeneratorHarness.File("en-US", ReswTestHelpers.CreateResw(
+                ("IResources", "An interface collision", null),
+                ("ResourcesProvider", "A provider collision", null)))]);
 
         Assert.DoesNotContain("string IResources {", run.Source("Resources.resw"));
+        Assert.DoesNotContain("string ResourcesProvider {", run.Source("Resources.resw"));
         run.AssertCompiles();
     }
 
