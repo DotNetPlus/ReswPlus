@@ -10,7 +10,6 @@
     <RootNamespace>ReswPlusUWPSampleExternalLibrary</RootNamespace>
     <AssemblyName>ReswPlusNativeAotUwpSampleExternalLibrary</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <LangVersion>latest</LangVersion>
     <Platforms>x86;x64;ARM64</Platforms>
     <UseUwp>true</UseUwp>
     <EnableMsixTooling>true</EnableMsixTooling>

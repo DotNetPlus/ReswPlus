@@ -11,10 +11,10 @@ Both UWP samples build the same app from `samples/UWP/ReswPlusUWPSample.Shared`.
 CI builds the whole solution, so mirror it:
 
 ```
-msbuild ReswPlus.sln /p:Configuration=Debug /p:Platform=x64
+msbuild ReswPlus.slnx /p:Configuration=Debug /p:Platform=x64
 ```
 
-A UWP sample needs a developer command prompt (`VsDevCmd.bat`). Run `nuget restore ReswPlus.sln` before the first build; do not run `msbuild /t:Restore` on the .NET Native projects, it fails with "One of your dependencies requires the .NET Framework".
+A UWP sample needs a developer command prompt (`VsDevCmd.bat`). Run `nuget restore ReswPlus.slnx` before the first build; do not run `msbuild /t:Restore` on the .NET Native projects, it fails with "One of your dependencies requires the .NET Framework".
 
 Unit tests are plain SDK-style: `dotnet test tests/ReswPlusUnitTests/ReswPlusUnitTests.csproj`.
 

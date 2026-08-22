@@ -169,6 +169,22 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
         // Add the generated members (format methods/properties) to the strongly-typed class.
         strongClassDecl = strongClassDecl.AddMembers(formatMembers.ToArray());
 
+        InterfaceDeclarationSyntax? resourceInterfaceDecl = null;
+        if (info.GenerateResourceInterface)
+        {
+            var interfaceName = "I" + info.ClassName;
+            var publicMembers = strongClassDecl.Members
+                .Where(member =>
+                    member is MethodDeclarationSyntax or PropertyDeclarationSyntax
+                    && member.Modifiers.Any(SyntaxKind.PublicKeyword))
+                .ToArray();
+
+            resourceInterfaceDecl = CreateResourceInterface(interfaceName, info, publicMembers);
+            strongClassDecl = strongClassDecl
+                .AddBaseListTypes(SimpleBaseType(IdentifierName(interfaceName)))
+                .AddMembers(CreateExplicitInterfaceImplementations(interfaceName, info.ClassName, publicMembers).ToArray());
+        }
+
         // Create the markup extension class that allows resource keys to be used in XAML.
         var markupExtensionDecl = CreateMarkupExtensionSyntax(info.ResoureFile, info.ClassName + "Extension", info.Items.Select(x => x.Key), info.AppType);
 
@@ -176,14 +192,18 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
         if (info.Namespaces != null && info.Namespaces.Any())
         {
             var nsName = string.Join(".", info.Namespaces);
-            var namespaceDecl = NamespaceDeclaration(ParseName(nsName))
-                .AddMembers(strongClassDecl, markupExtensionDecl);
+            var namespaceDecl = NamespaceDeclaration(ParseName(nsName));
+            namespaceDecl = resourceInterfaceDecl is null
+                ? namespaceDecl.AddMembers(strongClassDecl, markupExtensionDecl)
+                : namespaceDecl.AddMembers(resourceInterfaceDecl, strongClassDecl, markupExtensionDecl);
             compilationUnit = compilationUnit.AddMembers(namespaceDecl);
         }
         else
         {
             // Otherwise, add the classes at the root level.
-            compilationUnit = compilationUnit.AddMembers(strongClassDecl, markupExtensionDecl);
+            compilationUnit = resourceInterfaceDecl is null
+                ? compilationUnit.AddMembers(strongClassDecl, markupExtensionDecl)
+                : compilationUnit.AddMembers(resourceInterfaceDecl, strongClassDecl, markupExtensionDecl);
         }
 
         // Normalize the whitespace (formatting) and return the generated source code.
@@ -346,25 +366,7 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
     /// </summary>
     private ClassDeclarationSyntax CreateStronglyTypedClass(StronglyTypedClass info)
     {        // Define attributes for the generated class.
-        var assemblyName = GeneratorName;
-        var version = GeneratorVersion;
-        var attributes = List(
-        [
-            AttributeList(
-                SingletonSeparatedList(
-                    Attribute(ParseName("global::System.CodeDom.Compiler.GeneratedCodeAttribute"))
-                    .WithArgumentList(
-                        AttributeArgumentList(
-                            SeparatedList<AttributeArgumentSyntax>(new SyntaxNodeOrToken[]
-                            {
-                                AttributeArgument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(assemblyName))),
-                                Token(SyntaxKind.CommaToken),
-                                AttributeArgument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(version)))
-                            }))))
-            ),
-            AttributeList(SingletonSeparatedList(Attribute(ParseName("global::System.Diagnostics.DebuggerNonUserCodeAttribute")))),
-            AttributeList(SingletonSeparatedList(Attribute(ParseName("global::System.Runtime.CompilerServices.CompilerGeneratedAttribute"))))
-        ]);
+        var attributes = CreateGeneratedTypeAttributes();
 
         // Create a private static field: _resourceStringProvider.
         var resourceField = FieldDeclaration(
@@ -440,13 +442,136 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
         var classDecl = ClassDeclaration(info.ClassName)
             .WithAttributeLists(attributes)
             .WithLeadingTrivia(CreateDocumentation($"Provides strongly-typed access to the strings of the '{info.ResoureFile}' resource file."))
-            .WithModifiers(TokenList(
-                Token(SyntaxKind.PublicKeyword),
-                Token(SyntaxKind.StaticKeyword)
-            ))
+            .WithModifiers(info.GenerateResourceInterface
+                ? TokenList(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.SealedKeyword))
+                : TokenList(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)))
             .AddMembers(resourceField, staticCtor, getStringMethod);
 
         return classDecl;
+    }
+
+    private static SyntaxList<AttributeListSyntax> CreateGeneratedTypeAttributes(bool includeDebuggerNonUserCode = true)
+    {
+        var attributes = new List<AttributeListSyntax>
+        {
+            AttributeList(
+                SingletonSeparatedList(
+                    Attribute(ParseName("global::System.CodeDom.Compiler.GeneratedCodeAttribute"))
+                    .WithArgumentList(
+                        AttributeArgumentList(
+                            SeparatedList<AttributeArgumentSyntax>(new SyntaxNodeOrToken[]
+                            {
+                                AttributeArgument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(GeneratorName))),
+                                Token(SyntaxKind.CommaToken),
+                                AttributeArgument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(GeneratorVersion)))
+                            }))))
+            ),
+            AttributeList(SingletonSeparatedList(Attribute(ParseName("global::System.Runtime.CompilerServices.CompilerGeneratedAttribute"))))
+        };
+
+        if (includeDebuggerNonUserCode)
+        {
+            attributes.Insert(
+                1,
+                AttributeList(SingletonSeparatedList(Attribute(ParseName("global::System.Diagnostics.DebuggerNonUserCodeAttribute")))));
+        }
+
+        return List(attributes);
+    }
+
+    /// <summary>
+    /// Creates the injectable view of a generated resource class.
+    /// </summary>
+    private static InterfaceDeclarationSyntax CreateResourceInterface(
+        string interfaceName,
+        StronglyTypedClass info,
+        IEnumerable<MemberDeclarationSyntax> publicMembers)
+    {
+        return InterfaceDeclaration(interfaceName)
+            .WithAttributeLists(CreateGeneratedTypeAttributes(includeDebuggerNonUserCode: false))
+            .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
+            .WithLeadingTrivia(CreateDocumentation(
+                $"Provides injectable access to the strings of the '{info.ResoureFile}' resource file."))
+            .AddMembers(publicMembers.Select(CreateInterfaceMember).ToArray());
+    }
+
+    /// <summary>
+    /// Removes the implementation and static modifiers from a generated lookup member.
+    /// </summary>
+    private static MemberDeclarationSyntax CreateInterfaceMember(MemberDeclarationSyntax member)
+    {
+        var documentation = member.GetLeadingTrivia();
+        var trailingTrivia = member.GetTrailingTrivia();
+
+        if (member is MethodDeclarationSyntax method)
+        {
+            return method
+                .WithModifiers(default)
+                .WithBody(null)
+                .WithExpressionBody(null)
+                .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
+                .WithLeadingTrivia(documentation)
+                .WithTrailingTrivia(trailingTrivia);
+        }
+
+        var property = (PropertyDeclarationSyntax)member;
+        var accessors = property.AccessorList?.Accessors.Select(accessor =>
+                accessor
+                    .WithBody(null)
+                    .WithExpressionBody(null)
+                    .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)))
+            ?? [AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(Token(SyntaxKind.SemicolonToken))];
+
+        return property
+            .WithModifiers(default)
+            .WithExpressionBody(null)
+            .WithSemicolonToken(default)
+            .WithAccessorList(AccessorList(List(accessors)))
+            .WithLeadingTrivia(documentation)
+            .WithTrailingTrivia(trailingTrivia);
+    }
+
+    /// <summary>
+    /// Creates instance members that delegate an interface to the existing static API.
+    /// </summary>
+    private static IEnumerable<MemberDeclarationSyntax> CreateExplicitInterfaceImplementations(
+        string interfaceName,
+        string className,
+        IEnumerable<MemberDeclarationSyntax> publicMembers)
+    {
+        foreach (var member in publicMembers)
+        {
+            if (member is MethodDeclarationSyntax method)
+            {
+                var arguments = method.ParameterList.Parameters.Select(parameter =>
+                    Argument(IdentifierName(parameter.Identifier)));
+
+                yield return MethodDeclaration(method.ReturnType, method.Identifier)
+                    .WithExplicitInterfaceSpecifier(ExplicitInterfaceSpecifier(IdentifierName(interfaceName)))
+                    .WithParameterList(method.ParameterList)
+                    .WithExpressionBody(ArrowExpressionClause(
+                        InvocationExpression(
+                            MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                IdentifierName(className),
+                                IdentifierName(method.Identifier)))
+                        .WithArgumentList(ArgumentList(SeparatedList(arguments)))))
+                    .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
+            }
+            else
+            {
+                var property = (PropertyDeclarationSyntax)member;
+
+                yield return PropertyDeclaration(property.Type, property.Identifier)
+                    .WithExplicitInterfaceSpecifier(ExplicitInterfaceSpecifier(IdentifierName(interfaceName)))
+                    .WithExpressionBody(ArrowExpressionClause(
+                        MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            IdentifierName(className),
+                            IdentifierName(property.Identifier))))
+                    .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
+            }
+        }
     }
 
     /// <summary>

@@ -27,7 +27,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: 10.0.x
+          global-json-file: global.json
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v3
@@ -46,15 +46,15 @@ jobs:
           }
 
       - name: Restore Nuget
-        run: nuget restore ReswPlus.sln
+        run: nuget restore ReswPlus.slnx
         working-directory: ${{ github.workspace }}
 
       - name: DotNet Restore
-        run: dotnet restore ReswPlus.sln
+        run: dotnet restore ReswPlus.slnx
         working-directory: ${{ github.workspace }}
         
       - name: Build Solution
-        run: msbuild ReswPlus.sln /p:Configuration=${{ env.BUILD_CONFIG }} /p:Platform=x64 /p:PublishReadyToRun=false
+        run: msbuild ReswPlus.slnx /p:Configuration=${{ env.BUILD_CONFIG }} /p:Platform=x64 /p:PublishReadyToRun=false
         working-directory: ${{ github.workspace }}
 
       - name: Run Unit Tests
