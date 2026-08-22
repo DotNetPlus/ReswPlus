@@ -17,12 +17,74 @@
         <ReswPlusGenerateResourceInterfaces Condition="'$(ReswPlusGenerateResourceInterfaces)' == ''">true</ReswPlusGenerateResourceInterfaces>
         <!-- Ask the compiler to include source-generator timings in detailed build output. -->
         <ReswPlusReportGeneratorPerformance Condition="'$(ReswPlusReportGeneratorPerformance)' == ''">false</ReswPlusReportGeneratorPerformance>
+        <!-- Generate intermediate qps-ploc/qps-plocm resources before PRI indexing. -->
+        <ReswPlusPseudoLocalization Condition="'$(ReswPlusPseudoLocalization)' == ''">None</ReswPlusPseudoLocalization>
+        <ReswPlusPseudoLocalizationExpansion Condition="'$(ReswPlusPseudoLocalizationExpansion)' == ''">30</ReswPlusPseudoLocalizationExpansion>
+        <_ReswPlusBuildTasksAssembly Condition="'$(_ReswPlusBuildTasksAssembly)' == '' And Exists('$(MSBuildThisFileDirectory)..\tools\netstandard2.0\ReswPlus.BuildTasks.dll')">$(MSBuildThisFileDirectory)..\tools\netstandard2.0\ReswPlus.BuildTasks.dll</_ReswPlusBuildTasksAssembly>
+        <_ReswPlusBuildTasksAssembly Condition="'$(_ReswPlusBuildTasksAssembly)' == '' And Exists('$(MSBuildThisFileDirectory)..\src\ReswPlus.BuildTasks\bin\$(Configuration)\netstandard2.0\ReswPlus.BuildTasks.dll')">$(MSBuildThisFileDirectory)..\src\ReswPlus.BuildTasks\bin\$(Configuration)\netstandard2.0\ReswPlus.BuildTasks.dll</_ReswPlusBuildTasksAssembly>
     </PropertyGroup>
+    <UsingTask TaskName="ReswPlus.BuildTasks.GeneratePseudoResources"
+               AssemblyFile="$(_ReswPlusBuildTasksAssembly)"
+               Condition="'$(_ReswPlusBuildTasksAssembly)' != ''" />
+    <UsingTask TaskName="ReswPlus.BuildTasks.SetPseudoLanguagesInAppxManifest"
+               AssemblyFile="$(_ReswPlusBuildTasksAssembly)"
+               Condition="'$(_ReswPlusBuildTasksAssembly)' != ''" />
     <Target Name="EnableReswPlusGeneratorPerformanceReport"
             BeforeTargets="CoreCompile"
             Condition="'$(ReswPlusReportGeneratorPerformance)' == 'true'">
         <PropertyGroup>
             <ReportAnalyzer>true</ReportAnalyzer>
         </PropertyGroup>
+    </Target>
+    <Target Name="GenerateReswPlusPseudoResources"
+            BeforeTargets="_GenerateProjectPriConfigurationFiles;GenerateProjectPriFile"
+            Condition="'$(ReswPlusPseudoLocalization)' != 'None' And '$(ReswPlusPseudoLocalization)' != 'false'">
+        <Error Condition="'$(_ReswPlusBuildTasksAssembly)' == ''"
+               Text="ReswPlus pseudo-localization is enabled, but ReswPlus.BuildTasks.dll could not be found." />
+        <Error Condition="'$(DefaultLanguage)' == ''"
+               Text="ReswPlus pseudo-localization requires the project to declare DefaultLanguage." />
+        <GeneratePseudoResources Resources="@(PRIResource)"
+                                 DefaultLanguage="$(DefaultLanguage)"
+                                 ProjectDirectory="$(MSBuildProjectDirectory)"
+                                 IntermediateOutputPath="$(IntermediateOutputPath)"
+                                 Modes="$(ReswPlusPseudoLocalization)"
+                                 ExpansionPercentage="$(ReswPlusPseudoLocalizationExpansion)">
+            <Output TaskParameter="GeneratedResources" ItemName="_ReswPlusGeneratedPseudoResource" />
+            <Output TaskParameter="PseudoLanguage" PropertyName="_ReswPlusPseudoLanguage" />
+        </GeneratePseudoResources>
+        <PropertyGroup>
+            <DefaultLanguage>$(_ReswPlusPseudoLanguage)</DefaultLanguage>
+            <DefaultResourceLanguage>$(_ReswPlusPseudoLanguage)</DefaultResourceLanguage>
+        </PropertyGroup>
+        <ItemGroup>
+            <PRIResource Remove="@(PRIResource)"
+                         Condition="'%(Extension)' == '.resw'" />
+            <PRIResource Include="@(_ReswPlusGeneratedPseudoResource)" />
+            <FileWrites Include="@(_ReswPlusGeneratedPseudoResource)" />
+        </ItemGroup>
+        <Message Importance="high"
+                 Text="ReswPlus generated @(_ReswPlusGeneratedPseudoResource->Count()) pseudo-localized resource file(s)." />
+    </Target>
+    <Target Name="TrackReswPlusPseudoLanguagesForAppxManifest"
+            BeforeTargets="_GenerateCurrentProjectAppxManifest"
+            Condition="'$(FinalAppxManifestName)' != ''">
+        <PropertyGroup>
+            <_ReswPlusPseudoManifestInput>$(IntermediateOutputPath)ReswPlus\PseudoLocalization\manifest.mode</_ReswPlusPseudoManifestInput>
+        </PropertyGroup>
+        <MakeDir Directories="$([System.IO.Path]::GetDirectoryName('$(_ReswPlusPseudoManifestInput)'))" />
+        <WriteLinesToFile File="$(_ReswPlusPseudoManifestInput)"
+                          Lines="$(ReswPlusPseudoLocalization)"
+                          Overwrite="true"
+                          WriteOnlyWhenDifferent="true" />
+        <ItemGroup>
+            <_GenerateCurrentProjectAppxManifestInput Include="$(_ReswPlusPseudoManifestInput)" />
+            <FileWrites Include="$(_ReswPlusPseudoManifestInput)" />
+        </ItemGroup>
+    </Target>
+    <Target Name="AddReswPlusPseudoLanguagesToAppxManifest"
+            AfterTargets="_GenerateCurrentProjectAppxManifest"
+            Condition="'$(ReswPlusPseudoLocalization)' != 'None' And '$(ReswPlusPseudoLocalization)' != 'false' And Exists('$(FinalAppxManifestName)')">
+        <SetPseudoLanguagesInAppxManifest ManifestPath="$(FinalAppxManifestName)"
+                                          Modes="$(ReswPlusPseudoLocalization)" />
     </Target>
 </Project>

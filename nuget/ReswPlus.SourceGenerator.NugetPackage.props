@@ -23,6 +23,10 @@
   <ItemGroup>
     <!-- Include the built DLL as an analyzer -->
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs"/>
+    <!-- Include the build-time pseudo-localization task -->
+    <None Include="$(MSBuildThisFileDirectory)..\src\ReswPlus.BuildTasks\bin\$(Configuration)\netstandard2.0\ReswPlus.BuildTasks.dll"
+          Pack="true"
+          PackagePath="tools/netstandard2.0/" />
     <!-- Package metadata -->
     <None Include="$(MSBuildThisFileDirectory)Icon.png" Pack="true" PackagePath=""/>
     <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath=""/>

@@ -7,6 +7,7 @@
     <Platform Name="x86" />
   </Configurations>
   <Folder Name="/ReswPlus/">
+    <Project Path="src/ReswPlus.BuildTasks/ReswPlus.BuildTasks.csproj" />
     <Project Path="src/ReswPlus.CommandLine/ReswPlusCmd.csproj" />
     <Project Path="src/ReswPlus.Shared/ReswPlus.Shared.shproj" />
     <Project Path="src/ReswPlus.SourceGenerator/ReswPlus.SourceGenerator.csproj" />
