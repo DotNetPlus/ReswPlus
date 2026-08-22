@@ -66,10 +66,20 @@ public sealed class ReswResourceAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var defaultLanguage = context.Options.AnalyzerConfigOptionsProvider.GlobalOptions.TryGetValue("build_property.DefaultLanguage", out var value)
+        var globalOptions = context.Options.AnalyzerConfigOptionsProvider.GlobalOptions;
+        var defaultLanguage = globalOptions.TryGetValue("build_property.DefaultLanguage", out var value)
             ? value
             : null;
+        var generateResourceInterfaces =
+            !globalOptions.TryGetValue("build_property.ReswPlusGenerateResourceInterfaces", out var interfaceOption)
+            || !bool.TryParse(interfaceOption, out var parsedInterfaces)
+            || parsedInterfaces;
 
-        ReswResourceRules.Analyze(reswFiles, defaultLanguage, context.ReportDiagnostic, context.CancellationToken);
+        ReswResourceRules.Analyze(
+            reswFiles,
+            defaultLanguage,
+            generateResourceInterfaces,
+            context.ReportDiagnostic,
+            context.CancellationToken);
     }
 }

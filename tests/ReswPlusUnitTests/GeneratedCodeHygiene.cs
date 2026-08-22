@@ -80,7 +80,9 @@ public class GeneratedCodeHygiene
             .OfType<MemberDeclarationSyntax>()
             .Where(member => member is EnumMemberDeclarationSyntax ||
                              member.Modifiers.Any(SyntaxKind.PublicKeyword) ||
-                             member.Modifiers.Any(SyntaxKind.ProtectedKeyword))
+                             member.Modifiers.Any(SyntaxKind.ProtectedKeyword) ||
+                             member.Parent is InterfaceDeclarationSyntax interfaceDeclaration &&
+                             interfaceDeclaration.Modifiers.Any(SyntaxKind.PublicKeyword))
             .ToArray();
 
         Assert.NotEmpty(visibleMembers);
@@ -100,7 +102,14 @@ public class GeneratedCodeHygiene
     {
         var root = CSharpSyntaxTree.ParseText(GenerateSample()).GetRoot();
 
-        var methods = root.DescendantNodes().OfType<MethodDeclarationSyntax>().ToArray();
+        var methods = root.DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Where(method =>
+                method.Modifiers.Any(SyntaxKind.PublicKeyword) ||
+                method.Modifiers.Any(SyntaxKind.ProtectedKeyword) ||
+                method.Parent is InterfaceDeclarationSyntax interfaceDeclaration &&
+                interfaceDeclaration.Modifiers.Any(SyntaxKind.PublicKeyword))
+            .ToArray();
 
         Assert.NotEmpty(methods);
 

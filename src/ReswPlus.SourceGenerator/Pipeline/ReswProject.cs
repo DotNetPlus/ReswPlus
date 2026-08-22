@@ -139,7 +139,7 @@ internal sealed class ReswProject : IEquatable<ReswProject>
             new EquatableArray<string>(problems));
 
         ReswProject Unsupported(params string[] problems) =>
-            new(false, AppType.Unknown, "", "", "", false, false, false, options.DefaultLanguage, new EquatableArray<string>(problems));
+            new(false, AppType.Unknown, "", "", "", false, false, options.GenerateResourceInterfaces, options.DefaultLanguage, new EquatableArray<string>(problems));
     }
 
     /// <summary>

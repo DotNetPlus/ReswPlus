@@ -14,7 +14,7 @@
         <AdditionalFileItemNames>$(AdditionalFileItemNames);PRIResource</AdditionalFileItemNames>
         <!-- Read the plural language from the app runtime language list instead of the .NET UI culture -->
         <ReswPlusUseApplicationLanguages Condition="'$(ReswPlusUseApplicationLanguages)' == ''">false</ReswPlusUseApplicationLanguages>
-        <ReswPlusGenerateResourceInterfaces Condition="'$(ReswPlusGenerateResourceInterfaces)' == ''">false</ReswPlusGenerateResourceInterfaces>
+        <ReswPlusGenerateResourceInterfaces Condition="'$(ReswPlusGenerateResourceInterfaces)' == ''">true</ReswPlusGenerateResourceInterfaces>
         <!-- Ask the compiler to include source-generator timings in detailed build output. -->
         <ReswPlusReportGeneratorPerformance Condition="'$(ReswPlusReportGeneratorPerformance)' == ''">false</ReswPlusReportGeneratorPerformance>
     </PropertyGroup>

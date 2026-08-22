@@ -170,19 +170,23 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
         strongClassDecl = strongClassDecl.AddMembers(formatMembers.ToArray());
 
         InterfaceDeclarationSyntax? resourceInterfaceDecl = null;
-        if (info.GenerateResourceInterface)
+        ClassDeclarationSyntax? resourceProviderDecl = null;
+        if (info.GenerateResourceInterfaces)
         {
             var interfaceName = "I" + info.ClassName;
+            var providerName = info.ClassName + "Provider";
             var publicMembers = strongClassDecl.Members
                 .Where(member =>
                     member is MethodDeclarationSyntax or PropertyDeclarationSyntax
                     && member.Modifiers.Any(SyntaxKind.PublicKeyword))
                 .ToArray();
-
             resourceInterfaceDecl = CreateResourceInterface(interfaceName, info, publicMembers);
-            strongClassDecl = strongClassDecl
-                .AddBaseListTypes(SimpleBaseType(IdentifierName(interfaceName)))
-                .AddMembers(CreateExplicitInterfaceImplementations(interfaceName, info.ClassName, publicMembers).ToArray());
+            resourceProviderDecl = CreateResourceProvider(
+                providerName,
+                interfaceName,
+                info.ClassName,
+                info,
+                publicMembers);
         }
 
         // Create the markup extension class that allows resource keys to be used in XAML.
@@ -193,17 +197,17 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
         {
             var nsName = string.Join(".", info.Namespaces);
             var namespaceDecl = NamespaceDeclaration(ParseName(nsName));
-            namespaceDecl = resourceInterfaceDecl is null
+            namespaceDecl = resourceInterfaceDecl is null || resourceProviderDecl is null
                 ? namespaceDecl.AddMembers(strongClassDecl, markupExtensionDecl)
-                : namespaceDecl.AddMembers(resourceInterfaceDecl, strongClassDecl, markupExtensionDecl);
+                : namespaceDecl.AddMembers(resourceInterfaceDecl, resourceProviderDecl, strongClassDecl, markupExtensionDecl);
             compilationUnit = compilationUnit.AddMembers(namespaceDecl);
         }
         else
         {
             // Otherwise, add the classes at the root level.
-            compilationUnit = resourceInterfaceDecl is null
+            compilationUnit = resourceInterfaceDecl is null || resourceProviderDecl is null
                 ? compilationUnit.AddMembers(strongClassDecl, markupExtensionDecl)
-                : compilationUnit.AddMembers(resourceInterfaceDecl, strongClassDecl, markupExtensionDecl);
+                : compilationUnit.AddMembers(resourceInterfaceDecl, resourceProviderDecl, strongClassDecl, markupExtensionDecl);
         }
 
         // Normalize the whitespace (formatting) and return the generated source code.
@@ -442,9 +446,7 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
         var classDecl = ClassDeclaration(info.ClassName)
             .WithAttributeLists(attributes)
             .WithLeadingTrivia(CreateDocumentation($"Provides strongly-typed access to the strings of the '{info.ResoureFile}' resource file."))
-            .WithModifiers(info.GenerateResourceInterface
-                ? TokenList(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.SealedKeyword))
-                : TokenList(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)))
+            .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)))
             .AddMembers(resourceField, staticCtor, getStringMethod);
 
         return classDecl;
@@ -493,6 +495,26 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
             .WithLeadingTrivia(CreateDocumentation(
                 $"Provides injectable access to the strings of the '{info.ResoureFile}' resource file."))
             .AddMembers(publicMembers.Select(CreateInterfaceMember).ToArray());
+    }
+
+    /// <summary>
+    /// Creates an injectable adapter that delegates to the existing static resource API.
+    /// </summary>
+    private static ClassDeclarationSyntax CreateResourceProvider(
+        string providerName,
+        string interfaceName,
+        string className,
+        StronglyTypedClass info,
+        IEnumerable<MemberDeclarationSyntax> publicMembers)
+    {
+        return ClassDeclaration(providerName)
+            .WithAttributeLists(CreateGeneratedTypeAttributes())
+            .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.SealedKeyword)))
+            .WithBaseList(BaseList(SingletonSeparatedList<BaseTypeSyntax>(
+                SimpleBaseType(IdentifierName(interfaceName)))))
+            .WithLeadingTrivia(CreateDocumentation(
+                $"Provides injectable access to the strings of the '{info.ResoureFile}' resource file."))
+            .AddMembers(CreateExplicitInterfaceImplementations(interfaceName, className, publicMembers).ToArray());
     }
 
     /// <summary>

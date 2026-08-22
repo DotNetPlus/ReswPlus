@@ -184,7 +184,7 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
                 defaultNamespace: project.GetNamespace(file.Path),
                 isAdvanced: true,
                 appType: project.AppType,
-                generateResourceInterface: project.GenerateResourceInterfaces);
+                generateResourceInterfaces: project.GenerateResourceInterfaces);
 
             if (generated?.Files.FirstOrDefault() is not { } generatedFile)
             {

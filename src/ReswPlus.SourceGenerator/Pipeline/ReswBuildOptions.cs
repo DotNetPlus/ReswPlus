@@ -68,7 +68,7 @@ internal sealed class ReswBuildOptions : IEquatable<ReswBuildOptions>
     public bool UseUwp { get; }
 
     /// <summary>
-    /// Gets whether the project opted into generated injectable resource interfaces.
+    /// Gets whether injectable resource interfaces and providers should be generated.
     /// </summary>
     public bool GenerateResourceInterfaces { get; }
 
@@ -88,7 +88,7 @@ internal sealed class ReswBuildOptions : IEquatable<ReswBuildOptions>
             Get("build_property.RootNamespace"),
             bool.TryParse(Get("build_property.ReswPlusUseApplicationLanguages"), out var parsed) && parsed,
             bool.TryParse(Get("build_property.UseUwp"), out var parsedUseUwp) && parsedUseUwp,
-            bool.TryParse(Get("build_property.ReswPlusGenerateResourceInterfaces"), out var parsedInterfaces) && parsedInterfaces);
+            !bool.TryParse(Get("build_property.ReswPlusGenerateResourceInterfaces"), out var parsedInterfaces) || parsedInterfaces);
 
         string? Get(string key) => globalOptions.TryGetValue(key, out var value) ? value : null;
     }
@@ -137,7 +137,6 @@ internal sealed class ReswBuildOptions : IEquatable<ReswBuildOptions>
 
         hash = (hash * 31) + UseApplicationLanguages.GetHashCode();
         hash = (hash * 31) + UseUwp.GetHashCode();
-
         return (hash * 31) + GenerateResourceInterfaces.GetHashCode();
     }
 }

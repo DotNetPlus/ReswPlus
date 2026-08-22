@@ -55,9 +55,9 @@ internal static class ReswTestHelpers
     public static string GenerateCode(
         string reswContent,
         AppType appType = AppType.WindowsAppSDK,
-        bool generateResourceInterface = false)
+        bool generateResourceInterfaces = true)
     {
-        return GenerateFile(reswContent, appType, generateResourceInterface).Content;
+        return GenerateFile(reswContent, appType, generateResourceInterfaces).Content;
     }
 
     /// <summary>
@@ -69,7 +69,7 @@ internal static class ReswTestHelpers
     public static GeneratedFile GenerateFile(
         string reswContent,
         AppType appType = AppType.WindowsAppSDK,
-        bool generateResourceInterface = false)
+        bool generateResourceInterfaces = true)
     {
         var resourceFileInfo = new ResourceFileInfo(@"C:\Project\Strings\en-US\Resources.resw", new Project("TestProject", isLibrary: false));
         var generator = ReswClassGenerator.CreateGenerator(resourceFileInfo, logger: null);
@@ -82,7 +82,7 @@ internal static class ReswTestHelpers
             defaultNamespace: "TestProject.Strings",
             isAdvanced: true,
             appType: appType,
-            generateResourceInterface: generateResourceInterface);
+            generateResourceInterfaces: generateResourceInterfaces);
 
         Assert.NotNull(result);
 
@@ -97,13 +97,29 @@ internal static class ReswTestHelpers
     /// <returns>The diagnostics reported for those files.</returns>
     public static IReadOnlyList<Diagnostic> Analyze(string? defaultLanguage, params (string Language, string Content)[] files)
     {
+        return Analyze(defaultLanguage, generateResourceInterfaces: true, files);
+    }
+
+    /// <summary>
+    /// Runs the resource analysis with the configured resource-interface behavior.
+    /// </summary>
+    public static IReadOnlyList<Diagnostic> Analyze(
+        string? defaultLanguage,
+        bool generateResourceInterfaces,
+        params (string Language, string Content)[] files)
+    {
         var documents = files
             .Select(file => (GetPath(file.Language), SourceText.From(file.Content)))
             .ToArray();
 
         var diagnostics = new List<Diagnostic>();
 
-        ReswResourceRules.Analyze(documents, defaultLanguage, diagnostics.Add, CancellationToken.None);
+        ReswResourceRules.Analyze(
+            documents,
+            defaultLanguage,
+            generateResourceInterfaces,
+            diagnostics.Add,
+            CancellationToken.None);
 
         return diagnostics;
     }

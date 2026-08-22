@@ -57,10 +57,12 @@ internal static class GeneratedIdentifier
     /// beside the generated <c>GetString</c> without conflicting with it. Resources whose names only differ by
     /// case conflict for a different reason, and are reported by RESWP0009.
     /// </remarks>
-    public static bool ConflictsWithGeneratedMember(string name, string className, bool hasResourceInterface = false)
+    public static bool ConflictsWithGeneratedMember(string name, string className, bool generateResourceInterfaces)
     {
         return string.Equals(name, className, StringComparison.Ordinal)
-            || (hasResourceInterface && string.Equals(name, "I" + className, StringComparison.Ordinal))
+            || generateResourceInterfaces && (
+                string.Equals(name, "I" + className, StringComparison.Ordinal)
+                || string.Equals(name, className + "Provider", StringComparison.Ordinal))
             || Array.IndexOf(GeneratedMemberNames, name) >= 0;
     }
 
