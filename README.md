@@ -50,14 +50,36 @@ Without it, such a project is reported as `RESWP0005` and no code is generated f
 
 ### Injectable resource interfaces
 
-For `Resources.resw`, ReswPlus generates the static `Resources` class as before, plus an `IResources` interface and a sealed `ResourcesProvider` adapter. The provider delegates to the static API, so existing calls such as `Resources.WelcomeTitle` remain unchanged while view models and services can receive an injectable resource dependency:
+For every resource file, ReswPlus generates an interface and provider alongside the existing static resource class:
+
+| Resource file | Static API | Injectable API | Default implementation |
+| --- | --- | --- | --- |
+| `Resources.resw` | `Resources` | `IResources` | `ResourcesProvider` |
+| `Errors.resw` | `Errors` | `IErrors` | `ErrorsProvider` |
+
+The provider delegates to the static API, so existing calls such as `Resources.WelcomeTitle` remain unchanged while view models and services can receive an injectable resource dependency:
 
 ```csharp
-IResources resources = new ResourcesProvider();
-var title = resources.WelcomeTitle;
+public sealed class WelcomeViewModel
+{
+    private readonly IResources _resources;
+
+    public WelcomeViewModel(IResources resources)
+    {
+        _resources = resources;
+    }
+
+    public string Title => _resources.WelcomeTitle;
+}
 ```
 
-The interface includes `GetString`, regular resource properties, and all generated formatting, plural, and variant overloads.
+Register the generated provider with the dependency-injection container used by the application:
+
+```csharp
+services.AddSingleton<IResources, ResourcesProvider>();
+```
+
+The interface includes `GetString`, regular resource properties, and every generated formatting, plural, and variant overload. The provider implements these members explicitly, so application code should consume it through the generated interface.
 
 Generation is enabled by default. Projects that do not use dependency injection can disable the additional types:
 
