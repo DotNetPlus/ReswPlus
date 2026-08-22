@@ -65,14 +65,28 @@ internal static class PseudoLocalizer
             else
             {
                 throw new ArgumentException(
-                    $"Unknown pseudo-localization mode '{normalized}'. Use Accented, Mirrored, or both separated by a semicolon.",
+                    $"Unknown pseudo-localization mode '{normalized}'. Use Accented or Mirrored.",
                     nameof(modes));
             }
 
             if (seen.Add(mode))
             {
+                if (seen.Count > 1)
+                {
+                    throw new ArgumentException(
+                        "Choose one pseudo-localization mode per build: Accented or Mirrored.",
+                        nameof(modes));
+                }
+
                 parsed.Add((mode, mode == PseudoLocalizationMode.Accented ? "qps-ploc" : "qps-plocm"));
             }
+        }
+
+        if (parsed.Count == 0)
+        {
+            throw new ArgumentException(
+                "Choose one pseudo-localization mode per build: Accented or Mirrored.",
+                nameof(modes));
         }
 
         return parsed;

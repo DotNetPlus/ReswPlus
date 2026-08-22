@@ -26,7 +26,7 @@
     <UsingTask TaskName="ReswPlus.BuildTasks.GeneratePseudoResources"
                AssemblyFile="$(_ReswPlusBuildTasksAssembly)"
                Condition="'$(_ReswPlusBuildTasksAssembly)' != ''" />
-    <UsingTask TaskName="ReswPlus.BuildTasks.AddPseudoLanguagesToAppxManifest"
+    <UsingTask TaskName="ReswPlus.BuildTasks.SetPseudoLanguagesInAppxManifest"
                AssemblyFile="$(_ReswPlusBuildTasksAssembly)"
                Condition="'$(_ReswPlusBuildTasksAssembly)' != ''" />
     <Target Name="EnableReswPlusGeneratorPerformanceReport"
@@ -50,8 +50,15 @@
                                  Modes="$(ReswPlusPseudoLocalization)"
                                  ExpansionPercentage="$(ReswPlusPseudoLocalizationExpansion)">
             <Output TaskParameter="GeneratedResources" ItemName="_ReswPlusGeneratedPseudoResource" />
+            <Output TaskParameter="PseudoLanguage" PropertyName="_ReswPlusPseudoLanguage" />
         </GeneratePseudoResources>
+        <PropertyGroup>
+            <DefaultLanguage>$(_ReswPlusPseudoLanguage)</DefaultLanguage>
+            <DefaultResourceLanguage>$(_ReswPlusPseudoLanguage)</DefaultResourceLanguage>
+        </PropertyGroup>
         <ItemGroup>
+            <PRIResource Remove="@(PRIResource)"
+                         Condition="'%(Extension)' == '.resw'" />
             <PRIResource Include="@(_ReswPlusGeneratedPseudoResource)" />
             <FileWrites Include="@(_ReswPlusGeneratedPseudoResource)" />
         </ItemGroup>
@@ -77,7 +84,7 @@
     <Target Name="AddReswPlusPseudoLanguagesToAppxManifest"
             AfterTargets="_GenerateCurrentProjectAppxManifest"
             Condition="'$(ReswPlusPseudoLocalization)' != 'None' And '$(ReswPlusPseudoLocalization)' != 'false' And Exists('$(FinalAppxManifestName)')">
-        <AddPseudoLanguagesToAppxManifest ManifestPath="$(FinalAppxManifestName)"
+        <SetPseudoLanguagesInAppxManifest ManifestPath="$(FinalAppxManifestName)"
                                           Modes="$(ReswPlusPseudoLocalization)" />
     </Target>
 </Project>

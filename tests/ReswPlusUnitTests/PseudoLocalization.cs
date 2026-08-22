@@ -40,11 +40,20 @@ public class PseudoLocalization
     [Fact]
     public void ModesMapToWindowsPseudoLocales()
     {
-        var modes = PseudoLocalizer.ParseModes("Accented;Mirrored;Accented");
+        var accented = Assert.Single(PseudoLocalizer.ParseModes("Accented"));
+        var mirrored = Assert.Single(PseudoLocalizer.ParseModes("Mirrored"));
 
-        Assert.Equal(
-            [(PseudoLocalizationMode.Accented, "qps-ploc"), (PseudoLocalizationMode.Mirrored, "qps-plocm")],
-            modes);
+        Assert.Equal((PseudoLocalizationMode.Accented, "qps-ploc"), accented);
+        Assert.Equal((PseudoLocalizationMode.Mirrored, "qps-plocm"), mirrored);
+    }
+
+    [Fact]
+    public void MultipleModesAreRejected()
+    {
+        var exception = Assert.Throws<ArgumentException>(() =>
+            PseudoLocalizer.ParseModes("Accented;Mirrored"));
+
+        Assert.Contains("one pseudo-localization mode", exception.Message);
     }
 
     [Fact]
@@ -79,21 +88,17 @@ public class PseudoLocalization
                 DefaultLanguage = "en-US",
                 ProjectDirectory = projectDirectory,
                 IntermediateOutputPath = outputDirectory,
-                Modes = "Accented;Mirrored",
+                Modes = "Accented",
                 ExpansionPercentage = 30,
             };
 
             Assert.True(task.Execute());
-            Assert.Equal(2, task.GeneratedResources.Length);
+            var accented = Assert.Single(task.GeneratedResources);
 
-            var accented = Assert.Single(task.GeneratedResources, item =>
-                item.GetMetadata("Link") == @"Strings\qps-ploc\Resources.resw");
-            var mirrored = Assert.Single(task.GeneratedResources, item =>
-                item.GetMetadata("Link") == @"Strings\qps-plocm\Resources.resw");
-
+            Assert.Equal("qps-ploc", task.PseudoLanguage);
+            Assert.Equal(@"Strings\Resources.resw", accented.GetMetadata("Link"));
             Assert.Equal(accented.GetMetadata("Link"), accented.GetMetadata("TargetPath"));
             Assert.Equal("Accented", accented.GetMetadata("ReswPlusPseudoLocalization"));
-            Assert.Equal("Mirrored", mirrored.GetMetadata("ReswPlusPseudoLocalization"));
 
             var document = XDocument.Load(accented.ItemSpec);
             var value = document.Descendants("data").Single().Element("value")!.Value;
@@ -132,10 +137,10 @@ public class PseudoLocalization
             </Package>
             """);
 
-            var task = new AddPseudoLanguagesToAppxManifest
+            var task = new SetPseudoLanguagesInAppxManifest
             {
                 ManifestPath = manifestPath,
-                Modes = "Accented;Mirrored",
+                Modes = "Accented",
             };
 
             Assert.True(task.Execute());
@@ -148,7 +153,7 @@ public class PseudoLocalization
                 .Select(element => element.Attribute("Language")!.Value)
                 .ToArray();
 
-            Assert.Equal(["en-US", "qps-ploc", "qps-plocm"], languages);
+            Assert.Equal(["qps-ploc"], languages);
         }
         finally
         {

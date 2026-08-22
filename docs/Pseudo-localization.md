@@ -22,8 +22,11 @@ Enable pseudo-localization with an MSBuild property:
 ```
 
 ReswPlus reads the `.resw` files under the project's `DefaultLanguage` folder and adds generated
-`qps-ploc` resources to the PRI before Windows resource indexing. It also adds the pseudo-language to the
-generated AppX manifest so Windows accepts it as an application language. For example:
+`qps-ploc` resources to the PRI before Windows resource indexing. For that build, it removes the original
+`.resw` items from PRI indexing and replaces the generated AppX manifest languages with the enabled
+pseudo-language. The transformed intermediate resources are indexed as the package's neutral strings, which
+avoids retaining a real default-language fallback. This makes the pseudo-localized resources the only strings
+Windows can select. For example:
 
 ```text
 Welcome, {0}!
@@ -48,12 +51,6 @@ Use `Mirrored` to generate the Windows `qps-plocm` pseudo-locale:
 </PropertyGroup>
 ```
 
-Generate both pseudo-locales by separating the modes with a semicolon:
-
-```xml
-<ReswPlusPseudoLocalization>Accented;Mirrored</ReswPlusPseudoLocalization>
-```
-
 | Mode | Windows language | Behavior |
 | --- | --- | --- |
 | `Accented` | `qps-ploc` | Accents characters, expands text, and adds boundary markers |
@@ -61,21 +58,11 @@ Generate both pseudo-locales by separating the modes with a semicolon:
 
 ## Select the pseudo-language
 
-The generated resources participate in normal Windows resource resolution. Select one before creating UI
-that reads resources, then restart the application:
+No application code or system-language change is required. ReswPlus accepts one pseudo-localization mode per
+build, excludes the original `.resw` languages, and advertises only the selected pseudo-language in the
+generated AppX manifest. Windows therefore selects it automatically when the application starts.
 
-```csharp
-Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "qps-ploc";
-```
-
-Use `qps-plocm` for mirrored testing. Clear the override to return to the user's normal language:
-
-```csharp
-Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "";
-```
-
-An application with an in-app language picker can expose these identifiers only in development builds.
-They do not need to appear in production UI.
+Build once with `Accented` and once with `Mirrored` when a test suite needs to exercise both modes.
 
 ### System-level availability
 
@@ -85,8 +72,8 @@ APIs, but intentionally hides them from language enumeration. They are not displ
 so they cannot be selected as the Windows display language through Settings.
 
 On these Windows versions, registry edits do not make pseudo-locales appear in the system language
-list. Select `qps-ploc` or `qps-plocm` inside the application as shown above instead. This also keeps
-pseudo-localization isolated to the application under test.
+list. A ReswPlus pseudo-localization build needs no override because its real localized strings are
+excluded and the selected pseudo-language is the only packaged string language.
 
 Windows 10 version 1709 and older allowed pseudo-locales to be exposed for enumeration by adding
 their LCIDs under `HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Nls\Locale`. ReswPlus supports
@@ -104,13 +91,13 @@ Accented and mirrored values expand by 30 percent by default. Adjust the percent
 
 ## Use in CI
 
-Pseudo-localization is disabled unless `ReswPlusPseudoLocalization` is set. A CI job can enable it without
-changing the project:
+Pseudo-localization is disabled unless `ReswPlusPseudoLocalization` is set. Because enabling it replaces the
+packaged string languages, keep it scoped to test builds. A CI job can enable it without changing the project:
 
 ```console
 dotnet build -p:ReswPlusPseudoLocalization=Accented
 ```
 
 This verifies that the generated pseudo-language remains packageable and that all source resources can be
-parsed. UI automation can then launch the built application with `qps-ploc` selected and check for clipping,
-overlap, untranslated strings, and right-to-left regressions.
+parsed. UI automation can then launch the built application and check for clipping, overlap, untranslated
+strings, and right-to-left regressions.

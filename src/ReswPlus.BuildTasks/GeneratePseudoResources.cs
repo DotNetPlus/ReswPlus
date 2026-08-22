@@ -32,6 +32,9 @@ public sealed class GeneratePseudoResources : Task
     [Output]
     public ITaskItem[] GeneratedResources { get; private set; } = Array.Empty<ITaskItem>();
 
+    [Output]
+    public string PseudoLanguage { get; private set; } = "";
+
     public override bool Execute()
     {
         if (ExpansionPercentage is < 0 or > 200)
@@ -54,6 +57,8 @@ public sealed class GeneratePseudoResources : Task
             return false;
         }
 
+        PseudoLanguage = modes[0].Language;
+
         var sourceResources = Resources
             .Where(resource => Path.GetExtension(resource.ItemSpec).Equals(".resw", StringComparison.OrdinalIgnoreCase))
             .Select(resource => (Item: resource, LogicalPath: GetLogicalPath(resource)))
@@ -75,7 +80,7 @@ public sealed class GeneratePseudoResources : Task
         {
             foreach (var mode in modes)
             {
-                var logicalPath = ReplaceLanguageFolder(source.LogicalPath, DefaultLanguage, mode.Language);
+                var logicalPath = RemoveLanguageFolder(source.LogicalPath, DefaultLanguage);
                 var outputPath = Path.GetFullPath(Path.Combine(
                     IntermediateOutputPath,
                     "ReswPlus",
@@ -179,7 +184,7 @@ public sealed class GeneratePseudoResources : Task
         return SplitPath(path).Any(segment => segment.Equals(language, StringComparison.OrdinalIgnoreCase));
     }
 
-    private static string ReplaceLanguageFolder(string path, string sourceLanguage, string targetLanguage)
+    private static string RemoveLanguageFolder(string path, string sourceLanguage)
     {
         var segments = SplitPath(path);
 
@@ -187,8 +192,9 @@ public sealed class GeneratePseudoResources : Task
         {
             if (segments[index].Equals(sourceLanguage, StringComparison.OrdinalIgnoreCase))
             {
-                segments[index] = targetLanguage;
-                return string.Join(Path.DirectorySeparatorChar.ToString(), segments);
+                return string.Join(
+                    Path.DirectorySeparatorChar.ToString(),
+                    segments.Where((_, segmentIndex) => segmentIndex != index));
             }
         }
 

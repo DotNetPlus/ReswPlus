@@ -9,7 +9,7 @@ using Microsoft.Build.Utilities;
 
 namespace ReswPlus.BuildTasks;
 
-public sealed class AddPseudoLanguagesToAppxManifest : Task
+public sealed class SetPseudoLanguagesInAppxManifest : Task
 {
     [Required]
     public string ManifestPath { get; set; } = "";
@@ -31,28 +31,29 @@ public sealed class AddPseudoLanguagesToAppxManifest : Task
                 return false;
             }
 
-            var existing = new System.Collections.Generic.HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (var resource in resources.Elements().Where(element => element.Name.LocalName == "Resource"))
-            {
-                var language = resource.Attribute("Language")?.Value;
-                if (language is not null)
-                {
-                    existing.Add(language);
-                }
-            }
-
-            var changed = false;
-            foreach (var mode in PseudoLocalizer.ParseModes(Modes))
-            {
-                if (existing.Add(mode.Language))
-                {
-                    resources.Add(new XElement(resources.Name.Namespace + "Resource", new XAttribute("Language", mode.Language)));
-                    changed = true;
-                }
-            }
+            var languages = PseudoLocalizer.ParseModes(Modes)
+                .Select(mode => mode.Language)
+                .ToArray();
+            var existing = resources
+                .Elements()
+                .Where(element => element.Name.LocalName == "Resource")
+                .Select(element => element.Attribute("Language")?.Value ?? "")
+                .ToArray();
+            var changed = !existing.SequenceEqual(languages, StringComparer.OrdinalIgnoreCase);
 
             if (changed)
             {
+                resources.Elements()
+                    .Where(element => element.Name.LocalName == "Resource")
+                    .Remove();
+
+                foreach (var language in languages)
+                {
+                    resources.Add(new XElement(
+                        resources.Name.Namespace + "Resource",
+                        new XAttribute("Language", language)));
+                }
+
                 using var writer = XmlWriter.Create(ManifestPath, new XmlWriterSettings
                 {
                     Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
@@ -71,17 +72,17 @@ public sealed class AddPseudoLanguagesToAppxManifest : Task
         }
         catch (XmlException exception)
         {
-            Log.LogError("Could not add pseudo-languages to '{0}': {1}", ManifestPath, exception.Message);
+            Log.LogError("Could not set pseudo-languages in '{0}': {1}", ManifestPath, exception.Message);
             return false;
         }
         catch (IOException exception)
         {
-            Log.LogError("Could not add pseudo-languages to '{0}': {1}", ManifestPath, exception.Message);
+            Log.LogError("Could not set pseudo-languages in '{0}': {1}", ManifestPath, exception.Message);
             return false;
         }
         catch (UnauthorizedAccessException exception)
         {
-            Log.LogError("Could not add pseudo-languages to '{0}': {1}", ManifestPath, exception.Message);
+            Log.LogError("Could not set pseudo-languages in '{0}': {1}", ManifestPath, exception.Message);
             return false;
         }
     }
