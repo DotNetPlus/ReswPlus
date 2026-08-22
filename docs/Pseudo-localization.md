@@ -77,6 +77,23 @@ Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "";
 An application with an in-app language picker can expose these identifiers only in development builds.
 They do not need to appear in production UI.
 
+### System-level availability
+
+Nothing needs to be installed or enabled at the system level on Windows 10 version 1803 and newer,
+including Windows 11. Windows includes the `qps-*` pseudo-locales in its National Language Support
+APIs, but intentionally hides them from language enumeration. They are not display-language packs,
+so they cannot be selected as the Windows display language through Settings.
+
+On these Windows versions, registry edits do not make pseudo-locales appear in the system language
+list. Select `qps-ploc` or `qps-plocm` inside the application as shown above instead. This also keeps
+pseudo-localization isolated to the application under test.
+
+Windows 10 version 1709 and older allowed pseudo-locales to be exposed for enumeration by adding
+their LCIDs under `HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Nls\Locale`. ReswPlus supports
+modern UWP and Windows App SDK targets, so this legacy system configuration is not required. See
+[Using pseudo-locales for localizability testing](https://learn.microsoft.com/windows/win32/intl/using-pseudo-locales-for-localization-testing)
+for the legacy registry values and NLS details.
+
 ## Configure text expansion
 
 Accented and mirrored values expand by 30 percent by default. Adjust the percentage from 0 through 200:
