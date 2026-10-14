@@ -69,6 +69,7 @@ internal static class ReswGeneratorHarness
     /// <param name="nativeAotUwp">Whether the compilation should look like a UWP project built for Native AOT, which has the UWP types but no recognizable API contract reference.</param>
     /// <param name="additionalFiles">Files to pass to the compiler on top of <paramref name="files"/>, to cover what the generator does with the ones it doesn't own.</param>
     /// <param name="references">Custom compilation references, or <see langword="null"/> to use the platform stubs.</param>
+    /// <param name="appTypeOverride">The opt-in <c>ReswPlusAppType</c> selection, or <see langword="null"/> to leave it undeclared.</param>
     /// <returns>The result of the run.</returns>
     public static ReswGeneratorRun Run(
         IEnumerable<ReswFile> files,
@@ -85,7 +86,8 @@ internal static class ReswGeneratorHarness
         string assemblyName = "TestProject",
         bool nativeAotUwp = false,
         IEnumerable<ReswFile>? additionalFiles = null,
-        IEnumerable<MetadataReference>? references = null)
+        IEnumerable<MetadataReference>? references = null,
+        string? appTypeOverride = null)
     {
         var texts = files
             .Concat(additionalFiles ?? [])
@@ -104,6 +106,7 @@ internal static class ReswGeneratorHarness
         Declare("build_property.RootNamespace", rootNamespace);
         Declare("build_property.ReswPlusUseApplicationLanguages", useApplicationLanguages?.ToString().ToLowerInvariant());
         Declare("build_property.UseUwp", useUwp?.ToString().ToLowerInvariant());
+        Declare("build_property.ReswPlusAppType", appTypeOverride);
         Declare("build_property.ReswPlusGenerateResourceInterfaces", generateResourceInterfaces?.ToString().ToLowerInvariant());
 
         var compilation = CSharpCompilation.Create(
@@ -253,6 +256,19 @@ internal sealed class ReswGeneratorRun
     public ReswGeneratorRun RunAgainWithReferences(IEnumerable<MetadataReference> references)
     {
         return From(_driver, _inputCompilation.RemoveAllReferences().AddReferences(references), _texts);
+    }
+
+    /// <summary>
+    /// Runs the generator again with new project options, reusing its compilation, files, and cached state.
+    /// </summary>
+    /// <param name="globalOptions">The complete set of global project options for the new run.</param>
+    /// <returns>The result of the run with the new options.</returns>
+    public ReswGeneratorRun RunAgainWithOptions(IReadOnlyDictionary<string, string> globalOptions)
+    {
+        return From(
+            _driver.WithUpdatedAnalyzerConfigOptions(new TestAnalyzerConfigOptionsProvider(globalOptions)),
+            _inputCompilation,
+            _texts);
     }
 
     /// <summary>
@@ -562,10 +578,19 @@ internal static class PlatformStubs
             .Select(path => (MetadataReference)MetadataReference.CreateFromFile(path))]);
 
     private static readonly Lazy<MetadataReference> WindowsAppSdk = new(() =>
-        Compile("ReswPlusTests.WindowsAppSdkStub", WindowsAppSdkStub, @"C:\Packages\Microsoft.WindowsAppSdk\Microsoft.WindowsAppSdk.dll"));
+        Compile("ReswPlusTests.WindowsAppSdkStub", WindowsAppSdkStub, @"C:\Packages\Microsoft.WindowsAppSdk\Microsoft.WindowsAppSdk.dll", registerForRuntime: true));
 
     private static readonly Lazy<MetadataReference> Uwp = new(() =>
-        Compile("ReswPlusTests.UwpStub", UwpStub, @"C:\Packages\UAP\Windows.Foundation.UniversalApiContract.winmd"));
+        Compile("ReswPlusTests.UwpStub", UwpStub, @"C:\Packages\UAP\Windows.Foundation.UniversalApiContract.winmd", registerForRuntime: true));
+
+    private static readonly string UnoWinUIStub = UwpStub.Replace("Windows.UI.Xaml", "Microsoft.UI.Xaml");
+
+    private static readonly Lazy<MetadataReference> UnoWinUI = new(() =>
+        Compile(
+            "Uno.WinUI",
+            UnoWinUIStub + "\nnamespace Microsoft.UI.Xaml { public interface DependencyObject { } }",
+            @"C:\References\Platform.dll",
+            registerForRuntime: true));
 
     /// <summary>
     /// The same UWP types, under a name the app type detection cannot recognize.
@@ -576,7 +601,7 @@ internal static class PlatformStubs
     /// such a project look like no supported app type at all unless it declares <c>UseUwp</c>.
     /// </remarks>
     private static readonly Lazy<MetadataReference> NativeAotUwp = new(() =>
-        Compile("ReswPlusTests.NativeAotUwpStub", UwpStub, @"C:\Packages\Microsoft.Windows.SDK.NET\Microsoft.Windows.SDK.NET.dll"));
+        Compile("ReswPlusTests.NativeAotUwpStub", UwpStub, @"C:\Packages\Microsoft.Windows.SDK.NET\Microsoft.Windows.SDK.NET.dll", registerForRuntime: true));
 
     /// <summary>
     /// Returns the references of a UWP project built for Native AOT: the UWP types are there, but nothing names
@@ -598,8 +623,39 @@ internal static class PlatformStubs
         {
             AppType.WindowsAppSDK => RuntimeReferences.Value.Add(WindowsAppSdk.Value),
             AppType.UWP => RuntimeReferences.Value.Add(Uwp.Value),
+            AppType.UnoWinUI => RuntimeReferences.Value.Add(UnoWinUI.Value),
             _ => RuntimeReferences.Value,
         };
+    }
+
+    /// <summary>
+    /// Returns the APIs of an app model under an unrecognized or misleading reference path.
+    /// </summary>
+    /// <param name="appType">The app model whose APIs are available.</param>
+    /// <param name="hintedAppType">The app model suggested by the path, or <see langword="null"/> for no hint.</param>
+    /// <returns>The references with no conclusive Uno type identity.</returns>
+    public static ImmutableArray<MetadataReference> ReferencesWithDetectionHint(AppType appType, AppType? hintedAppType = null)
+    {
+        var source = appType switch
+        {
+            AppType.WindowsAppSDK => WindowsAppSdkStub,
+            AppType.UWP => UwpStub,
+            AppType.UnoWinUI => UnoWinUIStub,
+            _ => throw new ArgumentOutOfRangeException(nameof(appType)),
+        };
+        var path = hintedAppType switch
+        {
+            AppType.WindowsAppSDK => @"C:\Packages\Microsoft.WindowsAppSdk\Platform.dll",
+            AppType.UWP => @"C:\Packages\UAP\Windows.Foundation.UniversalApiContract.winmd",
+            null => @"C:\References\Platform.dll",
+            _ => throw new ArgumentOutOfRangeException(nameof(hintedAppType)),
+        };
+
+        return RuntimeReferences.Value.Add(Compile(
+            $"ReswPlusTests.Custom{appType}",
+            source,
+            path,
+            registerForRuntime: true));
     }
 
     /// <summary>
@@ -645,8 +701,9 @@ internal static class PlatformStubs
     /// <param name="assemblyName">The defining assembly identity.</param>
     /// <param name="source">The source of the platform types.</param>
     /// <param name="filePath">The reference path the generator sees.</param>
+    /// <param name="registerForRuntime">Whether the reference is a shared platform stub that can be loaded at runtime.</param>
     /// <returns>The compiled reference.</returns>
-    public static MetadataReference Compile(string assemblyName, string source, string filePath)
+    public static MetadataReference Compile(string assemblyName, string source, string filePath, bool registerForRuntime = false)
     {
         var compilation = CSharpCompilation.Create(
             assemblyName,
@@ -669,7 +726,10 @@ internal static class PlatformStubs
         // path the real framework would have.
         var image = peStream.ToArray();
 
-        StubImages[assemblyName] = image;
+        if (registerForRuntime)
+        {
+            StubImages[assemblyName] = image;
+        }
 
         return AssemblyMetadata.CreateFromImage(image)
             .GetReference(filePath: filePath, display: filePath);

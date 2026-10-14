@@ -14,3 +14,4 @@ RESWP0017 | Resources    | Info     | A translated resource does not exist in th
 RESWP0018 | Resources    | Info     | A translated value is identical to its default-language value.
 RESWP0019 | Resources    | Warning  | A translation cannot serve the resource shape generated from the default language.
 RESWP0020 | Resources    | Info     | A translation defines variants that do not exist in the default language.
+RESWP0021 | Compatibility | Error   | ReswPlusAppType specifies an unsupported application model.

@@ -76,7 +76,7 @@ internal static class Diagnostics
     public static readonly DiagnosticDescriptor UnrecognizedAppType = new(
         "RESWP0005",
         "Project type not recognized",
-        "ReswPlus only supports UWP, WinAppSDK, and Uno WinUI applications/libraries",
+        "ReswPlus only supports UWP, WinAppSDK, and Uno WinUI applications/libraries; set ReswPlusAppType to WindowsAppSDK, UWP, or UnoWinUI to override automatic detection",
         CompatibilityCategory,
         DiagnosticSeverity.Error,
         isEnabledByDefault: true);
@@ -273,6 +273,17 @@ internal static class Diagnostics
         isEnabledByDefault: true);
 
     /// <summary>
+    /// RESWP0021: the explicit application model selection is not supported.
+    /// </summary>
+    public static readonly DiagnosticDescriptor InvalidAppTypeOverride = new(
+        "RESWP0021",
+        "Invalid application model override",
+        "ReswPlusAppType must be Auto, WindowsAppSDK, UWP, or UnoWinUI",
+        CompatibilityCategory,
+        DiagnosticSeverity.Error,
+        isEnabledByDefault: true);
+
+    /// <summary>
     /// Returns the descriptor of a diagnostic from its identifier.
     /// </summary>
     /// <param name="id">The identifier of the diagnostic.</param>
@@ -291,6 +302,7 @@ internal static class Diagnostics
             "RESWP0003" => MissingRootPath,
             "RESWP0004" => UnknownProjectType,
             "RESWP0005" => UnrecognizedAppType,
+            "RESWP0021" => InvalidAppTypeOverride,
             _ => throw new System.ArgumentOutOfRangeException(nameof(id), id, "No diagnostic carries that identifier."),
         };
     }

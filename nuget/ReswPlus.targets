@@ -7,12 +7,14 @@
         <CompilerVisibleProperty Include="DefaultLanguage" />
         <CompilerVisibleProperty Include="OutputType" />
         <CompilerVisibleProperty Include="UseUwp" />
+        <CompilerVisibleProperty Include="ReswPlusAppType" />
         <CompilerVisibleProperty Include="ReswPlusUseApplicationLanguages" />
         <CompilerVisibleProperty Include="ReswPlusGenerateResourceInterfaces" />
         <CompilerVisibleProperty Include="ReswPlusTranslationChecks" />
     </ItemGroup>
     <PropertyGroup>
         <AdditionalFileItemNames>$(AdditionalFileItemNames);PRIResource</AdditionalFileItemNames>
+        <ReswPlusAppType Condition="'$(ReswPlusAppType)' == ''">Auto</ReswPlusAppType>
         <!-- Read the plural language from the app runtime language list instead of the .NET UI culture -->
         <ReswPlusUseApplicationLanguages Condition="'$(ReswPlusUseApplicationLanguages)' == ''">false</ReswPlusUseApplicationLanguages>
         <ReswPlusGenerateResourceInterfaces Condition="'$(ReswPlusGenerateResourceInterfaces)' == ''">true</ReswPlusGenerateResourceInterfaces>

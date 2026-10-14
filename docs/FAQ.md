@@ -35,6 +35,12 @@ Generated macro helpers are still subject to Uno's Windows API support. Uno may 
 
 If you previously worked around `RESWP0005` by setting `UseUwp=true` and adding `Windows.UI.Xaml` versions of `MarkupExtension`, `MarkupExtensionReturnTypeAttribute`, and `IValueConverter`, remove that override and those compatibility types after updating. A separate `WinRT.DynamicWindowsRuntimeCastAttribute` polyfill, if required by your app, is unrelated to ReswPlus and should be kept.
 
+## Can I override the detected application model?
+
+Yes. Set `ReswPlusAppType` to `WindowsAppSDK`, `UWP`, or `UnoWinUI` to explicitly select the app model. Leaving it unset, empty, or `Auto` preserves automatic detection and the existing `UseUwp` fallback. Supported names are case-insensitive and ignore surrounding whitespace; invalid values report `RESWP0021` and stop generation.
+
+An explicit `ReswPlusAppType` takes precedence over both references and `UseUwp`, but does not supply any missing platform APIs. For a multi-targeting Uno app, apply the override only to the affected target frameworks: Windows App SDK heads should keep their own app model. See the [configuration example](../README.md#override-application-model-detection).
+
 ## Is it free?
 
 Yes and it won't change.

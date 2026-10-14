@@ -12,6 +12,8 @@ The package adds the generator and its transitive MSBuild integration. Add or up
 
 Supports UWP, Windows App SDK, and Uno WinUI applications and libraries. Uno WinUI is detected automatically and uses WinUI XAML helpers with the Windows resource loader, without `UseUwp=true` or `Windows.UI.Xaml` compatibility types.
 
+If automatic detection cannot recognize your configuration or selects the wrong app model, opt in by setting `ReswPlusAppType` to `WindowsAppSDK`, `UWP`, or `UnoWinUI`. The default `Auto` preserves detection and the existing `UseUwp` fallback; an explicit selection overrides both. Configure it per target framework when needed, and retain the corresponding platform references. Invalid values report `RESWP0021`.
+
 ## Features
 
 - Strongly typed resource properties for XAML and C#
