@@ -29,7 +29,7 @@ VB support is currently under development. C++/CX and C++/WinRT support are plan
 
 ## Does the source generator support Uno WinUI?
 
-Yes. ReswPlus detects `Microsoft.UI.Xaml.DependencyObject` from the `Uno.UI` assembly, regardless of the NuGet package path or whether the type is a class or interface. It generates `Microsoft.UI.Xaml` helpers and uses `Windows.ApplicationModel.Resources.ResourceLoader.GetForViewIndependentUse`.
+Yes. ReswPlus detects `Microsoft.UI.Xaml.DependencyObject` from the `Uno.UI` assembly or the `Uno.WinUI` assembly used by Uno 7.0 and later, regardless of the NuGet package path or whether the type is a class or interface. It generates `Microsoft.UI.Xaml` helpers and uses `Windows.ApplicationModel.Resources.ResourceLoader.GetForViewIndependentUse`.
 
 Generated macro helpers are still subject to Uno's Windows API support. Uno may report `Uno0001` warnings for unsupported APIs in those helpers, even when the resource uses a different macro.
 

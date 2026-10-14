@@ -269,9 +269,9 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
     /// </summary>
     private static AppType RetrieveAppType(Compilation compilation)
     {
-        // Uno.WinUI defines WinUI's types in Uno.UI, but implements the Windows resource loader.
+        // Uno provides WinUI XAML types, but implements the Windows resource loader.
         var dependencyObject = compilation.GetTypeByMetadataName("Microsoft.UI.Xaml.DependencyObject");
-        if (dependencyObject?.ContainingAssembly.Identity.Name == "Uno.UI")
+        if (dependencyObject?.ContainingAssembly.Identity.Name is "Uno.UI" or "Uno.WinUI")
         {
             return AppType.UnoWinUI;
         }

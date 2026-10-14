@@ -18,17 +18,25 @@ public class AppTypeDetection
         ("FileCount_Other", "{0} files", "#Format[Plural Int count]"));
 
     [Theory]
-    [InlineData("interface", false, false)]
-    [InlineData("interface", true, false)]
-    [InlineData("class", false, false)]
-    [InlineData("class", true, false)]
-    [InlineData("interface", false, true)]
-    [InlineData("interface", true, true)]
-    [InlineData("class", false, true)]
-    [InlineData("class", true, true)]
-    public void UnoWinUIUsesWinUIHelpersAndWindowsResources(string typeKind, bool isLibrary, bool useApplicationLanguages)
+    [InlineData("Uno.UI", "interface", false, false)]
+    [InlineData("Uno.UI", "interface", true, false)]
+    [InlineData("Uno.UI", "class", false, false)]
+    [InlineData("Uno.UI", "class", true, false)]
+    [InlineData("Uno.UI", "interface", false, true)]
+    [InlineData("Uno.UI", "interface", true, true)]
+    [InlineData("Uno.UI", "class", false, true)]
+    [InlineData("Uno.UI", "class", true, true)]
+    [InlineData("Uno.WinUI", "interface", false, false)]
+    [InlineData("Uno.WinUI", "interface", true, false)]
+    [InlineData("Uno.WinUI", "class", false, false)]
+    [InlineData("Uno.WinUI", "class", true, false)]
+    [InlineData("Uno.WinUI", "interface", false, true)]
+    [InlineData("Uno.WinUI", "interface", true, true)]
+    [InlineData("Uno.WinUI", "class", false, true)]
+    [InlineData("Uno.WinUI", "class", true, true)]
+    public void UnoWinUIUsesWinUIHelpersAndWindowsResources(string unoAssemblyName, string typeKind, bool isLibrary, bool useApplicationLanguages)
     {
-        var reference = CreatePlatformReference(AppType.UnoWinUI, typeKind);
+        var reference = CreatePlatformReference(AppType.UnoWinUI, typeKind, unoAssemblyName);
         Assert.DoesNotContain("Uno", reference.Display!);
 
         var run = Run([reference], isLibrary, useApplicationLanguages);
@@ -68,7 +76,7 @@ public class AppTypeDetection
         }
 
         run.AssertCompiles();
-        AssertHelperTypes(run.OutputCompilation, "Microsoft.UI.Xaml", "Uno.UI");
+        AssertHelperTypes(run.OutputCompilation, "Microsoft.UI.Xaml", unoAssemblyName);
     }
 
     [Theory]
@@ -93,38 +101,45 @@ public class AppTypeDetection
 
     [Theory]
     [InlineData("Unrelated.UI", "Microsoft.UI.Xaml")]
-    [InlineData("Uno.WinUI", "Microsoft.UI.Xaml")]
+    [InlineData("Uno.WinUI.Unrelated", "Microsoft.UI.Xaml")]
     [InlineData("Uno.UI", "Windows.UI.Xaml")]
-    public void MatchingNamespaceOrPackageNameAloneDoesNotSelectUno(string assemblyName, string xamlNamespace)
+    [InlineData("Uno.WinUI", "Windows.UI.Xaml")]
+    public void MatchingNamespaceOrSimilarAssemblyNameAloneDoesNotSelectUno(string assemblyName, string xamlNamespace)
     {
         var reference = CreateReference(assemblyName, $"namespace {xamlNamespace} {{ public interface DependencyObject {{ }} }}");
 
         AssertUnrecognized(Run([reference]));
     }
 
-    [Fact]
-    public void MissingDependencyObjectDoesNotSelectUno()
+    [Theory]
+    [InlineData("Uno.UI")]
+    [InlineData("Uno.WinUI")]
+    public void MissingDependencyObjectDoesNotSelectUno(string unoAssemblyName)
     {
-        AssertUnrecognized(Run([CreateReference("Uno.UI", "public class UnrelatedType { }")]));
+        AssertUnrecognized(Run([CreateReference(unoAssemblyName, "public class UnrelatedType { }")]));
     }
 
-    [Fact]
-    public void AmbiguousDependencyObjectDoesNotSelectUno()
+    [Theory]
+    [InlineData("Uno.UI")]
+    [InlineData("Uno.WinUI")]
+    public void AmbiguousDependencyObjectDoesNotSelectUno(string unoAssemblyName)
     {
         const string source = "namespace Microsoft.UI.Xaml { public interface DependencyObject { } }";
-        var run = Run([CreateReference("Uno.UI", source), CreateReference("Unrelated.UI", source)]);
+        var run = Run([CreateReference(unoAssemblyName, source), CreateReference("Unrelated.UI", source)]);
 
         Assert.Null(run.OutputCompilation.GetTypeByMetadataName("Microsoft.UI.Xaml.DependencyObject"));
         AssertUnrecognized(run);
     }
 
     [Theory]
-    [InlineData(AppType.WindowsAppSDK)]
-    [InlineData(AppType.UWP)]
-    public void UnoWinUIDetectionTakesPrecedenceOverReferencePathHints(AppType hintedAppType)
+    [InlineData(AppType.WindowsAppSDK, "Uno.UI")]
+    [InlineData(AppType.UWP, "Uno.UI")]
+    [InlineData(AppType.WindowsAppSDK, "Uno.WinUI")]
+    [InlineData(AppType.UWP, "Uno.WinUI")]
+    public void UnoWinUIDetectionTakesPrecedenceOverReferencePathHints(AppType hintedAppType, string unoAssemblyName)
     {
         var hintedReference = CreateReference("PathHint", "public class UnrelatedType { }", GetReferencePath(hintedAppType));
-        var run = Run([CreatePlatformReference(AppType.UnoWinUI), hintedReference]);
+        var run = Run([CreatePlatformReference(AppType.UnoWinUI, unoAssemblyName: unoAssemblyName), hintedReference]);
 
         Assert.Empty(run.Diagnostics);
         Assert.Contains("using Microsoft.UI.Xaml.Markup;", run.Source("Resources.resw"));
@@ -170,13 +185,15 @@ public class AppTypeDetection
         Assert.Contains("using Microsoft.Windows.ApplicationModel.Resources;", run.Source("ResourceStringProvider"));
     }
 
-    [Fact]
-    public void ChangingReferencesInvalidatesTheIncrementalAppType()
+    [Theory]
+    [InlineData("Uno.UI")]
+    [InlineData("Uno.WinUI")]
+    public void ChangingReferencesInvalidatesTheIncrementalAppType(string unoAssemblyName)
     {
         var before = Run([CreatePlatformReference(AppType.WindowsAppSDK)]);
         Assert.Contains("using Microsoft.Windows.ApplicationModel.Resources;", before.Source("ResourceStringProvider"));
 
-        var after = before.RunAgainWithReferences(FrameworkReferences.Add(CreatePlatformReference(AppType.UnoWinUI)));
+        var after = before.RunAgainWithReferences(FrameworkReferences.Add(CreatePlatformReference(AppType.UnoWinUI, unoAssemblyName: unoAssemblyName)));
 
         Assert.Empty(after.Diagnostics);
         Assert.Contains("using Windows.ApplicationModel.Resources;", after.Source("ResourceStringProvider"));
@@ -194,6 +211,34 @@ public class AppTypeDetection
             new CompilationInfo(true, AppType.UnoWinUI, "TestProject"));
     }
 
+    [Fact]
+    public void MovingDependencyObjectToTheUnoWinUIAssemblyKeepsTheAppModelUnchanged()
+    {
+        var before = Run([CreatePlatformReference(AppType.UnoWinUI)]);
+        var after = before.RunAgainWithReferences(FrameworkReferences.Add(
+            CreatePlatformReference(AppType.UnoWinUI, unoAssemblyName: "Uno.WinUI")));
+
+        Assert.Empty(after.Diagnostics);
+        Assert.Equal(before.Source("Resources.resw"), after.Source("Resources.resw"));
+        Assert.Equal(before.Source("ResourceStringProvider"), after.Source("ResourceStringProvider"));
+        after.AssertReused(TrackingNames.CompilationInfo);
+        after.AssertReused(TrackingNames.Project);
+        after.AssertReused(TrackingNames.Generation);
+        after.AssertReused(TrackingNames.Support);
+        AssertHelperTypes(after.OutputCompilation, "Microsoft.UI.Xaml", "Uno.WinUI");
+        after.AssertCompiles();
+    }
+
+    [Fact]
+    public void ADependencyObjectDefinedInBothUnoAssembliesIsAmbiguous()
+    {
+        const string source = "namespace Microsoft.UI.Xaml { public interface DependencyObject { } }";
+        var run = Run([CreateReference("Uno.UI", source), CreateReference("Uno.WinUI", source)]);
+
+        Assert.Null(run.OutputCompilation.GetTypeByMetadataName("Microsoft.UI.Xaml.DependencyObject"));
+        AssertUnrecognized(run);
+    }
+
     private static void AssertHelperTypes(Compilation compilation, string xamlNamespace, string assemblyName)
     {
         var extension = compilation.GetTypeByMetadataName("TestProject.Strings.ResourcesExtension");
@@ -209,23 +254,29 @@ public class AppTypeDetection
     }
 
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void UseUwpDoesNotOverrideUnoWinUIReferences(bool useUwp)
+    [InlineData(false, "Uno.UI")]
+    [InlineData(true, "Uno.UI")]
+    [InlineData(false, "Uno.WinUI")]
+    [InlineData(true, "Uno.WinUI")]
+    public void UseUwpDoesNotOverrideUnoWinUIReferences(bool useUwp, string unoAssemblyName)
     {
-        var run = Run([CreatePlatformReference(AppType.UnoWinUI)], useUwp: useUwp);
+        var run = Run([CreatePlatformReference(AppType.UnoWinUI, unoAssemblyName: unoAssemblyName)], useUwp: useUwp);
 
         Assert.Empty(run.Diagnostics);
-        AssertHelperTypes(run.OutputCompilation, "Microsoft.UI.Xaml", "Uno.UI");
+        AssertHelperTypes(run.OutputCompilation, "Microsoft.UI.Xaml", unoAssemblyName);
         run.AssertCompiles();
     }
 
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void UnoWinUIHonorsResourceInterfaceGeneration(bool generateResourceInterfaces)
+    [InlineData(false, "Uno.UI")]
+    [InlineData(true, "Uno.UI")]
+    [InlineData(false, "Uno.WinUI")]
+    [InlineData(true, "Uno.WinUI")]
+    public void UnoWinUIHonorsResourceInterfaceGeneration(bool generateResourceInterfaces, string unoAssemblyName)
     {
-        var run = Run([CreatePlatformReference(AppType.UnoWinUI)], generateResourceInterfaces: generateResourceInterfaces);
+        var run = Run(
+            [CreatePlatformReference(AppType.UnoWinUI, unoAssemblyName: unoAssemblyName)],
+            generateResourceInterfaces: generateResourceInterfaces);
         var resources = run.Source("Resources.resw");
 
         Assert.Empty(run.Diagnostics);
@@ -274,7 +325,7 @@ public class AppTypeDetection
         };
     }
 
-    private static MetadataReference CreatePlatformReference(AppType appType, string typeKind = "class")
+    private static MetadataReference CreatePlatformReference(AppType appType, string typeKind = "class", string unoAssemblyName = "Uno.UI")
     {
         var xamlNamespace = appType == AppType.UWP ? "Windows.UI.Xaml" : "Microsoft.UI.Xaml";
         var resourceNamespace = appType == AppType.WindowsAppSDK
@@ -284,7 +335,7 @@ public class AppTypeDetection
         {
             AppType.WindowsAppSDK => "Microsoft.WinUI",
             AppType.UWP => "Windows.Foundation.UniversalApiContract",
-            _ => "Uno.UI"
+            _ => unoAssemblyName
         };
         var source = $$"""
             namespace {{xamlNamespace}}
