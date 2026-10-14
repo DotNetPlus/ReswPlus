@@ -68,6 +68,7 @@ internal static class ReswGeneratorHarness
     /// <param name="assemblyName">The name of the assembly being compiled.</param>
     /// <param name="nativeAotUwp">Whether the compilation should look like a UWP project built for Native AOT, which has the UWP types but no recognizable API contract reference.</param>
     /// <param name="additionalFiles">Files to pass to the compiler on top of <paramref name="files"/>, to cover what the generator does with the ones it doesn't own.</param>
+    /// <param name="references">Custom compilation references, or <see langword="null"/> to use the platform stubs.</param>
     /// <returns>The result of the run.</returns>
     public static ReswGeneratorRun Run(
         IEnumerable<ReswFile> files,
@@ -83,7 +84,8 @@ internal static class ReswGeneratorHarness
         bool? generateResourceInterfaces = null,
         string assemblyName = "TestProject",
         bool nativeAotUwp = false,
-        IEnumerable<ReswFile>? additionalFiles = null)
+        IEnumerable<ReswFile>? additionalFiles = null,
+        IEnumerable<MetadataReference>? references = null)
     {
         var texts = files
             .Concat(additionalFiles ?? [])
@@ -107,7 +109,7 @@ internal static class ReswGeneratorHarness
         var compilation = CSharpCompilation.Create(
             assemblyName,
             syntaxTrees: null,
-            nativeAotUwp ? PlatformStubs.NativeAotUwpReferences() : PlatformStubs.ReferencesFor(appType),
+            references ?? (nativeAotUwp ? PlatformStubs.NativeAotUwpReferences() : PlatformStubs.ReferencesFor(appType)),
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
         var driver = CSharpGeneratorDriver.Create(
@@ -241,6 +243,16 @@ internal sealed class ReswGeneratorRun
             .ToImmutableArray();
 
         return From(_driver.ReplaceAdditionalTexts(texts), _inputCompilation, texts);
+    }
+
+    /// <summary>
+    /// Runs the generator again with new compilation references, reusing the state of the previous run.
+    /// </summary>
+    /// <param name="references">The references of the new compilation.</param>
+    /// <returns>The result of the run with the new references.</returns>
+    public ReswGeneratorRun RunAgainWithReferences(IEnumerable<MetadataReference> references)
+    {
+        return From(_driver, _inputCompilation.RemoveAllReferences().AddReferences(references), _texts);
     }
 
     /// <summary>
@@ -627,7 +639,14 @@ internal static class PlatformStubs
             || name.Equals("WinRT.Runtime", StringComparison.OrdinalIgnoreCase);
     }
 
-    private static MetadataReference Compile(string assemblyName, string source, string filePath)
+    /// <summary>
+    /// Compiles platform types into an in-memory reference with a caller-supplied identity and display path.
+    /// </summary>
+    /// <param name="assemblyName">The defining assembly identity.</param>
+    /// <param name="source">The source of the platform types.</param>
+    /// <param name="filePath">The reference path the generator sees.</param>
+    /// <returns>The compiled reference.</returns>
+    public static MetadataReference Compile(string assemblyName, string source, string filePath)
     {
         var compilation = CSharpCompilation.Create(
             assemblyName,

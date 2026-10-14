@@ -10,6 +10,10 @@ dotnet add package ReswPlus
 
 The package adds the generator and its transitive MSBuild integration. Add or update the default-language `.resw` file in your project and ReswPlus generates resource properties and methods during compilation.
 
+Supports UWP, Windows App SDK, and Uno WinUI applications and libraries. Uno WinUI is detected
+automatically and uses WinUI XAML helpers with the Windows resource loader, without `UseUwp=true`
+or `Windows.UI.Xaml` compatibility types.
+
 ## Features
 
 - Strongly typed resource properties for XAML and C#

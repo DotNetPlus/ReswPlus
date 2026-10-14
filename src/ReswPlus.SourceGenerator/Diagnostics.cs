@@ -71,12 +71,12 @@ internal static class Diagnostics
         isEnabledByDefault: true);
 
     /// <summary>
-    /// RESWP0005: the project is neither a UWP nor a WinAppSDK project.
+    /// RESWP0005: the project is not a UWP, WinAppSDK, or Uno WinUI project.
     /// </summary>
     public static readonly DiagnosticDescriptor UnrecognizedAppType = new(
         "RESWP0005",
         "Project type not recognized",
-        "ReswPlus only supports UWP and WinAppSDK applications/libraries",
+        "ReswPlus only supports UWP, WinAppSDK, and Uno WinUI applications/libraries",
         CompatibilityCategory,
         DiagnosticSeverity.Error,
         isEnabledByDefault: true);

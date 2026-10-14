@@ -116,7 +116,7 @@ internal sealed class ReswProject : IEquatable<ReswProject>
             ? AppType.UWP
             : compilationInfo.AppType;
 
-        if (appType is not (AppType.WindowsAppSDK or AppType.UWP))
+        if (appType is not (AppType.WindowsAppSDK or AppType.UWP or AppType.UnoWinUI))
         {
             return Unsupported([.. problems, Diagnostics.UnrecognizedAppType.Id]);
         }

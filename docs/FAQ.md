@@ -38,6 +38,23 @@ Everything else ReswPlus generates works with Native AOT.
 
 VB support is currently under development. C++/CX and C++/WinRT support are planned for a future update.
 
+## Does the source generator support Uno WinUI?
+
+Yes. ReswPlus detects `Microsoft.UI.Xaml.DependencyObject` from the `Uno.UI` assembly,
+regardless of the NuGet package path or whether the type is a class or interface.
+It generates `Microsoft.UI.Xaml` helpers and uses
+`Windows.ApplicationModel.Resources.ResourceLoader.GetForViewIndependentUse`.
+
+Generated macro helpers are still subject to Uno's Windows API support. Uno may
+report `Uno0001` warnings for unsupported APIs in those helpers, even when the
+resource uses a different macro.
+
+If you previously worked around `RESWP0005` by setting `UseUwp=true` and adding
+`Windows.UI.Xaml` versions of `MarkupExtension`, `MarkupExtensionReturnTypeAttribute`,
+and `IValueConverter`, remove that override and those compatibility types after updating.
+A separate `WinRT.DynamicWindowsRuntimeCastAttribute` polyfill, if required by your app,
+is unrelated to ReswPlus and should be kept.
+
 ## Is it free?
 
 Yes and it won't change.
