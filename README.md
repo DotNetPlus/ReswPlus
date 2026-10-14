@@ -38,10 +38,7 @@ _**Now available as a Source Generator!**_
 
 ⚡ [How to Install ReswPlus](https://github.com/reswplus/ReswPlus/wiki/How-to-install-ReswPlus) – Step-by-step installation guide.
 
-The source generator supports UWP, Windows App SDK, and Uno WinUI applications and libraries.
-Uno WinUI is detected automatically from its referenced types and uses `Microsoft.UI.Xaml` helpers
-with `Windows.ApplicationModel.Resources.ResourceLoader`; no `UseUwp=true` override or
-`Windows.UI.Xaml` compatibility types are needed.
+The source generator supports UWP, Windows App SDK, and Uno WinUI applications and libraries. Uno WinUI is detected automatically from its referenced types and uses `Microsoft.UI.Xaml` helpers with `Windows.ApplicationModel.Resources.ResourceLoader`; no `UseUwp=true` override or `Windows.UI.Xaml` compatibility types are needed.
 
 ReswPlus recognizes a UWP project by the `Windows.Foundation.UniversalApiContract` reference it carries, and a Windows App SDK project by its own. A **UWP project built for Native AOT** has no such reference, so it declares what it is with the standard `UseUwp` property instead, which ReswPlus reads and trusts over the references:
 
