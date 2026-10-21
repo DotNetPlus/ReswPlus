@@ -3,7 +3,7 @@ using Windows.UI.Xaml.Data;
 
 namespace ReswPlusUWPSample.Converters
 {
-    internal class ToUpperCaseConverter : IValueConverter
+    internal partial class ToUpperCaseConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
