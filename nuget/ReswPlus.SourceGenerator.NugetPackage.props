@@ -17,7 +17,7 @@
     <PackageTags>dotnet localization resw source-generator uwp winui plural pluralization</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>Fix the UWP sample converter declaration for CsWinRT trimming and Native AOT compatibility.</PackageReleaseNotes>
+    <PackageReleaseNotes></PackageReleaseNotes>
     <NoWarn>$(NoWarn);NU5128</NoWarn>
   </PropertyGroup>
   <ItemGroup>
