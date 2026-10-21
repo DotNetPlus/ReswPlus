@@ -38,7 +38,9 @@ _**Now available as a Source Generator!**_
 
 ⚡ [How to Install ReswPlus](https://github.com/reswplus/ReswPlus/wiki/How-to-install-ReswPlus) – Step-by-step installation guide.
 
-ReswPlus recognizes a UWP project by the `Windows.Foundation.UniversalApiContract` reference it carries, and a Windows App SDK project by its own. A **UWP project built for Native AOT** has no such reference, so it declares what it is with the standard `UseUwp` property instead, which ReswPlus reads and trusts over the references:
+The source generator supports UWP, Windows App SDK, and Uno WinUI applications and libraries. Uno WinUI is detected automatically from its referenced types and uses `Microsoft.UI.Xaml` helpers with `Windows.ApplicationModel.Resources.ResourceLoader`; no `UseUwp=true` override or `Windows.UI.Xaml` compatibility types are needed.
+
+ReswPlus recognizes a UWP project by the `Windows.Foundation.UniversalApiContract` reference it carries, and a Windows App SDK project by its own. A **UWP project built for Native AOT** has no such reference, so it declares what it is with the standard `UseUwp` property instead. This property fills in the app model only when the references cannot identify it:
 
 ```xml
 <PropertyGroup>
@@ -46,7 +48,21 @@ ReswPlus recognizes a UWP project by the `Windows.Foundation.UniversalApiContrac
 </PropertyGroup>
 ```
 
-Without it, such a project is reported as `RESWP0005` and no code is generated for it. The `samples/UWP` folder has one sample of each kind: `ReswPlusUWPSample` built with .NET Native, and `ReswPlusNativeAotUwpSample` built on modern .NET with Native AOT.
+Without `UseUwp=true` or an explicit `ReswPlusAppType=UWP`, such a project is reported as `RESWP0005` and no code is generated for it. The `samples/UWP` folder has one sample of each kind: `ReswPlusUWPSample` built with .NET Native, and `ReswPlusNativeAotUwpSample` built on modern .NET with Native AOT.
+
+### Override application model detection
+
+Automatic detection remains the default. If it cannot recognize your configuration or selects the wrong app model, opt in to an explicit `ReswPlusAppType`. For example, an Uno application can override its non-Windows heads without changing a Windows App SDK head:
+
+```xml
+<PropertyGroup Condition="'$(TargetFramework)' != '' and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'windows'">
+    <ReswPlusAppType>UnoWinUI</ReswPlusAppType>
+</PropertyGroup>
+```
+
+Supported values are `Auto`, `WindowsAppSDK`, `UWP`, and `UnoWinUI`, matched case-insensitively with surrounding whitespace ignored. Unset, empty, or `Auto` keeps automatic detection and the existing `UseUwp` fallback. Any other value reports `RESWP0021` and stops generation rather than silently falling back.
+
+An explicit app model takes precedence over both the detected references and `UseUwp`. The override selects the generated XAML helpers, resource loader, and optional application-language resolver; it does not add platform references. Choose the model whose APIs your target actually provides, and condition the property per target framework when different heads use different app models.
 
 ### Injectable resource interfaces
 

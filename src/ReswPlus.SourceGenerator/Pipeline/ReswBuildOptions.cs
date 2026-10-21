@@ -25,6 +25,7 @@ internal sealed class ReswBuildOptions : IEquatable<ReswBuildOptions>
         string? rootNamespace,
         bool useApplicationLanguages,
         bool useUwp,
+        AppTypeSelection appTypeOverride,
         bool generateResourceInterfaces)
     {
         ProjectDir = projectDir;
@@ -35,6 +36,7 @@ internal sealed class ReswBuildOptions : IEquatable<ReswBuildOptions>
         RootNamespace = rootNamespace;
         UseApplicationLanguages = useApplicationLanguages;
         UseUwp = useUwp;
+        AppTypeOverride = appTypeOverride;
         GenerateResourceInterfaces = generateResourceInterfaces;
     }
 
@@ -63,9 +65,15 @@ internal sealed class ReswBuildOptions : IEquatable<ReswBuildOptions>
     /// A UWP project is otherwise recognized by the <c>Windows.Foundation.UniversalApiContract</c> reference it
     /// carries, which a UWP project built for Native AOT does not have. Such a project says so with this
     /// property instead. It fills in what the references don't say rather than overriding them: a compilation
-    /// whose references positively identify it is left alone.
+    /// whose references positively identify it is left alone. An explicit <c>ReswPlusAppType</c> takes
+    /// precedence over both the references and this fallback.
     /// </remarks>
     public bool UseUwp { get; }
+
+    /// <summary>
+    /// Gets the explicit application model selection, or <see cref="AppTypeSelection.Auto"/> to use detection.
+    /// </summary>
+    public AppTypeSelection AppTypeOverride { get; }
 
     /// <summary>
     /// Gets whether injectable resource interfaces and providers should be generated.
@@ -88,9 +96,37 @@ internal sealed class ReswBuildOptions : IEquatable<ReswBuildOptions>
             Get("build_property.RootNamespace"),
             bool.TryParse(Get("build_property.ReswPlusUseApplicationLanguages"), out var parsed) && parsed,
             bool.TryParse(Get("build_property.UseUwp"), out var parsedUseUwp) && parsedUseUwp,
+            ParseAppTypeOverride(Get("build_property.ReswPlusAppType")),
             !bool.TryParse(Get("build_property.ReswPlusGenerateResourceInterfaces"), out var parsedInterfaces) || parsedInterfaces);
 
         string? Get(string key) => globalOptions.TryGetValue(key, out var value) ? value : null;
+    }
+
+    private static AppTypeSelection ParseAppTypeOverride(string? value)
+    {
+        value = value?.Trim();
+
+        if (string.IsNullOrEmpty(value) || string.Equals(value, "Auto", StringComparison.OrdinalIgnoreCase))
+        {
+            return AppTypeSelection.Auto;
+        }
+
+        if (string.Equals(value, "WindowsAppSDK", StringComparison.OrdinalIgnoreCase))
+        {
+            return AppTypeSelection.WindowsAppSDK;
+        }
+
+        if (string.Equals(value, "UWP", StringComparison.OrdinalIgnoreCase))
+        {
+            return AppTypeSelection.UWP;
+        }
+
+        if (string.Equals(value, "UnoWinUI", StringComparison.OrdinalIgnoreCase))
+        {
+            return AppTypeSelection.UnoWinUI;
+        }
+
+        return AppTypeSelection.Invalid;
     }
 
     /// <summary>
@@ -119,6 +155,7 @@ internal sealed class ReswBuildOptions : IEquatable<ReswBuildOptions>
             && RootNamespace == other.RootNamespace
             && UseApplicationLanguages == other.UseApplicationLanguages
             && UseUwp == other.UseUwp
+            && AppTypeOverride == other.AppTypeOverride
             && GenerateResourceInterfaces == other.GenerateResourceInterfaces;
     }
 
@@ -137,6 +174,7 @@ internal sealed class ReswBuildOptions : IEquatable<ReswBuildOptions>
 
         hash = (hash * 31) + UseApplicationLanguages.GetHashCode();
         hash = (hash * 31) + UseUwp.GetHashCode();
+        hash = (hash * 31) + AppTypeOverride.GetHashCode();
         return (hash * 31) + GenerateResourceInterfaces.GetHashCode();
     }
 }

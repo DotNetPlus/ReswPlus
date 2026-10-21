@@ -336,7 +336,7 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
     /// </remarks>
     private static string XamlNamespace(AppType appType)
     {
-        return appType == AppType.WindowsAppSDK ? "global::Microsoft.UI.Xaml" : "global::Windows.UI.Xaml";
+        return appType is AppType.WindowsAppSDK or AppType.UnoWinUI ? "global::Microsoft.UI.Xaml" : "global::Windows.UI.Xaml";
     }
 
     /// <summary>
@@ -349,7 +349,7 @@ internal sealed class CSharpCodeGenerator : ICodeGenerator
             UsingDirective(ParseName("System"))
         };
 
-        if (appType == AppType.WindowsAppSDK)
+        if (appType is AppType.WindowsAppSDK or AppType.UnoWinUI)
         {
             usings.Add(UsingDirective(ParseName("Microsoft.UI.Xaml.Markup")));
             usings.Add(UsingDirective(ParseName("Microsoft.UI.Xaml.Data")));

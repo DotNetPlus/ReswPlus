@@ -26,6 +26,7 @@ public enum AppType
     Unknown,
     WindowsAppSDK,
     UWP,
+    UnoWinUI,
 }
 
 /// <summary>
@@ -264,10 +265,17 @@ public partial class ReswSourceGenerator : IIncrementalGenerator
     }
 
     /// <summary>
-    /// Determines the application type (WindowsAppSDK, UWP, or Unknown) by inspecting the compilation's external references.
+    /// Determines the application type by inspecting the compilation's referenced types and assemblies.
     /// </summary>
     private static AppType RetrieveAppType(Compilation compilation)
     {
+        // Uno provides WinUI XAML types, but implements the Windows resource loader.
+        var dependencyObject = compilation.GetTypeByMetadataName("Microsoft.UI.Xaml.DependencyObject");
+        if (dependencyObject?.ContainingAssembly.Identity.Name is "Uno.UI" or "Uno.WinUI")
+        {
+            return AppType.UnoWinUI;
+        }
+
         return compilation.ExternalReferences.Any(r =>
             r.Display?.IndexOf("Microsoft.WindowsAppSdk", StringComparison.OrdinalIgnoreCase) >= 0)
             ? AppType.WindowsAppSDK
